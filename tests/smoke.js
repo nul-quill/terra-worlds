@@ -1,0 +1,54 @@
+/* Headless smoke test for TerraCore: node tests/smoke.js */
+'use strict';
+
+require('../src/core.js');
+var core = globalThis.TerraCore;
+
+function assert(cond, msg) {
+  if (!cond) { console.error('FAIL: ' + msg); process.exitCode = 1; }
+  else { console.log('ok   - ' + msg); }
+}
+
+var a = core.generate({ seed: 'aurora basin', width: 200, height: 120 });
+var b = core.generate({ seed: 'aurora basin', width: 200, height: 120 });
+var c = core.generate({ seed: 'salt mirror', width: 200, height: 120 });
+
+assert(a.width === 200 && a.height === 120, 'grid size honoured');
+assert(a.data.length === 200 * 120 * 4, 'rgba buffer sized correctly');
+assert(a.biome.length === 200 * 120, 'biome buffer sized correctly');
+
+var same = true;
+for (var i = 0; i < a.data.length; i++) { if (a.data[i] !== b.data[i]) { same = false; break; } }
+assert(same, 'same seed reproduces identical pixels');
+assert(!a.data.every(function (v) { return v === a.data[0]; }), 'different seed changes output');
+
+var alphaOk = true;
+for (var p = 3; p < a.data.length; p += 4) { if (a.data[p] !== 255) { alphaOk = false; break; } }
+assert(alphaOk, 'alpha channel is opaque everywhere');
+
+var land = a.stats.land, water = a.stats.water;
+assert(land > 0.05 && land < 0.95, 'land fraction is non-degenerate (' + land.toFixed(3) + ')');
+assert(Math.abs(land + water - 1) < 1e-3, 'land + water covers the grid');
+
+assert(a.stats.rivers > 0, 'drainage produced river cells (' + a.stats.rivers + ')');
+
+var keys = Object.keys(a.stats.counts);
+assert(keys.length >= 5, 'multiple biomes present (' + keys.length + ')');
+
+var t = core.generate({ seed: 'perf', width: 480, height: 300 });
+assert(t.stats.ms < 900, 'generation under 900ms (' + t.stats.ms + 'ms)');
+
+var up = core.upscale(a, 2);
+assert(up.width === 400 && up.height === 240, 'upscale doubles the grid');
+
+var terraced = core.generate({ seed: 'terraced', width: 165, height: 103, terraces: 8, rivers: 200 });
+assert(terraced.stats.rivers > 0, 'terraced plateaus still drain (' + terraced.stats.rivers + ' cells)');
+
+var noRiver = core.generate({ seed: 'terraced', width: 165, height: 103, rivers: 0 });
+assert(noRiver.stats.rivers === 0, 'rivers=0 disables the drainage overlay');
+
+assert(core.hashString('a') !== core.hashString('b'), 'hash distinguishes seeds');
+
+console.log('\nsummary: ' + a.width + 'x' + a.height +
+  ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
+  '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
