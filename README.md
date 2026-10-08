@@ -49,6 +49,8 @@ the river cut is a quantile of the accumulation field, the share of the grid tha
 carries a channel barely moves when only the size changes — the smoke suite checks
 that.
 Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
+`c` cycles the overlays and `h` the shape curves, both walking the list the
+matching dropdown shows.
 `p` steps through the seed phrases listed by `--phrases`, which is a quicker way
 to browse good worlds than rerolling at random — and unlike reroll it returns to
 the first phrase after the last.

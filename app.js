@@ -1010,6 +1010,17 @@
       render();
       return;
     }
+    // 'h' steps through the shape curves — the biggest single lever on a
+    // world's silhouette, so it earns a key next to the overlay cycle. The
+    // list is the same one the dropdown and `cli --shapes` read.
+    if (!typingLetter && (ev.key === 'h' || ev.key === 'H')) {
+      ev.preventDefault();
+      var shapeKeys = TerraCore.shapes.map(function (s) { return s.key; });
+      var si = shapeKeys.indexOf(inputs.shape.value);
+      inputs.shape.value = shapeKeys[(si + 1) % shapeKeys.length];
+      render();
+      return;
+    }
     // The two checkboxes and the export are the only things left that a
     // keyboard user has to reach for: one key each, no modifiers.
     // 'p' steps through the hand-picked seed phrases, which is a quicker way
