@@ -52,6 +52,10 @@ the number means the world really changed, while a different `generate` time
 does not. The CLI prints the same value.
 Arrow keys walk the hovered cell, so the readout can be inspected without a
 pointer; they are ignored while a form field has the caret.
+Hovering a bar in the relief chart also lights up the cells in that height band
+on the map, the same way hovering a legend row isolates a class. A legend row
+takes priority while the pointer is on it, and leaving either one restores the
+full map.
 The hover crosshair and its hairlines take the palette's own ink, so they stay
 visible on the pale sky of `Sepia` or `Mono` instead of washing out.
 `c` steps through the overlays and back to the biome map. The hover readout

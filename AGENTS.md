@@ -67,6 +67,10 @@ Conventions:
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend
   path, or hover and click will disagree about the result.
+  A hovered relief-chart bar (`band`, a bin index) is the third filter in that
+  same loop: it selects by height instead of by class, and a legend selection
+  wins over it. Like `solo` it is a preview and never goes into the hash; both
+  are cleared when the pointer leaves the map.
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.

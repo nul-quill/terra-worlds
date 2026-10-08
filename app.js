@@ -102,6 +102,9 @@
   // studied after the pointer has moved on to the canvas.
   var solo = null;
   var pinned = null;
+  // Height band picked by hovering the relief chart: a bin index, or -1. Like
+  // `solo` this is a preview, so it is not written into the hash.
+  var band = -1;
 
   /* ---- defaults ---- */
 
@@ -222,9 +225,23 @@
     // still previews while the click selection waits underneath it.
     var want = solo || pinned;
     var sky = want ? hexToRgb(current.palette.sky) : null;
+    // A hovered bar in the relief chart is the other way to isolate: it selects
+    // by height instead of by class, so a band of the histogram lights up the
+    // matching cells on the map. Same blend, one more test in the same loop.
+    var hs = histState;
+    var bandLo = 0, bandSpan = 1, bandOn = band >= 0 && hs;
+    // A legend selection wins over a hovered band: the row is what the pointer
+    // is on, and two stacked filters would read as a third, dimmer state.
+    if (want) bandOn = false;
+    if (bandOn) {
+      bandLo = hs.lo; bandSpan = hs.span;
+      sky = sky || hexToRgb(current.palette.sky);
+    }
     var i;
     for (i = 0; i < src.length; i += 4) {
-      var keep = !sky || current.biome[i >> 2] === want ? 1 : 0.35;
+      var cell = i >> 2;
+      var keep = (!want || current.biome[cell] === want) &&
+        (!bandOn || histBinFor(current.heightField[cell]) === band) ? 1 : 0.35;
       out[i] = src[i] * keep + (sky ? sky[0] * (1 - keep) : 0);
       out[i + 1] = src[i + 1] * keep + (sky ? sky[1] * (1 - keep) : 0);
       out[i + 2] = src[i + 2] * keep + (sky ? sky[2] * (1 - keep) : 0);
@@ -833,13 +850,25 @@
     var rect = histCanvas.getBoundingClientRect();
     var x = ev.clientX - rect.left;
     var bin = Math.floor(x / Math.max(1, rect.width) * histState.bins);
-    paintHistogram(bin < 0 ? 0 : Math.min(histState.bins - 1, bin));
+    band = bin < 0 ? 0 : Math.min(histState.bins - 1, bin);
+    paintHistogram(band);
+    // And the matching cells on the map, so the two charts can be read against
+    // each other without moving the pointer back and forth.
+    drawHover();
   });
-  histCanvas.addEventListener('mouseleave', function () { paintHistogram(-1); });
+  histCanvas.addEventListener('mouseleave', function () {
+    band = -1;
+    paintHistogram(-1);
+    drawHover();
+  });
 
   view.addEventListener('mouseleave', function () {
     hover.x = -1; hover.y = -1;
     readout.textContent = 'hover the map';
+    // The chart's hovered bin is cleared together with the crosshair, so the
+    // map never keeps a height filter after the pointer has gone while the
+    // chart itself shows no selection.
+    band = -1;
     drawHover();
     // The chart keeps the last hovered bin until something else picks one, so
     // dropping the pointer off the map clears it along with the readout.
