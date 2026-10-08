@@ -51,6 +51,9 @@ Every control is mirrored into the URL hash (`#seed=...&pal=sepia&sea=0.6&...`),
 so a finished world can be pasted into a chat and reopened identically. Loading a
 hash fills the controls before the first render; anything absent falls back to the
 default. `export` picks the nearest-neighbour multiplier used by Save PNG.
+The stats list shows the choice as an `export` row — the multiplier plus the
+pixel size it produces — so the `e` key has an on-screen effect even though the
+world underneath is unchanged.
 `Copy link` — or the `x` key — puts that URL on the clipboard.
 A pinned legend class rides along as `pin=taiga`, so a shared link reopens with
 the same class isolated. An unknown key in that field is ignored rather than

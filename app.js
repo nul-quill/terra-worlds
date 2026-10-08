@@ -563,10 +563,22 @@
       summaryLine.textContent = TerraCore.describe(result);
     }
 
+  // What Save PNG will write: the grid times the multiplier in the export
+  // dropdown. One lookup so the stats row and the saved file cannot disagree
+  // about which factor was in use.
+  function exportFactor() {
+    return parseInt(inputs.scale.value, 10) || 3;
+  }
+
   function renderStats(result) {
     var s = result.stats;
+    var factor = exportFactor();
     var rows = [
       ['grid', result.width + ' x ' + result.height],
+      // The multiplier only ever touches the saved file, so without this row
+      // the `e` key would look like it did nothing until a PNG was opened.
+      ['export', factor + 'x \u00b7 ' + result.width * factor + ' x ' +
+        result.height * factor],
       ['land', percentText(s.land)],
       ['water', percentText(s.water)],
       ['lake', shareText(s.counts.lake || 0, s.pixels)],
@@ -939,7 +951,7 @@
 
   function savePng() {
     if (!current) return;
-    var big = TerraCore.upscale(current, parseInt(inputs.scale.value, 10) || 3);
+    var big = TerraCore.upscale(current, exportFactor());
     var c = document.createElement('canvas');
     c.width = big.width;
     c.height = big.height;

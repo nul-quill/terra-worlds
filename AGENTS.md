@@ -192,6 +192,10 @@ Conventions:
   that array. A multiplier enlarges only the saved pixels, so every count in
   `stats` is the same at 2x as at 6x — that is what makes it safe to change
   while comparing two worlds.
+  Because it moves no count, the multiplier is shown in its own `export` row
+  right under `grid`: the factor plus the pixel size it saves at. Both the row
+  and `savePng()` read it through `exportFactor()`, so the number on screen is
+  always the number that was written.
   `[` and `]` are not a list cycle: they nudge the sea slider by one step,
   reading `min`/`max`/`step` off the input itself so the key and the slider
   cannot disagree about the size of a step. Keep the clamp there rather than
@@ -215,7 +219,8 @@ Verify with:
   then keep typing in the seed box to check the letter keys stay out of the way.
   Press `c`, `h`, `d`, `w` and `k` too — each should move the dropdown or pin it
   is named for, and `Shift` with any of them should back one step up. `e` walks
-  the export size, which changes only the saved pixels. Walk off
+  the export size, which changes only the saved pixels — the `export` row under
+  `grid` should follow it while every other count stays put. Walk off
   the right-hand edge with the arrows: the cursor should come back on the left.
   `[` and `]` should move the `sea` slider by one hundredth, and `x` should
   briefly read `Copied` on the button.
