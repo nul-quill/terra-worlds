@@ -356,6 +356,13 @@
         // Hovering a row isolates that class on the map; leaving restores it.
         li.addEventListener('mouseenter', function () { drawHighlighted(key); });
         li.addEventListener('mouseleave', function () { drawMap(); });
+        // Same thing for a keyboard user tabbing through the list: focus takes
+        // the place of the pointer, so the isolation trick works without a
+        // mouse. The rows are only there to be read, so they are in the tab
+        // order deliberately.
+        li.tabIndex = 0;
+        li.addEventListener('focus', function () { drawHighlighted(key); });
+        li.addEventListener('blur', function () { drawMap(); });
         legendList.appendChild(li);
       });
   }
@@ -476,6 +483,15 @@
     hc.moveTo(Math.round(seaX) + 0.5, 0);
     hc.lineTo(Math.round(seaX) + 0.5, h);
     hc.stroke();
+    // The marker line alone does not say what the sea level is, and the slider
+    // is the knob that moves it most, so the number rides next to the rule.
+    // Flipped to the left of the line when it would otherwise run off the edge.
+    var seaLabel = 'sea ' + Math.round(result.seaLevel * 100);
+    var seaTw = hc.measureText(seaLabel).width;
+    hc.font = '9px system-ui, sans-serif';
+    hc.fillStyle = 'rgba(30,38,44,0.75)';
+    hc.fillText(seaLabel,
+      seaTw + 6 + seaX < w ? seaX + 4 : seaX - seaTw - 4, 9);
     // Corner labels give the chart a scale: without them the shape of the
     // spread is readable but the numbers are not. Drawn before the hovered-bin
     // label so a hover can cover them when space is tight.

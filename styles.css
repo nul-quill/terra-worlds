@@ -214,7 +214,8 @@ button:last-child {
 
 /* Hovering a row isolates that class on the map, so the row has to look like
    something happens when it is touched. */
-.legend li:hover { background: rgba(47, 125, 106, 0.10); }
+.legend li:hover,
+.legend li:focus { background: rgba(47, 125, 106, 0.10); outline: none; }
 
 .legend .sw {
   width: 12px;

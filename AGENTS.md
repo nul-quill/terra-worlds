@@ -58,6 +58,11 @@ Conventions:
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not
   replace it with a plain `randomSeed()` call in the button.
+- Letter shortcuts (`c`, `g`, `l`, `s`) are skipped while an INPUT or SELECT owns
+  the caret, so a seed phrase can still be typed. `styles.css` ends with two
+  `@media` blocks: `print` (hides the chrome, one column) and
+  `prefers-color-scheme: dark` (only the CSS variables change). Both are checked
+  with `page.emulateMedia()` followed by a reload.
 
 Verify with:
 
