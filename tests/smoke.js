@@ -295,6 +295,29 @@ assert(rampWorst <= 1,
   'overlay readout matches the rendered ramp (worst ' +
   rampWorst.toFixed(2) + ' of 255)');
 
+// Every ramp has to answer with a position in 0..1, on every field it reads:
+// the readout prints that number directly, so a value outside the ramp would
+// show a percentage no colour on screen can match. Each overlay also records
+// the scale it was built from, which is what a hover then reuses instead of
+// sorting the field again.
+core.channels.forEach(function (oc) {
+  core.channelize(spread, oc.key);
+  var sc = spread.channelScale;
+  var inRange = !!sc && sc.hi > sc.lo;
+  for (var oi2 = 0; inRange && oi2 < spread.width * spread.height; oi2 += 7) {
+    var ov = core.channelValue(spread, oi2);
+    if (!(ov >= 0 && ov <= 1)) inRange = false;
+  }
+  assert(inRange, (oc.key || 'biome') + ' readout stays inside its ramp (' +
+    sc.key + ' ' + sc.lo.toFixed(3) + '..' + sc.hi.toFixed(3) + ')');
+});
+
+// An unknown overlay name must still render something sensible rather than an
+// empty buffer: the hash can carry a key from an older build.
+var fallback = core.channelize(spread, 'no-such-ramp');
+assert(fallback.channel === 'relief' && fallback.data.length === spread.data.length,
+  'an unknown overlay falls back to relief (' + fallback.channel + ')');
+
 // The overlay reads the fields rather than the colour buffer, so the biome
 // classification underneath is untouched.
 assert(spread.biome.length === spread.width * spread.height &&

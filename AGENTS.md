@@ -91,6 +91,10 @@ Conventions:
   it is a difference of the height field, so it still cannot move a biome
   boundary, and it is cached on `result.slopeField` for the same reason the
   scale is — a hover reads the field once per cell.
+  A key that is not in the ramp table falls back to `relief` rather than
+  rendering nothing, so a hash saved against an older build still shows a map.
+  The smoke suite walks every entry of `TerraCore.channels` and checks each
+  ramp both spans a range and answers `channelValue` in 0..1.
 - `stats.checksum` is FNV-1a over the rendered RGBA buffer, as eight hex digits.
   It is the cheap equality test for determinism: same seed + same grid must give
   the same digits, while `stats.ms` is allowed to wander. Keep the multiply in the
