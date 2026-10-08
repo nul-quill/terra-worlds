@@ -10,6 +10,10 @@ node cli.js "aurora basin" --width 320 --height 200 --out world.ppm
 Several seeds can be rendered in one call — each writes its own file
 (`world-1.ppm`, `world-2.ppm`, …) — and `--json` swaps the stats table for one
 JSON record per world, which is what a script would consume.
+A dashed word that matches no flag is reported rather than swallowed: without
+A dashed word that matches no flag is named on stderr rather than swallowed as a
+seed, and the word after it is skipped — otherwise a mistyped `--widht 30`
+would quietly render a second world from the number `30`.
 `--scale n` grows the saved pixels by nearest-neighbour without changing the
 grid the stats are computed from, so a small grid can still fill a screen.
 `--describe` prints only the one-line summary — the same sentence the sidebar

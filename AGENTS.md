@@ -103,6 +103,11 @@ Conventions:
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not
   replace it with a plain `randomSeed()` call in the button.
+- `parseArgs()` in `cli.js` treats a bare word as a seed and a dashed word as a
+  flag. A dashed word that matches nothing is named on stderr, and the word
+  after it is skipped, so a mistyped `--widht 30` costs one warning instead of
+  quietly rendering a second world from the number `30`. Keep that skip in the
+  parser rather than filtering the seed list afterwards.
 - Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
   (`x` joins that list: it is not a list cycle but a call to `copyLink()`, the
   same function the `Copy link` button is wired to, so the two paths cannot

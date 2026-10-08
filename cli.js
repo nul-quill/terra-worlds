@@ -7,7 +7,7 @@ var core = globalThis.TerraCore;
 var zlib = require('zlib');
 
 function parseArgs(argv) {
-  var opts = { seeds: [], width: 480, height: 300, out: 'world.ppm' };
+  var opts = { seeds: [], unknown: [], width: 480, height: 300, out: 'world.ppm' };
   for (var i = 0; i < argv.length; i++) {
     var a = argv[i];
     if (a === '--width') opts.width = parseInt(argv[++i], 10);
@@ -37,7 +37,20 @@ function parseArgs(argv) {
     else if (a === '--grids') opts.grids = true;
     else if (a === '--scales') opts.scales = true;
     else if (a === '--json') opts.json = true;
+    else if (a.charAt(0) === '-') {
+      opts.unknown.push(a);
+      // Whatever followed was meant for this flag, so it should not become a
+      // second seed: a typo should cost one word, not two worlds.
+      if (argv[i + 1] && argv[i + 1].charAt(0) !== '-') i++;
+    }
     else opts.seeds.push(a);
+  }
+  // A bare word is a seed; a dashed word that matched nothing is almost
+  // always a typo, and swallowing it as a seed would render a world nobody
+  // asked for. Saying so is cheaper than a surprise file.
+  if (opts.unknown.length) {
+    console.error('unknown flag: ' + opts.unknown.join(', ') +
+      ' (--help lists the ones that exist)');
   }
   if (!opts.seeds.length) opts.seeds.push('terra');
   return opts;

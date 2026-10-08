@@ -409,6 +409,16 @@ core.scales.forEach(function (sc) {
 });
 assert(scaleOk, 'every export multiplier upscales by that factor');
 
+// A dashed word that matches no flag is a typo, not a seed: the CLI says so
+// and still renders one world, rather than treating the stray word (and its
+// value) as extra seeds. Checked by counting the summaries it prints.
+var typoOut = require('child_process')
+  .execSync('node cli.js "pale shelf" --describe --widht 30',
+    {cwd: __dirname + '/..', stdio: ['ignore', 'pipe', 'ignore']})
+  .toString().trim().split('\n');
+assert(typoOut.length === 1 && typoOut[0].indexOf('(') > 0,
+  'a mistyped flag does not add a second world (' + typoOut.length + ')');
+
 // And the same for the light bearings: the dropdown, the `d` key and the shade
 // pass all read core.lights, so a key printed by the CLI must be one the
 // generator accepts, with the same note the dropdown implies.
