@@ -18,18 +18,21 @@
     polar: document.getElementById('polar'),
     terraces: document.getElementById('terraces'),
     hillshade: document.getElementById('hillshade'),
-    rivers: document.getElementById('rivers')
+    rivers: document.getElementById('rivers'),
+    lightDir: document.getElementById('lightDir'),
+    dither: document.getElementById('dither')
   };
 
   var PRESETS = ['aurora basin', 'salt mirror', 'thousand isles', 'red ridge', 'pale shelf'];
 
   // The whole option set lives in the URL hash, so a finished world can be
   // pasted into a chat and reopen identically. Keys are short to keep the hash
-  // readable; anything missing falls back to the default below.
+  // readable; anything missing falls back to the default below. 'lit' is the
+  // strength of the hillshade, 'dir' the compass bearing of the light.
   var HASH_KEYS = {
     seed: 'seed', palette: 'pal', shape: 'shape', seaLevel: 'sea',
     detail: 'det', polar: 'cli', terraces: 'stp', hillshade: 'lit',
-    rivers: 'riv', scale: 's'
+    rivers: 'riv', scale: 's', dither: 'gr', lightDir: 'dir'
   };
 
   function readHash() {
@@ -49,6 +52,11 @@
     Object.keys(HASH_KEYS).forEach(function (key) {
       var el = inputs[key];
       if (!el) return;
+      // Checkboxes are stored as 1/0 so the hash stays short.
+      if (el.type === 'checkbox') {
+        parts.push(HASH_KEYS[key] + '=' + (el.checked ? 1 : 0));
+        return;
+      }
       parts.push(HASH_KEYS[key] + '=' + encodeURIComponent(el.value));
     });
     var next = '#' + parts.join('&');
@@ -63,7 +71,10 @@
     var fromUrl = readHash();
     Object.keys(HASH_KEYS).forEach(function (key) {
       var value = fromUrl[HASH_KEYS[key]];
-      if (value != null && value !== '' && inputs[key]) inputs[key].value = value;
+      var el = inputs[key];
+      if (value == null || value === '' || !el) return;
+      if (el.type === 'checkbox') el.checked = value === '1';
+      else el.value = value;
     });
   }
 
@@ -96,7 +107,9 @@
       polar: parseFloat(inputs.polar.value),
       terraces: parseInt(inputs.terraces.value, 10),
       hillshade: parseFloat(inputs.hillshade.value),
-      rivers: parseInt(inputs.rivers.value, 10)
+      rivers: parseInt(inputs.rivers.value, 10),
+      lightDir: inputs.lightDir.value,
+      dither: inputs.dither.checked
     };
   }
 
@@ -116,7 +129,9 @@
       seed: opts.seed, palette: opts.palette, shape: opts.shape,
       seaLevel: opts.seaLevel, detail: opts.detail, terraces: opts.terraces,
       polar: opts.polar,
-      hillshade: opts.hillshade, rivers: opts.rivers, width: cols, height: rows
+      hillshade: opts.hillshade, rivers: opts.rivers, dither: opts.dither,
+      lightDir: opts.lightDir,
+      width: cols, height: rows
     });
     current = result;
 
@@ -270,7 +285,9 @@
     } else if (!above && h < current.seaLevel - 0.14) {
       parts.push('off-shelf');
     }
-    if (current.riverMask && current.riverMask[i]) parts.push('river');
+    if (current.riverMask && current.riverMask[i]) {
+      parts.push(current.riverMask[i] === 2 ? 'trunk river' : 'river');
+    }
     readout.textContent = parts.join(' — ');
   }
 
@@ -302,6 +319,7 @@
   inputs.hillshade.value = '0.55';
   inputs.rivers.value = '90';
   inputs.scale.value = '3';
+  inputs.dither.checked = true;
   // Anything in the address bar wins over the defaults above.
   applyHash();
 

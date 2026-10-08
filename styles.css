@@ -95,6 +95,15 @@ body {
 
 .field.range { min-width: 92px; }
 
+.field.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.field.check input { accent-color: var(--accent); }
+
 input[type="range"] {
   width: 92px;
   accent-color: var(--accent);

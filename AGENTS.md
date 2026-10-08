@@ -25,6 +25,13 @@ Conventions:
 - Lakes are closed depressions: the water surface is the minimum on a ring of
   radius `RIM` around the seed cell, and the basin is a flood fill capped at that
   surface. The old single-cell test (`gap > threshold` only) left one-pixel dots.
+  Each fill also records its lowest rim neighbour as a spillway, so a basin's
+  accumulation continues downstream instead of dying at the shore.
+- The trunk/tributary split is a second quantile of the SAME accumulation field
+  (`majorCut`), never a separate threshold. `riverMask` holds 1 or 2.
+- Shading-only knobs (`hillshade`, `lightDir`, `dither`) must never move a biome
+  boundary: classification happens before the colour pass. The smoke suite
+  asserts that, so keep it that way.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
@@ -33,4 +40,4 @@ Verify with:
 
 1. `node tests/smoke.js`
 2. open `index.html` in the integrated browser, move a slider, hover the map,
-   click Reroll and Save PNG.
+   hover a legend row, toggle `grain`, click Reroll and Save PNG.

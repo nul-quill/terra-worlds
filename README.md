@@ -30,14 +30,21 @@ Pipeline, all on the CPU:
    side of a ridge, so the leeward side comes out a band drier.
 3. **Drainage** — cells are visited highest-first and each one pushes its
    accumulation into its lowest neighbour, which yields dendritic river networks
-   without any per-frame work.
+   without any per-frame work. The cut is a quantile of the accumulation field, so
+   one slider value behaves the same on a small preview and a large export; the top
+   slice of that same field is drawn as a trunk river with a stronger blend.
 4. **Basins** — a cell holds water when every route off it climbs. Comparing its
    height against the minimum on a ring around it gives the water surface, and a
    flood fill up to that surface fills the basin. Lakes also green their shore.
+   Each basin also reports its lowest rim cell, so the surplus leaves as a short
+   outflow channel and the catchment continues downstream instead of stopping.
 5. **Biomes** — a temperature x moisture lookup gives 11 land/water classes; coast
    cells, polar ice caps, snow caps and alpine rock are resolved on top.
 6. **Shading** — a hillshade from the height gradient, a 4x4 Bayer dither to kill
-   banding, and depth falloff under water and in lakes.
+   banding, and depth falloff under water and in lakes. The `grain` checkbox drops
+   the dither for a flat, posterised look; it only touches shading, never a biome
+   boundary. `from` picks the compass bearing of the light (NW / NE / SW / SE), which
+   is also shading-only. Hovering a legend row isolates that class on the map.
 
 The noise lattice counts are integers and every octave doubles them, so the field
 tiles seamlessly on both axes — pan or tile the map with no visible seam.

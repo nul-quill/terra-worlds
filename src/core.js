@@ -363,7 +363,14 @@
     var landCells = 0, waterCells = 0, riverCells = 0, iceCells = 0;
 
     // Light direction for the hillshade, normalised.
-    var lx = -0.55, ly = -0.62, lz = 0.56;
+    // One of four compass directions, so relief can be lit from whichever side
+    // reads best for the shape in play. Normalised, z always points at the viewer.
+    var LIGHT_DIRS = {
+      nw: [-0.55, -0.62, 0.56], ne: [0.55, -0.62, 0.56],
+      sw: [-0.55, 0.62, 0.56], se: [0.55, 0.62, 0.56]
+    };
+    var light = LIGHT_DIRS[opts.lightDir] || LIGHT_DIRS.nw;
+    var lx = light[0], ly = light[1], lz = light[2];
     var bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
     // The cut is a fraction of the largest catchment rather than an absolute
     // cell count, so one slider value behaves the same on a small preview, a
@@ -376,6 +383,9 @@
     var keep = 0.01 + clamp01(riverMin / 400) * 0.19;
     var qIndex = Math.min(n - 1, Math.round((1 - keep) * (n - 1)));
     var riverCut = accSorted[qIndex];
+    // Major channels: the top slice of the same field. Drawn with a stronger
+    // blend so a trunk river does not look like its own tributaries.
+    var majorCut = accSorted[Math.min(n - 1, Math.round((1 - keep * 0.28) * (n - 1)))];
 
     // Lakes are closed depressions. A cell holds water when every route off it
     // climbs: compare its height against the lowest point on a ring of radius
@@ -417,6 +427,38 @@
       return best;
     }
 
+    // Where a basin spills: the lowest cell just outside the filled area. A
+    // lake is never the end of the hydrology — the surplus leaves over the
+    // lowest point of the rim and cuts a channel on the way down.
+    var spill = new Uint8Array(n);
+
+    // Lowest non-lake neighbour around a filled basin: that is where the
+    // surplus leaves. Ties go to the higher index, matching the drainage
+    // tie-break so the outlet is the same cell the walk would pick.
+    function pickSpill(candidate, best) {
+      if (lake[candidate] || hf[candidate] >= seaLevel + 0.30) return best;
+      if (best < 0) return candidate;
+      return lower(hf[candidate], candidate, hf[best], best) ? candidate : best;
+    }
+
+    function recordSpill(count) {
+      var best = -1;
+      for (var q = 0; q < count; q++) {
+        var bc = queue[q];
+        var bx = bc % width, by = (bc / width) | 0;
+        if (bx > 0) best = pickSpill(bc - 1, best);
+        if (bx < width - 1) best = pickSpill(bc + 1, best);
+        if (by > 0) best = pickSpill(bc - width, best);
+        if (by < height - 1) best = pickSpill(bc + width, best);
+      }
+      if (best < 0) return;
+      spill[best] = 1;
+      // Everything the basin collected continues downstream from the outlet.
+      var carried = 0;
+      for (var qq = 0; qq < count; qq++) carried += acc[queue[qq]];
+      acc[best] += carried;
+    }
+
     // Fill the mask: depth is the rim-to-floor gap, capped so a deep basin and
     // Fill each basin: the water surface sits at the lowest point of the ring
     // around the seed, and every cell reachable from the seed without climbing
@@ -444,6 +486,7 @@
           if (cy2 > 0 && !lake[cur - width] && hf[cur - width] <= surface) queue[tail++] = cur - width;
           if (cy2 < height - 1 && !lake[cur + width] && hf[cur + width] <= surface) queue[tail++] = cur + width;
         }
+        recordSpill(tail);
       }
     }
 
@@ -484,9 +527,11 @@
         // Rivers: strong accumulation carves a line through the land.
         // Standing water in a basin already reads as water, so the network is
         // only drawn where it has to cut a channel.
-        if (!isWater && !inLake && riverMin > 0 && acc[i] > riverCut) {
+        if (!isWater && !inLake && riverMin > 0 && (acc[i] > riverCut || spill[i])) {
           river[i] = 1;
           riverCells++;
+          // A trunk river gets a stronger blend than its tributaries.
+          if (acc[i] > majorCut) river[i] = 2;
         }
 
         biome[i] = key;
@@ -533,9 +578,10 @@
         }
 
         if (river[i]) {
-          r = r * 0.45 + colors.shallow[0] * 0.55;
-          g = g * 0.45 + colors.shallow[1] * 0.55;
-          b = b * 0.45 + colors.shallow[2] * 0.55;
+          var mix = river[i] === 2 ? 0.72 : 0.50;
+          r = r * (1 - mix) + colors.shallow[0] * mix;
+          g = g * (1 - mix) + colors.shallow[1] * mix;
+          b = b * (1 - mix) + colors.shallow[2] * mix;
         }
 
         if (key === 'ice') iceCells++;

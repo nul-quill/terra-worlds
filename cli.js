@@ -17,8 +17,10 @@ function parseArgs(argv) {
     else if (a === '--detail') opts.detail = parseFloat(argv[++i]);
     else if (a === '--polar') opts.polar = parseFloat(argv[++i]);
     else if (a === '--light') opts.hillshade = parseFloat(argv[++i]);
+    else if (a === '--dir') opts.lightDir = argv[++i];
     else if (a === '--terraces') opts.terraces = parseInt(argv[++i], 10);
     else if (a === '--rivers') opts.rivers = parseInt(argv[++i], 10);
+    else if (a === '--no-grain') opts.dither = false;
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--help' || a === '-h') opts.help = true;
     else opts.seed = a;
@@ -44,7 +46,9 @@ if (opts.help) {
   console.log('usage: node cli.js "<seed>" [--width n] [--height n] [--palette name]');
   console.log('       [--shape continents|islands|atolls|craton|fjord] [--sea 0..1]');
   console.log('       [--detail 0..1] [--polar 0..1] [--light 0..1]');
+  console.log('       [--dir nw|ne|sw|se] for the hillshade light bearing,');
   console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
+    console.log('       [--no-grain] to skip the Bayer dither on the shading');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
 } else {
   var result = core.generate(opts);

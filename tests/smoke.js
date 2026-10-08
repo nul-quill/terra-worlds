@@ -61,6 +61,17 @@ assert(terraced.stats.rivers > 0, 'terraced plateaus still drain (' + terraced.s
 var noRiver = core.generate({ seed: 'terraced', width: 165, height: 103, rivers: 0 });
 assert(noRiver.stats.rivers === 0, 'rivers=0 disables the drainage overlay');
 
+// River hierarchy: a trunk must exist alongside its tributaries, and lake
+// outflows must be drawn even where accumulation alone would not reach.
+var hier = core.generate({ seed: 'pale shelf', width: 200, height: 120, rivers: 200 });
+var minor = 0, major = 0;
+for (var hi = 0; hi < hier.riverMask.length; hi++) {
+  if (hier.riverMask[hi] === 1) minor++;
+  else if (hier.riverMask[hi] === 2) major++;
+}
+assert(minor > 0 && major > 0 && major < minor,
+  'trunk rivers are a subset of the network (' + major + ' of ' + (minor + major) + ')');
+
 // Inland lakes: closed depressions must be detected on a plain-ish grid.
 var withLakes = core.generate({ seed: 'pale shelf', width: 200, height: 120 });
 var lakeCells = withLakes.stats.counts.lake || 0;
@@ -79,6 +90,34 @@ assert(coldBiomes(cold) > coldBiomes(warm),
   'climate slider cools the world (' + coldBiomes(warm) + ' -> ' + coldBiomes(cold) + ')');
 
 assert(core.hashString('a') !== core.hashString('b'), 'hash distinguishes seeds');
+
+// Grain: turning the Bayer dither off must change the shading but never move
+// a biome boundary — the classification happens before the shading pass.
+var grained = core.generate({ seed: 'salt mirror', width: 160, height: 100 });
+var flat = core.generate({ seed: 'salt mirror', width: 160, height: 100, dither: false });
+var shadeDiff = 0, biomeDiff = 0;
+for (var gi = 0; gi < grained.data.length; gi += 4) {
+  if (grained.data[gi] !== flat.data[gi]) shadeDiff++;
+}
+for (var gj = 0; gj < grained.biome.length; gj++) {
+  if (grained.biome[gj] !== flat.biome[gj]) biomeDiff++;
+}
+assert(shadeDiff > 0 && biomeDiff === 0,
+  'grain changes shading only (' + shadeDiff + ' pixels, ' + biomeDiff + ' biome moves)');
+
+// Light bearing: rotating the light must move the shading but again must not
+// shift a single biome, since classification happens before the colour pass.
+var nw = core.generate({ seed: 'red ridge', width: 160, height: 100, lightDir: 'nw' });
+var se = core.generate({ seed: 'red ridge', width: 160, height: 100, lightDir: 'se' });
+var dirDiff = 0, dirBiome = 0;
+for (var di = 0; di < nw.data.length; di += 4) {
+  if (nw.data[di] !== se.data[di]) dirDiff++;
+}
+for (var dj = 0; dj < nw.biome.length; dj++) {
+  if (nw.biome[dj] !== se.biome[dj]) dirBiome++;
+}
+assert(dirDiff > 0 && dirBiome === 0,
+  'light bearing changes shading only (' + dirDiff + ' pixels, ' + dirBiome + ' biome moves)');
 
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
