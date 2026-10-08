@@ -270,6 +270,20 @@ assert(listed.length === coreNames.length &&
   listedNames.join(',') === coreNames.join(','),
   'cli --palettes lists every palette (' + listedNames.length + ')');
 
+// The per-class shares the CLI prints must agree with the counts the generator
+// reported, so the two views of the same world cannot drift apart.
+var jsonLine = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --width 120 --height 80 --json --out ch.ppm',
+    {cwd: __dirname + '/..'}).toString().trim());
+var jsonPairs = jsonLine.classes.split(' ').map(function (p) {
+  var at = p.indexOf('=');
+  return [p.slice(0, at), parseInt(p.slice(at + 1), 10)];
+});
+var jsonTotal = jsonPairs.reduce(function (n, p) { return n + p[1]; }, 0);
+assert(jsonPairs.length === jsonLine.biomes && jsonTotal >= 96 && jsonTotal <= 104,
+  'cli class shares match the biome count (' + jsonPairs.length + ' classes, ' +
+  jsonTotal + '%)');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

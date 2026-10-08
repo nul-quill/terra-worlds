@@ -17,6 +17,10 @@ shows — and skips the `.ppm` file, which is handy for a quick comparison of
 seeds.
 `--palettes` lists the palette keys the `--palette` flag takes, with the label
 each one shows in the dropdown and the sky colour the chart is washed with.
+The stats record also carries a `classes` column: every class on this world's
+legend, biggest first, as `shallow=38% grass=22%` pairs. That is the same list
+the sidebar shows, so a saved `.ppm` can be described from its own record
+without opening it.
 
 Every control is mirrored into the URL hash (`#seed=...&pal=sepia&sea=0.6&...`),
 so a finished world can be pasted into a chat and reopened identically. Loading a

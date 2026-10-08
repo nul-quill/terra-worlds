@@ -139,6 +139,16 @@ if (opts.help) {
 // table is what a person reads after a reroll.
 function summarise(seed, result, name, asJson) {
   var s = result.stats;
+  // Per-class shares, biggest first. The one-line summary only names the
+  // dominant class, which is not enough to tell two worlds apart when most of
+  // the grid is water. Kept as "key=NN%" pairs so the table form stays a
+  // single line and the JSON form needs no extra nesting.
+  var classes = Object.keys(s.counts)
+    .sort(function (a, b) { return s.counts[b] - s.counts[a]; })
+    .map(function (k) {
+      return k + '=' + Math.round(s.counts[k] / s.pixels * 100) + '%';
+    })
+    .join(' ');
   var rec = {
     seed: seed,
     width: result.width, height: result.height,
@@ -150,6 +160,7 @@ function summarise(seed, result, name, asJson) {
     relief: Math.round((s.max - s.min) * 100),
     contourBands: s.contourBands, basinBands: s.basinBands,
     biomes: Object.keys(s.counts).length,
+    classes: classes,
     summary: core.describe(result),
     checksum: s.checksum,
     ms: s.ms, file: name
