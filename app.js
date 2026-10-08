@@ -166,6 +166,9 @@
 
   function drawHover() {
     if (!current) return;
+    // Repaint from the offscreen copy first, so moving the cursor does not
+    // leave a trail of previous crosshairs behind.
+    drawMap();
     var cellX = view.width / current.width;
     var cellY = view.height / current.height;
     ctx.strokeStyle = 'rgba(255,255,255,0.9)';
@@ -188,7 +191,30 @@
       ctx.strokeStyle = 'rgba(255,255,255,0.9)';
       ctx.lineWidth = Math.max(1, Math.round(cellX * 0.25));
       ctx.strokeRect(px * cellX, py * cellY, cellX, cellY);
+      drawInset(px, py);
     }
+  }
+
+  // A magnified patch around the hovered cell, drawn in the corner of the
+  // canvas: at 2x-3x the individual cells are hard to read, and this shows
+  // the pixel structure without touching the main blit.
+  function drawInset(px, py) {
+    var span = 12;
+    var x0 = Math.max(0, Math.min(current.width - span, px - (span >> 1)));
+    var y0 = Math.max(0, Math.min(current.height - span, py - (span >> 1)));
+    var size = Math.round(Math.min(view.width, view.height) * 0.28);
+    var pad = Math.round(size * 0.10);
+    var dx = view.width - size - pad;
+    var dy = view.height - size - pad;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillRect(dx - 2, dy - 2, size + 4, size + 4);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(off, x0, y0, span, span, dx, dy, size, size);
+    ctx.strokeStyle = 'rgba(30,38,44,0.55)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(dx - 2.5, dy - 2.5, size + 5, size + 5);
+    ctx.restore();
   }
 
   // Repaint the map with one biome kept at full strength and the rest faded
