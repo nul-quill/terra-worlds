@@ -34,6 +34,8 @@ the number means the world really changed, while a different `generate` time
 does not. The CLI prints the same value.
 Arrow keys walk the hovered cell, so the readout can be inspected without a
 pointer; they are ignored while a form field has the caret.
+The hover crosshair and its hairlines take the palette's own ink, so they stay
+visible on the pale sky of `Sepia` or `Mono` instead of washing out.
 `c` steps through the overlays and back to the biome map. The hover readout
 reports the cell's moisture as well as its height, which is what makes two cells
 at the same elevation land in different classes.

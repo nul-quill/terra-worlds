@@ -190,9 +190,15 @@
     // Repaint from the offscreen copy first, so moving the cursor does not
     // leave a trail of previous crosshairs behind.
     drawMap();
+    // The crosshair takes the palette's own darkest ink rather than a fixed
+    // white, which disappears on the pale sky of Sepia or Mono.
+    var ink = hexToRgb(current.palette.sky);
+    var deep = current.palette.colors.deep;
+    var hair = rgba(mix(deep, ink, 0.45), 0.45);
+    var edge = rgba(mix(deep, ink, 0.15), 0.9);
     var cellX = view.width / current.width;
     var cellY = view.height / current.height;
-    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.strokeStyle = edge;
     ctx.lineWidth = Math.max(1, Math.round(cellX * 0.25));
     if (hover.x >= 0) {
       var px = Math.floor(hover.x / cellX);
@@ -200,7 +206,7 @@
       // Hairline crosshair through the cell makes the readout easy to trust
       // on a dense grid, where the box alone is hard to place.
       ctx.save();
-      ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+      ctx.strokeStyle = hair;
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(Math.round((px + 0.5) * cellX) + 0.5, 0);
@@ -209,7 +215,7 @@
       ctx.lineTo(view.width, Math.round((py + 0.5) * cellY) + 0.5);
       ctx.stroke();
       ctx.restore();
-      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.strokeStyle = edge;
       ctx.lineWidth = Math.max(1, Math.round(cellX * 0.25));
       ctx.strokeRect(px * cellX, py * cellY, cellX, cellY);
       drawInset(px, py);
@@ -268,6 +274,21 @@
     if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
     var n = parseInt(s, 16);
     return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  // Blend two rgb triples, and turn one into a css rgba() string. Both are
+  // only used for the hover overlay, so the map itself is untouched.
+  function mix(a, b, t) {
+    return [
+      a[0] + (b[0] - a[0]) * t,
+      a[1] + (b[1] - a[1]) * t,
+      a[2] + (b[2] - a[2]) * t
+    ];
+  }
+
+  function rgba(c, alpha) {
+    return 'rgba(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' +
+      Math.round(c[2]) + ',' + alpha + ')';
   }
 
   // How many classes actually occur on this map. The legend only lists those,
