@@ -844,6 +844,7 @@
     moist: ['desert', 'rain'],
     drain: ['beach', 'rock'],
     lake: ['shallow', 'lake'],
+    slope: ['beach', 'forest'],
     coast: ['beach', 'deep']
   };
 
@@ -856,6 +857,7 @@
     {key: 'moist', label: 'moisture', note: 'wetness after the orographic pass'},
     {key: 'drain', label: 'drainage', note: 'catchment size, log ramp'},
     {key: 'lake', label: 'lake depth', note: 'standing water, by basin depth'},
+    {key: 'slope', label: 'slope', note: 'height drop to the nearest neighbour'},
     {key: 'coast', label: 'coast dist', note: 'steps to the nearest shore, log ramp'}
   ];
 
@@ -869,11 +871,38 @@
   // Which stored field an overlay reads. One lookup so the renderer and the
   // hover readout cannot drift to different columns of the same result.
   function fieldFor(key, result) {
+    // Slope is the one field derived here rather than in generate: it is a
+    // difference of the height field, so it can never move a biome boundary,
+    // and an overlay must not change the map underneath it. Cached on the
+    // result for the same reason the scale is — a hover re-reads it per cell.
+    if (key === 'slope') {
+      if (!result.slopeField) result.slopeField = slopeField(result);
+      return result.slopeField;
+    }
     return key === 'relief' ? result.heightField
       : key === 'moist' ? result.moisture
         : key === 'drain' ? result.accumulation
           : key === 'lake' ? result.lakeMask
           : result.coastDistance;
+  }
+
+  // Steepest drop from each cell to its four neighbours, in height units. This
+  // is what separates a scarp from a plain when the height field itself is a
+  // near-flat plateau: the two share a median and differ entirely in gradient.
+  function slopeField(result) {
+    var w = result.width, h = result.height, hf = result.heightField;
+    var out = new Float32Array(w * h);
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var i = y * w + x;
+        var best = Math.abs(hf[i] - hf[x > 0 ? i - 1 : i]);
+        if (x + 1 < w) best = Math.max(best, Math.abs(hf[i] - hf[i + 1]));
+        if (y > 0) best = Math.max(best, Math.abs(hf[i] - hf[i - w]));
+        if (y + 1 < h) best = Math.max(best, Math.abs(hf[i] - hf[i + w]));
+        out[i] = best;
+      }
+    }
+    return out;
   }
 
   // Spread a field over 0..1 by its own extremes, so a low-contrast field

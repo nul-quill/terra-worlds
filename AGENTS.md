@@ -83,6 +83,10 @@ Conventions:
   already normalised by its own basin (1..60 steps), and most of a grid is dry,
   so the 98% mark of a world with two small tarns is still zero. It scales over
   0..60 instead.
+  `slope` is the one field built inside `fieldFor` rather than by `generate`:
+  it is a difference of the height field, so it still cannot move a biome
+  boundary, and it is cached on `result.slopeField` for the same reason the
+  scale is — a hover reads the field once per cell.
 - `stats.checksum` is FNV-1a over the rendered RGBA buffer, as eight hex digits.
   It is the cheap equality test for determinism: same seed + same grid must give
   the same digits, while `stats.ms` is allowed to wander. Keep the multiply in the

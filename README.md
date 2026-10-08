@@ -132,6 +132,10 @@ world: `relief` (height), `moist` (the orographic moisture field), `drain`
 (catchment accumulation, logged so one big river does not wash out the rest),
 `lake` (standing water, scaled by its own basin depth rather than percentiles,
 since most of a grid is dry) or `coast` (distance to the nearest shoreline).
+`slope` sits between them: the steepest drop to a neighbouring cell, which is
+what tells a scarp from a plateau when both report the same relief range. It is
+derived from the height field on first use rather than stored by `generate`, so
+an overlay still cannot move a biome boundary.
 Each is stretched over its own percentiles and ramped between two colours taken
 from the active palette, so an overlay looks like the map it came from.
 Everything underneath is untouched:
