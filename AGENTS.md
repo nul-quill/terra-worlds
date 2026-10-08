@@ -207,6 +207,9 @@ Conventions:
   that array. A multiplier enlarges only the saved pixels, so every count in
   `stats` is the same at 2x as at 6x — that is what makes it safe to change
   while comparing two worlds.
+  `upscale()` replicates each cell as a solid f x f block rather than blending
+  it, which is what keeps a 6x save the same picture as a 2x one; the smoke
+  suite checks that block-for-block on a small grid.
   Because it moves no count, the multiplier is shown in its own `export` row
   right under `grid`: the factor plus the pixel size it saves at. Both the row
   and `savePng()` read it through `exportFactor()`, so the number on screen is

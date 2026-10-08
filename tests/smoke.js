@@ -54,6 +54,27 @@ assert(t.stats.ms < 900, 'generation under 900ms (' + t.stats.ms + 'ms)');
 var up = core.upscale(a, 2);
 assert(up.width === 400 && up.height === 240, 'upscale doubles the grid');
 
+// Growing the pixels must only repeat them: every source cell becomes a block
+// of identical pixels, so a saved PNG at 6x is the same picture as at 2x and
+// not a resampled one. Checked on a 3x of a small grid.
+var tiny = core.generate({seed: 'upscale check', width: 24, height: 16});
+var up3 = core.upscale(tiny, 3);
+var blockOk = true;
+for (var by = 0; by < tiny.height && blockOk; by++) {
+  for (var bx = 0; bx < tiny.width && blockOk; bx++) {
+    var so = (by * tiny.width + bx) * 4;
+    for (var oy = 0; oy < 3; oy++) {
+      for (var ox = 0; ox < 3; ox++) {
+        var o = ((by * 3 + oy) * up3.width + bx * 3 + ox) * 4;
+        for (var cc = 0; cc < 4; cc++) {
+          if (up3.data[o + cc] !== tiny.data[so + cc]) blockOk = false;
+        }
+      }
+    }
+  }
+}
+assert(blockOk, 'upscale repeats each cell as a solid block');
+
 var terraced = core.generate({ seed: 'terraced', width: 165, height: 103, terraces: 8, rivers: 200 });
 assert(terraced.stats.rivers > 0, 'terraced plateaus still drain (' + terraced.stats.rivers + ' cells)');
 
