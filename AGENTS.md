@@ -36,6 +36,10 @@ Conventions:
   The same loop labels each filled cell in `result.basin` (1-based), which is
   what the hover readout prints as `basin 2/4`. `describe()` uses the count too:
   `4 lakes` rather than a bare `with lakes`.
+  Those labels must stay dense: every lake cell carries a number in
+  1..`stats.lakeBasins`, every number in that range appears, and no dry cell
+  carries one. The smoke suite checks all three, since the readout's
+  denominator comes from the count and its numerator from the label.
   `recordSpill()` also pushes one compass point per basin into
   `result.basinSpill`, indexed by basin number minus one: the bearing from the
   fill's centroid to its spillway, printed by the hover readout as `drains E`.

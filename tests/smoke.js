@@ -632,6 +632,22 @@ assert(outlets > 0 && outlets <= bw.stats.lakeBasins && touching === outlets,
   'every basin has one outlet on its own rim (' + outlets + ' of ' +
   bw.stats.lakeBasins + ')');
 
+// The labels a hover prints as `basin 2/4` have to cover every basin exactly:
+// each lake cell carries a number in 1..lakeBasins, and each of those numbers
+// appears at least once. A missing label would make the readout's denominator
+// wrong, a stray one would point at a basin that does not exist.
+var labelSeen = {};
+var labelOk = true;
+for (var li = 0; li < bw.basin.length; li++) {
+  var lbNum = bw.basin[li];
+  if (!lbNum) continue;
+  if (lbNum > bw.stats.lakeBasins || !bw.lakeMask[li]) labelOk = false;
+  labelSeen[lbNum] = 1;
+}
+var labelCount = Object.keys(labelSeen).length;
+assert(labelOk && labelCount === bw.stats.lakeBasins,
+  'every lake cell is labelled with its basin (' + labelCount + ' labels)');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
