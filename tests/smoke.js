@@ -362,6 +362,16 @@ assert(jsonPairs.length === jsonLine.biomes && jsonTotal >= 96 && jsonTotal <= 1
   'cli class shares match the biome count (' + jsonPairs.length + ' classes, ' +
   jsonTotal + '%)');
 
+// The record also names the look it was drawn with, so two worlds that share a
+// seed and a grid but differ only in palette are still tellable apart from the
+// JSON alone. Checked against a non-default palette to prove it is not a
+// hardcoded 'terra'.
+var palRec = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --width 40 --height 24 --palette sepia ' +
+    '--json --out pal-check.ppm', {cwd: __dirname + '/..'}).toString().trim());
+assert(palRec.palette === 'sepia' && jsonLine.palette === 'terra',
+  'cli record names the palette it rendered (' + palRec.palette + ')');
+
 // A .png name must produce a real PNG rather than a PPM with a new suffix:
 // signature, then IHDR carrying the scaled size, then the image data. The
 // pixels themselves are the same buffer the PPM writer emits, so the two

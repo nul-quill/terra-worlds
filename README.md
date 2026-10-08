@@ -33,6 +33,9 @@ The stats record also carries a `classes` column: every class on this world's
 legend, biggest first, as `shallow=38% grass=22%` pairs. That is the same list
 the sidebar shows, so a saved `.ppm` can be described from its own record
 without opening it.
+Alongside it the record names the `palette` it was drawn with, which is the one
+part of the state a summary sentence cannot carry: two worlds sharing a seed, a
+shape and a grid can still be different pictures, and the palette is why.
 
 Every control is mirrored into the URL hash (`#seed=...&pal=sepia&sea=0.6&...`),
 so a finished world can be pasted into a chat and reopened identically. Loading a

@@ -247,6 +247,10 @@ function summarise(seed, result, name, asJson) {
   var rec = {
     seed: seed,
     width: result.width, height: result.height,
+    // The look is part of the state: two records with the same seed and grid
+    // can still be different pictures, and the palette name is what tells the
+    // two apart. Shape is already the first word of the summary.
+    palette: opts.palette || 'terra',
     land: Math.round(s.land * 1000) / 1000,
     water: Math.round(s.water * 1000) / 1000,
     median: Math.round(s.median * 1000) / 1000,
