@@ -300,6 +300,17 @@ assert(said === core.describe(core.generate({ seed: 'aurora basin', width: 200, 
   /land/.test(said) && said.length > 20,
   'summary sentence is stable (' + said + ')');
 
+// The numbers inside that sentence have to be the ones in stats, so a reader
+// can trust the words next to the sidebar rows: the land share and the basin
+// count are pulled out of the string and compared with the record.
+var saidRec = core.generate({seed: 'salt mirror', width: 160, height: 100});
+var saidText = core.describe(saidRec);
+var saidLand = parseInt(/(\d+)% land/.exec(saidText)[1], 10);
+var saidLakes = parseInt(/(\d+) lakes?/.exec(saidText)[1], 10);
+assert(saidLand === Math.round(saidRec.stats.land * 100) &&
+  saidLakes === saidRec.stats.lakeBasins,
+  'summary numbers match the stats (' + saidLand + '%, ' + saidLakes + ' lakes)');
+
 // The checksum is the short form of "identical pixels": it must match for a
 // repeat of the same seed and differ for another one, without anyone having
 // to compare the RGBA buffer by hand.
