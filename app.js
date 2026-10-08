@@ -587,8 +587,27 @@
     if (only >= 0) {
       var from = lo + only / BINS * span;
       var to = lo + (only + 1) / BINS * span;
+      // Which class fills this slice of the height range. The map colours come
+      // from biome, not height, so a bin that looks bimodal in the chart is
+      // usually two classes sharing a band — naming the bigger one makes the
+      // bump readable without hovering each cell.
+      var biome = st.result.biome;
+      var tally = {};
+      if (biome) {
+        for (i = 0; i < biome.length; i++) {
+          var bb = Math.floor((st.result.heightField[i] - lo) / span * BINS);
+          if (bb !== only) continue;
+          var bk = biome[i];
+          tally[bk] = (tally[bk] || 0) + 1;
+        }
+      }
+      var top = null, topN = 0;
+      Object.keys(tally).forEach(function (k) {
+        if (tally[k] > topN) { topN = tally[k]; top = k; }
+      });
       var label = Math.round(from * 100) + '-' + Math.round(to * 100) +
-        '  ' + (hist[only] || 0) + ' cells';
+        '  ' + (hist[only] || 0) + ' cells' +
+        (top ? '  ' + (TerraCore.biomeNames[top] || top) : '');
       hc.font = '10px system-ui, sans-serif';
       var tw = hc.measureText(label).width;
       hc.fillStyle = 'rgba(255,255,255,0.88)';
