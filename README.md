@@ -17,6 +17,9 @@ shows — and skips the `.ppm` file, which is handy for a quick comparison of
 seeds.
 `--palettes` lists the palette keys the `--palette` flag takes, with the label
 each one shows in the dropdown and the sky colour the chart is washed with.
+`--shapes` does the same for the shape keys. Both lists come from the generator
+(`TerraCore.palettes`, `TerraCore.shapes`), which is also what fills the two
+dropdowns — one source of truth for each.
 The stats record also carries a `classes` column: every class on this world's
 legend, biggest first, as `shallow=38% grass=22%` pairs. That is the same list
 the sidebar shows, so a saved `.ppm` can be described from its own record
@@ -53,7 +56,6 @@ does not. The CLI prints the same value.
 Right after `lake` the list shows `basins`: how many separate closed depressions
 that lake cover resolves into. Each one keeps its own water and spills over its
 own lowest rim cell, so the number says whether the interior is a handful of big
-lakes or a scatter of puddles — something the lake percentage alone cannot tell.
 The CLI record carries the same field as `lakeBasins`.
 Arrow keys walk the hovered cell, so the readout can be inspected without a
 pointer; they are ignored while a form field has the caret.

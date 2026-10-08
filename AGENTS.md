@@ -95,6 +95,9 @@ Conventions:
 - `cli.js --palettes` lists the palette keys from `core.palettes`, so a name
   copied from the terminal is always valid for `--palette`. The smoke suite
   compares that listing against `Object.keys(core.palettes)` — keep both in step.
+  `--shapes` does the same job for the shape curves from `core.shapes`, which is
+  also what fills the shape dropdown. Add a curve in `core.js` only; the list,
+  the dropdown and the CLI output all follow from that one array.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
 

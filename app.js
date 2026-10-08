@@ -120,6 +120,19 @@
     inputs.palette.appendChild(frag);
   }
 
+  // Shapes come from the generator's own list, so the dropdown, `cli --shapes`
+  // and shapeHeight() cannot disagree about which keys exist.
+  function fillShapes() {
+    var frag = document.createDocumentFragment();
+    TerraCore.shapes.forEach(function (shape) {
+      var opt = document.createElement('option');
+      opt.value = shape.key;
+      opt.textContent = shape.label;
+      frag.appendChild(opt);
+    });
+    inputs.shape.appendChild(frag);
+  }
+
   function readOptions() {
     return {
       seed: inputs.seed.value || 'terra',
@@ -827,6 +840,7 @@
   /* ---- wiring ---- */
 
   fillPalettes();
+  fillShapes();
   inputs.seed.value = PRESETS[0];
   inputs.seaLevel.value = '0.48';
   inputs.detail.value = '0.35';

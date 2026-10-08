@@ -29,6 +29,7 @@ function parseArgs(argv) {
     else if (a === '--next') opts.next = parseInt(argv[++i], 10) || 5;
     else if (a === '--help' || a === '-h') opts.help = true;
     else if (a === '--palettes') opts.palettes = true;
+    else if (a === '--shapes') opts.shapes = true;
     else if (a === '--json') opts.json = true;
     else opts.seeds.push(a);
   }
@@ -68,6 +69,7 @@ if (opts.help) {
   console.log('       the Reroll button derives from it, one per line');
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
   console.log('       [--palettes] to list the palette keys and their labels');
+  console.log('       [--shapes] to list the shape keys and what each one cuts');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
   console.log('       JSON per world instead of the table');
@@ -80,6 +82,13 @@ if (opts.help) {
     var p = core.palettes[name];
     console.log(name.padEnd(11) + p.label + '  sky ' + p.sky);
   });
+  } else if (opts.shapes) {
+    // Same idea for the shape curve: the key --shape takes, plus a short note
+    // on what the curve does to the height field. Both lists are read from the
+    // generator, so a name copied from here is always valid.
+    core.shapes.forEach(function (s) {
+      console.log(s.key.padEnd(11) + s.note);
+    });
 } else {
   var fs = require('fs');
   // --next is the seed-chain dump: the first seed plus the n seeds derived

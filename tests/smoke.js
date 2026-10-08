@@ -45,9 +45,10 @@ var terraced = core.generate({ seed: 'terraced', width: 165, height: 103, terrac
 assert(terraced.stats.rivers > 0, 'terraced plateaus still drain (' + terraced.stats.rivers + ' cells)');
 
 // Every shape must produce a usable map: non-degenerate land, and heights that
-// actually span the range rather than collapsing to one value.
-['continents', 'islands', 'atolls', 'craton', 'fjord'].forEach(function (shape) {
-  var r = core.generate({ seed: 'shape ' + shape, width: 180, height: 110, shape: shape });
+// actually span the range rather than collapsing to one value. Walked from the
+// generator's own list, so a new curve is covered without editing this file.
+core.shapes.forEach(function (shape) {
+  var r = core.generate({ seed: 'shape ' + shape.key, width: 180, height: 110, shape: shape.key });
   var lo = 1, hi = 0;
   for (var si = 0; si < r.heightField.length; si++) {
     var hv = r.heightField[si];
@@ -55,7 +56,7 @@ assert(terraced.stats.rivers > 0, 'terraced plateaus still drain (' + terraced.s
     if (hv > hi) hi = hv;
   }
   assert(r.stats.land > 0.02 && r.stats.land < 0.99 && hi - lo > 0.2,
-    shape + ' spans a real height range (land=' + Math.round(r.stats.land * 100) + '%)');
+    shape.key + ' spans a real height range (land=' + Math.round(r.stats.land * 100) + '%)');
 });
 
 var noRiver = core.generate({ seed: 'terraced', width: 165, height: 103, rivers: 0 });
@@ -290,6 +291,17 @@ var coreNames = Object.keys(core.palettes);
 assert(listed.length === coreNames.length &&
   listedNames.join(',') === coreNames.join(','),
   'cli --palettes lists every palette (' + listedNames.length + ')');
+
+// Same check for the shape curves: the dropdown, --shape and this list all
+// read TerraCore.shapes, so a key printed in a terminal must be one the
+// generator accepts.
+var shapeList = require('child_process')
+  .execSync('node cli.js --shapes', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var shapeNames = shapeList.map(function (line) { return line.split(/\s+/)[0]; });
+var coreShapes = core.shapes.map(function (s) { return s.key; });
+assert(shapeList.length === coreShapes.length &&
+  shapeNames.join(',') === coreShapes.join(','),
+  'cli --shapes lists every shape (' + shapeNames.length + ')');
 
 // The per-class shares the CLI prints must agree with the counts the generator
 // reported, so the two views of the same world cannot drift apart.

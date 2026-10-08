@@ -205,6 +205,17 @@
    * Height shaping curves.
    * ------------------------------------------------------------------ */
 
+  // The shapes the height field can be cut from, in the order the dropdown
+  // lists them. Each one is a curve in shapeHeight below, so the list is the
+  // single source of truth for both the page and `cli --shapes`.
+  var SHAPES = [
+    {key: 'continents', label: 'continents', note: 'one landmass with inland seas'},
+    {key: 'islands', label: 'islands', note: 'many islands on open water'},
+    {key: 'atolls', label: 'atolls', note: 'ring rims around lagoons'},
+    {key: 'craton', label: 'craton', note: 'flat interior, one mountain spine'},
+    {key: 'fjord', label: 'fjord', note: 'plateau sawn by deep inlets'}
+  ];
+
   function shapeHeight(h, shape) {
     if (shape === 'islands') {
       return Math.pow(clamp01(h), 1.35);
@@ -928,6 +939,7 @@
     randomSeed: randomSeed,
     nextSeed: nextSeed,
     palettes: PALETTES,
+    shapes: SHAPES,
     biomeNames: BIOME_NAMES
   };
 })(typeof window !== 'undefined' ? window : globalThis);
