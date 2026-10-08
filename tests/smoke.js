@@ -409,6 +409,22 @@ core.scales.forEach(function (sc) {
 });
 assert(scaleOk, 'every export multiplier upscales by that factor');
 
+// Every shared list is also what a URL hash is matched against, so its keys
+// must be unique: two options sharing a key would make a restored link depend
+// on which of the two the dropdown happened to reach first.
+function uniqueKeys(list) {
+  var seen = {};
+  for (var k = 0; k < list.length; k++) {
+    var key = list[k].key;
+    if (seen[key]) return false;
+    seen[key] = true;
+  }
+  return true;
+}
+var listsOk = uniqueKeys(core.shapes) && uniqueKeys(core.channels) &&
+  uniqueKeys(core.lights) && uniqueKeys(core.grids) && uniqueKeys(core.scales);
+assert(listsOk, 'every dropdown list has distinct keys');
+
 // A dashed word that matches no flag is a typo, not a seed: the CLI says so
 // and still renders one world, rather than treating the stray word (and its
 // value) as extra seeds. Checked by counting the summaries it prints.

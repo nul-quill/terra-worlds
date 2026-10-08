@@ -43,6 +43,16 @@
     , contour: 'ln', channel: 'ch', gridSize: 'g'
   };
 
+  // Whether a SELECT offers a given value. Used when restoring a link so a
+  // stale key cannot blank out a control that would otherwise show a sensible
+  // default.
+  function hasOption(select, value) {
+    for (var i = 0; i < select.options.length; i++) {
+      if (select.options[i].value === value) return true;
+    }
+    return false;
+  }
+
   function readHash() {
     var out = {};
     var raw = String(location.hash || '').replace(/^#/, '');
@@ -91,8 +101,16 @@
       var value = fromUrl[HASH_KEYS[key]];
       var el = inputs[key];
       if (value == null || value === '' || !el) return;
-      if (el.type === 'checkbox') el.checked = value === '1';
-      else el.value = value;
+      if (el.type === 'checkbox') {
+        el.checked = value === '1';
+        return;
+      }
+      // A dropdown only accepts a key its own list offers. An older link can
+      // name a palette or overlay that has since been dropped, and setting a
+      // missing value on a SELECT leaves it showing nothing at all — so the
+      // stale pair is skipped and the default stands.
+      if (el.tagName === 'SELECT' && !hasOption(el, value)) return;
+      el.value = value;
     });
     // The pin is not an input, so it is read separately. Only a class the
     // palette actually knows is accepted, which keeps a hand-written link from

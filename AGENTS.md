@@ -134,6 +134,10 @@ Conventions:
     in one direction keeps sweeping instead of sticking on the last column; the
     clamp in `hoverCell()` still handles a hash-restored index outside a smaller
     grid.
+    A dropdown only takes a value its own list offers: `applyHash()` checks
+    `hasOption()` before assigning, so a link saved against a key that has since
+    been dropped keeps the current default instead of leaving the select blank.
+    Keep the check in `applyHash()` — the lists are filled before it runs.
 - Legend isolation lives in `drawMap()`: `solo` follows the pointer/focus,
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend
