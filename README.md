@@ -135,6 +135,8 @@ still fills the chart. Hovering a bin dims the rest and prints that bin's elevat
 range and cell count inside the chart. It redraws with every slider move.
 Tapping a bar works too: the chart answers a touch `pointerdown` with the same
 selection rule the cursor uses, so the bin filter is not mouse-only.
+Tapping that same bar a second time drops the filter, which is how a touch
+device releases it — there is no hover-out to do it.
 The two corners of the chart carry the minimum and maximum elevation of this
 world, so the bars have a scale without needing a second readout.
 Under the bars a tick marks every few units of height. The spacing follows the

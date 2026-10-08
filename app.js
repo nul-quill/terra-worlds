@@ -1038,12 +1038,16 @@
   // chart rather than in the hud strip under the map. One function backs both
   // the mouse and the touch path, so a tap selects the same bin the cursor
   // would have.
-  function hoverHistogram(ev) {
+  function hoverHistogram(ev, toggleSame) {
     if (!histState) return;
     var rect = histCanvas.getBoundingClientRect();
     var x = ev.clientX - rect.left;
     var bin = Math.floor(x / Math.max(1, rect.width) * histState.bins);
-    band = bin < 0 ? 0 : Math.min(histState.bins - 1, bin);
+    // A touch has no hover-out, so nothing would ever clear the band again:
+    // tapping the bar that is already selected drops it instead. The mouse
+    // path keeps the plain rule, since leaving the chart clears it there.
+    if (toggleSame && band === bin) band = -1;
+    else band = bin < 0 ? 0 : Math.min(histState.bins - 1, bin);
     // And the matching cells on the map, so the two charts can be read against
     // each other without moving the pointer back and forth. drawHover() goes
     // through drawMap(), which repaints this chart with the same `band`, so one
@@ -1056,7 +1060,7 @@
   // would only respond to a mouse. Same selection rule, same repaint.
   histCanvas.addEventListener('pointerdown', function (ev) {
     if (ev.pointerType === 'mouse') return;
-    hoverHistogram(ev);
+    hoverHistogram(ev, true);
   });
 
   // Keyboard version of the same selection: Shift+arrows walk the bins, so the

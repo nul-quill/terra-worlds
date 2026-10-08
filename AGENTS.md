@@ -139,6 +139,9 @@ Conventions:
   do not repaint the chart from the individual handlers.
   `hoverHistogram()` is shared by `mousemove` and a touch `pointerdown`, so a tap
   on the chart selects a bin the same way a cursor does. Keep the one function.
+  The touch call passes a second argument so tapping the bar that is already
+  selected clears it: a finger has no hover-out, and without that second tap a
+  phone would never get the full map back. The mouse path keeps the plain rule.
   Shift+arrows walk the same bin through `stepBand()`, which is the keyboard
   path for the height filter; plain arrows still walk cells. Both are previews —
   neither goes into the hash.
