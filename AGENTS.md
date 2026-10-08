@@ -59,3 +59,4 @@ Verify with:
   `lines`, click Reroll and Save PNG.
   The relief histogram at the bottom of the sidebar should follow the `sea` slider,
   and hovering one of its bars should print that bin's range inside the chart.
+  Hovering the map highlights the hovered cell's bin in that same chart.

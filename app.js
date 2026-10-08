@@ -496,6 +496,17 @@
       parts.push(current.riverMask[i] === 2 ? 'trunk river' : 'river');
     }
     readout.textContent = parts.join(' — ');
+    // Tie the readout to the relief chart: the bin this cell falls in is
+    // highlighted, so a colour on the map can be traced back to where it sits
+    // in the world's elevation spread.
+    paintHistogram(histBinFor(h));
+  }
+
+  // Bin index for a height, using the range the chart was binned over.
+  function histBinFor(h) {
+    if (!histState) return -1;
+    var b = Math.floor((h - histState.lo) / histState.span * histState.bins);
+    return Math.max(0, Math.min(histState.bins - 1, b));
   }
 
   function savePng() {
@@ -588,6 +599,9 @@
     hover.x = -1; hover.y = -1;
     readout.textContent = 'hover the map';
     drawHover();
+    // The chart keeps the last hovered bin until something else picks one, so
+    // dropping the pointer off the map clears it along with the readout.
+    paintHistogram(-1);
   });
 
   window.addEventListener('resize', render);
