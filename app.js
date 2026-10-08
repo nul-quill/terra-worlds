@@ -690,6 +690,22 @@
       hc.moveTo(Math.round(medX) + 0.5, h - 12);
       hc.lineTo(Math.round(medX) + 0.5, h - 5);
       hc.stroke();
+      // The mark alone says "most of the grid is around here"; the number says
+      // how high that is, which is the difference between a shape and a
+      // measurement. Kept inside the corner labels so the strip never overlaps.
+      var medLabel = 'median ' + Math.round(result.stats.median * 100);
+      var medTw = hc.measureText(medLabel).width;
+      var loTw = hc.measureText(loLabel).width;
+      var hiTw = hc.measureText(hiLabel).width;
+      var medTextX = medX - medTw / 2;
+      if (medTextX < pad + loTw + 4) medTextX = pad + loTw + 4;
+      if (medTextX + medTw > w - pad - hiTw - 4) {
+        medTextX = w - pad - hiTw - 4 - medTw;
+      }
+      if (medTw < w - pad * 2 - loTw - hiTw - 16) {
+        hc.fillStyle = 'rgba(30,38,44,0.7)';
+        hc.fillText(medLabel, medTextX, h - 1);
+      }
     }
     // A hovered bin gets its elevation range and cell count written into the
     // chart itself, which keeps the sidebar from reflowing on every move.
