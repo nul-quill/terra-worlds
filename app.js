@@ -259,6 +259,17 @@
     return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
   }
 
+  // How many classes actually occur on this map. The legend only lists those,
+  // so the count has to be taken from the occupancy map rather than the
+  // fixed list of fourteen names.
+  function biomeCount(counts) {
+    var n = 0;
+    Object.keys(counts).forEach(function (key) {
+      if (counts[key] > 0) n++;
+    });
+    return n;
+  }
+
   function renderLegend(result) {
     var keys = Object.keys(result.palette.colors);
     var counts = result.stats.counts;
@@ -295,6 +306,7 @@
       ['ice', Math.round(s.ice * 100) + '%'],
       ['river cells', String(s.rivers)],
       ['relief', Math.round((s.max - s.min) * 100) + ' units'],
+      ['biomes', String(biomeCount(s.counts))],
       ['contours', s.contourBands + ' land / ' + s.basinBands + ' basin'],
       ['generate', s.ms + ' ms']
     ];

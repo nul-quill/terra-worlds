@@ -10,6 +10,8 @@ node cli.js "aurora basin" --width 320 --height 200 --out world.ppm
 Several seeds can be rendered in one call — each writes its own file
 (`world-1.ppm`, `world-2.ppm`, …) — and `--json` swaps the stats table for one
 JSON record per world, which is what a script would consume.
+`--scale n` grows the saved pixels by nearest-neighbour without changing the
+grid the stats are computed from, so a small grid can still fill a screen.
 
 Every control is mirrored into the URL hash (`#seed=...&pal=sepia&sea=0.6&...`),
 so a finished world can be pasted into a chat and reopened identically. Loading a

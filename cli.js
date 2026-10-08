@@ -23,6 +23,7 @@ function parseArgs(argv) {
     else if (a === '--no-grain') opts.dither = false;
     else if (a === '--contour') opts.contour = true;
     else if (a === '--channel') opts.channel = argv[++i];
+    else if (a === '--scale') opts.scale = parseInt(argv[++i], 10);
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--help' || a === '-h') opts.help = true;
     else if (a === '--json') opts.json = true;
@@ -56,6 +57,8 @@ if (opts.help) {
   console.log('       steps under water, both spaced by this world\'s relief');
   console.log('       [--channel relief|moist|drain|coast] to flatten the world');
   console.log('       to one scalar field instead of the biome colours');
+  console.log('       [--scale n] nearest-neighbour multiplier applied to the');
+  console.log('       saved pixels, so a small grid can still fill a screen');
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
@@ -77,7 +80,8 @@ if (opts.help) {
     var name = opts.seeds.length > 1
       ? opts.out.replace(/(\.ppm)?$/, '-' + (si + 1) + '.ppm')
       : opts.out;
-    fs.writeFileSync(name, toPpm(result), 'latin1');
+    // The grid stays as generated for the stats; only the saved pixels grow.
+    fs.writeFileSync(name, toPpm(opts.scale > 1 ? core.upscale(result, opts.scale) : result), 'latin1');
     console.log(summarise(seed, result, name, opts.json));
   });
 }
