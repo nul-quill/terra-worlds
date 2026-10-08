@@ -96,6 +96,14 @@ Conventions:
   `@media` blocks: `print` (hides the chrome, one column) and
   `prefers-color-scheme: dark` (only the CSS variables change). Both are checked
   with `page.emulateMedia()` followed by a reload.
+  - The URL hash is written by `writeHash()` only, and every pair in it comes from
+    a form control in `HASH_KEYS` plus two extras that are not controls: `pin=` for
+    the clicked legend class and `at=x,y` for the hovered cell. Both pointer paths
+    and `hoverCell()` call `writeHash()` after painting, so the link always matches
+    what the readout shows. `applyHash()` stores `at` in `atCell` and `render()`
+    replays it through `hoverCell()` when no pointer hover is active — that is the
+    only writer of the pair, so keep the clamp inside `hoverCell()` rather than
+    trimming the indices at parse time.
 - Legend isolation lives in `drawMap()`: `solo` follows the pointer/focus,
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend

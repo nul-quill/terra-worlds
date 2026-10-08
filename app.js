@@ -70,6 +70,13 @@
     // The pinned legend class is not a form control, so it rides along here.
     // A link with `pin=taiga` should reopen with that class still isolated.
     if (pinned) parts.push('pin=' + encodeURIComponent(pinned));
+    // The hovered cell too, so a link can point at one inlet rather than at a
+    // whole world. Written as a pair of grid indices, which survive a resize:
+    // the cell is clamped into whatever grid the new window asks for.
+    if (hover.x >= 0 && current) {
+      var cell = currentCell();
+      parts.push('at=' + cell[0] + ',' + cell[1]);
+    }
     var next = '#' + parts.join('&');
     if (next !== location.hash) {
       history.replaceState(null, '', next);
@@ -92,6 +99,15 @@
     // producing a map where every cell is faded.
     var pin = fromUrl.pin;
     pinned = pin && TerraCore.biomeNames[pin] ? pin : null;
+    // A cell picked by the link is applied after the first render, since the
+    // grid size is not known before then. Anything unparseable is ignored, so
+    // a hand-written link with only two values still works.
+    var at = fromUrl.at;
+    atCell = null;
+    if (at && /^\d+,\d+$/.test(at)) {
+      var xy = at.split(',');
+      atCell = [parseInt(xy[0], 10), parseInt(xy[1], 10)];
+    }
   }
 
   var off = document.createElement('canvas');
@@ -104,6 +120,10 @@
   // studied after the pointer has moved on to the canvas.
   var solo = null;
   var pinned = null;
+  // Cell picked out of the URL hash, as a pair of grid indices, or null. Like
+  // `at=` in the hash it survives a resize: the indices are clamped into each
+  // new grid rather than remembered as pixels.
+  var atCell = null;
   // Height band picked by hovering the relief chart: a bin index, or -1. Like
   // `solo` this is a preview, so it is not written into the hash.
   var band = -1;
@@ -235,6 +255,11 @@
     renderStats(result);
     drawHistogram(result);
     renderSummary(result);
+    // A link that named one cell gets it back after the rebuild, as long as the
+    // pointer has not taken over in the meantime. The indices are clamped by
+    // hoverCell, so a link written on a wide window still lands sensibly in a
+    // narrow one.
+    if (hover.x < 0 && atCell) hoverCell(atCell[0], atCell[1]);
   }
 
   // Blit the generated grid onto the visible canvas, nearest-neighbour.
@@ -733,6 +758,9 @@
     hover.y = (py + 0.5) * cs.h;
     updateReadout(px, py);
     drawHover();
+    // The walked cell is part of the shared state too, so the link follows the
+    // keyboard. replaceState does not fire hashchange, so this cannot loop.
+    writeHash();
   }
 
   function currentCell() {
@@ -925,6 +953,9 @@
     setHoverFromEvent(ev);
     updateReadout(ev);
     drawHover();
+    // The hovered cell belongs in the link, so a pasted URL reopens on the same
+    // inlet. replaceState does not fire hashchange, so this cannot loop.
+    writeHash();
   });
   // Touch fires pointer events rather than mousemove, so the readout and the
   // crosshair would never move on a phone. One handler covers both, and the
@@ -934,6 +965,7 @@
     setHoverFromEvent(ev);
     updateReadout(ev);
     drawHover();
+    writeHash();
   });
 
   // The relief chart is small, so the readout for a bin is drawn inside the

@@ -45,6 +45,10 @@ default. `export` picks the nearest-neighbour multiplier used by Save PNG.
 A pinned legend class rides along as `pin=taiga`, so a shared link reopens with
 the same class isolated. An unknown key in that field is ignored rather than
 fading the whole map.
+The hovered cell rides along too, as `at=12,8`, so a link can point at one inlet
+instead of at a whole world. The pair is a pair of grid indices, not pixels, so
+the cell is clamped into whatever grid the new window asks for and the readout
+comes back with the same biome, elevation and overlay value.
 `grid` pins the column count instead of deriving it from the window width, so the
 same seed produces the same number of cells on a phone and on a wide monitor. The
 row count keeps the canvas aspect, which is what makes the cells square. Because
