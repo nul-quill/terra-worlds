@@ -171,6 +171,20 @@
     if (hover.x >= 0) {
       var px = Math.floor(hover.x / cellX);
       var py = Math.floor(hover.y / cellY);
+      // Hairline crosshair through the cell makes the readout easy to trust
+      // on a dense grid, where the box alone is hard to place.
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(Math.round((px + 0.5) * cellX) + 0.5, 0);
+      ctx.lineTo(Math.round((px + 0.5) * cellX) + 0.5, view.height);
+      ctx.moveTo(0, Math.round((py + 0.5) * cellY) + 0.5);
+      ctx.lineTo(view.width, Math.round((py + 0.5) * cellY) + 0.5);
+      ctx.stroke();
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.lineWidth = Math.max(1, Math.round(cellX * 0.25));
       ctx.strokeRect(px * cellX, py * cellY, cellX, cellY);
     }
   }
