@@ -428,6 +428,19 @@ var icy = core.generate({seed: 'aurora basin', width: 60, height: 40, polar: 1})
 assert(icy.stats.ice > 0.02 && /polar\b/.test(core.describe(icy)),
   'a cold world says so in its sentence (' + core.describe(icy) + ')');
 
+// The basin tail is the only place the sentence inflects, so the plural has to
+// follow the count it prints: one basin reads `1 lake`, any other number
+// pluralises. Both shapes are checked here because the sentence is printed by
+// the sidebar and the CLI from the same string.
+[icy, saidRec].forEach(function (pl) {
+  var plText = core.describe(pl);
+  var plMatch = /(\d+) lakes?\b/.exec(plText);
+  var plN = parseInt(plMatch[1], 10);
+  assert(plN === pl.stats.lakeBasins &&
+    plMatch[0] === plN + ' lake' + (plN === 1 ? '' : 's'),
+    'basin tail agrees with its own count (' + plMatch[0] + ')');
+});
+
 // The checksum is the short form of "identical pixels": it must match for a
 // repeat of the same seed and differ for another one, without anyone having
 // to compare the RGBA buffer by hand.

@@ -40,6 +40,8 @@ Conventions:
   when `counts.lake` is non-zero, `polar` only when `stats.ice` passes 0.02. The
   smoke suite checks each shape in both directions, so a sentence cannot grow a
   tail the stats do not support — nor lose one they do.
+  The lake tail also inflects off its own number (`1 lake`, `6 lakes`), which is
+  why the smoke suite checks both a one-basin and a many-basin world.
   Those labels must stay dense: every lake cell carries a number in
   1..`stats.lakeBasins`, every number in that range appears, and no dry cell
   carries one. The smoke suite checks all three, since the readout's
