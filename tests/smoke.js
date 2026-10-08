@@ -1,4 +1,4 @@
-  // The sentence ends with the dominant class, or with the lake / polar
+  // The ice share is a fraction of the grid, so a smaller world on the same
 /* Headless smoke test for TerraCore: node tests/smoke.js */
 'use strict';
 
@@ -376,6 +376,30 @@ assert(saidLand === Math.round(saidRec.stats.land * 100) &&
     ls + ' legend shares account for the whole grid (' + total + ' of ' +
     lw.stats.pixels + ', mostly ' + saidTop + ')');
 });
+
+// The two optional tails of the sentence are conditions rather than counts, so
+// each has to appear exactly when its own test passes: `N lakes` only when the
+// world has standing water, `polar` only once the ice share is visible. A
+// sentence that lies about either is worse than one that stays silent.
+core.shapes.forEach(function (sp) {
+  var sw = core.generate({seed: 'pale shelf', shape: sp.key, width: 160, height: 100});
+  var st = core.describe(sw);
+  var lakeWanted = (sw.stats.counts.lake || 0) > 0;
+  var polarWanted = sw.stats.ice > 0.02;
+  assert(st.indexOf(sw.shape) === 0 &&
+    /\d+ lakes?\b/.test(st) === lakeWanted &&
+    /polar\b/.test(st) === polarWanted,
+    sp.key + ' sentence only says what is true (' + st + ')');
+});
+
+// A pushed climate is the one knob that reliably crosses the ice threshold, so
+// at least one sentence has to grow the `polar` tail rather than every world
+// sitting under it. Same rule as above, checked from the other side.
+// The ice share is a fraction of the grid, so a smaller world on the same
+// phrase is the cheapest way past the threshold.
+var icy = core.generate({seed: 'aurora basin', width: 60, height: 40, polar: 1});
+assert(icy.stats.ice > 0.02 && /polar\b/.test(core.describe(icy)),
+  'a cold world says so in its sentence (' + core.describe(icy) + ')');
 
 // The checksum is the short form of "identical pixels": it must match for a
 // repeat of the same seed and differ for another one, without anyone having

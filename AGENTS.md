@@ -36,6 +36,10 @@ Conventions:
   The same loop labels each filled cell in `result.basin` (1-based), which is
   what the hover readout prints as `basin 2/4`. `describe()` uses the count too:
   `4 lakes` rather than a bare `with lakes`.
+  Both tails of that sentence are conditions, not decorations: `N lakes` only
+  when `counts.lake` is non-zero, `polar` only when `stats.ice` passes 0.02. The
+  smoke suite checks each shape in both directions, so a sentence cannot grow a
+  tail the stats do not support — nor lose one they do.
   Those labels must stay dense: every lake cell carries a number in
   1..`stats.lakeBasins`, every number in that range appears, and no dry cell
   carries one. The smoke suite checks all three, since the readout's
