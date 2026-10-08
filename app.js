@@ -934,8 +934,10 @@
   });
 
   // The relief chart is small, so the readout for a bin is drawn inside the
-  // chart rather than in the hud strip under the map.
-  histCanvas.addEventListener('mousemove', function (ev) {
+  // chart rather than in the hud strip under the map. One function backs both
+  // the mouse and the touch path, so a tap selects the same bin the cursor
+  // would have.
+  function hoverHistogram(ev) {
     if (!histState) return;
     var rect = histCanvas.getBoundingClientRect();
     var x = ev.clientX - rect.left;
@@ -946,6 +948,14 @@
     // through drawMap(), which repaints this chart with the same `band`, so one
     // call keeps both views in step.
     drawHover();
+  }
+
+  histCanvas.addEventListener('mousemove', hoverHistogram);
+  // A finger reports itself through pointer events, so without this the chart
+  // would only respond to a mouse. Same selection rule, same repaint.
+  histCanvas.addEventListener('pointerdown', function (ev) {
+    if (ev.pointerType === 'mouse') return;
+    hoverHistogram(ev);
   });
   histCanvas.addEventListener('mouseleave', function () {
     band = -1;

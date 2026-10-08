@@ -104,6 +104,8 @@ elevation, bars below the shoreline drawn fainter, with a rule at the current se
 level. Bins span the world's own height range rather than 0..1, so a flat craton
 still fills the chart. Hovering a bin dims the rest and prints that bin's elevation
 range and cell count inside the chart. It redraws with every slider move.
+Tapping a bar works too: the chart answers a touch `pointerdown` with the same
+selection rule the cursor uses, so the bin filter is not mouse-only.
 The two corners of the chart carry the minimum and maximum elevation of this
 world, so the bars have a scale without needing a second readout.
 Between them the chart marks the median height — half the grid sits below that

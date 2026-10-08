@@ -104,6 +104,8 @@ Conventions:
   dims the other bars, a legend selection dims the bins with none of that class.
   `drawMap()` calls `paintHistogram()` so one repaint keeps both views in step —
   do not repaint the chart from the individual handlers.
+  `hoverHistogram()` is shared by `mousemove` and a touch `pointerdown`, so a tap
+  on the chart selects a bin the same way a cursor does. Keep the one function.
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.
