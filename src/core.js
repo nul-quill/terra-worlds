@@ -489,6 +489,11 @@
     // lowest point of the rim and cuts a channel on the way down.
     var spill = new Uint8Array(n);
 
+    // Which basin each lake cell belongs to, 1-based. Two lakes that look
+    // alike on the map are different bodies of water, and the hover readout
+    // can only say so if the fill leaves a label behind.
+    var basin = new Uint16Array(n);
+
     // Lowest non-lake neighbour around a filled basin: that is where the
     // surplus leaves. Ties go to the higher index, matching the drainage
     // tie-break so the outlet is the same cell the walk would pick.
@@ -500,6 +505,10 @@
 
     function recordSpill(count) {
       lakeBasins++;
+      // Label every cell this fill claimed, so a hover can name its lake.
+      // Done here rather than in the fill loop: this is the one place that
+      // runs exactly once per basin.
+      for (var lb = 0; lb < count; lb++) basin[queue[lb]] = lakeBasins;
       var best = -1;
       for (var q = 0; q < count; q++) {
         var bc = queue[q];
@@ -736,6 +745,7 @@
       moisture: mf,
       accumulation: acc,
       lakeMask: lake,
+      basin: basin,
       riverMask: river,
       coastDistance: dist,
       seaLevel: seaLevel,
@@ -866,7 +876,9 @@
       Math.round(s.land * 100) + '% land',
       'mostly ' + (BIOME_NAMES[top] || top)
     ];
-    if (s.counts.lake) parts.push('with lakes');
+    // The count is more useful than the bare fact: three large basins and
+    // thirty puddles both have lakes, and the number is already computed.
+    if (s.counts.lake) parts.push(s.lakeBasins + ' lake' + (s.lakeBasins === 1 ? '' : 's'));
     if (s.ice > 0.02) parts.push('polar');
     return parts.join(' · ');
   }

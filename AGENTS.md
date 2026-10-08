@@ -30,6 +30,9 @@ Conventions:
   `recordSpill()` bumps `stats.lakeBasins` once per fill, which is what the
   `basins` row and the CLI `lakeBasins` field report. Keep the increment there
   (one call per basin) rather than recounting the mask afterwards.
+  The same loop labels each filled cell in `result.basin` (1-based), which is
+  what the hover readout prints as `basin 2/4`. `describe()` uses the count too:
+  `4 lakes` rather than a bare `with lakes`.
 - The trunk/tributary split is a second quantile of the SAME accumulation field
   (`majorCut`), never a separate threshold. `riverMask` holds 1 or 2.
 - Hypsometric band count is derived from the relief above the shoreline
