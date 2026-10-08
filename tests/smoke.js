@@ -1,3 +1,4 @@
+  // The sentence ends with the dominant class, or with the lake / polar
 /* Headless smoke test for TerraCore: node tests/smoke.js */
 'use strict';
 
@@ -354,6 +355,27 @@ var saidLakes = parseInt(/(\d+) lakes?/.exec(saidText)[1], 10);
 assert(saidLand === Math.round(saidRec.stats.land * 100) &&
   saidLakes === saidRec.stats.lakeBasins,
   'summary numbers match the stats (' + saidLand + '%, ' + saidLakes + ' lakes)');
+
+// The legend prints one row per class with its share of the grid, so the
+// counts behind those rows have to add up: every cell is in exactly one class,
+// no class is listed with an empty share, and the class the sentence calls
+// dominant really is the biggest one.
+['aurora basin', 'salt mirror', 'thousand isles', 'red ridge'].forEach(function (ls) {
+  var lw = core.generate({seed: ls, width: 180, height: 110});
+  var total = 0, filled = 0, topKey = '', topN = 0;
+  Object.keys(lw.stats.counts).forEach(function (ck) {
+    total += lw.stats.counts[ck];
+    if (lw.stats.counts[ck] > 0) filled++;
+    if (lw.stats.counts[ck] > topN) { topN = lw.stats.counts[ck]; topKey = ck; }
+  });
+  // The sentence lists the dominant class by its display name, which can be
+  // two words ("Deep water"), so the capture runs to the next separator.
+  var saidTop = /mostly ([^·]+)/.exec(core.describe(lw))[1].replace(/\s+$/, '');
+  assert(total === lw.stats.pixels && filled === Object.keys(lw.stats.counts).length &&
+    saidTop === core.biomeNames[topKey],
+    ls + ' legend shares account for the whole grid (' + total + ' of ' +
+    lw.stats.pixels + ', mostly ' + saidTop + ')');
+});
 
 // The checksum is the short form of "identical pixels": it must match for a
 // repeat of the same seed and differ for another one, without anyone having

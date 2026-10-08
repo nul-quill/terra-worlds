@@ -178,6 +178,10 @@ Conventions:
   biggest first. The `k` cycle walks that same array, so the key follows the
   order on screen instead of the order the palette declares. Like the click it
   pins, so it writes the hash; unlike `solo` and `band` it is not a preview.
+  `stats.counts` is the partition behind those rows: every cell lands in exactly
+  one class, so the counts sum to `stats.pixels` and no listed class is empty.
+  The smoke suite checks that on every hand-picked phrase, along with the
+  sentence's `mostly X` naming the same biggest class the first row does.
   `Shift+k` walks the same array backwards, which is why the cycle is a
   `(ki + step + rows.length) % rows.length` step rather than a plain increment:
   a mis-press should not need a whole lap to undo. Keep the one branch handling
