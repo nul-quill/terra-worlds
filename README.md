@@ -78,9 +78,11 @@ At the top of the sidebar, one line puts the world into words — shape, a relie
 word with its range, the land share, the dominant class, plus how many separate
 lake basins the world has (`4 lakes`) and `polar` when they apply. Hovering a
 lake cell names its own basin — `basin 2/4` — so two bodies of water of the same
-depth are easy to tell apart while walking the map. Save PNG uses the same idea
-for the filename: seed, shape and grid size, so a folder of exports stays
-readable.
+depth are easy to tell apart while walking the map. The same readout adds the
+bearing of that basin's spillway — `drains E` — the direction its surplus
+leaves over the lowest point of the rim, which is also where the outflow
+channel starts. Save PNG uses the same idea for the filename: seed, shape and
+grid size, so a folder of exports stays readable.
 The sidebar ends with a small relief histogram: how much of the grid sits at each
 elevation, bars below the shoreline drawn fainter, with a rule at the current sea
 level. Bins span the world's own height range rather than 0..1, so a flat craton

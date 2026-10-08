@@ -775,6 +775,11 @@
       // alike otherwise, and the number matches the `basins` row in the stats.
       if (current.basin && current.basin[i]) {
         parts.push('basin ' + current.basin[i] + '/' + current.stats.lakeBasins);
+        // Which side the surplus leaves on. A closed lake still has one low
+        // spot in its rim, and that is where the outflow channel starts.
+        var bearing = current.basinSpill &&
+          current.basinSpill[current.basin[i] - 1];
+        if (bearing) parts.push('drains ' + bearing);
       }
     } else if (!above && h < current.seaLevel - 0.14) {
       parts.push('off-shelf');

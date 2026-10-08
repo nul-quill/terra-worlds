@@ -33,6 +33,15 @@ Conventions:
   The same loop labels each filled cell in `result.basin` (1-based), which is
   what the hover readout prints as `basin 2/4`. `describe()` uses the count too:
   `4 lakes` rather than a bare `with lakes`.
+  `recordSpill()` also pushes one compass point per basin into
+  `result.basinSpill`, indexed by basin number minus one: the bearing from the
+  fill's centroid to its spillway, printed by the hover readout as `drains E`.
+  The spillway search caps the rim at `seaLevel + 0.30` on the first pass, then
+  retries without the cap — a terraced plateau stacks its rims high enough that
+  the capped pass alone would leave a big basin with no outlet at all.
+  The flood fill marks cells in `queued` with the fill number at enqueue time,
+  not at dequeue: without that a cell offered by two neighbours is pushed twice
+  and overflows the one-slot-per-cell queue.
 - The trunk/tributary split is a second quantile of the SAME accumulation field
   (`majorCut`), never a separate threshold. `riverMask` holds 1 or 2.
 - Hypsometric band count is derived from the relief above the shoreline

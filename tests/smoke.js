@@ -349,6 +349,18 @@ assert(basinCells > 0 && basinWorld.stats.lakeBasins >= 1 &&
   'basin count tracks the lake cover (' + basinWorld.stats.lakeBasins + ' basins in ' +
   basinCells + ' lake cells)');
 
+// Every labelled basin also needs a bearing, since the readout pairs the two:
+// one entry per basin, each a real compass point, and none for a world with no
+// standing water.
+var POINTS = 'N,NE,E,SE,S,SW,W,NW'.split(',');
+var bearingsOk = basinWorld.basinSpill.length === basinWorld.stats.lakeBasins;
+for (var bs = 0; bs < basinWorld.basinSpill.length && bearingsOk; bs++) {
+  bearingsOk = POINTS.indexOf(basinWorld.basinSpill[bs]) >= 0;
+}
+assert(bearingsOk && dryWorld.basinSpill.length === 0,
+  'each basin names the way its surplus leaves (' +
+  basinWorld.basinSpill.join('/') + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

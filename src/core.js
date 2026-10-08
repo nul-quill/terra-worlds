@@ -514,11 +514,30 @@
     // can only say so if the fill leaves a label behind.
     var basin = new Uint16Array(n);
 
+    // Which way each basin's surplus leaves, as a compass bearing. Indexed by
+    // basin number minus one, so a hover can look it up from the label it
+    // already has. Filled in recordSpill(), which runs once per basin.
+    var basinSpill = [];
+
+    // Eight-point compass. The grid grows y downwards, so a smaller y is
+    // north; each bucket covers 45 degrees.
+    var COMPASS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+
+    function bearing(dx, dy) {
+      var deg = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+      var step = Math.round(deg / 45) % 8;
+      if (step < 0) step += 8;
+      return COMPASS[step];
+    }
+
     // Lowest non-lake neighbour around a filled basin: that is where the
     // surplus leaves. Ties go to the higher index, matching the drainage
     // tie-break so the outlet is the same cell the walk would pick.
-    function pickSpill(candidate, best) {
-      if (lake[candidate] || hf[candidate] >= seaLevel + 0.30) return best;
+    function pickSpill(candidate, best, cap) {
+      if (lake[candidate]) return best;
+      // A tall rim on a terraced plateau can sit above the comfort cap; the
+      // caller then retries without it, so a basin always has an outlet.
+      if (cap && hf[candidate] >= seaLevel + 0.30) return best;
       if (best < 0) return candidate;
       return lower(hf[candidate], candidate, hf[best], best) ? candidate : best;
     }
@@ -528,21 +547,44 @@
       // Label every cell this fill claimed, so a hover can name its lake.
       // Done here rather than in the fill loop: this is the one place that
       // runs exactly once per basin.
-      for (var lb = 0; lb < count; lb++) basin[queue[lb]] = lakeBasins;
+      var sumX = 0, sumY = 0;
+      for (var lb = 0; lb < count; lb++) {
+        var lcq = queue[lb];
+        basin[queue[lb]] = lakeBasins;
+        sumX += lcq % width;
+        sumY += (lcq / width) | 0;
+      }
       var best = -1;
       for (var q = 0; q < count; q++) {
         var bc = queue[q];
         var bx = bc % width, by = (bc / width) | 0;
-        if (bx > 0) best = pickSpill(bc - 1, best);
-        if (bx < width - 1) best = pickSpill(bc + 1, best);
-        if (by > 0) best = pickSpill(bc - width, best);
-        if (by < height - 1) best = pickSpill(bc + width, best);
+        if (bx > 0) best = pickSpill(bc - 1, best, true);
+        if (bx < width - 1) best = pickSpill(bc + 1, best, true);
+        if (by > 0) best = pickSpill(bc - width, best, true);
+        if (by < height - 1) best = pickSpill(bc + width, best, true);
+      }
+      if (best < 0) {
+        for (var q2 = 0; q2 < count; q2++) {
+          var cc = queue[q2];
+          var cx3 = cc % width, cy3 = (cc / width) | 0;
+          if (cx3 > 0) best = pickSpill(cc - 1, best, false);
+          if (cx3 < width - 1) best = pickSpill(cc + 1, best, false);
+          if (cy3 > 0) best = pickSpill(cc - width, best, false);
+          if (cy3 < height - 1) best = pickSpill(cc + width, best, false);
+        }
       }
       // Every basin has a rim, so an outlet is essentially always found. When
       // a fill touches the whole grid there is nothing outside it, and the
       // surplus simply stays where it is.
       if (best < 0) return;
       spill[best] = 1;
+      // Bearing from the middle of the lake to its outlet: the way a walker
+      // follows to get off the basin. One entry per basin, same order as the
+      // labels in `basin`, so a hover can pair them up.
+      basinSpill.push(bearing(
+        (best % width) - sumX / count,
+        ((best / width) | 0) - sumY / count
+      ));
       // Everything the basin collected continues downstream from the outlet.
       var carried = 0;
       for (var qq = 0; qq < count; qq++) carried += acc[queue[qq]];
@@ -555,6 +597,10 @@
     // above that surface is under water. Depth is surface minus floor, capped
     // so a deep basin and a shallow both read as water rather than a hole.
     var queue = new Int32Array(n);
+    // One entry per cell, marked at enqueue time. `gen` is the fill number, so
+    // the marks never have to be cleared between basins.
+    var queued = new Int32Array(n);
+    var gen = 0;
     for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
         i = y * width + x;
@@ -563,6 +609,8 @@
         if (gap <= 0.006) continue;
         var surface = hf[i] + gap;
         var head = 0, tail = 0;
+        gen++;
+        queued[i] = gen;
         queue[tail++] = i;
         while (head < tail) {
           var cur = queue[head++];
@@ -571,10 +619,13 @@
           var d = surface - ch;
           lake[cur] = Math.max(1, Math.round(Math.min(1, d / 0.09) * 60));
           var cx2 = cur % width, cy2 = (cur / width) | 0;
-          if (cx2 > 0 && !lake[cur - 1] && hf[cur - 1] <= surface) queue[tail++] = cur - 1;
-          if (cx2 < width - 1 && !lake[cur + 1] && hf[cur + 1] <= surface) queue[tail++] = cur + 1;
-          if (cy2 > 0 && !lake[cur - width] && hf[cur - width] <= surface) queue[tail++] = cur - width;
-          if (cy2 < height - 1 && !lake[cur + width] && hf[cur + width] <= surface) queue[tail++] = cur + width;
+          // `queued` marks a cell the moment it enters the queue: the depth is
+          // only written on dequeue, so without this a cell offered by two
+          // neighbours could be pushed twice and overflow the queue.
+          if (cx2 > 0 && queued[cur - 1] !== gen && !lake[cur - 1] && hf[cur - 1] <= surface) { queued[cur - 1] = gen; queue[tail++] = cur - 1; }
+          if (cx2 < width - 1 && queued[cur + 1] !== gen && !lake[cur + 1] && hf[cur + 1] <= surface) { queued[cur + 1] = gen; queue[tail++] = cur + 1; }
+          if (cy2 > 0 && queued[cur - width] !== gen && !lake[cur - width] && hf[cur - width] <= surface) { queued[cur - width] = gen; queue[tail++] = cur - width; }
+          if (cy2 < height - 1 && queued[cur + width] !== gen && !lake[cur + width] && hf[cur + width] <= surface) { queued[cur + width] = gen; queue[tail++] = cur + width; }
         }
         recordSpill(tail);
       }
@@ -770,6 +821,7 @@
       accumulation: acc,
       lakeMask: lake,
       basin: basin,
+      basinSpill: basinSpill,
       riverMask: river,
       coastDistance: dist,
       seaLevel: seaLevel,
