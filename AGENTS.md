@@ -54,6 +54,10 @@ Conventions:
   It is the cheap equality test for determinism: same seed + same grid must give
   the same digits, while `stats.ms` is allowed to wander. Keep the multiply in the
   shift-add form so it stays inside 32 bits.
+- `nextSeed(value)` derives the next seed from the current one (FNV-1a over the
+  phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
+  use it, so a click sequence is reproducible from the first phrase. Do not
+  replace it with a plain `randomSeed()` call in the button.
 
 Verify with:
 

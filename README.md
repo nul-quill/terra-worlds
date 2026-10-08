@@ -28,6 +28,10 @@ the river cut is a quantile of the accumulation field, the share of the grid tha
 carries a channel barely moves when only the size changes — the smoke suite checks
 that.
 Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
+Reroll is not random: the next seed is a hash of the current one, so a run of
+clicks from the same starting phrase walks the same sequence of worlds every
+time. `node cli.js "aurora basin" --next 6` prints that sequence, one seed per
+line, which is the quickest way back to a world found by clicking.
 The stats list ends with a `pixels` row: eight hex digits of an FNV-1a hash over
 the rendered RGBA buffer. Same seed and same grid, same digits — so a change in
 the number means the world really changed, while a different `generate` time
@@ -48,6 +52,8 @@ elevation, bars below the shoreline drawn fainter, with a rule at the current se
 level. Bins span the world's own height range rather than 0..1, so a flat craton
 still fills the chart. Hovering a bin dims the rest and prints that bin's elevation
 range and cell count inside the chart. It redraws with every slider move.
+The two corners of the chart carry the minimum and maximum elevation of this
+world, so the bars have a scale without needing a second readout.
 Bin count follows the width of the chart, so a narrow sidebar does not turn into
 mush. Hovering the map also highlights the bin that the hovered cell falls in,
 which ties a colour on the map back to its place in the elevation spread; moving

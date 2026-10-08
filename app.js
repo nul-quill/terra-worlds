@@ -585,7 +585,13 @@
     var inland = current.coastDistance ? Math.round(current.coastDistance[i]) : 0;
     if (above && inland > 1) parts.push(inland + ' from water');
     if (current.riverMask && current.riverMask[i]) {
-      parts.push(current.riverMask[i] === 2 ? 'trunk river' : 'river');
+      // The catchment behind the channel explains why this cell is a trunk and
+      // its neighbour is a tributary: it is the same accumulation number the
+      // quantile cut is taken from.
+      var catchment = current.accumulation
+        ? Math.round(current.accumulation[i]) : 0;
+      parts.push((current.riverMask[i] === 2 ? 'trunk river' : 'river') +
+        (catchment > 1 ? ' (' + catchment + ' cells)' : ''));
     }
     readout.textContent = parts.join(' — ');
     // Tie the readout to the relief chart: the bin this cell falls in is

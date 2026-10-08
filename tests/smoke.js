@@ -232,6 +232,25 @@ assert(/^[0-9a-f]{8}$/.test(a.stats.checksum) &&
   a.stats.checksum !== c.stats.checksum,
   'pixel checksum identifies a world (' + a.stats.checksum + ')');
 
+// The Reroll button chains from the current seed instead of drawing a fresh
+// random one, so a shared link replays the same sequence of worlds. Two walks
+// of five steps from the same phrase must agree, and each step must be a
+// different world from the one before it.
+function chain(seed) {
+  var out = [];
+  for (var s = seed, k = 0; k < 5; k++) { s = core.nextSeed(s); out.push(s); }
+  return out;
+}
+var walkA = chain('aurora basin');
+var walkB = chain('aurora basin');
+assert(walkA.join(',') === walkB.join(',') &&
+  walkA.every(function (v, k) { return v === walkB[k]; }) &&
+  new Set(walkA).size === walkA.length,
+  'reroll chain is reproducible and never repeats (' + walkA[0] + ')');
+var chainWorld = core.generate({ seed: String(walkA[0]), width: 120, height: 80 });
+assert(/^[0-9a-f]{8}$/.test(chainWorld.stats.checksum),
+  'a chained seed renders a world (' + chainWorld.stats.checksum + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
