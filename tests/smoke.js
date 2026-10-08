@@ -361,6 +361,23 @@ assert(bearingsOk && dryWorld.basinSpill.length === 0,
   'each basin names the way its surplus leaves (' +
   basinWorld.basinSpill.join('/') + ')');
 
+// Each basin marks exactly one rim cell as its outlet, and that cell must sit
+// against the lake it drains: the readout pairs `outlet` with the neighbouring
+// `basin N/M`, so a floating mark would be a lie. Two basins may share one
+// seam, hence at most one mark per basin.
+var bw = basinWorld, outlets = 0, touching = 0;
+for (var oi = 0; oi < bw.spillway.length; oi++) {
+  if (!bw.spillway[oi]) continue;
+  outlets++;
+  var ox = oi % bw.width, oy = (oi / bw.width) | 0;
+  if ((ox > 0 && bw.lakeMask[oi - 1]) || (ox < bw.width - 1 && bw.lakeMask[oi + 1]) ||
+    (oy > 0 && bw.lakeMask[oi - bw.width]) ||
+    (oy < bw.height - 1 && bw.lakeMask[oi + bw.width])) touching++;
+}
+assert(outlets > 0 && outlets <= bw.stats.lakeBasins && touching === outlets,
+  'every basin has one outlet on its own rim (' + outlets + ' of ' +
+  bw.stats.lakeBasins + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

@@ -36,6 +36,9 @@ Conventions:
   `recordSpill()` also pushes one compass point per basin into
   `result.basinSpill`, indexed by basin number minus one: the bearing from the
   fill's centroid to its spillway, printed by the hover readout as `drains E`.
+  The spillway cell itself is marked in `result.spillway` (one cell per basin),
+  which the readout prints as `outlet` and the river pass uses to keep a
+  basin's catchment drawn even when accumulation alone would cut it off.
   The spillway search caps the rim at `seaLevel + 0.30` on the first pass, then
   retries without the cap — a terraced plateau stacks its rims high enough that
   the capped pass alone would leave a big basin with no outlet at all.

@@ -795,6 +795,10 @@
     // and a beach cell one step in, so those would repeat the biome name.
     var inland = current.coastDistance ? Math.round(current.coastDistance[i]) : 0;
     if (above && inland > 1) parts.push(inland + ' from water');
+    // The one rim cell a basin spills over. It is the seam between a lake and
+    // the river network, so it is worth naming on its own: hovering it shows
+    // where the water in a closed basin actually goes.
+    if (current.spillway && current.spillway[i]) parts.push('outlet');
     if (current.riverMask && current.riverMask[i]) {
       // The catchment behind the channel explains why this cell is a trunk and
       // its neighbour is a tributary: it is the same accumulation number the

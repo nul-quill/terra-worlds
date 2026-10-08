@@ -822,6 +822,7 @@
       lakeMask: lake,
       basin: basin,
       basinSpill: basinSpill,
+      spillway: spill,
       riverMask: river,
       coastDistance: dist,
       seaLevel: seaLevel,
