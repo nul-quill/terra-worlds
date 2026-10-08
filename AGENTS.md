@@ -99,7 +99,7 @@ Conventions:
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not
   replace it with a plain `randomSeed()` call in the button.
-- Letter shortcuts (`c`, `h`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
+- Letter shortcuts (`c`, `h`, `k`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
   SELECT owns the caret, so a seed phrase can still be typed. Each cycle key
   reads the same array its dropdown does — `TerraCore.channels` for `c`,
   `TerraCore.shapes` for `h`, `TerraCore.phrases` for `p` — so a key and the
@@ -135,6 +135,10 @@ Conventions:
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.
+  The row order comes from `legendKeys(result)` — classes present on this world,
+  biggest first. The `k` cycle walks that same array, so the key follows the
+  order on screen instead of the order the palette declares. Like the click it
+  pins, so it writes the hash; unlike `solo` and `band` it is not a preview.
 - `cli.js --palettes` lists the palette keys from `core.palettes`, so a name
   copied from the terminal is always valid for `--palette`. The smoke suite
   compares that listing against `Object.keys(core.palettes)` — keep both in step.

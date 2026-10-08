@@ -444,13 +444,10 @@
   }
 
   function renderLegend(result) {
-    var keys = Object.keys(result.palette.colors);
+    var keys = legendKeys(result);
     var counts = result.stats.counts;
     legendList.textContent = '';
-    keys
-      .filter(function (k) { return counts[k]; })
-      .sort(function (a, b) { return counts[b] - counts[a]; })
-      .forEach(function (key) {
+    keys.forEach(function (key) {
         var li = document.createElement('li');
         // The key is kept on the element so a rebuild can find the same row
         // again and hand the caret back after a keyboard toggle.
@@ -506,6 +503,17 @@
         li.addEventListener('blur', function () { solo = null; drawMap(); });
         legendList.appendChild(li);
       });
+  }
+
+  // The legend rows in the order they are shown: every class present on this
+  // world, biggest first. Both the list and the `k` cycle read this one
+  // function, so the key walks the rows in the order they appear rather than
+  // in the order the palette happens to declare them.
+  function legendKeys(result) {
+    var counts = result.stats.counts;
+    return Object.keys(result.palette.colors)
+      .filter(function (k) { return counts[k]; })
+      .sort(function (a, b) { return counts[b] - counts[a]; });
   }
 
     // One line that describes the world in words rather than numbers: the shape
@@ -1103,6 +1111,21 @@
     }
     // The two checkboxes and the export are the only things left that a
     // keyboard user has to reach for: one key each, no modifiers.
+    // 'k' walks the legend: each press pins the next class, and the cycle wraps
+    // back through "nothing pinned". Same list the rows are built from, so the
+    // order under the key is the order on screen.
+    if (!typingLetter && (ev.key === 'k' || ev.key === 'K')) {
+      ev.preventDefault();
+      if (current) {
+        var rows = legendKeys(current);
+        var ki = rows.indexOf(pinned || '');
+        pinned = ki + 1 >= rows.length ? null : rows[ki + 1];
+        renderLegend(current);
+        drawMap();
+        writeHash();
+      }
+      return;
+    }
     // 'p' steps through the hand-picked seed phrases, which is a quicker way
     // to browse good worlds than rerolling at random. The phrase that is
     // already in the box is replaced rather than appended, so the list never

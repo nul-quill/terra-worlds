@@ -89,6 +89,10 @@ takes priority while the pointer is on it, and leaving either one restores the
 full map. The legend works the other way too: bins that hold no cell of the
 selected class dim in the chart, so a row shows the slice of the height range it
 occupies. Every filter is a preview — only a clicked row ends up in the URL hash.
+`k` walks those pins from the keyboard: each press keeps the next class on the
+map at full strength and releases the previous one, wrapping back to no pin
+after the last row. It walks the rows in the order the legend lists them, so
+the key and the list cannot disagree.
 The hover crosshair and its hairlines take the palette's own ink, so they stay
 visible on the pale sky of `Sepia` or `Mono` instead of washing out.
 `c` steps through the overlays and back to the biome map. The hover readout
