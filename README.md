@@ -42,6 +42,10 @@ shape and a grid can still be different pictures, and the palette is why.
 The `channel` key rides along for the same reason. An overlay keeps every count
 in the record identical while changing only the pixels, so without it a drained
 world and a moist one look like the same entry.
+`scale` is the third of those: the export multiplier, which is the only knob
+that changes the saved file's dimensions without changing a single count. With
+it in the record, the `width` and `height` above are enough to work out the
+pixel size of the file on disk.
 
 Every control is mirrored into the URL hash (`#seed=...&pal=sepia&sea=0.6&...`),
 so a finished world can be pasted into a chat and reopened identically. Loading a

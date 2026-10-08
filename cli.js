@@ -288,6 +288,10 @@ function summarise(seed, result, name, asJson) {
     // dropped for an overlay. Like the palette it is invisible in the summary
     // sentence, and two records with the same checksum otherwise look alike.
     channel: opts.channel || '',
+    // The multiplier is in the record too: it changes the saved file's pixel
+    // dimensions without touching a single count above, so without it a record
+    // cannot say why its PNG is bigger than the grid it lists.
+    scale: opts.scale > 1 ? opts.scale : 1,
     land: Math.round(s.land * 1000) / 1000,
     water: Math.round(s.water * 1000) / 1000,
     median: Math.round(s.median * 1000) / 1000,

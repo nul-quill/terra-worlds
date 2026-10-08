@@ -95,6 +95,10 @@ Conventions:
   sentence cannot hold: `palette` and `channel` both change only pixels, so every
   count stays identical without them. Keep both in the record and keep the smoke
   assertions comparing one populated run against the plain one.
+  `scale` joins them: it is the multiplier behind the saved file's dimensions,
+  which is why the PNG assertion in the smoke suite can check the IHDR from the
+  record alone. It reads `opts.scale > 1 ? opts.scale : 1`, so a plain render
+  reports 1 rather than an empty string.
 - `nextSeed(value)` derives the next seed from the current one (FNV-1a over the
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not

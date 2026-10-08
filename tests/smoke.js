@@ -474,6 +474,12 @@ assert(pngHeadOk && pngBuf.toString('ascii', 12, 16) === 'IHDR' &&
   pngBuf.readUInt32BE(16) + 'x' + pngBuf.readUInt32BE(20) +
   ', ' + pngBuf.length + ' bytes)');
 
+// The multiplier is the one part of the state that changes the file without
+// changing a count, so the record has to carry it: the scaled IHDR above is
+// only checkable from the JSON if the JSON says what the multiplier was.
+assert(pngRec.scale === 2 && jsonLine.scale === 1,
+  'cli record carries the export multiplier (' + pngRec.scale + ')');
+
 // The median must sit inside the world's own range and really split the grid
 // in half, which is the whole point of publishing it: the relief range on its
 // own cannot tell a plateau from a plain with one peak. Same world as the
