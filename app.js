@@ -523,6 +523,8 @@
     var i;
     hc.clearRect(0, 0, w, h);
     var binW = w / BINS;
+    // Left/right inset for the text drawn into the chart.
+    var pad = 3;
     var seaX = ((result.seaLevel - lo) / span) * w;
     if (seaX < 0) seaX = 0;
     if (seaX > w) seaX = w;
@@ -550,20 +552,31 @@
     hc.moveTo(Math.round(seaX) + 0.5, 0);
     hc.lineTo(Math.round(seaX) + 0.5, h);
     hc.stroke();
+    // Ticks every ten units of height, in the strip under the bars. Two corner
+    // numbers give the ends of the range but nothing in between, and the ticks
+    // are what make a bar's height estimable by eye. Drawn on the same grid as
+    // the sea rule so both read as one set of marks.
+    hc.strokeStyle = 'rgba(30,38,44,0.35)';
+    for (var u = Math.ceil(lo * 100 / 10) * 10; u <= (lo + span) * 100; u += 10) {
+      var tickX = ((u / 100 - lo) / span) * w;
+      if (tickX < pad - 1 || tickX > w - pad + 1) continue;
+      hc.beginPath();
+      hc.moveTo(Math.round(tickX) + 0.5, h - 11);
+      hc.lineTo(Math.round(tickX) + 0.5, h - 8);
+      hc.stroke();
+    }
     // The marker line alone does not say what the sea level is, and the slider
     // is the knob that moves it most, so the number rides next to the rule.
     // Flipped to the left of the line when it would otherwise run off the edge.
+    hc.font = '9px system-ui, sans-serif';
     var seaLabel = 'sea ' + Math.round(result.seaLevel * 100);
     var seaTw = hc.measureText(seaLabel).width;
-    hc.font = '9px system-ui, sans-serif';
     hc.fillStyle = 'rgba(30,38,44,0.75)';
     hc.fillText(seaLabel,
       seaTw + 6 + seaX < w ? seaX + 4 : seaX - seaTw - 4, 9);
     // Corner labels give the chart a scale: without them the shape of the
     // spread is readable but the numbers are not. Drawn before the hovered-bin
     // label so a hover can cover them when space is tight.
-    hc.font = '9px system-ui, sans-serif';
-    var pad = 3;
     hc.fillStyle = 'rgba(30,38,44,0.55)';
     var loLabel = String(Math.round(lo * 100));
     var hiLabel = String(Math.round((lo + span) * 100));
