@@ -567,7 +567,7 @@
       ['median', Math.round(s.median * 100) + ' units'],
       ['biomes', String(biomeCount(s.counts))],
       ['contours', s.contourBands + ' land / ' + s.basinBands + ' basin'],
-      ['pixels', s.checksum],
+      ['checksum', s.checksum],
       ['generate', s.ms + ' ms']
     ];
     // When an overlay is on, say which one: the legend below still lists the

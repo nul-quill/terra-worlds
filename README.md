@@ -83,7 +83,7 @@ while the caret is in a text field, so a seed phrase can still be typed. The
 way to walk a shoreline in without reaching for the slider.
 The page follows the OS colour scheme, and a print stylesheet keeps the map plus
 legend and stats while dropping the controls.
-The stats list ends with a `pixels` row: eight hex digits of an FNV-1a hash over
+The stats list ends with a `checksum` row: eight hex digits of an FNV-1a hash over
 the rendered RGBA buffer. Same seed and same grid, same digits — so a change in
 the number means the world really changed, while a different `generate` time
 does not. The CLI prints the same value.
@@ -126,7 +126,8 @@ channel starts. Hovering that rim cell itself prints `outlet`, so the seam
 between a lake and the river network is findable by eye. Save PNG uses the same
 idea for the filename: seed, shape, palette, grid size and the pixel checksum, so
 a folder of exports stays readable and any file can be traced back to the link
-that produced it. The checksum is the same eight digits as the `pixels` row.
+that produced it. The checksum is the same eight digits as the `checksum` row in
+the stats list.
 The sidebar ends with a small relief histogram: how much of the grid sits at each
 elevation, bars below the shoreline drawn fainter, with a rule at the current sea
 level. Bins span the world's own height range rather than 0..1, so a flat craton
