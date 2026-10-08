@@ -413,6 +413,11 @@
     var biome = new Array(n);
     var counts = {};
     var landCells = 0, waterCells = 0, riverCells = 0, iceCells = 0;
+    // How many separate basins the lake mask resolves into. Filled by
+    // recordSpill(), which runs once per basin. A handful of large lakes and a
+    // scatter of small ones look the same by cell count, so the count itself
+    // is worth publishing.
+    var lakeBasins = 0;
 
     // Light direction for the hillshade, normalised.
     // One of four compass directions, so relief can be lit from whichever side
@@ -494,6 +499,7 @@
     }
 
     function recordSpill(count) {
+      lakeBasins++;
       var best = -1;
       for (var q = 0; q < count; q++) {
         var bc = queue[q];
@@ -503,6 +509,9 @@
         if (by > 0) best = pickSpill(bc - width, best);
         if (by < height - 1) best = pickSpill(bc + width, best);
       }
+      // Every basin has a rim, so an outlet is essentially always found. When
+      // a fill touches the whole grid there is nothing outside it, and the
+      // surplus simply stays where it is.
       if (best < 0) return;
       spill[best] = 1;
       // Everything the basin collected continues downstream from the outlet.
@@ -707,6 +716,10 @@
       // and the tests can see the spacing without duplicating the formula.
       contourBands: contourBands,
       basinBands: basinBands,
+      // Separate lake basins on the map. Each one keeps its own water and
+      // spills over its own rim, so the count says whether the interior is a
+      // few large lakes or a scatter of puddles.
+      lakeBasins: lakeBasins,
       ms: Date.now() - started,
       // Eight hex digits over the rendered pixels, so two runs can be compared
       // without walking the whole buffer from the outside.

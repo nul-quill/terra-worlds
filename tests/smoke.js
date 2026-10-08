@@ -284,6 +284,21 @@ assert(jsonPairs.length === jsonLine.biomes && jsonTotal >= 96 && jsonTotal <= 1
   'cli class shares match the biome count (' + jsonPairs.length + ' classes, ' +
   jsonTotal + '%)');
 
+// The basin count must agree with the lake cover it summarises: at least one
+// basin when there is standing water, never more basins than lake cells, and
+// none at all when the whole grid is open water.
+var basinWorld = core.generate({
+  seed: 'red ridge', shape: 'craton', seaLevel: 0.3, terraces: 6,
+  width: 200, height: 120
+});
+var dryWorld = core.generate({seed: 'red ridge', seaLevel: 0.95, width: 200, height: 120});
+var basinCells = basinWorld.stats.counts.lake || 0;
+assert(basinCells > 0 && basinWorld.stats.lakeBasins >= 1 &&
+  basinWorld.stats.lakeBasins <= basinCells &&
+  dryWorld.stats.lakeBasins === 0 && (dryWorld.stats.counts.lake || 0) === 0,
+  'basin count tracks the lake cover (' + basinWorld.stats.lakeBasins + ' basins in ' +
+  basinCells + ' lake cells)');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

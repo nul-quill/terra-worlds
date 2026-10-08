@@ -157,6 +157,7 @@ function summarise(seed, result, name, asJson) {
     lake: Math.round((s.counts.lake || 0) / s.pixels * 1000) / 1000,
     ice: Math.round(s.ice * 1000) / 1000,
     rivers: s.rivers,
+    lakeBasins: s.lakeBasins,
     relief: Math.round((s.max - s.min) * 100),
     contourBands: s.contourBands, basinBands: s.basinBands,
     biomes: Object.keys(s.counts).length,

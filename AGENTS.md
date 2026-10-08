@@ -27,6 +27,9 @@ Conventions:
   surface. The old single-cell test (`gap > threshold` only) left one-pixel dots.
   Each fill also records its lowest rim neighbour as a spillway, so a basin's
   accumulation continues downstream instead of dying at the shore.
+  `recordSpill()` bumps `stats.lakeBasins` once per fill, which is what the
+  `basins` row and the CLI `lakeBasins` field report. Keep the increment there
+  (one call per basin) rather than recounting the mask afterwards.
 - The trunk/tributary split is a second quantile of the SAME accumulation field
   (`majorCut`), never a separate threshold. `riverMask` holds 1 or 2.
 - Hypsometric band count is derived from the relief above the shoreline

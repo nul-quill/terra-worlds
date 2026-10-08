@@ -50,6 +50,11 @@ The stats list ends with a `pixels` row: eight hex digits of an FNV-1a hash over
 the rendered RGBA buffer. Same seed and same grid, same digits — so a change in
 the number means the world really changed, while a different `generate` time
 does not. The CLI prints the same value.
+Right after `lake` the list shows `basins`: how many separate closed depressions
+that lake cover resolves into. Each one keeps its own water and spills over its
+own lowest rim cell, so the number says whether the interior is a handful of big
+lakes or a scatter of puddles — something the lake percentage alone cannot tell.
+The CLI record carries the same field as `lakeBasins`.
 Arrow keys walk the hovered cell, so the readout can be inspected without a
 pointer; they are ignored while a form field has the caret.
 Hovering a bar in the relief chart also lights up the cells in that height band
