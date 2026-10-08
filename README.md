@@ -68,6 +68,10 @@ visible on the pale sky of `Sepia` or `Mono` instead of washing out.
 `c` steps through the overlays and back to the biome map. The hover readout
 reports the cell's moisture as well as its height, which is what makes two cells
 at the same elevation land in different classes.
+While an overlay is on, the readout also prints that overlay's own ramp position
+for the hovered cell — `drain 68` — which is the number the colour was mixed
+from, not the raw field value. The scale is cached on the result when the overlay
+is built, so walking the map does not re-sort the field.
 At the top of the sidebar, one line puts the world into words — shape, a relief
 word with its range, the land share, the dominant class, plus how many separate
 lake basins the world has (`4 lakes`) and `polar` when they apply. Hovering a

@@ -60,6 +60,10 @@ Conventions:
   into `generate`: an overlay must not change the biome map. Stretch each field by
   its own 2%/98% percentiles, and keep the log transform on `drain` and `coast` —
   both are heavy-tailed and a linear ramp collapses them into one colour.
+  `fieldFor(key, result)` is the single field lookup shared by the ramp and by
+  `channelValue(result, cell)`, which is what the hover readout prints. The scale
+  is cached in `result.channelScale` during `channelize` so a hover does not sort
+  the field again; keep it that way rather than recomputing percentiles per cell.
 - `stats.checksum` is FNV-1a over the rendered RGBA buffer, as eight hex digits.
   It is the cheap equality test for determinism: same seed + same grid must give
   the same digits, while `stats.ms` is allowed to wander. Keep the multiply in the

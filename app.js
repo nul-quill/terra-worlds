@@ -744,6 +744,13 @@
       (TerraCore.biomeNames[key] || key),
       (elev > 0 ? '+' : '') + elev + ' units'
     ];
+    // With an overlay on, the colour under the cursor is a ramp position, so
+    // print that position: it is the same 0..100 number the blend used, which
+    // is what makes two similar shades distinguishable.
+    if (current.channelName) {
+      parts.push(current.channelName + ' ' +
+        Math.round(TerraCore.channelValue(current, i) * 100));
+    }
     // Extra context when it costs nothing: how deep the standing water is, and
     // whether this cell is on the drainage network.
     if (above && current.lakeMask && current.lakeMask[i]) {

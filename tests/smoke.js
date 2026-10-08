@@ -198,6 +198,27 @@ assert(cdMin === 0 && cdMax > cdMin && cdBad === 0,
     name + ' overlay spans a ramp and repeats (' + loC + '..' + hiC + ')');
 });
 
+// The readout prints the overlay's own ramp position, so it has to agree with
+// the pixels: the colour under the cursor must be the palette pair lerped by
+// exactly that number. Checked on the log-scaled field, whose raw values are
+// furthest from what the ramp shows.
+var rampChan = core.channelize(spread, 'drain');
+var rampLo = spread.palette.colors.beach, rampHi = spread.palette.colors.rock;
+var rampWorst = 0;
+for (var rpi = 0; rpi < 400; rpi++) {
+  var rc = (rpi * 37) % (spread.width * spread.height);
+  var rt = core.channelValue(spread, rc);
+  var ro = rc * 4;
+  for (var rcn = 0; rcn < 3; rcn++) {
+    var want = rampLo[rcn] + (rampHi[rcn] - rampLo[rcn]) * rt;
+    var diff = Math.abs(want - rampChan.data[ro + rcn]);
+    if (diff > rampWorst) rampWorst = diff;
+  }
+}
+assert(rampWorst <= 1,
+  'overlay readout matches the rendered ramp (worst ' +
+  rampWorst.toFixed(2) + ' of 255)');
+
 // The overlay reads the fields rather than the colour buffer, so the biome
 // classification underneath is untouched.
 assert(spread.biome.length === spread.width * spread.height &&

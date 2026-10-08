@@ -782,6 +782,15 @@
     coast: ['beach', 'deep']
   };
 
+  // Which stored field an overlay reads. One lookup so the renderer and the
+  // hover readout cannot drift to different columns of the same result.
+  function fieldFor(key, result) {
+    return key === 'relief' ? result.heightField
+      : key === 'moist' ? result.moisture
+        : key === 'drain' ? result.accumulation
+          : result.coastDistance;
+  }
+
   // Spread a field over 0..1 by its own extremes, so a low-contrast field
   // still fills the ramp. The top and bottom 2% are clipped away, which keeps
   // a single deep trench or one huge catchment from washing out the rest.
@@ -803,12 +812,13 @@
     var w = result.width, h = result.height, n = w * h;
     var out = new Uint8ClampedArray(n * 4);
     var key = CHANNELS[name] ? name : 'relief';
-    var src = key === 'relief' ? result.heightField
-      : key === 'moist' ? result.moisture
-        : key === 'drain' ? result.accumulation
-          : result.coastDistance;
     var useLog = key === 'drain' || key === 'coast';
+    var src = fieldFor(key, result);
     var sc = scaleFor(src, n, useLog);
+    // Keep the scale on the result: a hover wants to print the very number the
+    // ramp was built from, and re-deriving the percentiles per cell would sort
+    // the whole field again.
+    result.channelScale = {key: key, useLog: useLog, lo: sc.lo, hi: sc.hi};
     var colors = result.palette.colors;
     var lo = colors[CHANNELS[key][0]];
     var hi = colors[CHANNELS[key][1]];
@@ -844,6 +854,18 @@
 
   function randomSeed() {
     return (Math.random() * 4294967295) >>> 0;
+  }
+
+  // The 0..1 position of one cell inside the overlay it is being shown as.
+  // Same percentiles and the same log transform as the ramp, so the number in
+  // the readout matches the colour under the cursor rather than a raw field
+  // value that would need its own scale to interpret.
+  function channelValue(result, cell) {
+    var sc = result.channelScale;
+    if (!sc) return clamp01(result.heightField[cell]);
+    var src = fieldFor(sc.key, result);
+    var v = sc.useLog ? Math.log(1 + src[cell]) : src[cell];
+    return clamp01((v - sc.lo) / (sc.hi - sc.lo));
   }
 
   // Derive the next seed from the current one, so a chain of rerolls from the
@@ -901,6 +923,7 @@
     upscale: upscale,
     channelize: channelize,
     describe: describe,
+    channelValue: channelValue,
     hashString: hashString,
     randomSeed: randomSeed,
     nextSeed: nextSeed,
