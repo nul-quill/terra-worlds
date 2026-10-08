@@ -99,14 +99,14 @@ Conventions:
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not
   replace it with a plain `randomSeed()` call in the button.
-- Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
+- Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
   (`x` joins that list: it is not a list cycle but a call to `copyLink()`, the
   same function the `Copy link` button is wired to, so the two paths cannot
   disagree about what lands on the clipboard. Keep that one function for both.)
   SELECT owns the caret, so a seed phrase can still be typed. Each cycle key
   reads the same array its dropdown does — `TerraCore.channels` for `c`,
   `TerraCore.shapes` for `h`, `TerraCore.phrases` for `p`, `TerraCore.lights` for
-  `d`, `TerraCore.grids` for `w` — so a key and the
+  `d`, `TerraCore.grids` for `w`, `TerraCore.scales` for `e` — so a key and the
   select can never disagree about the order. Every cycle key also answers to
   `Shift`: one branch, a `±1` step, so a mis-press backs out instead of looping
   the whole list. `styles.css` ends with two
@@ -183,6 +183,11 @@ Conventions:
   `w` cycle, `cli --grids` and the smoke width loop read that array; every
   non-empty key must be usable as `generate({width})` unchanged, which is what
   makes a pinned count mean the same thing in the page and from a terminal.
+  `core.scales` is the seventh: the nearest-neighbour multipliers the export
+  dropdown offers. The `e` cycle, `cli --scales` and the smoke upscale loop read
+  that array. A multiplier enlarges only the saved pixels, so every count in
+  `stats` is the same at 2x as at 6x — that is what makes it safe to change
+  while comparing two worlds.
   `[` and `]` are not a list cycle: they nudge the sea slider by one step,
   reading `min`/`max`/`step` off the input itself so the key and the slider
   cannot disagree about the size of a step. Keep the clamp there rather than
@@ -205,7 +210,8 @@ Verify with:
   Press `p` a few times: the seed box should walk the phrase list and wrap,
   then keep typing in the seed box to check the letter keys stay out of the way.
   Press `c`, `h`, `d`, `w` and `k` too — each should move the dropdown or pin it
-  is named for, and `Shift` with any of them should back one step up. Walk off
+  is named for, and `Shift` with any of them should back one step up. `e` walks
+  the export size, which changes only the saved pixels. Walk off
   the right-hand edge with the arrows: the cursor should come back on the left.
   `[` and `]` should move the `sea` slider by one hundredth, and `x` should
   briefly read `Copied` on the button.

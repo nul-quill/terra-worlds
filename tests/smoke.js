@@ -390,6 +390,25 @@ core.grids.forEach(function (gr) {
 });
 assert(gridOk, 'every pinned column count renders at that width');
 
+// The export multipliers are the sixth shared list: the dropdown, the `e` key
+// and --scale all read core.scales, so each multiplier printed by the CLI must
+// enlarge a render by exactly that factor.
+var scaleList = require('child_process')
+  .execSync('node cli.js --scales', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var scaleNames = scaleList.map(function (line) { return line.split(/\s+/)[0]; });
+var coreScales = core.scales.map(function (sc) { return sc.key; });
+assert(scaleList.length === coreScales.length &&
+  scaleNames.join(',') === coreScales.join(','),
+  'cli --scales lists every export multiplier (' + scaleNames.length + ')');
+var scaleOk = true;
+core.scales.forEach(function (sc) {
+  var n = parseInt(sc.key, 10);
+  var small = core.generate({seed: 'pale shelf', width: 20, height: 12});
+  var big = core.upscale(small, n);
+  if (big.width !== small.width * n || big.height !== small.height * n) scaleOk = false;
+});
+assert(scaleOk, 'every export multiplier upscales by that factor');
+
 // And the same for the light bearings: the dropdown, the `d` key and the shade
 // pass all read core.lights, so a key printed by the CLI must be one the
 // generator accepts, with the same note the dropdown implies.

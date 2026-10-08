@@ -194,6 +194,19 @@
     inputs.gridSize.appendChild(frag);
   }
 
+  // The export multipliers come from the core as well, so the sizes a link can
+  // name are the sizes `cli --scales` prints.
+  function fillScales() {
+    var frag = document.createDocumentFragment();
+    TerraCore.scales.forEach(function (sc) {
+      var opt = document.createElement('option');
+      opt.value = sc.key;
+      opt.textContent = sc.label;
+      frag.appendChild(opt);
+    });
+    inputs.scale.appendChild(frag);
+  }
+
   function readOptions() {
     return {
       seed: inputs.seed.value || 'terra',
@@ -982,6 +995,7 @@
   fillChannels();
   fillLights();
   fillGrids();
+  fillScales();
   inputs.seed.value = PRESETS[0];
   inputs.seaLevel.value = '0.48';
   inputs.detail.value = '0.35';
@@ -1195,6 +1209,18 @@
       var wi = widths.indexOf(inputs.gridSize.value);
       var wdir = ev.shiftKey ? -1 : 1;
       inputs.gridSize.value = widths[((wi + wdir) % widths.length + widths.length) % widths.length];
+      render();
+      return;
+    }
+    // 'e' walks the export multiplier: the fourth of these lists is the only
+    // one that changes the saved file and not the world, so it is the safest
+    // key to press while comparing two sizes of the same seed.
+    if (!typingLetter && /^(e|E)$/.test(ev.key)) {
+      ev.preventDefault();
+      var sizes = TerraCore.scales.map(function (sc) { return sc.key; });
+      var ei = sizes.indexOf(inputs.scale.value);
+      var edir = ev.shiftKey ? -1 : 1;
+      inputs.scale.value = sizes[((ei + edir) % sizes.length + sizes.length) % sizes.length];
       render();
       return;
     }

@@ -896,6 +896,17 @@
     {key: '480', label: '480 col', note: 'fine grain, most coastline'}
   ];
 
+  // Nearest-neighbour multipliers the export offers. The grid stays the same
+  // size — only the saved pixels grow — so the list is about how big a file a
+  // world should become. The dropdown, the `e` key, `cli --scales` and the
+  // --scale flag all read this one list.
+  var SCALES = [
+    {key: '2', label: '2x', note: 'smallest file, still crisp'},
+    {key: '3', label: '3x', note: 'the default, fits a laptop screen'},
+    {key: '4', label: '4x', note: 'one cell per small window'},
+    {key: '6', label: '6x', note: 'wallpaper sized'}
+  ];
+
   // Which stored field an overlay reads. One lookup so the renderer and the
   // hover readout cannot drift to different columns of the same result.
   function fieldFor(key, result) {
@@ -1081,6 +1092,7 @@
     phrases: PHRASES,
     lights: LIGHTS,
     grids: GRIDS,
+    scales: SCALES,
     biomeNames: BIOME_NAMES
   };
 })(typeof window !== 'undefined' ? window : globalThis);
