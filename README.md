@@ -21,6 +21,9 @@ default. `export` picks the nearest-neighbour multiplier used by Save PNG.
 Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
 Arrow keys walk the hovered cell, so the readout can be inspected without a
 pointer; they are ignored while a form field has the caret.
+`c` steps through the overlays and back to the biome map. The hover readout
+reports the cell's moisture as well as its height, which is what makes two cells
+at the same elevation land in different classes.
 The sidebar ends with a small relief histogram: how much of the grid sits at each
 elevation, bars below the shoreline drawn fainter, with a rule at the current sea
 level. Bins span the world's own height range rather than 0..1, so a flat craton

@@ -481,6 +481,11 @@
     } else if (!above && h < current.seaLevel - 0.14) {
       parts.push('off-shelf');
     }
+    // Moisture is the other axis of the biome lookup, so printing it explains
+    // why two cells at the same height land in different classes.
+    if (current.moisture) {
+      parts.push('moist ' + Math.round(current.moisture[i] * 100));
+    }
     // Distance to the nearest shoreline, so a green patch in the middle of a
     // continent reads differently from the same colour on a coast.
     // Only worth printing inland: a water cell is by definition at the shore,
@@ -614,6 +619,16 @@
         inputs.palette.value = names[idx];
         render();
       }
+      return;
+    }
+    // 'c' steps through the overlays, which is the quickest way to compare a
+    // handful of scalar fields on the same seed.
+    if (ev.key === 'c' || ev.key === 'C') {
+      ev.preventDefault();
+      var order = ['', 'relief', 'moist', 'drain', 'coast'];
+      var at = order.indexOf(inputs.channel.value);
+      inputs.channel.value = order[(at + 1) % order.length];
+      render();
       return;
     }
     if ((ev.key === ' ' || ev.key === 'r') && document.activeElement !== inputs.seed) {
