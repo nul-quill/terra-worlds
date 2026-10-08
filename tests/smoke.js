@@ -1,4 +1,3 @@
-  // The ice share is a fraction of the grid, so a smaller world on the same
 /* Headless smoke test for TerraCore: node tests/smoke.js */
 'use strict';
 
@@ -182,6 +181,19 @@ core.lights.forEach(function (lt) {
 assert(Object.keys(litSums).length === core.lights.length,
   'every bearing is a distinct light vector (' + Object.keys(litSums).length + ')');
 
+// Each bearing carries its own normalised vector, since the shade pass mixes
+// it straight into a height without renormalising. A long vector would wash
+// the relief out and a short one would flatten it, so check the length here
+// rather than letting a hand-edited triple drift.
+var worstLen = 0;
+core.lights.forEach(function (lt) {
+  var v = lt.vec;
+  var len = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+  worstLen = Math.max(worstLen, Math.abs(len - 1));
+});
+assert(worstLen < 0.01,
+  'every light vector is a unit vector (worst drift ' + worstLen.toFixed(4) + ')');
+
 // Hypsometric contours behave like the other shading knobs: more pixels move,
 // no biome boundary does.
 var lined = core.generate({ seed: 'craton step', width: 160, height: 100, contour: true });
@@ -355,6 +367,21 @@ var saidLakes = parseInt(/(\d+) lakes?/.exec(saidText)[1], 10);
 assert(saidLand === Math.round(saidRec.stats.land * 100) &&
   saidLakes === saidRec.stats.lakeBasins,
   'summary numbers match the stats (' + saidLand + '%, ' + saidLakes + ' lakes)');
+
+// The relief word and the number in brackets are two views of one difference,
+// so they must agree: the word is a bucket of the number, and the number is
+// the relief in stats. A sentence that says `plain (88)` would be a bug in the
+// bucket list rather than in the field, which is why both come from `s`.
+core.shapes.forEach(function (rw) {
+  var rWorld = core.generate({seed: 'red ridge', shape: rw.key, width: 140, height: 90});
+  var rText = core.describe(rWorld);
+  var rMatch = /(rugged|rolling|plain) \((\d+)\)/.exec(rText);
+  var rNum = parseInt(rMatch[2], 10);
+  var rWant = rNum > 70 ? 'rugged' : rNum > 40 ? 'rolling' : 'plain';
+  assert(rMatch[1] === rWant &&
+    rNum === Math.round((rWorld.stats.max - rWorld.stats.min) * 100),
+    rw.key + ' relief word matches its number (' + rMatch[0] + ')');
+});
 
 // The legend prints one row per class with its share of the grid, so the
 // counts behind those rows have to add up: every cell is in exactly one class,

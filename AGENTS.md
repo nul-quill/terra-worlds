@@ -216,6 +216,9 @@ Conventions:
   `cli --lights` all read that one array. A bearing is shading only — the smoke
   suite checks all four keep the biome counts identical while the checksum of
   each differs from the others.
+  The smoke suite also checks each vector's length, since the shade pass mixes
+  it into a height without renormalising: a long one washes the relief out, a
+  short one flattens it.
   `core.grids` is the sixth: the column counts the grid dropdown pins, with the
   empty-key "auto" entry first so following the window stays the default. The
   `w` cycle, `cli --grids` and the smoke width loop read that array; every
