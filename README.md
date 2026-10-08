@@ -12,6 +12,9 @@ Several seeds can be rendered in one call — each writes its own file
 JSON record per world, which is what a script would consume.
 `--scale n` grows the saved pixels by nearest-neighbour without changing the
 grid the stats are computed from, so a small grid can still fill a screen.
+`--describe` prints only the one-line summary — the same sentence the sidebar
+shows — and skips the `.ppm` file, which is handy for a quick comparison of
+seeds.
 
 Every control is mirrored into the URL hash (`#seed=...&pal=sepia&sea=0.6&...`),
 so a finished world can be pasted into a chat and reopened identically. Loading a

@@ -25,6 +25,7 @@ function parseArgs(argv) {
     else if (a === '--channel') opts.channel = argv[++i];
     else if (a === '--scale') opts.scale = parseInt(argv[++i], 10);
     else if (a === '--out') opts.out = argv[++i];
+    else if (a === '--describe') opts.describe = true;
     else if (a === '--help' || a === '-h') opts.help = true;
     else if (a === '--json') opts.json = true;
     else opts.seeds.push(a);
@@ -59,6 +60,8 @@ if (opts.help) {
   console.log('       to one scalar field instead of the biome colours');
   console.log('       [--scale n] nearest-neighbour multiplier applied to the');
   console.log('       saved pixels, so a small grid can still fill a screen');
+  console.log('       [--describe] to print only the one-line summary and skip');
+  console.log('       the .ppm file entirely');
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
@@ -77,6 +80,12 @@ if (opts.help) {
     }
     // With several seeds the output name becomes a prefix, so nothing is
     // silently overwritten.
+    // --describe is the quick look: no file, just the sentence. The stats in
+    // the sentence come from the grid as generated, before any upscale.
+    if (opts.describe) {
+      console.log(core.describe(result));
+      return;
+    }
     var name = opts.seeds.length > 1
       ? opts.out.replace(/(\.ppm)?$/, '-' + (si + 1) + '.ppm')
       : opts.out;
