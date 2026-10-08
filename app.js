@@ -327,6 +327,7 @@
       ['relief', Math.round((s.max - s.min) * 100) + ' units'],
       ['biomes', String(biomeCount(s.counts))],
       ['contours', s.contourBands + ' land / ' + s.basinBands + ' basin'],
+      ['pixels', s.checksum],
       ['generate', s.ms + ' ms']
     ];
     // When an overlay is on, say which one: the legend below still lists the

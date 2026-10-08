@@ -111,6 +111,7 @@ function summarise(seed, result, name, asJson) {
     contourBands: s.contourBands, basinBands: s.basinBands,
     biomes: Object.keys(s.counts).length,
     summary: core.describe(result),
+    checksum: s.checksum,
     ms: s.ms, file: name
   };
   if (asJson) return JSON.stringify(rec);

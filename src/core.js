@@ -708,6 +708,9 @@
       contourBands: contourBands,
       basinBands: basinBands,
       ms: Date.now() - started,
+      // Eight hex digits over the rendered pixels, so two runs can be compared
+      // without walking the whole buffer from the outside.
+      checksum: checksum(data),
       counts: counts
     };
 
@@ -805,6 +808,22 @@
 
   function randomSeed() {
     return (Math.random() * 4294967295) >>> 0;
+  }
+
+  // FNV-1a over the rendered pixels, as eight hex digits. Two runs of the same
+  // seed must agree here even when their timings differ, so this is the
+  // shortest way to tell "identical world" from "close enough".
+  function checksum(d) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < d.length; i++) {
+      h ^= d[i];
+      // Shift-add form of the FNV prime: the plain product passes 2^53 and
+      // would lose precision in a double, so the multiply stays in 32 bits.
+      h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+    }
+    var hex = h.toString(16);
+    while (hex.length < 8) hex = '0' + hex;
+    return hex;
   }
 
   // One line that puts a world into words: the shape it was cut from, how much

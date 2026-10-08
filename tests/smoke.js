@@ -224,6 +224,14 @@ assert(said === core.describe(core.generate({ seed: 'aurora basin', width: 200, 
   /land/.test(said) && said.length > 20,
   'summary sentence is stable (' + said + ')');
 
+// The checksum is the short form of "identical pixels": it must match for a
+// repeat of the same seed and differ for another one, without anyone having
+// to compare the RGBA buffer by hand.
+assert(/^[0-9a-f]{8}$/.test(a.stats.checksum) &&
+  a.stats.checksum === b.stats.checksum &&
+  a.stats.checksum !== c.stats.checksum,
+  'pixel checksum identifies a world (' + a.stats.checksum + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

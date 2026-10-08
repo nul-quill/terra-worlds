@@ -50,6 +50,10 @@ Conventions:
   into `generate`: an overlay must not change the biome map. Stretch each field by
   its own 2%/98% percentiles, and keep the log transform on `drain` and `coast` —
   both are heavy-tailed and a linear ramp collapses them into one colour.
+- `stats.checksum` is FNV-1a over the rendered RGBA buffer, as eight hex digits.
+  It is the cheap equality test for determinism: same seed + same grid must give
+  the same digits, while `stats.ms` is allowed to wander. Keep the multiply in the
+  shift-add form so it stays inside 32 bits.
 
 Verify with:
 
