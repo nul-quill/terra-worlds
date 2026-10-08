@@ -2,3 +2,7 @@ env/
 __pycache__/
 *.pyc
 .DS_Store
+# Render fixtures are written by the smoke suite and the CLI on every run, so
+# they are always regenerable from a seed and never worth a diff.
+*.ppm
+/*.png

@@ -17,6 +17,9 @@ Conventions:
   without a transpiler. No dependencies, no CDN assets.
 - Keep generation deterministic: everything derives from the seed hash, so the
   same seed must produce byte-identical pixels at any canvas size.
+- Render fixtures (`*.ppm`, the root `*.png`) are written by the smoke suite and
+  the CLI on every run, so they are git-ignored: a seed is the artifact, the
+  dumped pixels are not. Do not commit them to keep a diff small.
 - River density is a quantile of the flow-accumulation field, not an absolute
   cell count. That is what keeps density stable across grid sizes, shapes and
   terracing. Do not replace it with a fixed threshold.
