@@ -40,6 +40,10 @@ Conventions:
   does not turn into stripes. Keep it derived, not a fixed constant.
   The water gets its own count from the depth range (`basinBands`, clamped 3..12)
   drawn by the same `contour` switch. Both stay derived, never constants.
+  `stats.median` is the middle of the sorted height field, published for the
+  same reason: min/max alone cannot tell a plateau from a peaked plain. It is
+  grid-size dependent like the band counts, so any assertion comparing it with
+  the CLI record must generate the same grid in both places.
 - Shading-only knobs (`hillshade`, `lightDir`, `dither`) must never move a biome
     boundary: classification happens before the colour pass. The smoke suite
     asserts that, so keep it that way. `contour` (hypsometric lines) belongs to

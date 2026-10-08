@@ -284,6 +284,23 @@ assert(jsonPairs.length === jsonLine.biomes && jsonTotal >= 96 && jsonTotal <= 1
   'cli class shares match the biome count (' + jsonPairs.length + ' classes, ' +
   jsonTotal + '%)');
 
+// The median must sit inside the world's own range and really split the grid
+// in half, which is the whole point of publishing it: the relief range on its
+// own cannot tell a plateau from a plain with one peak. Same world as the
+// record above, so the two numbers are comparable.
+var medWorld = core.generate({seed: 'salt mirror', width: 120, height: 80});
+var med = medWorld.stats.median;
+var belowCount = 0;
+for (var mi = 0; mi < medWorld.heightField.length; mi++) {
+  if (medWorld.heightField[mi] <= med) belowCount++;
+}
+var belowShare = belowCount / medWorld.stats.pixels;
+assert(med >= medWorld.stats.min && med <= medWorld.stats.max &&
+  belowShare > 0.4 && belowShare < 0.6 &&
+  Math.abs(med - jsonLine.median) < 0.002,
+  'median splits the grid and matches the cli (' + Math.round(med * 100) +
+  ' units, ' + Math.round(belowShare * 100) + '% below)');
+
 // The basin count must agree with the lake cover it summarises: at least one
 // basin when there is standing water, never more basins than lake cells, and
 // none at all when the whole grid is open water.

@@ -154,6 +154,7 @@ function summarise(seed, result, name, asJson) {
     width: result.width, height: result.height,
     land: Math.round(s.land * 1000) / 1000,
     water: Math.round(s.water * 1000) / 1000,
+    median: Math.round(s.median * 1000) / 1000,
     lake: Math.round((s.counts.lake || 0) / s.pixels * 1000) / 1000,
     ice: Math.round(s.ice * 1000) / 1000,
     rivers: s.rivers,

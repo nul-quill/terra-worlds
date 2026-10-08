@@ -339,6 +339,15 @@
       else if (hf[i] > maxH) maxH = hf[i];
     }
 
+    // Middle of the height field. Two worlds can share a range and still look
+    // nothing alike — one is a broad plateau with a trench, the other a plain
+    // with a single peak — and the median is what separates them. Sorted on a
+    // copy so the field itself keeps its row-major order for the sweeps.
+    var heights = new Float32Array(n);
+    for (i = 0; i < n; i++) heights[i] = hf[i];
+    heights.sort();
+    var medianH = heights[n >> 1];
+
     // How many hypsometric bands the relief can carry. Counted above the
     // shoreline, because that is the span the lines are drawn across: a low
     // world gets a handful of wide steps, a jagged one gets more.
@@ -721,6 +730,10 @@
       // without sampling the buffer from the outside.
       min: minH,
       max: maxH,
+      // Middle of the same range: half the grid sits below this. Says whether
+      // a world is mostly high ground with a trench or mostly plain with a
+      // peak, which min and max alone cannot tell apart.
+      median: medianH,
       // How many hypsometric bands the current relief can carry, so the CLI
       // and the tests can see the spacing without duplicating the formula.
       contourBands: contourBands,

@@ -82,6 +82,10 @@ still fills the chart. Hovering a bin dims the rest and prints that bin's elevat
 range and cell count inside the chart. It redraws with every slider move.
 The two corners of the chart carry the minimum and maximum elevation of this
 world, so the bars have a scale without needing a second readout.
+Between them the chart marks the median height — half the grid sits below that
+mark — which is what separates a broad plateau with a trench from a plain with
+a single peak, even when both worlds report the same relief range. The same
+number appears as the `median` row in the stats list and in the CLI record.
 Bin count follows the width of the chart, so a narrow sidebar does not turn into
 mush. Hovering the map also highlights the bin that the hovered cell falls in,
 which ties a colour on the map back to its place in the elevation spread; moving

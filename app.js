@@ -475,6 +475,9 @@
       ['ice', percentText(s.ice)],
       ['river cells', String(s.rivers)],
       ['relief', Math.round((s.max - s.min) * 100) + ' units'],
+      // Half the grid sits below this height, which is what separates a broad
+      // plateau from a plain with one peak when both share a relief range.
+      ['median', Math.round(s.median * 100) + ' units'],
       ['biomes', String(biomeCount(s.counts))],
       ['contours', s.contourBands + ' land / ' + s.basinBands + ' basin'],
       ['pixels', s.checksum],
@@ -624,6 +627,17 @@
     var hiLabel = String(Math.round((lo + span) * 100));
     hc.fillText(loLabel, pad, h - 1);
     hc.fillText(hiLabel, w - pad - hc.measureText(hiLabel).width, h - 1);
+    // The median gets a taller mark than the decade ticks: it is the one
+    // number that says where most of the grid actually sits, so it is worth
+    // seeing against the bars without reading the stats list.
+    var medX = ((result.stats.median - lo) / span) * w;
+    if (medX >= 0 && medX <= w) {
+      hc.strokeStyle = 'rgba(30,38,44,0.7)';
+      hc.beginPath();
+      hc.moveTo(Math.round(medX) + 0.5, h - 12);
+      hc.lineTo(Math.round(medX) + 0.5, h - 5);
+      hc.stroke();
+    }
     // A hovered bin gets its elevation range and cell count written into the
     // chart itself, which keeps the sidebar from reflowing on every move.
     if (only >= 0) {
