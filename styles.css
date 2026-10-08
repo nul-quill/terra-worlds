@@ -217,6 +217,10 @@ button:last-child {
 .legend li:hover,
 .legend li:focus { background: rgba(47, 125, 106, 0.10); outline: none; }
 
+/* A clicked row stays marked so the pinned class is visible after the pointer
+  has moved back onto the map. */
+.legend li.on { box-shadow: inset 0 0 0 1px var(--accent); }
+
 .legend .sw {
   width: 12px;
   height: 12px;

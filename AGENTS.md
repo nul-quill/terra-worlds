@@ -63,6 +63,10 @@ Conventions:
   `@media` blocks: `print` (hides the chrome, one column) and
   `prefers-color-scheme: dark` (only the CSS variables change). Both are checked
   with `page.emulateMedia()` followed by a reload.
+- Legend isolation lives in `drawMap()`: `solo` follows the pointer/focus,
+  `pinned` is the click selection and survives a reroll. Both blend non-matching
+  cells toward the palette sky in that one loop — do not add a second blend
+  path, or hover and click will disagree about the result.
 - `cli.js --palettes` lists the palette keys from `core.palettes`, so a name
   copied from the terminal is always valid for `--palette`. The smoke suite
   compares that listing against `Object.keys(core.palettes)` — keep both in step.

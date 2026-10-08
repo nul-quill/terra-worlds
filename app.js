@@ -88,6 +88,12 @@
   var offCtx = off.getContext('2d');
   var current = null;
   var hover = { x: -1, y: -1 };
+  // Which biome is currently isolated: `solo` follows the pointer over the
+  // legend, `pinned` survives it and is set by clicking a row. Either one is
+  // enough to fade the rest of the map, which is what lets a selection be
+  // studied after the pointer has moved on to the canvas.
+  var solo = null;
+  var pinned = null;
 
   /* ---- defaults ---- */
 
@@ -198,7 +204,24 @@
     off.width = current.width;
     off.height = current.height;
     var img = offCtx.createImageData(current.width, current.height);
-    img.data.set(current.data);
+    // A pinned legend class fades every other class toward the sky colour, so
+    // the map itself carries the selection. Done here rather than in a second
+    // function because every repaint — hover, resize, blur — goes through this
+    // one path, and the two must not disagree about what "clean" looks like.
+    var src = current.data;
+    var out = img.data;
+    // A hovered row wins over a pinned one, so hovering elsewhere in the list
+    // still previews while the click selection waits underneath it.
+    var want = solo || pinned;
+    var sky = want ? hexToRgb(current.palette.sky) : null;
+    var i;
+    for (i = 0; i < src.length; i += 4) {
+      var keep = !sky || current.biome[i >> 2] === want ? 1 : 0.35;
+      out[i] = src[i] * keep + (sky ? sky[0] * (1 - keep) : 0);
+      out[i + 1] = src[i + 1] * keep + (sky ? sky[1] * (1 - keep) : 0);
+      out[i + 2] = src[i + 2] * keep + (sky ? sky[2] * (1 - keep) : 0);
+      out[i + 3] = 255;
+    }
     offCtx.putImageData(img, 0, 0);
     ctx.imageSmoothingEnabled = false;
     ctx.fillStyle = current.palette.sky;
@@ -282,27 +305,11 @@
 
   // Repaint the map with one biome kept at full strength and the rest faded
   // toward the sky colour, so a legend row can show where that class sits.
+  // The blend lives in drawMap so a hovered selection and a clicked one cannot
+  // drift apart: this only records which class is wanted and repaints.
   function drawHighlighted(key) {
-    if (!current) return;
-    var w = current.width, h = current.height;
-    var src = current.data;
-    var img = offCtx.createImageData(w, h);
-    var out = img.data;
-    var sky = hexToRgb(current.palette.sky);
-    for (var i = 0, o = 0; i < current.biome.length; i++, o += 4) {
-      var keep = current.biome[i] === key ? 1 : 0.35;
-      out[o] = src[o] * keep + sky[0] * (1 - keep);
-      out[o + 1] = src[o + 1] * keep + sky[1] * (1 - keep);
-      out[o + 2] = src[o + 2] * keep + sky[2] * (1 - keep);
-      out[o + 3] = 255;
-    }
-    off.width = w;
-    off.height = h;
-    offCtx.putImageData(img, 0, 0);
-    ctx.imageSmoothingEnabled = false;
-    ctx.fillStyle = current.palette.sky;
-    ctx.fillRect(0, 0, view.width, view.height);
-    ctx.drawImage(off, 0, 0, view.width, view.height);
+    solo = key;
+    drawMap();
   }
 
   function hexToRgb(hex) {
@@ -375,14 +382,23 @@
         li.appendChild(sw); li.appendChild(label); li.appendChild(pct);
         // Hovering a row isolates that class on the map; leaving restores it.
         li.addEventListener('mouseenter', function () { drawHighlighted(key); });
-        li.addEventListener('mouseleave', function () { drawMap(); });
+        li.addEventListener('mouseleave', function () { solo = null; drawMap(); });
+        // Clicking keeps the choice after the pointer moves away, which is how
+        // to compare a class against the relief chart without holding the
+        // cursor on its row. Clicking the same row again releases it.
+        li.addEventListener('click', function () {
+          pinned = pinned === key ? null : key;
+          renderLegend(current);
+          drawMap();
+        });
+        if (pinned === key) li.className = 'on';
         // Same thing for a keyboard user tabbing through the list: focus takes
         // the place of the pointer, so the isolation trick works without a
         // mouse. The rows are only there to be read, so they are in the tab
         // order deliberately.
         li.tabIndex = 0;
         li.addEventListener('focus', function () { drawHighlighted(key); });
-        li.addEventListener('blur', function () { drawMap(); });
+        li.addEventListener('blur', function () { solo = null; drawMap(); });
         legendList.appendChild(li);
       });
   }
