@@ -65,6 +65,7 @@ if (opts.help) {
   console.log('lake      ' + Math.round((s.counts.lake || 0) / s.pixels * 100) + '%');
   console.log('ice       ' + Math.round(s.ice * 100) + '%');
   console.log('rivers    ' + s.rivers + ' cells');
+  console.log('relief    ' + Math.round((s.max - s.min) * 100) + ' units');
   console.log('biomes    ' + Object.keys(s.counts).length);
   console.log('time      ' + s.ms + ' ms');
   console.log('wrote     ' + opts.out);

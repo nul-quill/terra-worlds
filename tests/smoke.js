@@ -91,6 +91,18 @@ assert(coldBiomes(cold) > coldBiomes(warm),
 
 assert(core.hashString('a') !== core.hashString('b'), 'hash distinguishes seeds');
 
+// Stats must report the real extremes of the height field: the histogram bins
+// itself over that range, so a wrong min/max would squash the chart.
+var ranged = core.generate({ seed: 'aurora basin', width: 160, height: 100 });
+var loSeen = 1, hiSeen = 0;
+for (var ri = 0; ri < ranged.heightField.length; ri++) {
+  if (ranged.heightField[ri] < loSeen) loSeen = ranged.heightField[ri];
+  if (ranged.heightField[ri] > hiSeen) hiSeen = ranged.heightField[ri];
+}
+assert(Math.abs(ranged.stats.min - loSeen) < 1e-6 && Math.abs(ranged.stats.max - hiSeen) < 1e-6,
+  'stats report the height range (' + ranged.stats.min.toFixed(3) + '..' +
+  ranged.stats.max.toFixed(3) + ')');
+
 // Grain: turning the Bayer dither off must change the shading but never move
 // a biome boundary — the classification happens before the shading pass.
 var grained = core.generate({ seed: 'salt mirror', width: 160, height: 100 });

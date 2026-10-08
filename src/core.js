@@ -330,6 +330,15 @@
       }
     }
 
+    // Extremes of the finished height field: the colour pass and the stats
+    // both want the actual range, which is narrower than 0..1 after the
+    // shape curve and the detail term have done their work.
+    var minH = hf[0], maxH = hf[0];
+    for (i = 1; i < n; i++) {
+      if (hf[i] < minH) minH = hf[i];
+      else if (hf[i] > maxH) maxH = hf[i];
+    }
+
     /* ---- Drainage: flow accumulation over the height field. ---- */
 
     var sortArr = new Array(n);
@@ -632,6 +641,10 @@
       water: waterCells / n,
       rivers: riverCells,
       ice: iceCells / n,
+      // Extremes of the height field, so a world's relief range is readable
+      // without sampling the buffer from the outside.
+      min: minH,
+      max: maxH,
       ms: Date.now() - started,
       counts: counts
     };

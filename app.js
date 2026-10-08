@@ -284,6 +284,7 @@
       ['lake', Math.round((s.counts.lake || 0) / s.pixels * 100) + '%'],
       ['ice', Math.round(s.ice * 100) + '%'],
       ['river cells', String(s.rivers)],
+      ['relief', Math.round((s.max - s.min) * 100) + ' units'],
       ['generate', s.ms + ' ms']
     ];
     statsBox.textContent = '';
@@ -316,15 +317,21 @@
     var BINS = 48;
     var hist = new Array(BINS);
     var hf = result.heightField;
+    // Bins span the actual range of this world rather than 0..1, so a low
+    // relief craton still fills the chart instead of crowding the middle.
+    var lo = result.stats.min, hi = result.stats.max;
+    var span = Math.max(0.001, hi - lo);
     for (var i = 0; i < hf.length; i++) {
-      var b = Math.min(BINS - 1, Math.floor(hf[i] * BINS));
+      var b = Math.min(BINS - 1, Math.floor((hf[i] - lo) / span * BINS));
       hist[b] = (hist[b] || 0) + 1;
     }
     var peak = 0;
     for (i = 0; i < BINS; i++) if (hist[i] > peak) peak = hist[i];
     hc.clearRect(0, 0, w, h);
-    var bw = w / BINS;
-    var seaX = result.seaLevel * w;
+    var binW = w / BINS;
+    var seaX = ((result.seaLevel - lo) / span) * w;
+    if (seaX < 0) seaX = 0;
+    if (seaX > w) seaX = w;
     hc.fillStyle = result.palette.sky;
     hc.fillRect(0, 0, w, h);
     // Bars take the palette's own water and grass triples, so the little chart
@@ -333,9 +340,9 @@
     var dry = result.palette.colors.grass;
     for (i = 0; i < BINS; i++) {
       var bh = peak ? hist[i] / peak * (h - 6) : 0;
-      var c = (i + 0.5) / BINS < result.seaLevel ? wet : dry;
+      var c = lo + (i + 0.5) / BINS * span < result.seaLevel ? wet : dry;
       hc.fillStyle = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
-      hc.fillRect(Math.round(i * bw), Math.round(h - bh), Math.ceil(bw), Math.round(bh));
+      hc.fillRect(Math.round(i * binW), Math.round(h - bh), Math.ceil(binW), Math.round(bh));
     }
     hc.strokeStyle = 'rgba(30,38,44,0.7)';
     hc.lineWidth = 1;
