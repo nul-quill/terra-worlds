@@ -15,6 +15,8 @@ grid the stats are computed from, so a small grid can still fill a screen.
 `--describe` prints only the one-line summary — the same sentence the sidebar
 shows — and skips the `.ppm` file, which is handy for a quick comparison of
 seeds.
+`--palettes` lists the palette keys the `--palette` flag takes, with the label
+each one shows in the dropdown and the sky colour the chart is washed with.
 
 Every control is mirrored into the URL hash (`#seed=...&pal=sepia&sea=0.6&...`),
 so a finished world can be pasted into a chat and reopened identically. Loading a

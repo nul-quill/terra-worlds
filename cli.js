@@ -28,6 +28,7 @@ function parseArgs(argv) {
     else if (a === '--describe') opts.describe = true;
     else if (a === '--next') opts.next = parseInt(argv[++i], 10) || 5;
     else if (a === '--help' || a === '-h') opts.help = true;
+    else if (a === '--palettes') opts.palettes = true;
     else if (a === '--json') opts.json = true;
     else opts.seeds.push(a);
   }
@@ -66,10 +67,19 @@ if (opts.help) {
   console.log('       [--next n] with one seed to print that seed plus the n-1 seeds');
   console.log('       the Reroll button derives from it, one per line');
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
+  console.log('       [--palettes] to list the palette keys and their labels');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
   console.log('       JSON per world instead of the table');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
+} else if (opts.palettes) {
+  // One row per palette: the key that --palette takes, plus the label the
+  // dropdown shows and the sky triple the chart is washed with. Names only,
+  // so it is cheap to eyeball before choosing a scheme for a render.
+  Object.keys(core.palettes).forEach(function (name) {
+    var p = core.palettes[name];
+    console.log(name.padEnd(11) + p.label + '  sky ' + p.sky);
+  });
 } else {
   var fs = require('fs');
   // --next is the seed-chain dump: the first seed plus the n seeds derived

@@ -260,6 +260,16 @@ assert(cli.length === 5 && cli[0] === 'aurora basin' &&
   cli.slice(1).join(',') === walkA.join(','),
   'cli --next matches the button chain (' + cli[1] + ')');
 
+// The palette keys the CLI lists must be the ones the generator knows, so a
+// name copied from the terminal is guaranteed to be accepted by --palette.
+var listed = require('child_process')
+  .execSync('node cli.js --palettes', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var listedNames = listed.map(function (line) { return line.split(/\s+/)[0]; });
+var coreNames = Object.keys(core.palettes);
+assert(listed.length === coreNames.length &&
+  listedNames.join(',') === coreNames.join(','),
+  'cli --palettes lists every palette (' + listedNames.length + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

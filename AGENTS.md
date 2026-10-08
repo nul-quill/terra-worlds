@@ -63,6 +63,11 @@ Conventions:
   `@media` blocks: `print` (hides the chrome, one column) and
   `prefers-color-scheme: dark` (only the CSS variables change). Both are checked
   with `page.emulateMedia()` followed by a reload.
+- `cli.js --palettes` lists the palette keys from `core.palettes`, so a name
+  copied from the terminal is always valid for `--palette`. The smoke suite
+  compares that listing against `Object.keys(core.palettes)` — keep both in step.
+  The sea-level rule in the relief chart also prints its value; set the chart
+  font before `measureText` so the flip-to-fit test is accurate.
 
 Verify with:
 
