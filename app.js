@@ -323,6 +323,15 @@
       Math.round(c[2]) + ',' + alpha + ')';
   }
 
+  // Share of the grid a class covers. Whole numbers are fine above ten
+  // percent; below that a rounded value collapses a lot of rows onto "0%" or
+  // "1%" and the ordering the list is sorted by stops being visible, so the
+  // small end keeps one decimal.
+  function shareText(count, pixels) {
+    var pct = count / pixels * 100;
+    return (pct >= 10 ? Math.round(pct) : pct.toFixed(1)) + '%';
+  }
+
   // How many classes actually occur on this map. The legend only lists those,
   // so the count has to be taken from the occupancy map rather than the
   // fixed list of fourteen names.
@@ -351,7 +360,7 @@
         label.textContent = TerraCore.biomeNames[key] || key;
         var pct = document.createElement('span');
         pct.className = 'pct';
-        pct.textContent = Math.round(counts[key] / result.stats.pixels * 100) + '%';
+        pct.textContent = shareText(counts[key], result.stats.pixels);
         li.appendChild(sw); li.appendChild(label); li.appendChild(pct);
         // Hovering a row isolates that class on the map; leaving restores it.
         li.addEventListener('mouseenter', function () { drawHighlighted(key); });
@@ -381,7 +390,7 @@
       ['grid', result.width + ' x ' + result.height],
       ['land', Math.round(s.land * 100) + '%'],
       ['water', Math.round(s.water * 100) + '%'],
-      ['lake', Math.round((s.counts.lake || 0) / s.pixels * 100) + '%'],
+      ['lake', shareText(s.counts.lake || 0, s.pixels)],
       ['ice', Math.round(s.ice * 100) + '%'],
       ['river cells', String(s.rivers)],
       ['relief', Math.round((s.max - s.min) * 100) + ' units'],
