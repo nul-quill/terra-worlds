@@ -53,10 +53,12 @@ Pipeline, all on the CPU:
    boundary. `from` picks the compass bearing of the light (NW / NE / SW / SE), which
    is also shading-only. Hovering a legend row isolates that class on the map.
    The `lines` checkbox adds hypsometric contours: a thin darker rule every
-   1/14 of the relief above sea level, so the terraces and ridgelines read at a
-   glance. Spacing is measured from the shoreline, so the lines stay even however
-   far the `sea` slider floods the map. Like the other shading knobs it never
-   moves a biome boundary.
+   fraction of the relief above sea level, so the terraces and ridgelines read at
+   a glance. The number of bands is derived from the world's own relief — between
+   6 and 20 — so a flat craton does not turn into stripes while a jagged spill
+   still shows steps. Spacing is measured from the shoreline, so the lines stay
+   even however far the `sea` slider floods the map. Like the other shading knobs
+   it never moves a biome boundary.
 
 The noise lattice counts are integers and every octave doubles them, so the field
 tiles seamlessly on both axes — pan or tile the map with no visible seam.

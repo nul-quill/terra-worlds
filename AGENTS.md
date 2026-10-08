@@ -29,6 +29,9 @@ Conventions:
   accumulation continues downstream instead of dying at the shore.
 - The trunk/tributary split is a second quantile of the SAME accumulation field
   (`majorCut`), never a separate threshold. `riverMask` holds 1 or 2.
+- Hypsometric band count is derived from the relief above the shoreline
+  (`contourBands`, clamped 6..20) and published in `stats`, so a flat craton
+  does not turn into stripes. Keep it derived, not a fixed constant.
 - Shading-only knobs (`hillshade`, `lightDir`, `dither`) must never move a biome
     boundary: classification happens before the colour pass. The smoke suite
     asserts that, so keep it that way. `contour` (hypsometric lines) belongs to

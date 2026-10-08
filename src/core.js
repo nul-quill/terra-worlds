@@ -339,6 +339,12 @@
       else if (hf[i] > maxH) maxH = hf[i];
     }
 
+    // How many hypsometric bands the relief can carry. Counted above the
+    // shoreline, because that is the span the lines are drawn across: a low
+    // world gets a handful of wide steps, a jagged one gets more.
+    var reliefAboveSea = Math.max(0.001, maxH - seaLevel);
+    var contourBands = Math.max(6, Math.min(20, Math.round(reliefAboveSea * 26)));
+
     /* ---- Drainage: flow accumulation over the height field. ---- */
 
     var sortArr = new Array(n);
@@ -595,9 +601,14 @@
         // line above sea level, which makes the relief legible without a
         // gradient ramp. Measuring from the shoreline keeps the spacing even
         // when the sea slider floods most of the map.
+        // The number of bands follows this world's own relief: a flat craton
+        // would turn into stripes under a fixed count, while a mountainous
+        // spill needs the extra lines to read at all. Measuring from the
+        // shoreline keeps the spacing even when the sea slider floods most
+        // of the map.
         if (contour && h >= seaLevel) {
           var above = (h - seaLevel) / Math.max(0.001, 1 - seaLevel);
-          var band = above * 14 - Math.floor(above * 14);
+          var band = above * contourBands - Math.floor(above * contourBands);
           if (band < 0.10) { r *= 0.88; g *= 0.88; b *= 0.88; }
         }
 
@@ -645,6 +656,9 @@
       // without sampling the buffer from the outside.
       min: minH,
       max: maxH,
+      // How many hypsometric bands the current relief can carry, so the CLI
+      // and the tests can see the spacing without duplicating the formula.
+      contourBands: contourBands,
       ms: Date.now() - started,
       counts: counts
     };

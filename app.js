@@ -285,6 +285,7 @@
       ['ice', Math.round(s.ice * 100) + '%'],
       ['river cells', String(s.rivers)],
       ['relief', Math.round((s.max - s.min) * 100) + ' units'],
+      ['contours', s.contourBands + ' bands'],
       ['generate', s.ms + ' ms']
     ];
     statsBox.textContent = '';

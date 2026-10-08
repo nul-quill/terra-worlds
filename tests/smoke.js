@@ -145,6 +145,15 @@ for (var cj = 0; cj < lined.biome.length; cj++) {
 assert(lineDiff > 0 && lineBiome === 0,
   'contour lines change shading only (' + lineDiff + ' pixels, ' + lineBiome + ' biome moves)');
 
+// Band count must track the relief: a flooded world (high sea, so little land
+// above the shoreline) gets fewer bands than a fully exposed one.
+var flooded = core.generate({ seed: 'red ridge', width: 160, height: 100, seaLevel: 0.8 });
+var dryWorld = core.generate({ seed: 'red ridge', width: 160, height: 100, seaLevel: 0.2 });
+assert(flooded.stats.contourBands >= 6 && flooded.stats.contourBands <= 20 &&
+  dryWorld.stats.contourBands >= flooded.stats.contourBands,
+  'contour bands follow the relief (' + flooded.stats.contourBands + ' flooded, ' +
+  dryWorld.stats.contourBands + ' dry)');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
