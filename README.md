@@ -18,6 +18,12 @@ so a finished world can be pasted into a chat and reopened identically. Loading 
 hash fills the controls before the first render; anything absent falls back to the
 default. `export` picks the nearest-neighbour multiplier used by Save PNG.
 `Copy link` puts that URL on the clipboard.
+`grid` pins the column count instead of deriving it from the window width, so the
+same seed produces the same number of cells on a phone and on a wide monitor. The
+row count keeps the canvas aspect, which is what makes the cells square. Because
+the river cut is a quantile of the accumulation field, the share of the grid that
+carries a channel barely moves when only the size changes — the smoke suite checks
+that.
 Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
 Arrow keys walk the hovered cell, so the readout can be inspected without a
 pointer; they are ignored while a form field has the caret.

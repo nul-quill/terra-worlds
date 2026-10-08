@@ -14,6 +14,7 @@
     palette: document.getElementById('palette'),
     shape: document.getElementById('shape'),
     scale: document.getElementById('scale'),
+    gridSize: document.getElementById('gridSize'),
     seaLevel: document.getElementById('seaLevel'),
     detail: document.getElementById('detail'),
     polar: document.getElementById('polar'),
@@ -36,7 +37,7 @@
     seed: 'seed', palette: 'pal', shape: 'shape', seaLevel: 'sea',
     detail: 'det', polar: 'cli', terraces: 'stp', hillshade: 'lit',
     rivers: 'riv', scale: 's', dither: 'gr', lightDir: 'dir'
-    , contour: 'ln', channel: 'ch'
+    , contour: 'ln', channel: 'ch', gridSize: 'g'
   };
 
   function readHash() {
@@ -106,6 +107,7 @@
       seed: inputs.seed.value || 'terra',
       palette: inputs.palette.value,
       shape: inputs.shape.value,
+      gridSize: parseInt(inputs.gridSize.value, 10) || 0,
       seaLevel: parseFloat(inputs.seaLevel.value),
       detail: parseFloat(inputs.detail.value),
       polar: parseFloat(inputs.polar.value),
@@ -130,6 +132,13 @@
     // Native grid: keep cells chunky so the pixel look survives upscaling.
     var cols = Math.max(120, Math.round(rect.width / 3));
     var rows = Math.max(80, Math.round(rect.height / 3));
+    // A chosen grid size pins the column count, so the same seed gives the same
+    // cell count in a narrow window and on a wide one. Rows keep the aspect of
+    // the canvas, which is what makes the cells square rather than stretched.
+    if (opts.gridSize) {
+      cols = opts.gridSize;
+      rows = Math.max(40, Math.round(cols * rect.height / Math.max(1, rect.width)));
+    }
 
     var result = TerraCore.generate({
       seed: opts.seed, palette: opts.palette, shape: opts.shape,

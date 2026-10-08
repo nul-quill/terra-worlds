@@ -205,6 +205,17 @@ assert(spread.biome.length === spread.width * spread.height &&
   spread.accumulation.length === spread.biome.length,
   'scalar fields are exported at grid size');
 
+// A pinned grid must behave like the auto one: because the river cut is a
+// quantile of the accumulation field, the share of the grid carrying a channel
+// should stay in the same band when only the size changes.
+var smallGrid = core.generate({ seed: 'aurora basin', width: 120, height: 80, rivers: 120 });
+var bigGrid = core.generate({ seed: 'aurora basin', width: 480, height: 320, rivers: 120 });
+var smallShare = smallGrid.stats.rivers / smallGrid.stats.pixels;
+var bigShare = bigGrid.stats.rivers / bigGrid.stats.pixels;
+assert(Math.abs(smallShare - bigShare) < 0.04,
+  'river density holds across grid sizes (' + (smallShare * 100).toFixed(1) + '% vs ' +
+  (bigShare * 100).toFixed(1) + '%)');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
