@@ -459,7 +459,9 @@
     var wet = result.palette.colors.shallow;
     var dry = result.palette.colors.grass;
     for (i = 0; i < BINS; i++) {
-      var bh = peak ? hist[i] / peak * (h - 6) : 0;
+      // Leave a strip along the bottom for the two corner labels, so the
+      // tallest bar never sits on top of the numbers.
+      var bh = peak ? hist[i] / peak * (h - 12) : 0;
       var c = lo + (i + 0.5) / BINS * span < result.seaLevel ? wet : dry;
       var keep = only < 0 || i === only ? 1 : 0.45;
       hc.fillStyle = 'rgb(' +
@@ -474,6 +476,16 @@
     hc.moveTo(Math.round(seaX) + 0.5, 0);
     hc.lineTo(Math.round(seaX) + 0.5, h);
     hc.stroke();
+    // Corner labels give the chart a scale: without them the shape of the
+    // spread is readable but the numbers are not. Drawn before the hovered-bin
+    // label so a hover can cover them when space is tight.
+    hc.font = '9px system-ui, sans-serif';
+    var pad = 3;
+    hc.fillStyle = 'rgba(30,38,44,0.55)';
+    var loLabel = String(Math.round(lo * 100));
+    var hiLabel = String(Math.round((lo + span) * 100));
+    hc.fillText(loLabel, pad, h - 1);
+    hc.fillText(hiLabel, w - pad - hc.measureText(hiLabel).width, h - 1);
     // A hovered bin gets its elevation range and cell count written into the
     // chart itself, which keeps the sidebar from reflowing on every move.
     if (only >= 0) {
@@ -482,7 +494,6 @@
       var label = Math.round(from * 100) + '-' + Math.round(to * 100) +
         '  ' + (hist[only] || 0) + ' cells';
       hc.font = '10px system-ui, sans-serif';
-      var pad = 3;
       var tw = hc.measureText(label).width;
       hc.fillStyle = 'rgba(255,255,255,0.88)';
       hc.fillRect(pad - 1, 1, tw + 4, 13);
