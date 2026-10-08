@@ -181,7 +181,24 @@ assert(cdMin === 0 && cdMax > cdMin && cdBad === 0,
 // Overlays: every channel must be a real scalar rendering — some spread in
 // the output, opaque, and reproducible — without disturbing the fields the
 // readout depends on.
-['relief', 'moist', 'drain', 'coast'].forEach(function (name) {
+// Driven from the generator's own list, which is also what fills the dropdown
+// and what `c` cycles. The first entry is the plain biome map, so it is
+// skipped: it has no ramp to check.
+var overlayKeys = core.channels.map(function (ch) { return ch.key; })
+  .filter(function (k) { return k !== ''; });
+// Exactly one entry — the first — means "no overlay", and no key may repeat:
+// the dropdown and the `c` cycle both rely on that order.
+var seenKeys = {};
+var listOk = core.channels[0].key === '';
+core.channels.forEach(function (ch, ci) {
+  if (ci > 0 && !ch.key) listOk = false;
+  if (seenKeys[ch.key]) listOk = false;
+  seenKeys[ch.key] = 1;
+});
+assert(listOk && overlayKeys.length > 1,
+  'overlay list starts at the plain biome map (' +
+  core.channels.map(function (ch) { return ch.label; }).join(', ') + ')');
+overlayKeys.forEach(function (name) {
   var chan = core.channelize(spread, name);
   var loC = 255, hiC = 0, badAlpha = 0;
   for (var cpi = 0; cpi < chan.data.length; cpi += 4) {

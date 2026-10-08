@@ -84,13 +84,9 @@
     </label>
     <label class="field">
       <span>channel</span>
-      <select id="channel">
-        <option value="">biome</option>
-        <option value="relief">relief</option>
-        <option value="moist">moisture</option>
-        <option value="drain">drainage</option>
-        <option value="coast">coast dist</option>
-      </select>
+      <!-- Options come from TerraCore.channels, which is also the order the
+        `c` key cycles through. -->
+      <select id="channel"></select>
     </label>
     <label class="field check">
       <input id="dither" type="checkbox">

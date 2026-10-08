@@ -20,6 +20,10 @@ each one shows in the dropdown and the sky colour the chart is washed with.
 `--shapes` does the same for the shape keys. Both lists come from the generator
 (`TerraCore.palettes`, `TerraCore.shapes`), which is also what fills the two
 dropdowns — one source of truth for each.
+The overlay dropdown is built the same way from `TerraCore.channels`: the first
+entry is the plain biome map, and the rest are the scalar ramps that
+`--channel` takes. The `c` key walks that same array, so the dropdown, the
+shortcut and the CLI always agree.
 The stats record also carries a `classes` column: every class on this world's
 legend, biggest first, as `shallow=38% grass=22%` pairs. That is the same list
 the sidebar shows, so a saved `.ppm` can be described from its own record

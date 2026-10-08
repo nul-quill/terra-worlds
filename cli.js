@@ -74,6 +74,9 @@ if (opts.help) {
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
   console.log('       JSON per world instead of the table');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
+  console.log('channels: ' + core.channels.map(function (c) {
+    return c.key || 'biome';
+  }).join(', '));
 } else if (opts.palettes) {
   // One row per palette: the key that --palette takes, plus the label the
   // dropdown shows and the sky triple the chart is washed with. Names only,

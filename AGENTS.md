@@ -110,6 +110,10 @@ Conventions:
   `--shapes` does the same job for the shape curves from `core.shapes`, which is
   also what fills the shape dropdown. Add a curve in `core.js` only; the list,
   the dropdown and the CLI output all follow from that one array.
+  `core.channels` is the third of these lists: the overlay ramps, with the
+  empty-key entry first so "no overlay" is always the default selection. The
+  channel dropdown, the `c` cycle and the smoke overlay loop all read that one
+  array — add a ramp there, never in `app.js`.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
 

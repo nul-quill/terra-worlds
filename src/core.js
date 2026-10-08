@@ -846,6 +846,17 @@
     coast: ['beach', 'deep']
   };
 
+  // The overlays in the order the dropdown and the `c` key walk them. The
+  // first entry is the plain biome map, which is what an empty key means.
+  // Labels are the words the UI shows; the keys are what a URL hash stores.
+  var CHANNEL_LIST = [
+    {key: '', label: 'biome', note: 'the class lookup, no overlay'},
+    {key: 'relief', label: 'relief', note: 'height field at full contrast'},
+    {key: 'moist', label: 'moisture', note: 'wetness after the orographic pass'},
+    {key: 'drain', label: 'drainage', note: 'catchment size, log ramp'},
+    {key: 'coast', label: 'coast dist', note: 'steps to the nearest shore, log ramp'}
+  ];
+
   // Which stored field an overlay reads. One lookup so the renderer and the
   // hover readout cannot drift to different columns of the same result.
   function fieldFor(key, result) {
@@ -993,6 +1004,7 @@
     nextSeed: nextSeed,
     palettes: PALETTES,
     shapes: SHAPES,
+    channels: CHANNEL_LIST,
     biomeNames: BIOME_NAMES
   };
 })(typeof window !== 'undefined' ? window : globalThis);

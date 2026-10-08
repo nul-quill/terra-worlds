@@ -133,6 +133,19 @@
     inputs.shape.appendChild(frag);
   }
 
+  // Same for the overlays: the dropdown, the `c` cycle and the ramp in
+  // channelize() all walk this one list.
+  function fillChannels() {
+    var frag = document.createDocumentFragment();
+    TerraCore.channels.forEach(function (ch) {
+      var opt = document.createElement('option');
+      opt.value = ch.key;
+      opt.textContent = ch.label;
+      frag.appendChild(opt);
+    });
+    inputs.channel.appendChild(frag);
+  }
+
   function readOptions() {
     return {
       seed: inputs.seed.value || 'terra',
@@ -850,6 +863,7 @@
 
   fillPalettes();
   fillShapes();
+  fillChannels();
   inputs.seed.value = PRESETS[0];
   inputs.seaLevel.value = '0.48';
   inputs.detail.value = '0.35';
@@ -988,7 +1002,7 @@
     var typingLetter = ae2 && (ae2.tagName === 'INPUT' || ae2.tagName === 'SELECT');
     if (!typingLetter && (ev.key === 'c' || ev.key === 'C')) {
       ev.preventDefault();
-      var order = ['', 'relief', 'moist', 'drain', 'coast'];
+      var order = TerraCore.channels.map(function (ch) { return ch.key; });
       var at = order.indexOf(inputs.channel.value);
       inputs.channel.value = order[(at + 1) % order.length];
       render();
