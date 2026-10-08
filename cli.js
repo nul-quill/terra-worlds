@@ -6,7 +6,7 @@ require('./src/core.js');
 var core = globalThis.TerraCore;
 
 function parseArgs(argv) {
-  var opts = { seed: 'terra', width: 480, height: 300, out: 'world.ppm' };
+  var opts = { seeds: [], width: 480, height: 300, out: 'world.ppm' };
   for (var i = 0; i < argv.length; i++) {
     var a = argv[i];
     if (a === '--width') opts.width = parseInt(argv[++i], 10);
@@ -24,8 +24,10 @@ function parseArgs(argv) {
     else if (a === '--contour') opts.contour = true;
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--help' || a === '-h') opts.help = true;
-    else opts.seed = a;
+    else if (a === '--json') opts.json = true;
+    else opts.seeds.push(a);
   }
+  if (!opts.seeds.length) opts.seeds.push('terra');
   return opts;
 }
 
@@ -52,23 +54,50 @@ if (opts.help) {
   console.log('       [--contour] for hypsometric lines on land and bathymetric');
   console.log('       steps under water, both spaced by this world\'s relief');
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
+  console.log('       several seeds at once are fine: each gets its own file');
+  console.log('       (--out becomes a prefix), and [--json] prints one line of');
+  console.log('       JSON per world instead of the table');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
 } else {
-  var result = core.generate(opts);
   var fs = require('fs');
-  fs.writeFileSync(opts.out, toPpm(result), 'latin1');
+  opts.seeds.forEach(function (seed, si) {
+    var runOpts = {};
+    Object.keys(opts).forEach(function (k) { runOpts[k] = opts[k]; });
+    runOpts.seed = seed;
+    var result = core.generate(runOpts);
+    // With several seeds the output name becomes a prefix, so nothing is
+    // silently overwritten.
+    var name = opts.seeds.length > 1
+      ? opts.out.replace(/(\.ppm)?$/, '-' + (si + 1) + '.ppm')
+      : opts.out;
+    fs.writeFileSync(name, toPpm(result), 'latin1');
+    console.log(summarise(seed, result, name, opts.json));
+  });
+}
 
+// One world, one line of text. The JSON form is what scripts consume; the
+// table is what a person reads after a reroll.
+function summarise(seed, result, name, asJson) {
   var s = result.stats;
-  console.log('seed      ' + opts.seed);
-  console.log('grid      ' + result.width + ' x ' + result.height);
-  console.log('land      ' + Math.round(s.land * 100) + '%');
-  console.log('water     ' + Math.round(s.water * 100) + '%');
-  console.log('lake      ' + Math.round((s.counts.lake || 0) / s.pixels * 100) + '%');
-  console.log('ice       ' + Math.round(s.ice * 100) + '%');
-  console.log('rivers    ' + s.rivers + ' cells');
-  console.log('relief    ' + Math.round((s.max - s.min) * 100) + ' units');
-  console.log('bands     ' + s.contourBands + ' land / ' + s.basinBands + ' basin');
-  console.log('biomes    ' + Object.keys(s.counts).length);
-  console.log('time      ' + s.ms + ' ms');
-  console.log('wrote     ' + opts.out);
+  var rec = {
+    seed: seed,
+    width: result.width, height: result.height,
+    land: Math.round(s.land * 1000) / 1000,
+    water: Math.round(s.water * 1000) / 1000,
+    lake: Math.round((s.counts.lake || 0) / s.pixels * 1000) / 1000,
+    ice: Math.round(s.ice * 1000) / 1000,
+    rivers: s.rivers,
+    relief: Math.round((s.max - s.min) * 100),
+    contourBands: s.contourBands, basinBands: s.basinBands,
+    biomes: Object.keys(s.counts).length,
+    ms: s.ms, file: name
+  };
+  if (asJson) return JSON.stringify(rec);
+  var lines = [];
+  Object.keys(rec).forEach(function (k) {
+    var label = k;
+    while (label.length < 9) label += ' ';
+    lines.push(label + rec[k]);
+  });
+  return lines.join('\n');
 }
