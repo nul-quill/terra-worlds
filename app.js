@@ -691,6 +691,15 @@
     updateReadout(ev);
     drawHover();
   });
+  // Touch fires pointer events rather than mousemove, so the readout and the
+  // crosshair would never move on a phone. One handler covers both, and the
+  // mouse path is skipped when the pointer reports itself as a touch.
+  view.addEventListener('pointermove', function (ev) {
+    if (ev.pointerType === 'mouse') return;
+    setHoverFromEvent(ev);
+    updateReadout(ev);
+    drawHover();
+  });
 
   // The relief chart is small, so the readout for a bin is drawn inside the
   // chart rather than in the hud strip under the map.
@@ -745,12 +754,30 @@
     }
     // 'c' steps through the overlays, which is the quickest way to compare a
     // handful of scalar fields on the same seed.
-    if (ev.key === 'c' || ev.key === 'C') {
+    // Letters are shortcuts only when no text field owns the caret, so a seed
+    // phrase like "salt mirror" can still be typed.
+    var ae2 = document.activeElement;
+    var typingLetter = ae2 && (ae2.tagName === 'INPUT' || ae2.tagName === 'SELECT');
+    if (!typingLetter && (ev.key === 'c' || ev.key === 'C')) {
       ev.preventDefault();
       var order = ['', 'relief', 'moist', 'drain', 'coast'];
       var at = order.indexOf(inputs.channel.value);
       inputs.channel.value = order[(at + 1) % order.length];
       render();
+      return;
+    }
+    // The two checkboxes and the export are the only things left that a
+    // keyboard user has to reach for: one key each, no modifiers.
+    var toggle = { g: 'dither', l: 'contour' }[ev.key.toLowerCase()];
+    if (!typingLetter && toggle) {
+      ev.preventDefault();
+      inputs[toggle].checked = !inputs[toggle].checked;
+      render();
+      return;
+    }
+    if (!typingLetter && (ev.key === 's' || ev.key === 'S')) {
+      ev.preventDefault();
+      savePng();
       return;
     }
     if ((ev.key === ' ' || ev.key === 'r') && document.activeElement !== inputs.seed) {

@@ -238,7 +238,7 @@ assert(/^[0-9a-f]{8}$/.test(a.stats.checksum) &&
 // different world from the one before it.
 function chain(seed) {
   var out = [];
-  for (var s = seed, k = 0; k < 5; k++) { s = core.nextSeed(s); out.push(s); }
+  for (var s = seed, k = 0; k < 4; k++) { s = core.nextSeed(s); out.push(s); }
   return out;
 }
 var walkA = chain('aurora basin');
@@ -250,6 +250,15 @@ assert(walkA.join(',') === walkB.join(',') &&
 var chainWorld = core.generate({ seed: String(walkA[0]), width: 120, height: 80 });
 assert(/^[0-9a-f]{8}$/.test(chainWorld.stats.checksum),
   'a chained seed renders a world (' + chainWorld.stats.checksum + ')');
+
+// The CLI prints the same chain the button walks, so a phrase found in the
+// browser can be replayed from a terminal. Both go through nextSeed, which is
+// the only place the derivation is defined.
+var cli = require('child_process')
+  .execSync('node cli.js "aurora basin" --next 5', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+assert(cli.length === 5 && cli[0] === 'aurora basin' &&
+  cli.slice(1).join(',') === walkA.join(','),
+  'cli --next matches the button chain (' + cli[1] + ')');
 
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +

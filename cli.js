@@ -82,7 +82,21 @@ if (opts.help) {
       chainSeed = String(core.nextSeed(chainSeed));
       chain.push(chainSeed);
     }
-    console.log(chain.join('\n'));
+    // With --describe each seed also gets its one-line summary, which is how
+    // to pick a world out of a chain without opening the page.
+    if (opts.describe) {
+      console.log(chain.map(function (s) {
+        var r = core.generate({
+          seed: s, width: opts.width, height: opts.height, palette: opts.palette,
+          shape: opts.shape, seaLevel: opts.seaLevel, detail: opts.detail,
+          polar: opts.polar, terraces: opts.terraces, rivers: opts.rivers,
+          hillshade: opts.hillshade, lightDir: opts.lightDir
+        });
+        return s + '  ' + core.describe(r);
+      }).join('\n'));
+    } else {
+      console.log(chain.join('\n'));
+    }
     return;
   }
   opts.seeds.forEach(function (seed, si) {

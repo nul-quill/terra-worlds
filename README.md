@@ -32,6 +32,11 @@ Reroll is not random: the next seed is a hash of the current one, so a run of
 clicks from the same starting phrase walks the same sequence of worlds every
 time. `node cli.js "aurora basin" --next 6` prints that sequence, one seed per
 line, which is the quickest way back to a world found by clicking.
+Add `--describe` to that call and each seed also gets its summary line.
+`g` and `l` toggle grain and lines, `s` saves the PNG; the letters are ignored
+while the caret is in a text field, so a seed phrase can still be typed. The
+page follows the OS colour scheme, and a print stylesheet keeps the map plus
+legend and stats while dropping the controls.
 The stats list ends with a `pixels` row: eight hex digits of an FNV-1a hash over
 the rendered RGBA buffer. Same seed and same grid, same digits — so a change in
 the number means the world really changed, while a different `generate` time

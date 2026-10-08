@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Terra — procedural pixel worlds</title>
+<meta name="description" content="Deterministic procedural pixel-art worlds from a seed string. No build step, no dependencies.">
+<!-- Tiny inline globe: a couple of arcs on a sky disc, so the tab matches the
+  map without shipping a separate image file. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23dfe9ee'/%3E%3Cpath d='M4 18c5-4 9 2 13-2s7 1 11-2v12H4z' fill='%232f7d6a'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -126,7 +130,8 @@
     <p class="note">
       Same seed, same seed-phrase, same world on any machine. Everything is computed
       on the CPU from a hash of the seed string — no images, no fonts, no libraries.
-      Keys: Space rerolls, arrows walk a cell, 1-9 pick a palette, C cycles channels.
+      Keys: Space rerolls, arrows walk a cell, 1-9 pick a palette, C cycles
+      channels, G and L toggle grain and lines, S saves the PNG.
     </p>
   </aside>
 </main>

@@ -263,3 +263,38 @@ button:last-child {
   .stage { grid-template-columns: minmax(0, 1fr); }
   .canvasWrap { aspect-ratio: 8 / 5; }
 }
+
+/* Printing: the controls are chrome, the map and its numbers are the content.
+   The stage collapses to one column and the canvas keeps its pixelated look,
+   so a printed page looks like the saved PNG with a caption. */
+@media print {
+  :root { --bg: #fff; --panel: #fff; }
+  .top { padding: 0 0 8px; border: none; }
+  .controls { display: none; }
+  .stage { grid-template-columns: minmax(0, 1fr); padding: 0; gap: 10px; }
+  .canvasWrap { border: none; aspect-ratio: 8 / 5; }
+  .hud { background: none; }
+  .side { border: none; padding: 0; max-height: none; overflow: visible; }
+  #hist, .note { display: none; }
+}
+
+/* Dark scheme: only the four colour variables change, so every rule above
+   keeps working. The map itself brings its own sky colour, which is why the
+   canvas keeps a light border in both schemes. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14181b;
+    --panel: #1c2226;
+    --ink: #e7ecef;
+    --muted: #93a3ac;
+    --line: #2c353a;
+    --accent: #4fb39a;
+  }
+
+  .field input[type="text"],
+  .field select { background: #171d21; }
+
+  .hud { background: rgba(20, 24, 27, 0.88); color: var(--ink); }
+
+  button:last-child { background: transparent; }
+}
