@@ -379,7 +379,20 @@
 
   // Space rerolls from anywhere, unless the caret is in the seed box.
   document.addEventListener('keydown', function (ev) {
-    if (ev.key === ' ' && document.activeElement !== inputs.seed) {
+    if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    // Number keys pick the palette by position, so a look can be recalled
+    // without reaching for the select.
+    if (/^[1-9]$/.test(ev.key)) {
+      var names = Object.keys(TerraCore.palettes);
+      var idx = parseInt(ev.key, 10) - 1;
+      if (idx < names.length) {
+        ev.preventDefault();
+        inputs.palette.value = names[idx];
+        render();
+      }
+      return;
+    }
+    if ((ev.key === ' ' || ev.key === 'r') && document.activeElement !== inputs.seed) {
       ev.preventDefault();
       document.getElementById('reroll').click();
     }

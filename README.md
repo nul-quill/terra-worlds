@@ -13,6 +13,7 @@ so a finished world can be pasted into a chat and reopened identically. Loading 
 hash fills the controls before the first render; anything absent falls back to the
 default. `export` picks the nearest-neighbour multiplier used by Save PNG.
 `Copy link` puts that URL on the clipboard.
+Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
 
 ## What it does
 
