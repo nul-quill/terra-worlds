@@ -393,15 +393,44 @@
 
   function setHoverFromEvent(ev) {
     var rect = view.getBoundingClientRect();
-    hover.x = ev.clientX - rect.left;
-    hover.y = ev.clientY - rect.top;
+    // Stored in backing-store pixels: the crosshair is drawn in that space, so
+    // dividing by the cell size works at any device-pixel ratio.
+    hover.x = (ev.clientX - rect.left) * (view.width / Math.max(1, rect.width));
+    hover.y = (ev.clientY - rect.top) * (view.height / Math.max(1, rect.height));
+  }
+
+  // Keyboard equivalent: put the cursor on a grid cell by index, which is how
+  // the arrow keys walk the map. The readout is rebuilt from the same code the
+  // mouse uses, so both paths agree on what a cell says.
+  function hoverCell(px, py) {
+    if (!current) return;
+    px = Math.max(0, Math.min(current.width - 1, px));
+    py = Math.max(0, Math.min(current.height - 1, py));
+    hover.x = (px + 0.5) / current.width * view.width;
+    hover.y = (py + 0.5) / current.height * view.height;
+    updateReadout(px, py);
+    drawHover();
+  }
+
+  function currentCell() {
+    if (hover.x < 0 || !current) {
+      return [Math.floor(current ? current.width / 2 : 0),
+        Math.floor(current ? current.height / 2 : 0)];
+    }
+    var px = Math.floor(hover.x / Math.max(1, view.width) * current.width);
+    var py = Math.floor(hover.y / Math.max(1, view.height) * current.height);
+    return [px, py];
   }
 
   function updateReadout(ev) {
     if (!current) return;
-    var rect = view.getBoundingClientRect();
-    var px = Math.floor((ev.clientX - rect.left) / rect.width * current.width);
-    var py = Math.floor((ev.clientY - rect.top) / rect.height * current.height);
+    var px, py;
+    if (typeof ev === 'number') { px = ev; py = arguments[1]; }
+    else {
+      var rect = view.getBoundingClientRect();
+      px = Math.floor((ev.clientX - rect.left) / rect.width * current.width);
+      py = Math.floor((ev.clientY - rect.top) / rect.height * current.height);
+    }
     px = Math.max(0, Math.min(current.width - 1, px));
     py = Math.max(0, Math.min(current.height - 1, py));
     var i = py * current.width + px;
@@ -531,6 +560,20 @@
   // Space rerolls from anywhere, unless the caret is in the seed box.
   document.addEventListener('keydown', function (ev) {
     if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    // Arrows walk the hovered cell, so the readout is reachable without a
+    // pointer. The first press starts from the middle of the grid.
+    var step = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[ev.key];
+    if (step) {
+      // Only when a text field does not want the arrow for its own caret.
+      var ae = document.activeElement;
+      var typing = ae && (ae.tagName === 'INPUT' || ae.tagName === 'SELECT');
+      if (!typing) {
+        var cell = currentCell();
+        ev.preventDefault();
+        hoverCell(cell[0] + step[0], cell[1] + step[1]);
+      }
+      return;
+    }
     // Number keys pick the palette by position, so a look can be recalled
     // without reaching for the select.
     if (/^[1-9]$/.test(ev.key)) {
