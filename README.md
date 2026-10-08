@@ -25,6 +25,9 @@ dropdowns — one source of truth for each.
 `--phrases` is the fourth: the hand-picked seed phrases, numbered in the order
 the `p` key walks them. Every phrase in that list is also rendered by the smoke
 suite, so a suggestion copied from the terminal is never a dead one.
+`--lights` is the fifth: the four compass bearings the `--dir` flag takes, each
+with the side of the frame the light comes from. The `from` dropdown, the `d`
+key and the shade pass all read that same list.
 The overlay dropdown is built the same way from `TerraCore.channels`: the first
 entry is the plain biome map, and the rest are the scalar ramps that
 `--channel` takes. The `c` key walks that same array, so the dropdown, the

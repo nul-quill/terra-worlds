@@ -132,6 +132,21 @@ for (var dj = 0; dj < nw.biome.length; dj++) {
 assert(dirDiff > 0 && dirBiome === 0,
   'light bearing changes shading only (' + dirDiff + ' pixels, ' + dirBiome + ' biome moves)');
 
+// The light bearings are one list too: the dropdown, the `d` key and the shade
+// pass all read core.lights, so --lights has to agree with it.
+var lit = {};
+var litCounts = '';
+var litSums = {};
+core.lights.forEach(function (lt) {
+  lit[lt.key] = core.generate({seed: 'aurora basin', width: 60, height: 40, lightDir: lt.key});
+  var counts = JSON.stringify(lit[lt.key].stats.counts);
+  if (!litCounts) litCounts = counts;
+  assert(counts === litCounts, 'bearing ' + lt.key + ' shades without moving a biome');
+  litSums[lit[lt.key].stats.checksum] = 1;
+});
+assert(Object.keys(litSums).length === core.lights.length,
+  'every bearing is a distinct light vector (' + Object.keys(litSums).length + ')');
+
 // Hypsometric contours behave like the other shading knobs: more pixels move,
 // no biome boundary does.
 var lined = core.generate({ seed: 'craton step', width: 160, height: 100, contour: true });
@@ -347,6 +362,17 @@ core.phrases.forEach(function (p) {
 });
 assert(phraseOk,
   'cli --phrases lists phrases that each render a world (' + phraseNames.length + ')');
+
+// And the same for the light bearings: the dropdown, the `d` key and the shade
+// pass all read core.lights, so a key printed by the CLI must be one the
+// generator accepts, with the same note the dropdown implies.
+var lightList = require('child_process')
+  .execSync('node cli.js --lights', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var lightNames = lightList.map(function (line) { return line.split(/\s+/)[0]; });
+var coreLights = core.lights.map(function (lt) { return lt.key; });
+assert(lightList.length === coreLights.length &&
+  lightNames.join(',') === coreLights.join(','),
+  'cli --lights lists every bearing (' + lightNames.length + ')');
 
 // The per-class shares the CLI prints must agree with the counts the generator
 // reported, so the two views of the same world cannot drift apart.

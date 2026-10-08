@@ -442,11 +442,7 @@
     // Light direction for the hillshade, normalised.
     // One of four compass directions, so relief can be lit from whichever side
     // reads best for the shape in play. Normalised, z always points at the viewer.
-    var LIGHT_DIRS = {
-      nw: [-0.55, -0.62, 0.56], ne: [0.55, -0.62, 0.56],
-      sw: [-0.55, 0.62, 0.56], se: [0.55, 0.62, 0.56]
-    };
-    var light = LIGHT_DIRS[opts.lightDir] || LIGHT_DIRS.nw;
+    var light = lightVector(opts.lightDir);
     var lx = light[0], ly = light[1], lz = light[2];
     var bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
     // The cut is a fraction of the largest catchment rather than an absolute
@@ -868,6 +864,27 @@
   var PHRASES = ['aurora basin', 'salt mirror', 'thousand isles', 'red ridge',
     'pale shelf'];
 
+  // Compass bearings the hillshade accepts, with the light vector each one
+  // means. The dropdown, `cli --lights` and the shade pass all read this list,
+  // so a bearing printed in the terminal is always one the page will take.
+  // z always points at the viewer, which is what keeps the relief readable
+  // from every side rather than only from the upper left.
+  var LIGHTS = [
+    {key: 'nw', label: 'NW', note: 'from the upper left', vec: [-0.55, -0.62, 0.56]},
+    {key: 'ne', label: 'NE', note: 'from the upper right', vec: [0.55, -0.62, 0.56]},
+    {key: 'sw', label: 'SW', note: 'from the lower left', vec: [-0.55, 0.62, 0.56]},
+    {key: 'se', label: 'SE', note: 'from the lower right', vec: [0.55, 0.62, 0.56]}
+  ];
+
+  // Look up a bearing, falling back to the first entry so an empty or unknown
+  // --dir still renders rather than dropping the shading entirely.
+  function lightVector(key) {
+    for (var i = 0; i < LIGHTS.length; i++) {
+      if (LIGHTS[i].key === key) return LIGHTS[i].vec;
+    }
+    return LIGHTS[0].vec;
+  }
+
   // Which stored field an overlay reads. One lookup so the renderer and the
   // hover readout cannot drift to different columns of the same result.
   function fieldFor(key, result) {
@@ -1051,6 +1068,7 @@
     shapes: SHAPES,
     channels: CHANNEL_LIST,
     phrases: PHRASES,
+    lights: LIGHTS,
     biomeNames: BIOME_NAMES
   };
 })(typeof window !== 'undefined' ? window : globalThis);

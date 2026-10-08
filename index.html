@@ -71,12 +71,8 @@
     </label>
     <label class="field">
       <span>from</span>
-      <select id="lightDir">
-        <option value="nw">NW</option>
-        <option value="ne">NE</option>
-        <option value="sw">SW</option>
-        <option value="se">SE</option>
-      </select>
+      <!-- Options come from TerraCore.lights, the same list `cli --lights` prints. -->
+      <select id="lightDir"></select>
     </label>
     <label class="field range">
       <span>rivers</span>
@@ -123,8 +119,9 @@
       on the CPU from a hash of the seed string — no images, no fonts, no libraries.
       Keys: Space rerolls, arrows walk a cell, Shift+arrows walk the relief
       bins, 1-9 pick a palette, C cycles channels, H cycles shapes, P steps
-      through the seed phrases, K walks the legend pins — Shift steps any of
-      those lists backwards — G and L toggle grain and lines, S saves the PNG.
+      through the seed phrases, K walks the legend pins, D swings the light
+      around the compass — Shift steps any of those lists backwards — G and L
+      toggle grain and lines, S saves the PNG.
       Click a legend row to keep one class at full strength.
     </p>
   </aside>

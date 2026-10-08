@@ -99,10 +99,11 @@ Conventions:
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not
   replace it with a plain `randomSeed()` call in the button.
-- Letter shortcuts (`c`, `h`, `k`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
+- Letter shortcuts (`c`, `h`, `k`, `d`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
   SELECT owns the caret, so a seed phrase can still be typed. Each cycle key
   reads the same array its dropdown does — `TerraCore.channels` for `c`,
-  `TerraCore.shapes` for `h`, `TerraCore.phrases` for `p` — so a key and the
+  `TerraCore.shapes` for `h`, `TerraCore.phrases` for `p`, `TerraCore.lights` for
+  `d` — so a key and the
   select can never disagree about the order. Every cycle key also answers to
   `Shift`: one branch, a `±1` step, so a mis-press backs out instead of looping
   the whole list. `styles.css` ends with two
@@ -159,6 +160,12 @@ Conventions:
   `app.js` is that array, the `p` key walks it, `cli.js --phrases` prints it and
   the smoke suite renders every entry, so a phrase is only worth adding if it
   produces a non-degenerate world at the default grid.
+  `core.lights` is the fifth: the four compass bearings the hillshade accepts.
+  Each entry carries its own normalised vector, so `lightVector()` is the only
+  lookup and the shade pass, the `from` dropdown, the `d` cycle and
+  `cli --lights` all read that one array. A bearing is shading only — the smoke
+  suite checks all four keep the biome counts identical while the checksum of
+  each differs from the others.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
   The median mark prints its number in the same bottom strip, squeezed between

@@ -168,6 +168,19 @@
     inputs.channel.appendChild(frag);
   }
 
+  // The four compass bearings come from the same list the shade pass reads, so
+  // the dropdown, the `d` key and `cli --lights` all offer the same four.
+  function fillLights() {
+    var frag = document.createDocumentFragment();
+    TerraCore.lights.forEach(function (lt) {
+      var opt = document.createElement('option');
+      opt.value = lt.key;
+      opt.textContent = lt.label;
+      frag.appendChild(opt);
+    });
+    inputs.lightDir.appendChild(frag);
+  }
+
   function readOptions() {
     return {
       seed: inputs.seed.value || 'terra',
@@ -930,6 +943,7 @@
   fillPalettes();
   fillShapes();
   fillChannels();
+  fillLights();
   inputs.seed.value = PRESETS[0];
   inputs.seaLevel.value = '0.48';
   inputs.detail.value = '0.35';
@@ -1119,6 +1133,17 @@
       var si = shapeKeys.indexOf(inputs.shape.value);
       var sdir = ev.shiftKey ? -1 : 1;
       inputs.shape.value = shapeKeys[((si + sdir) % shapeKeys.length + shapeKeys.length) % shapeKeys.length];
+      render();
+      return;
+    }
+    // 'd' walks the light bearing: the same four compass points the dropdown
+    // lists, which is the fastest way to see which side a ridge wants.
+    if (!typingLetter && /^(d|D)$/.test(ev.key)) {
+      ev.preventDefault();
+      var bearings = TerraCore.lights.map(function (lt) { return lt.key; });
+      var di = bearings.indexOf(inputs.lightDir.value);
+      var bdir = ev.shiftKey ? -1 : 1;
+      inputs.lightDir.value = bearings[((di + bdir) % bearings.length + bearings.length) % bearings.length];
       render();
       return;
     }

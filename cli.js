@@ -33,6 +33,7 @@ function parseArgs(argv) {
     else if (a === '--shapes') opts.shapes = true;
     else if (a === '--channels') opts.channels = true;
     else if (a === '--phrases') opts.phrases = true;
+    else if (a === '--lights') opts.lights = true;
     else if (a === '--json') opts.json = true;
     else opts.seeds.push(a);
   }
@@ -131,6 +132,7 @@ if (opts.help) {
   console.log('       one reads, in the order the c key cycles them');
   console.log('       [--phrases] to list the hand-picked seed phrases the p key');
   console.log('       walks, one per line, ready to paste after this command');
+  console.log('       [--lights] to list the light bearings --dir takes');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
   console.log('       JSON per world instead of the table');
@@ -138,6 +140,15 @@ if (opts.help) {
   console.log('channels: ' + core.channels.map(function (c) {
     return c.key || 'biome';
   }).join(', '));
+  console.log('lights: ' + core.lights.map(function (lt) {
+    return lt.key;
+  }).join(', '));
+} else if (opts.lights) {
+  // The bearings --dir accepts, with the words the dropdown shows. Same list
+  // the shade pass reads, so a key copied here is always valid.
+  core.lights.forEach(function (lt) {
+    console.log(lt.key.padEnd(11) + lt.note);
+  });
 } else if (opts.palettes) {
   // One row per palette: the key that --palette takes, plus the label the
   // dropdown shows and the sky triple the chart is washed with. Names only,
