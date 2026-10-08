@@ -252,6 +252,9 @@
     var riverMin = opts.rivers == null ? 90 : Math.max(0, Math.round(opts.rivers));
     var shape = opts.shape || 'continents';
     var dither = opts.dither !== false;
+    // Hypsometric contours: thin bands at fixed height intervals. Off by
+    // default because it is a drawing style, not a climate effect.
+    var contour = !!opts.contour;
 
     var pal = PALETTES[opts.palette] || PALETTES.terra;
     var colors = pal.colors;
@@ -527,11 +530,13 @@
         // Rivers: strong accumulation carves a line through the land.
         // Standing water in a basin already reads as water, so the network is
         // only drawn where it has to cut a channel.
+        var onRiver = 0;
         if (!isWater && !inLake && riverMin > 0 && (acc[i] > riverCut || spill[i])) {
+          onRiver = 1;
           river[i] = 1;
           riverCells++;
           // A trunk river gets a stronger blend than its tributaries.
-          if (acc[i] > majorCut) river[i] = 2;
+          if (acc[i] > majorCut) { river[i] = 2; onRiver = 2; }
         }
 
         biome[i] = key;
@@ -577,8 +582,35 @@
           r *= sh; g *= sh; b *= sh;
         }
 
-        if (river[i]) {
+        // Hypsometric contours: every 0.06 of height gets a slightly darker
+        // line, which makes the relief legible without a gradient ramp.
+        if (contour && h >= seaLevel) {
+          var band = h * 16 - Math.floor(h * 16);
+          if (band < 0.10) { r *= 0.88; g *= 0.88; b *= 0.88; }
+        }
+
+        // Coastline ink: the first ring of water against land catches a little
+        // light, which is what makes a pixel coastline readable at small sizes.
+        if (isWater) {
+          var ashore =
+            (y > 0 && hf[i - width] >= seaLevel) ||
+            (y < height - 1 && hf[i + width] >= seaLevel) ||
+            (x > 0 && hf[i - 1] >= seaLevel) ||
+            (x < width - 1 && hf[i + 1] >= seaLevel);
+          if (ashore) {
+            r += (colors.beach[0] - r) * 0.16;
+            g += (colors.beach[1] - g) * 0.16;
+            b += (colors.beach[2] - b) * 0.16;
+          }
+        }
+
+        if (onRiver) {
+          // A river mouth spreads: the last cell before the sea widens out.
+          var mouth =
+            (x > 0 && hf[i - 1] < seaLevel) || (x < width - 1 && hf[i + 1] < seaLevel) ||
+            (y > 0 && hf[i - width] < seaLevel) || (y < height - 1 && hf[i + width] < seaLevel);
           var mix = river[i] === 2 ? 0.72 : 0.50;
+          if (mouth) mix = Math.min(0.9, mix + 0.18);
           r = r * (1 - mix) + colors.shallow[0] * mix;
           g = g * (1 - mix) + colors.shallow[1] * mix;
           b = b * (1 - mix) + colors.shallow[2] * mix;

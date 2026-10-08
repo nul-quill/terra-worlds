@@ -21,6 +21,7 @@ function parseArgs(argv) {
     else if (a === '--terraces') opts.terraces = parseInt(argv[++i], 10);
     else if (a === '--rivers') opts.rivers = parseInt(argv[++i], 10);
     else if (a === '--no-grain') opts.dither = false;
+    else if (a === '--contour') opts.contour = true;
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--help' || a === '-h') opts.help = true;
     else opts.seed = a;
@@ -48,6 +49,7 @@ if (opts.help) {
   console.log('       [--detail 0..1] [--polar 0..1] [--light 0..1]');
   console.log('       [--dir nw|ne|sw|se] for the hillshade light bearing,');
   console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
+  console.log('       [--contour] for hypsometric lines every 1/16 of the relief');
     console.log('       [--no-grain] to skip the Bayer dither on the shading');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
 } else {

@@ -20,7 +20,8 @@
     hillshade: document.getElementById('hillshade'),
     rivers: document.getElementById('rivers'),
     lightDir: document.getElementById('lightDir'),
-    dither: document.getElementById('dither')
+    dither: document.getElementById('dither'),
+    contour: document.getElementById('contour')
   };
 
   var PRESETS = ['aurora basin', 'salt mirror', 'thousand isles', 'red ridge', 'pale shelf'];
@@ -33,6 +34,7 @@
     seed: 'seed', palette: 'pal', shape: 'shape', seaLevel: 'sea',
     detail: 'det', polar: 'cli', terraces: 'stp', hillshade: 'lit',
     rivers: 'riv', scale: 's', dither: 'gr', lightDir: 'dir'
+    , contour: 'ln'
   };
 
   function readHash() {
@@ -109,7 +111,8 @@
       hillshade: parseFloat(inputs.hillshade.value),
       rivers: parseInt(inputs.rivers.value, 10),
       lightDir: inputs.lightDir.value,
-      dither: inputs.dither.checked
+      dither: inputs.dither.checked,
+      contour: inputs.contour.checked
     };
   }
 
@@ -131,6 +134,7 @@
       polar: opts.polar,
       hillshade: opts.hillshade, rivers: opts.rivers, dither: opts.dither,
       lightDir: opts.lightDir,
+      contour: opts.contour,
       width: cols, height: rows
     });
     current = result;

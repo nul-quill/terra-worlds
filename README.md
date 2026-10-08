@@ -45,6 +45,9 @@ Pipeline, all on the CPU:
    the dither for a flat, posterised look; it only touches shading, never a biome
    boundary. `from` picks the compass bearing of the light (NW / NE / SW / SE), which
    is also shading-only. Hovering a legend row isolates that class on the map.
+   The `lines` checkbox adds hypsometric contours: a thin darker rule every 1/16 of
+   the relief above sea level, so the terraces and ridgelines read at a glance. Like
+   the other shading knobs it never moves a biome boundary.
 
 The noise lattice counts are integers and every octave doubles them, so the field
 tiles seamlessly on both axes — pan or tile the map with no visible seam.

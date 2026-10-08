@@ -119,6 +119,20 @@ for (var dj = 0; dj < nw.biome.length; dj++) {
 assert(dirDiff > 0 && dirBiome === 0,
   'light bearing changes shading only (' + dirDiff + ' pixels, ' + dirBiome + ' biome moves)');
 
+// Hypsometric contours behave like the other shading knobs: more pixels move,
+// no biome boundary does.
+var lined = core.generate({ seed: 'craton step', width: 160, height: 100, contour: true });
+var plain = core.generate({ seed: 'craton step', width: 160, height: 100 });
+var lineDiff = 0, lineBiome = 0;
+for (var ci = 0; ci < lined.data.length; ci += 4) {
+  if (lined.data[ci] !== plain.data[ci]) lineDiff++;
+}
+for (var cj = 0; cj < lined.biome.length; cj++) {
+  if (lined.biome[cj] !== plain.biome[cj]) lineBiome++;
+}
+assert(lineDiff > 0 && lineBiome === 0,
+  'contour lines change shading only (' + lineDiff + ' pixels, ' + lineBiome + ' biome moves)');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
