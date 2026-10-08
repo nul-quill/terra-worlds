@@ -363,6 +363,24 @@ core.phrases.forEach(function (p) {
 assert(phraseOk,
   'cli --phrases lists phrases that each render a world (' + phraseNames.length + ')');
 
+// The pinned column counts are a shared list too: the grid dropdown, the `w`
+// key and --width all read core.grids, so every count printed by the CLI must
+// be one the generator accepts as a width.
+var gridList = require('child_process')
+  .execSync('node cli.js --grids', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var gridNames = gridList.map(function (line) { return line.split(/\s+/)[0]; });
+var coreGrids = core.grids.map(function (gr) { return gr.key || 'auto'; });
+assert(gridList.length === coreGrids.length &&
+  gridNames.join(',') === coreGrids.join(','),
+  'cli --grids lists every column count (' + gridNames.length + ')');
+var gridOk = true;
+core.grids.forEach(function (gr) {
+  if (!gr.key) return;
+  var g = core.generate({seed: 'pale shelf', width: parseInt(gr.key, 10), height: 150});
+  if (g.width !== parseInt(gr.key, 10)) gridOk = false;
+});
+assert(gridOk, 'every pinned column count renders at that width');
+
 // And the same for the light bearings: the dropdown, the `d` key and the shade
 // pass all read core.lights, so a key printed by the CLI must be one the
 // generator accepts, with the same note the dropdown implies.

@@ -99,11 +99,11 @@ Conventions:
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not
   replace it with a plain `randomSeed()` call in the button.
-- Letter shortcuts (`c`, `h`, `k`, `d`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
+- Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
   SELECT owns the caret, so a seed phrase can still be typed. Each cycle key
   reads the same array its dropdown does — `TerraCore.channels` for `c`,
   `TerraCore.shapes` for `h`, `TerraCore.phrases` for `p`, `TerraCore.lights` for
-  `d` — so a key and the
+  `d`, `TerraCore.grids` for `w` — so a key and the
   select can never disagree about the order. Every cycle key also answers to
   `Shift`: one branch, a `±1` step, so a mis-press backs out instead of looping
   the whole list. `styles.css` ends with two
@@ -166,6 +166,11 @@ Conventions:
   `cli --lights` all read that one array. A bearing is shading only — the smoke
   suite checks all four keep the biome counts identical while the checksum of
   each differs from the others.
+  `core.grids` is the sixth: the column counts the grid dropdown pins, with the
+  empty-key "auto" entry first so following the window stays the default. The
+  `w` cycle, `cli --grids` and the smoke width loop read that array; every
+  non-empty key must be usable as `generate({width})` unchanged, which is what
+  makes a pinned count mean the same thing in the page and from a terminal.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
   The median mark prints its number in the same bottom strip, squeezed between

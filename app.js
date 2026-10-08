@@ -181,6 +181,19 @@
     inputs.lightDir.appendChild(frag);
   }
 
+  // Column counts come from the core too, so a pinned grid in a link means the
+  // same thing after the list is edited.
+  function fillGrids() {
+    var frag = document.createDocumentFragment();
+    TerraCore.grids.forEach(function (gr) {
+      var opt = document.createElement('option');
+      opt.value = gr.key;
+      opt.textContent = gr.label;
+      frag.appendChild(opt);
+    });
+    inputs.gridSize.appendChild(frag);
+  }
+
   function readOptions() {
     return {
       seed: inputs.seed.value || 'terra',
@@ -944,6 +957,7 @@
   fillShapes();
   fillChannels();
   fillLights();
+  fillGrids();
   inputs.seed.value = PRESETS[0];
   inputs.seaLevel.value = '0.48';
   inputs.detail.value = '0.35';
@@ -1144,6 +1158,19 @@
       var di = bearings.indexOf(inputs.lightDir.value);
       var bdir = ev.shiftKey ? -1 : 1;
       inputs.lightDir.value = bearings[((di + bdir) % bearings.length + bearings.length) % bearings.length];
+      render();
+      return;
+    }
+    // 'w' walks the column count. It is the one knob that changes how much of
+    // the world fits on screen without changing the seed, so it is worth a key
+    // next to the shape cycle. The empty entry — auto — is part of the list,
+    // so a lap of the key ends where the window began.
+    if (!typingLetter && /^(w|W)$/.test(ev.key)) {
+      ev.preventDefault();
+      var widths = TerraCore.grids.map(function (gr) { return gr.key; });
+      var wi = widths.indexOf(inputs.gridSize.value);
+      var wdir = ev.shiftKey ? -1 : 1;
+      inputs.gridSize.value = widths[((wi + wdir) % widths.length + widths.length) % widths.length];
       render();
       return;
     }

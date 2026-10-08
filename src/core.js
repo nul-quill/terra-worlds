@@ -885,6 +885,17 @@
     return LIGHTS[0].vec;
   }
 
+  // Column counts the page can pin. The first entry lets the grid follow the
+  // window; the rest fix it, which is how the same seed keeps the same number
+  // of cells in a narrow window and on a wide one. The dropdown, the `w` key,
+  // `cli --grids` and the smoke loop all read this one list.
+  var GRIDS = [
+    {key: '', label: 'auto', note: 'fill the window'},
+    {key: '240', label: '240 col', note: 'chunky cells, quick to read'},
+    {key: '320', label: '320 col', note: 'the middle ground'},
+    {key: '480', label: '480 col', note: 'fine grain, most coastline'}
+  ];
+
   // Which stored field an overlay reads. One lookup so the renderer and the
   // hover readout cannot drift to different columns of the same result.
   function fieldFor(key, result) {
@@ -1069,6 +1080,7 @@
     channels: CHANNEL_LIST,
     phrases: PHRASES,
     lights: LIGHTS,
+    grids: GRIDS,
     biomeNames: BIOME_NAMES
   };
 })(typeof window !== 'undefined' ? window : globalThis);

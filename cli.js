@@ -34,6 +34,7 @@ function parseArgs(argv) {
     else if (a === '--channels') opts.channels = true;
     else if (a === '--phrases') opts.phrases = true;
     else if (a === '--lights') opts.lights = true;
+    else if (a === '--grids') opts.grids = true;
     else if (a === '--json') opts.json = true;
     else opts.seeds.push(a);
   }
@@ -133,6 +134,7 @@ if (opts.help) {
   console.log('       [--phrases] to list the hand-picked seed phrases the p key');
   console.log('       walks, one per line, ready to paste after this command');
   console.log('       [--lights] to list the light bearings --dir takes');
+  console.log('       [--grids] to list the column counts the grid dropdown pins');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
   console.log('       JSON per world instead of the table');
@@ -143,6 +145,16 @@ if (opts.help) {
   console.log('lights: ' + core.lights.map(function (lt) {
     return lt.key;
   }).join(', '));
+  console.log('grids: ' + core.grids.map(function (gr) {
+    return gr.key || 'auto';
+  }).join(', '));
+} else if (opts.grids) {
+  // The column counts the grid dropdown pins, in the order the `w` key walks
+  // them. Each is a --width that keeps a world's cell count stable across
+  // window sizes; "auto" is the one that follows the window instead.
+  core.grids.forEach(function (gr) {
+    console.log((gr.key || 'auto').padEnd(11) + gr.note);
+  });
 } else if (opts.lights) {
   // The bearings --dir accepts, with the words the dropdown shows. Same list
   // the shade pass reads, so a key copied here is always valid.

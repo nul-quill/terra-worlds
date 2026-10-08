@@ -42,12 +42,8 @@
     </label>
     <label class="field">
       <span>grid</span>
-      <select id="gridSize">
-        <option value="">auto</option>
-        <option value="240">240 col</option>
-        <option value="320">320 col</option>
-        <option value="480">480 col</option>
-      </select>
+      <!-- Options come from TerraCore.grids, the same list `cli --grids` prints. -->
+      <select id="gridSize"></select>
     </label>
     <label class="field range">
       <span>sea</span>
@@ -120,8 +116,8 @@
       Keys: Space rerolls, arrows walk a cell, Shift+arrows walk the relief
       bins, 1-9 pick a palette, C cycles channels, H cycles shapes, P steps
       through the seed phrases, K walks the legend pins, D swings the light
-      around the compass — Shift steps any of those lists backwards — G and L
-      toggle grain and lines, S saves the PNG.
+      around the compass, W walks the pinned column counts — Shift steps any of
+      those lists backwards — G and L toggle grain and lines, S saves the PNG.
       Click a legend row to keep one class at full strength.
     </p>
   </aside>

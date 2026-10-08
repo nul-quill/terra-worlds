@@ -61,10 +61,13 @@ row count keeps the canvas aspect, which is what makes the cells square. Because
 the river cut is a quantile of the accumulation field, the share of the grid that
 carries a channel barely moves when only the size changes — the smoke suite checks
 that.
+`--grids` is the sixth list: those same column counts, with the note each one
+shows. The `w` key walks that list, so a pinned count in a link means the same
+thing from a terminal.
 Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
 `c` cycles the overlays and `h` the shape curves, both walking the list the
 matching dropdown shows.
-Hold `Shift` with any of the cycle keys (`c`, `h`, `k`, `p`) and the same list
+Hold `Shift` with any of the cycle keys (`c`, `h`, `k`, `d`, `w`, `p`) and the same list
 walks backwards, so backing out of a choice never needs a full lap.
 `p` steps through the seed phrases listed by `--phrases`, which is a quicker way
 to browse good worlds than rerolling at random — and unlike reroll it returns to
