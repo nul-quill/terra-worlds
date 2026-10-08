@@ -171,6 +171,10 @@ Conventions:
   `w` cycle, `cli --grids` and the smoke width loop read that array; every
   non-empty key must be usable as `generate({width})` unchanged, which is what
   makes a pinned count mean the same thing in the page and from a terminal.
+  `[` and `]` are not a list cycle: they nudge the sea slider by one step,
+  reading `min`/`max`/`step` off the input itself so the key and the slider
+  cannot disagree about the size of a step. Keep the clamp there rather than
+  hard-coding the range in the handler.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
   The median mark prints its number in the same bottom strip, squeezed between

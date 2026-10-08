@@ -1174,6 +1174,22 @@
       render();
       return;
     }
+    // '[' and ']' nudge the sea level, which is the slider that changes a
+    // world most: it moves the shoreline, the relief band count and the basin
+    // band count at once. The step matches the slider's own, and the bounds
+    // come from the input so the two paths cannot disagree.
+    if (!typingLetter && (ev.key === '[' || ev.key === ']')) {
+      ev.preventDefault();
+      var stepSea = parseFloat(inputs.seaLevel.step) || 0.01;
+      var loSea = parseFloat(inputs.seaLevel.min);
+      var hiSea = parseFloat(inputs.seaLevel.max);
+      var nextSea = parseFloat(inputs.seaLevel.value) +
+        (ev.key === ']' ? stepSea : -stepSea);
+      nextSea = Math.max(loSea, Math.min(hiSea, Math.round(nextSea * 100) / 100));
+      inputs.seaLevel.value = String(nextSea);
+      render();
+      return;
+    }
     // The two checkboxes and the export are the only things left that a
     // keyboard user has to reach for: one key each, no modifiers.
     // 'k' walks the legend: each press pins the next class, and the cycle wraps

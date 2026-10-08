@@ -180,6 +180,15 @@ assert(flooded.stats.basinBands >= 3 && flooded.stats.basinBands <= 12 &&
 // Distance to the shoreline: a cell adjacent to water must be at most one step
 // from it, and the widest inland cell must be further. The readout and the
 // continental drying both depend on this being a real distance field.
+// One bracket press moves the sea slider by its own step, so the step has to be
+// fine enough to see but not so fine that a press looks like nothing happened.
+var seaStep = core.generate({ seed: 'pale shelf', width: 120, height: 80, seaLevel: 0.48 });
+var seaNext = core.generate({ seed: 'pale shelf', width: 120, height: 80, seaLevel: 0.49 });
+assert(Math.abs(seaNext.stats.land - seaStep.stats.land) > 0.001 &&
+  Math.abs(seaNext.stats.land - seaStep.stats.land) < 0.10,
+  'one sea step is visible but small (' + seaStep.stats.land.toFixed(3) + ' -> ' +
+  seaNext.stats.land.toFixed(3) + ')');
+
 var spread = core.generate({ seed: 'aurora basin', width: 160, height: 100 });
 var cd = spread.coastDistance;
 var cdMin = Infinity, cdMax = 0, cdBad = 0;
