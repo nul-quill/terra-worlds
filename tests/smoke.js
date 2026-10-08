@@ -609,6 +609,31 @@ var helpShapes = core.shapes.every(function (s) {
 });
 assert(helpShapes, '--help lists every shape key');
 
+// The other direction is worth checking too: every flag the help text names
+// must be one the parser knows, or the usage line advertises something that
+// silently falls through to the unknown-flag warning. Each token is run with a
+// throwaway value and must leave stderr quiet.
+// A leading dash only starts a flag where a word can begin — the start of a
+// line, after a space, or after an opening bracket. That keeps the hyphen
+// inside "nearest-neighbour" from being read as a flag of its own.
+var helpFlags = (helpOut.match(/(?:^|[\s[(])--?[a-z][a-z-]*/gm) || [])
+  .map(function (fl) { return fl.replace(/^[\s[(]/, ''); });
+var quietFlags = {};
+var rejected = [];
+helpFlags.forEach(function (fl) {
+  if (quietFlags[fl]) return;
+  quietFlags[fl] = 1;
+  var err = require('child_process')
+    .execSync('node cli.js "salt mirror" --describe ' + fl + ' 24 2>&1',
+      {cwd: __dirname + '/..', stdio: ['ignore', 'pipe', 'ignore']})
+    .toString();
+  if (/unknown flag/.test(err)) rejected.push(fl);
+});
+assert(rejected.length === 0 && Object.keys(quietFlags).length > 8,
+  'every flag in --help is one the parser takes (' +
+  Object.keys(quietFlags).length + ' checked' +
+  (rejected.length ? ', stuck on ' + rejected.join(', ') : '') + ')');
+
 // A dashed word that matches no flag is a typo, not a seed: the CLI says so
 // and still renders one world, rather than treating the stray word (and its
 // value) as extra seeds. Checked by counting the summaries it prints.
