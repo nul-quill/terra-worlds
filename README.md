@@ -118,7 +118,9 @@ Pipeline, all on the CPU:
    it never moves a biome boundary.
    Hovering a legend row isolates that class on the map; clicking the row pins it,
    so the selection survives moving the cursor back onto the canvas. Clicking the
-   same row again releases it, and the pin is kept across a reroll.
+   same row again releases it, and the pin is kept across a reroll. The rows are in
+   the tab order, so `Enter` pins and `Space` releases without a pointer; `Space`
+   only rerolls when the caret is somewhere else.
    Under water the same switch draws bathymetric lines, a lighter set of steps
    between the deepest cell and the shoreline, with their own count derived from
    the depth range (3 to 12). Both counts are listed in the stats block.

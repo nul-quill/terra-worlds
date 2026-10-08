@@ -67,6 +67,9 @@ Conventions:
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend
   path, or hover and click will disagree about the result.
+  Rows carry `data-key` so a keyboard toggle can hand the caret back after the
+  list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
+  also the reroll shortcut and must not fire twice.
 - `cli.js --palettes` lists the palette keys from `core.palettes`, so a name
   copied from the terminal is always valid for `--palette`. The smoke suite
   compares that listing against `Object.keys(core.palettes)` — keep both in step.

@@ -370,6 +370,9 @@
       .sort(function (a, b) { return counts[b] - counts[a]; })
       .forEach(function (key) {
         var li = document.createElement('li');
+        // The key is kept on the element so a rebuild can find the same row
+        // again and hand the caret back after a keyboard toggle.
+        li.setAttribute('data-key', key);
         var sw = document.createElement('span');
         sw.className = 'sw';
         var c = result.palette.colors[key];
@@ -390,6 +393,24 @@
           pinned = pinned === key ? null : key;
           renderLegend(current);
           drawMap();
+        });
+        // A row is in the tab order, so it has to answer to the keyboard too:
+        // Enter or Space toggles the same pin a click would. Without this the
+        // click selection would be mouse-only while hover and focus were not.
+        li.addEventListener('keydown', function (ev) {
+          if (ev.key !== 'Enter' && ev.key !== ' ') return;
+          ev.preventDefault();
+          // Space is also the reroll shortcut, so the row has to claim the key
+          // before the document handler sees it.
+          ev.stopPropagation();
+          pinned = pinned === key ? null : key;
+          renderLegend(current);
+          drawMap();
+          // Rebuilding the list drops the caret, so put it back on the row that
+          // was just activated: a second Enter should release the pin without
+          // tabbing through the list again.
+          var again = legendList.querySelector('[data-key="' + key + '"]');
+          if (again) again.focus();
         });
         if (pinned === key) li.className = 'on';
         // Same thing for a keyboard user tabbing through the list: focus takes
