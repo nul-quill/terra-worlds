@@ -662,8 +662,17 @@
     // numbers give the ends of the range but nothing in between, and the ticks
     // are what make a bar's height estimable by eye. Drawn on the same grid as
     // the sea rule so both read as one set of marks.
+    // The spacing follows the relief of this world: a flat craton spanning
+    // fifteen units would otherwise get a single tick, a tall fjord close to
+    // twenty. Pick the first step that leaves at most ten marks.
+    var STEPS = [5, 10, 20, 25, 50];
+    var stepUnits = STEPS[STEPS.length - 1];
+    for (i = 0; i < STEPS.length; i++) {
+      if ((span * 100) / STEPS[i] <= 10) { stepUnits = STEPS[i]; break; }
+    }
     hc.strokeStyle = 'rgba(30,38,44,0.35)';
-    for (var u = Math.ceil(lo * 100 / 10) * 10; u <= (lo + span) * 100; u += 10) {
+    for (var u = Math.ceil(lo * 100 / stepUnits) * stepUnits;
+      u <= (lo + span) * 100; u += stepUnits) {
       var tickX = ((u / 100 - lo) / span) * w;
       if (tickX < pad - 1 || tickX > w - pad + 1) continue;
       hc.beginPath();
@@ -1114,12 +1123,16 @@
     // 'k' walks the legend: each press pins the next class, and the cycle wraps
     // back through "nothing pinned". Same list the rows are built from, so the
     // order under the key is the order on screen.
-    if (!typingLetter && (ev.key === 'k' || ev.key === 'K')) {
+    if (!typingLetter && /^(k|K)$/.test(ev.key)) {
       ev.preventDefault();
       if (current) {
         var rows = legendKeys(current);
+        // Shift steps backwards through the same list, so a mis-press does not
+        // need a full lap of the legend to undo.
+        var step = ev.shiftKey ? -1 : 1;
         var ki = rows.indexOf(pinned || '');
-        pinned = ki + 1 >= rows.length ? null : rows[ki + 1];
+        if (ki < 0) ki = step > 0 ? -1 : 0;
+        pinned = rows[(ki + step + rows.length) % rows.length] || null;
         renderLegend(current);
         drawMap();
         writeHash();

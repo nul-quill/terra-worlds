@@ -92,7 +92,8 @@ occupies. Every filter is a preview — only a clicked row ends up in the URL ha
 `k` walks those pins from the keyboard: each press keeps the next class on the
 map at full strength and releases the previous one, wrapping back to no pin
 after the last row. It walks the rows in the order the legend lists them, so
-the key and the list cannot disagree.
+the key and the list cannot disagree. `Shift+k` walks the same list backwards,
+which is the quick way to undo a mis-press without a full lap.
 The hover crosshair and its hairlines take the palette's own ink, so they stay
 visible on the pale sky of `Sepia` or `Mono` instead of washing out.
 `c` steps through the overlays and back to the biome map. The hover readout
@@ -123,6 +124,10 @@ Tapping a bar works too: the chart answers a touch `pointerdown` with the same
 selection rule the cursor uses, so the bin filter is not mouse-only.
 The two corners of the chart carry the minimum and maximum elevation of this
 world, so the bars have a scale without needing a second readout.
+Under the bars a tick marks every few units of height. The spacing follows the
+relief of the world on screen — the first of 5, 10, 20, 25 or 50 units that
+leaves at most ten marks — so a flat shelf is not left with a single tick while
+a tall fjord is not crowded with twenty.
 Between them the chart marks the median height — half the grid sits below that
 mark — which is what separates a broad plateau with a trench from a plain with
 a single peak, even when both worlds report the same relief range. The same

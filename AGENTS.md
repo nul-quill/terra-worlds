@@ -139,6 +139,10 @@ Conventions:
   biggest first. The `k` cycle walks that same array, so the key follows the
   order on screen instead of the order the palette declares. Like the click it
   pins, so it writes the hash; unlike `solo` and `band` it is not a preview.
+  `Shift+k` walks the same array backwards, which is why the cycle is a
+  `(ki + step + rows.length) % rows.length` step rather than a plain increment:
+  a mis-press should not need a whole lap to undo. Keep the one branch handling
+  both directions.
 - `cli.js --palettes` lists the palette keys from `core.palettes`, so a name
   copied from the terminal is always valid for `--palette`. The smoke suite
   compares that listing against `Object.keys(core.palettes)` — keep both in step.
@@ -158,6 +162,9 @@ Conventions:
   The median mark prints its number in the same bottom strip, squeezed between
   the two corner labels: measure all three first and skip the median label when
   the strip cannot hold the whole row, rather than overlapping the corners.
+  The decade ticks under the bars do not use a fixed ten-unit step: the step is
+  the first of 5/10/20/25/50 that leaves at most ten marks over this world's own
+  relief. A flat craton would otherwise get one tick, a tall fjord twenty.
 
 Verify with:
 
