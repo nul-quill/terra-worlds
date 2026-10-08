@@ -372,6 +372,14 @@ var palRec = JSON.parse(require('child_process')
 assert(palRec.palette === 'sepia' && jsonLine.palette === 'terra',
   'cli record names the palette it rendered (' + palRec.palette + ')');
 
+// An overlay is also invisible in the summary sentence, so the record has to
+// carry its key: a drained world and a moist one can share every other number.
+var chanRec = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --width 40 --height 24 --channel drain ' +
+    '--json --out chan-check.ppm', {cwd: __dirname + '/..'}).toString().trim());
+assert(chanRec.channel === 'drain' && jsonLine.channel === '',
+  'cli record names the overlay it flattened (' + chanRec.channel + ')');
+
 // A .png name must produce a real PNG rather than a PPM with a new suffix:
 // signature, then IHDR carrying the scaled size, then the image data. The
 // pixels themselves are the same buffer the PPM writer emits, so the two

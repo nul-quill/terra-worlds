@@ -251,6 +251,10 @@ function summarise(seed, result, name, asJson) {
     // can still be different pictures, and the palette name is what tells the
     // two apart. Shape is already the first word of the summary.
     palette: opts.palette || 'terra',
+    // Which scalar field the pixels came from, when the biome colours were
+    // dropped for an overlay. Like the palette it is invisible in the summary
+    // sentence, and two records with the same checksum otherwise look alike.
+    channel: opts.channel || '',
     land: Math.round(s.land * 1000) / 1000,
     water: Math.round(s.water * 1000) / 1000,
     median: Math.round(s.median * 1000) / 1000,

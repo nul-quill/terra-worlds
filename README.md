@@ -36,6 +36,9 @@ without opening it.
 Alongside it the record names the `palette` it was drawn with, which is the one
 part of the state a summary sentence cannot carry: two worlds sharing a seed, a
 shape and a grid can still be different pictures, and the palette is why.
+The `channel` key rides along for the same reason. An overlay keeps every count
+in the record identical while changing only the pixels, so without it a drained
+world and a moist one look like the same entry.
 
 Every control is mirrored into the URL hash (`#seed=...&pal=sepia&sea=0.6&...`),
 so a finished world can be pasted into a chat and reopened identically. Loading a
