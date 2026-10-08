@@ -605,10 +605,20 @@
       Object.keys(tally).forEach(function (k) {
         if (tally[k] > topN) { topN = tally[k]; top = k; }
       });
-      var label = Math.round(from * 100) + '-' + Math.round(to * 100) +
-        '  ' + (hist[only] || 0) + ' cells' +
-        (top ? '  ' + (TerraCore.biomeNames[top] || top) : '');
       hc.font = '10px system-ui, sans-serif';
+      // The full label is the range, the count and the class. On a narrow
+      // sidebar that runs past the chart, so the least useful parts are
+      // dropped first: class, then count. The range always survives — it is
+      // what ties the bump back to the map.
+      var parts = [Math.round(from * 100) + '-' + Math.round(to * 100),
+        (hist[only] || 0) + ' cells',
+        top ? (TerraCore.biomeNames[top] || top) : null];
+      var label = parts.filter(Boolean).join('  ');
+      while (parts.length > 1 &&
+        hc.measureText(label).width > w - pad * 2) {
+        parts.pop();
+        label = parts.filter(Boolean).join('  ');
+      }
       var tw = hc.measureText(label).width;
       hc.fillStyle = 'rgba(255,255,255,0.88)';
       hc.fillRect(pad - 1, 1, tw + 4, 13);
