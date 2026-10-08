@@ -951,6 +951,30 @@
     a.click();
   }
 
+  // The hash already holds every option, so the current URL is the whole
+  // state. Both the button and the `x` key go through this one path, so a
+  // copied link always carries what is on screen — including a hovered cell.
+  function copyLink() {
+    var url = location.href;
+    var done = function () {
+      var btn = document.getElementById('copy');
+      var was = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(function () { btn.textContent = was; }, 900);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done, done);
+    } else {
+      var tmp = document.createElement('textarea');
+      tmp.value = url;
+      document.body.appendChild(tmp);
+      tmp.select();
+      try { document.execCommand('copy'); } catch (e) { /* older browsers */ }
+      document.body.removeChild(tmp);
+      done();
+    }
+  }
+
   /* ---- wiring ---- */
 
   fillPalettes();
@@ -989,26 +1013,7 @@
   document.getElementById('save').addEventListener('click', savePng);
 
   // The hash already holds every option, so the current URL is the whole state.
-  document.getElementById('copy').addEventListener('click', function () {
-    var url = location.href;
-    var done = function () {
-      var btn = document.getElementById('copy');
-      var was = btn.textContent;
-      btn.textContent = 'Copied';
-      setTimeout(function () { btn.textContent = was; }, 900);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(url).then(done, done);
-    } else {
-      var tmp = document.createElement('textarea');
-      tmp.value = url;
-      document.body.appendChild(tmp);
-      tmp.select();
-      try { document.execCommand('copy'); } catch (e) { /* older browsers */ }
-      document.body.removeChild(tmp);
-      done();
-    }
-  });
+  document.getElementById('copy').addEventListener('click', copyLink);
 
   view.addEventListener('mousemove', function (ev) {
     setHoverFromEvent(ev);
@@ -1237,6 +1242,14 @@
       return;
     }
     var toggle = { g: 'dither', l: 'contour' }[ev.key.toLowerCase()];
+    // 'x' copies the link, which is the last step of a finished world and the
+    // only action left that needed a mouse. Same function as the button, so
+    // the two paths cannot disagree about what gets copied.
+    if (!typingLetter && (ev.key === 'x' || ev.key === 'X')) {
+      ev.preventDefault();
+      copyLink();
+      return;
+    }
     if (!typingLetter && toggle) {
       ev.preventDefault();
       inputs[toggle].checked = !inputs[toggle].checked;

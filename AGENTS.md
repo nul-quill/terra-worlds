@@ -100,6 +100,9 @@ Conventions:
   use it, so a click sequence is reproducible from the first phrase. Do not
   replace it with a plain `randomSeed()` call in the button.
 - Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
+  (`x` joins that list: it is not a list cycle but a call to `copyLink()`, the
+  same function the `Copy link` button is wired to, so the two paths cannot
+  disagree about what lands on the clipboard. Keep that one function for both.)
   SELECT owns the caret, so a seed phrase can still be typed. Each cycle key
   reads the same array its dropdown does — `TerraCore.channels` for `c`,
   `TerraCore.shapes` for `h`, `TerraCore.phrases` for `p`, `TerraCore.lights` for
