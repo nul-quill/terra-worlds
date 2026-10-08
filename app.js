@@ -1068,7 +1068,10 @@
   // middle of the range, which is where most worlds keep most of their cells.
   function stepBand(bin) {
     if (!histState) return;
-    band = Math.max(0, Math.min(histState.bins - 1, bin));
+    // Same wrap the cell walk uses: sweeping one direction across the height
+    // range keeps going instead of sticking on the last bar.
+    var n = histState.bins;
+    band = ((bin % n) + n) % n;
     drawHover();
   }
   histCanvas.addEventListener('mouseleave', function () {

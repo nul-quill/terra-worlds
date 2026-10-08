@@ -145,6 +145,8 @@ Conventions:
   Shift+arrows walk the same bin through `stepBand()`, which is the keyboard
   path for the height filter; plain arrows still walk cells. Both are previews —
   neither goes into the hash.
+  `stepBand()` wraps its bin with the same modulo the cell walk uses, so one
+  direction keeps sweeping the height range instead of sticking on the last bar.
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.
@@ -202,6 +204,11 @@ Verify with:
   `lines`, click Reroll and Save PNG.
   Press `p` a few times: the seed box should walk the phrase list and wrap,
   then keep typing in the seed box to check the letter keys stay out of the way.
+  Press `c`, `h`, `d`, `w` and `k` too — each should move the dropdown or pin it
+  is named for, and `Shift` with any of them should back one step up. Walk off
+  the right-hand edge with the arrows: the cursor should come back on the left.
+  `[` and `]` should move the `sea` slider by one hundredth, and `x` should
+  briefly read `Copied` on the button.
   The relief histogram at the bottom of the sidebar should follow the `sea` slider,
   and hovering one of its bars should print that bin's range inside the chart.
   Hovering the map highlights the hovered cell's bin in that same chart.

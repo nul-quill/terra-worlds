@@ -95,6 +95,8 @@ Arrow keys walk the hovered cell, so the readout can be inspected without a
 pointer; they are ignored while a form field has the caret. The walk wraps at
 the edges, so pressing one direction keeps sweeping the map instead of sticking
 to the last column.
+`Shift` with an arrow walks the relief bins in the chart instead, and wraps the
+same way: one direction sweeps the whole height range and comes back round.
 Hovering a bar in the relief chart also lights up the cells in that height band
 on the map, the same way hovering a legend row isolates a class. A legend row
 takes priority while the pointer is on it, and leaving either one restores the
