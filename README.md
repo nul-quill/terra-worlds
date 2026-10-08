@@ -20,6 +20,8 @@ each one shows in the dropdown and the sky colour the chart is washed with.
 `--shapes` does the same for the shape keys. Both lists come from the generator
 (`TerraCore.palettes`, `TerraCore.shapes`), which is also what fills the two
 dropdowns — one source of truth for each.
+`--channels` is the third list of the same kind: the overlay keys that
+`--channel` takes, each with the field it reads.
 The overlay dropdown is built the same way from `TerraCore.channels`: the first
 entry is the plain biome map, and the rest are the scalar ramps that
 `--channel` takes. The `c` key walks that same array, so the dropdown, the

@@ -320,6 +320,17 @@ assert(shapeList.length === coreShapes.length &&
   shapeNames.join(',') === coreShapes.join(','),
   'cli --shapes lists every shape (' + shapeNames.length + ')');
 
+// And the same for the overlay ramps, including the empty key that means the
+// plain biome map: the CLI prints it as "biome", so the printed column still
+// lines up with what --channel accepts.
+var chanList = require('child_process')
+  .execSync('node cli.js --channels', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var chanNames = chanList.map(function (line) { return line.split(/\s+/)[0]; });
+var coreChannels = core.channels.map(function (c) { return c.key || 'biome'; });
+assert(chanList.length === coreChannels.length &&
+  chanNames.join(',') === coreChannels.join(','),
+  'cli --channels lists every overlay (' + chanNames.length + ')');
+
 // The per-class shares the CLI prints must agree with the counts the generator
 // reported, so the two views of the same world cannot drift apart.
 var jsonLine = JSON.parse(require('child_process')

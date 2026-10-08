@@ -30,6 +30,7 @@ function parseArgs(argv) {
     else if (a === '--help' || a === '-h') opts.help = true;
     else if (a === '--palettes') opts.palettes = true;
     else if (a === '--shapes') opts.shapes = true;
+    else if (a === '--channels') opts.channels = true;
     else if (a === '--json') opts.json = true;
     else opts.seeds.push(a);
   }
@@ -70,6 +71,8 @@ if (opts.help) {
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
   console.log('       [--palettes] to list the palette keys and their labels');
   console.log('       [--shapes] to list the shape keys and what each one cuts');
+  console.log('       [--channels] to list the overlay keys and the field each');
+  console.log('       one reads, in the order the c key cycles them');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
   console.log('       JSON per world instead of the table');
@@ -92,6 +95,13 @@ if (opts.help) {
     core.shapes.forEach(function (s) {
       console.log(s.key.padEnd(11) + s.note);
     });
+} else if (opts.channels) {
+  // The overlay ramps in the order the dropdown and the `c` key walk them.
+  // The empty key is the plain biome map, which prints as "biome" so the
+  // line is never a blank column.
+  core.channels.forEach(function (c) {
+    console.log((c.key || 'biome').padEnd(11) + c.note);
+  });
 } else {
   var fs = require('fs');
   // --next is the seed-chain dump: the first seed plus the n seeds derived
