@@ -26,6 +26,7 @@ function parseArgs(argv) {
     else if (a === '--scale') opts.scale = parseInt(argv[++i], 10);
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--describe') opts.describe = true;
+    else if (a === '--next') opts.next = parseInt(argv[++i], 10) || 5;
     else if (a === '--help' || a === '-h') opts.help = true;
     else if (a === '--json') opts.json = true;
     else opts.seeds.push(a);
@@ -62,6 +63,8 @@ if (opts.help) {
   console.log('       saved pixels, so a small grid can still fill a screen');
   console.log('       [--describe] to print only the one-line summary and skip');
   console.log('       the .ppm file entirely');
+  console.log('       [--next n] with one seed to print that seed plus the n-1 seeds');
+  console.log('       the Reroll button derives from it, one per line');
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
@@ -69,6 +72,19 @@ if (opts.help) {
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
 } else {
   var fs = require('fs');
+  // --next is the seed-chain dump: the first seed plus the n seeds derived
+  // from it, which is exactly the sequence the Reroll button walks. Handy for
+  // reproducing a favourite run of clicks from a single phrase.
+  if (opts.next) {
+    var chainSeed = opts.seeds[0];
+    var chain = [chainSeed];
+    for (var cn = 1; cn < opts.next; cn++) {
+      chainSeed = String(core.nextSeed(chainSeed));
+      chain.push(chainSeed);
+    }
+    console.log(chain.join('\n'));
+    return;
+  }
   opts.seeds.forEach(function (seed, si) {
     var runOpts = {};
     Object.keys(opts).forEach(function (k) { runOpts[k] = opts[k]; });

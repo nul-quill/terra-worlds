@@ -141,6 +141,25 @@
       rows = Math.max(40, Math.round(cols * rect.height / Math.max(1, rect.width)));
     }
 
+    // Cells must be a whole number of device pixels wide, or the columns come
+    var bw = Math.round(rect.width * dpr);
+    var bh = Math.round(rect.height * dpr);
+    // When a cell is at least two pixels wide, snap it to a whole number of
+    // device pixels and trim the count to whatever fits: every cell then comes
+    // out identical, and only the last couple of pixels stay sky-coloured.
+    // Below two pixels the snap would throw away a visible slice of canvas, so
+    // the grid keeps its fractional cell size and stretches to fill.
+    var cw = bw / cols;
+    var chh = bh / rows;
+    if (cw >= 2) {
+      cw = Math.round(cw);
+      cols = Math.min(cols, Math.floor(bw / cw));
+    }
+    if (chh >= 2) {
+      chh = Math.round(chh);
+      rows = Math.min(rows, Math.floor(bh / chh));
+    }
+
     var result = TerraCore.generate({
       seed: opts.seed, palette: opts.palette, shape: opts.shape,
       seaLevel: opts.seaLevel, detail: opts.detail, terraces: opts.terraces,
@@ -151,6 +170,8 @@
       width: cols, height: rows
     });
     current = result;
+    current.cellW = cw;
+    current.cellH = chh;
 
     // A scalar overlay replaces the colour buffer only: every field stays as
     // generated, so the readout, legend and chart still describe this world.
@@ -160,8 +181,8 @@
       result.channelName = chan.channel;
     }
 
-    view.width = Math.round(rect.width * dpr);
-    view.height = Math.round(rect.height * dpr);
+    view.width = bw;
+    view.height = bh;
     drawMap();
 
     drawHover();
@@ -182,7 +203,17 @@
     ctx.imageSmoothingEnabled = false;
     ctx.fillStyle = current.palette.sky;
     ctx.fillRect(0, 0, view.width, view.height);
-    ctx.drawImage(off, 0, 0, view.width, view.height);
+    // Draw at the integer cell size rather than stretching to the canvas, so
+    // every cell is exactly the same number of device pixels.
+    var cs = cellSize();
+    ctx.drawImage(off, 0, 0, current.width * cs.w, current.height * cs.h);
+  }
+
+  // Whole-device-pixel cell size, matching what render() chose for the grid.
+  // The size is stored on the result by render(), so the blit, the crosshair
+  // and the pointer mapping all divide by the very same numbers.
+  function cellSize() {
+    return { w: current.cellW, h: current.cellH };
   }
 
   function drawHover() {
@@ -196,8 +227,9 @@
     var deep = current.palette.colors.deep;
     var hair = rgba(mix(deep, ink, 0.45), 0.45);
     var edge = rgba(mix(deep, ink, 0.15), 0.9);
-    var cellX = view.width / current.width;
-    var cellY = view.height / current.height;
+    var cs = cellSize();
+    var cellX = cs.w;
+    var cellY = cs.h;
     ctx.strokeStyle = edge;
     ctx.lineWidth = Math.max(1, Math.round(cellX * 0.25));
     if (hover.x >= 0) {
@@ -476,8 +508,9 @@
     if (!current) return;
     px = Math.max(0, Math.min(current.width - 1, px));
     py = Math.max(0, Math.min(current.height - 1, py));
-    hover.x = (px + 0.5) / current.width * view.width;
-    hover.y = (py + 0.5) / current.height * view.height;
+    var cs = cellSize();
+    hover.x = (px + 0.5) * cs.w;
+    hover.y = (py + 0.5) * cs.h;
     updateReadout(px, py);
     drawHover();
   }
@@ -487,8 +520,9 @@
       return [Math.floor(current ? current.width / 2 : 0),
         Math.floor(current ? current.height / 2 : 0)];
     }
-    var px = Math.floor(hover.x / Math.max(1, view.width) * current.width);
-    var py = Math.floor(hover.y / Math.max(1, view.height) * current.height);
+    var cs = cellSize();
+    var px = Math.floor(hover.x / cs.w);
+    var py = Math.floor(hover.y / cs.h);
     return [px, py];
   }
 
@@ -498,8 +532,11 @@
     if (typeof ev === 'number') { px = ev; py = arguments[1]; }
     else {
       var rect = view.getBoundingClientRect();
-      px = Math.floor((ev.clientX - rect.left) / rect.width * current.width);
-      py = Math.floor((ev.clientY - rect.top) / rect.height * current.height);
+      // Convert to backing-store pixels first, then divide by the integer cell
+      // size — the same pair of numbers the crosshair is drawn with.
+      var cs = cellSize();
+      px = Math.floor((ev.clientX - rect.left) * (view.width / Math.max(1, rect.width)) / cs.w);
+      py = Math.floor((ev.clientY - rect.top) * (view.height / Math.max(1, rect.height)) / cs.h);
     }
     px = Math.max(0, Math.min(current.width - 1, px));
     py = Math.max(0, Math.min(current.height - 1, py));
@@ -518,7 +555,10 @@
     // Extra context when it costs nothing: how deep the standing water is, and
     // whether this cell is on the drainage network.
     if (above && current.lakeMask && current.lakeMask[i]) {
-      parts.push('depth ' + current.lakeMask[i]);
+      // The mask stores 1..60 steps of the basin's own depth range, so the
+      // readout converts it to a percentage: "depth 42" means nothing, "62%
+      // deep" says how full this part of the basin is.
+      parts.push(Math.round(current.lakeMask[i] / 60 * 100) + '% deep');
     } else if (!above && h < current.seaLevel - 0.14) {
       parts.push('off-shelf');
     }
@@ -599,7 +639,10 @@
   window.addEventListener('hashchange', function () { applyHash(); render(); });
 
   document.getElementById('reroll').addEventListener('click', function () {
-    inputs.seed.value = String(TerraCore.randomSeed());
+    // Chain from the current seed rather than picking a fresh random one, so
+    // the same starting phrase always walks the same sequence of worlds and a
+    // shared link lands on the same tenth reroll.
+    inputs.seed.value = String(TerraCore.nextSeed(inputs.seed.value));
     render();
   });
   document.getElementById('save').addEventListener('click', savePng);

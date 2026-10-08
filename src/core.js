@@ -810,6 +810,15 @@
     return (Math.random() * 4294967295) >>> 0;
   }
 
+  // Derive the next seed from the current one, so a chain of rerolls from the
+  // same starting phrase is reproducible: the same first world always walks the
+  // same sequence. Falls back to a fresh random value when there is nothing to
+  // derive from. The trailing separator moves the hash off the original phrase.
+  function nextSeed(value) {
+    if (value == null || value === '') return randomSeed();
+    return hashString(String(value) + '\u0001');
+  }
+
   // FNV-1a over the rendered pixels, as eight hex digits. Two runs of the same
   // seed must agree here even when their timings differ, so this is the
   // shortest way to tell "identical world" from "close enough".
@@ -856,6 +865,7 @@
     describe: describe,
     hashString: hashString,
     randomSeed: randomSeed,
+    nextSeed: nextSeed,
     palettes: PALETTES,
     biomeNames: BIOME_NAMES
   };
