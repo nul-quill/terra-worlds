@@ -71,13 +71,15 @@ that.
 `--grids` is the sixth list: those same column counts, with the note each one
 shows. The `w` key walks that list, so a pinned count in a link means the same
 thing from a terminal.
-`--scales` is the seventh: the export multipliers behind the `export` dropdown,
+it in the record, the `width` and `height` above are enough to work out the
 which the `e` key walks. Unlike the other lists it changes only the saved file —
 the grid, and therefore every count, is the same at 2x or 6x.
 Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
-`c` cycles the overlays and `h` the shape curves, both walking the list the
-matching dropdown shows.
-Hold `Shift` with any of the cycle keys (`c`, `h`, `k`, `d`, `w`, `e`, `p`) and
+idea for the filename: seed, shape, palette, grid size, the export multiplier
+and the pixel checksum, so a folder of exports stays readable and any file can
+be traced back to the link that produced it. The multiplier is in there because
+every other part of the name is identical between a 2x and a 6x save of the
+same world — the checksum moves only with the pixels, not with their size.
 the same list walks backwards, so backing out of a choice never needs a full lap.
 `p` steps through the seed phrases listed by `--phrases`, which is a quicker way
 to browse good worlds than rerolling at random — and unlike reroll it returns to
@@ -136,10 +138,12 @@ bearing of that basin's spillway — `drains E` — the direction its surplus
 leaves over the lowest point of the rim, which is also where the outflow
 channel starts. Hovering that rim cell itself prints `outlet`, so the seam
 between a lake and the river network is findable by eye. Save PNG uses the same
-idea for the filename: seed, shape, palette, grid size and the pixel checksum, so
-a folder of exports stays readable and any file can be traced back to the link
-that produced it. The checksum is the same eight digits as the `checksum` row in
-the stats list.
+idea for the filename: seed, shape, palette, grid size, the export multiplier and
+the pixel checksum, so a folder of exports stays readable and any file can be
+traced back to the link that produced it. The multiplier is in there because
+every other part of the name is identical between a 2x and a 6x save of the same
+world: the checksum moves with the pixels, not with their size. The checksum is
+the same eight digits as the `checksum` row in the stats list.
 The sidebar ends with a small relief histogram: how much of the grid sits at each
 elevation, bars below the shoreline drawn fainter, with a rule at the current sea
 level. Bins span the world's own height range rather than 0..1, so a flat craton

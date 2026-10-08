@@ -968,6 +968,10 @@
     var nameParts = ['terra', inputs.seed.value || 'world', inputs.shape.value,
       inputs.palette.value, current.width + 'x' + current.height,
       current.stats.checksum];
+    // The multiplier belongs in the name too: the same world saved at 2x and
+    // at 6x is the same checksum, so without the factor the two files would
+    // overwrite each other with different pixel sizes.
+    nameParts.splice(5, 0, exportFactor() + 'x');
     // Shape comes off the result rather than the select, so a name written from
     // a hash that skipped the control still matches the world on screen.
     nameParts[2] = current.shape || nameParts[2];

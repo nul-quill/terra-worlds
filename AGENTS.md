@@ -196,6 +196,9 @@ Conventions:
   right under `grid`: the factor plus the pixel size it saves at. Both the row
   and `savePng()` read it through `exportFactor()`, so the number on screen is
   always the number that was written.
+  The factor also goes into the saved filename, between the grid size and the
+  checksum: the checksum is computed on the unscaled buffer, so a 2x and a 6x
+  save of one world otherwise share every other field of the name.
   `[` and `]` are not a list cycle: they nudge the sea slider by one step,
   reading `min`/`max`/`step` off the input itself so the key and the slider
   cannot disagree about the size of a step. Keep the clamp there rather than
