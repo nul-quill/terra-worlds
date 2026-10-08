@@ -8,6 +8,7 @@
   var legendList = document.getElementById('legend');
   var statsBox = document.getElementById('stats');
   var histCanvas = document.getElementById('hist');
+  var summaryLine = document.getElementById('summary');
 
   var inputs = {
     seed: document.getElementById('seed'),
@@ -167,6 +168,7 @@
     renderLegend(result);
     renderStats(result);
     drawHistogram(result);
+    renderSummary(result);
   }
 
   // Blit the generated grid onto the visible canvas, nearest-neighbour.
@@ -304,6 +306,28 @@
         legendList.appendChild(li);
       });
   }
+
+    // One line that describes the world in words rather than numbers: the shape
+    // it was cut from, how much of it is dry, how much relief it carries, and
+    // which class covers most of it. Reads better than scanning the table below.
+    function renderSummary(result) {
+      var s = result.stats;
+      var top = null, topCount = -1;
+      Object.keys(s.counts).forEach(function (key) {
+        if (s.counts[key] > topCount) { topCount = s.counts[key]; top = key; }
+      });
+      var relief = Math.round((s.max - s.min) * 100);
+      var shapeWord = relief > 70 ? 'rugged' : relief > 40 ? 'rolling' : 'plain';
+      var parts = [
+        inputs.shape.value,
+        shapeWord + ' (' + relief + ')',
+        Math.round(s.land * 100) + '% land',
+        'mostly ' + (TerraCore.biomeNames[top] || top)
+      ];
+      if (s.counts.lake) parts.push('with lakes');
+      if (s.ice > 0.02) parts.push('polar');
+      summaryLine.textContent = parts.join(' · ');
+    }
 
   function renderStats(result) {
     var s = result.stats;
@@ -530,7 +554,11 @@
     img.data.set(big.data);
     cx.putImageData(img, 0, 0);
     var a = document.createElement('a');
-    a.download = 'terra-' + (inputs.seed.value || 'world') + '.png';
+    // The seed alone is not enough to recognise a saved file later: the shape
+    // and the grid size tell you which of the many rerolls this was.
+    var nameParts = ['terra', inputs.seed.value || 'world', inputs.shape.value,
+      current.width + 'x' + current.height];
+    a.download = nameParts.join('-').replace(/\s+/g, '_') + '.png';
     a.href = c.toDataURL('image/png');
     a.click();
   }

@@ -187,6 +187,13 @@ button:last-child {
 
 .side h2 + h2, .legend + h2, .stats + h2 { margin-top: 18px; }
 
+.summary {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
 .legend {
   margin: 0 0 16px;
   padding: 0;
