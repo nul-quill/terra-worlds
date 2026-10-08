@@ -300,8 +300,19 @@
   // A small height histogram: how much of the grid sits at each elevation, with
   // the sea level marked so the balance of a world can be read without hovering.
   function drawHistogram(result) {
+    // The sidebar width changes with the window, so the backing store is sized
+    // to the element rather than the attribute: a fixed-width canvas stretched
+    // to 100% reads as a blur. Drawing math stays in CSS pixels because the
+    // device-pixel scale is applied with a transform.
+    var cssW = histCanvas.clientWidth || 240;
+    var cssH = histCanvas.clientHeight || 52;
+    var dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    var bw = Math.round(cssW * dpr), bhPix = Math.round(cssH * dpr);
+    if (histCanvas.width !== bw) histCanvas.width = bw;
+    if (histCanvas.height !== bhPix) histCanvas.height = bhPix;
     var hc = histCanvas.getContext('2d');
-    var w = histCanvas.width, h = histCanvas.height;
+    hc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var w = cssW, h = cssH;
     var BINS = 48;
     var hist = new Array(BINS);
     var hf = result.heightField;
