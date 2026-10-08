@@ -328,7 +328,14 @@
   // "1%" and the ordering the list is sorted by stops being visible, so the
   // small end keeps one decimal.
   function shareText(count, pixels) {
-    var pct = count / pixels * 100;
+    return percentText(count / pixels);
+  }
+
+  // Same rule for a fraction that is already normalised: whole numbers above
+  // ten percent, one decimal below, so a two-percent class and a
+  // zero-two-percent class never print the same string.
+  function percentText(fraction) {
+    var pct = fraction * 100;
     return (pct >= 10 ? Math.round(pct) : pct.toFixed(1)) + '%';
   }
 
@@ -388,10 +395,10 @@
     var s = result.stats;
     var rows = [
       ['grid', result.width + ' x ' + result.height],
-      ['land', Math.round(s.land * 100) + '%'],
-      ['water', Math.round(s.water * 100) + '%'],
+      ['land', percentText(s.land)],
+      ['water', percentText(s.water)],
       ['lake', shareText(s.counts.lake || 0, s.pixels)],
-      ['ice', Math.round(s.ice * 100) + '%'],
+      ['ice', percentText(s.ice)],
       ['river cells', String(s.rivers)],
       ['relief', Math.round((s.max - s.min) * 100) + ' units'],
       ['biomes', String(biomeCount(s.counts))],
