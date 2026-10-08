@@ -362,6 +362,28 @@ assert(jsonPairs.length === jsonLine.biomes && jsonTotal >= 96 && jsonTotal <= 1
   'cli class shares match the biome count (' + jsonPairs.length + ' classes, ' +
   jsonTotal + '%)');
 
+// A .png name must produce a real PNG rather than a PPM with a new suffix:
+// signature, then IHDR carrying the scaled size, then the image data. The
+// pixels themselves are the same buffer the PPM writer emits, so the two
+// encoders only differ in framing.
+var pngOut = require('child_process')
+  .execSync('node cli.js "salt mirror" --width 24 --height 12 --scale 2 ' +
+    '--json --out png-check.png', {cwd: __dirname + '/..'}).toString().trim();
+var pngName = JSON.parse(pngOut).file;
+var pngBuf = require('fs').readFileSync(__dirname + '/../' + pngName);
+var pngSig = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+var pngHeadOk = pngSig.every(function (b, si) { return pngBuf[si] === b; });
+// The record keeps the grid as generated, so the scaled size is its own width
+// and height times --scale: that is what the IHDR has to advertise.
+var pngRec = JSON.parse(pngOut);
+assert(pngHeadOk && pngBuf.toString('ascii', 12, 16) === 'IHDR' &&
+  pngBuf.readUInt32BE(16) === pngRec.width * 2 &&
+  pngBuf.readUInt32BE(20) === pngRec.height * 2 &&
+  pngBuf.length > 40,
+  'cli writes a real PNG when the name ends in .png (' +
+  pngBuf.readUInt32BE(16) + 'x' + pngBuf.readUInt32BE(20) +
+  ', ' + pngBuf.length + ' bytes)');
+
 // The median must sit inside the world's own range and really split the grid
 // in half, which is the whole point of publishing it: the relief range on its
 // own cannot tell a plateau from a plain with one peak. Same world as the

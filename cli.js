@@ -4,6 +4,7 @@
 
 require('./src/core.js');
 var core = globalThis.TerraCore;
+var zlib = require('zlib');
 
 function parseArgs(argv) {
   var opts = { seeds: [], width: 480, height: 300, out: 'world.ppm' };
@@ -49,6 +50,60 @@ function toPpm(img) {
     chars[k++] = String.fromCharCode(img.data[i + 2]);
   }
   return out + chars.join('');
+}
+
+// A .png name gets a real PNG: an 8-bit RGB scanline stream, deflated, behind
+// the four standard chunks. Node's zlib does the compression, so there is no
+// dependency and no second code path — the pixels come from the same buffer
+// the PPM writer reads.
+function crc32(buf) {
+  var c, crc = 0xffffffff;
+  for (var i = 0; i < buf.length; i++) {
+    // Shift the whole register, not just the incoming byte: the byte is
+    // folded in first, then eight rounds of the polynomial walk it through.
+    c = crc ^ buf[i];
+    for (var b = 0; b < 8; b++) {
+      c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+    }
+    crc = c;
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function chunk(type, data) {
+  var len = data.length;
+  var out = Buffer.alloc(12 + len);
+  out.writeUInt32BE(len, 0);
+  out.write(type, 4, 'ascii');
+  data.copy(out, 8);
+  out.writeUInt32BE(crc32(out.slice(4, 8 + len)), 8 + len);
+  return out;
+}
+
+function toPng(img) {
+  var w = img.width, h = img.height;
+  var rows = Buffer.alloc(h * (1 + w * 3));
+  var k = 0;
+  for (var y = 0; y < h; y++) {
+    rows[k++] = 0; // every scanline starts with its filter byte: none
+    for (var x = 0; x < w; x++) {
+      var i = (y * w + x) * 4;
+      rows[k++] = img.data[i];
+      rows[k++] = img.data[i + 1];
+      rows[k++] = img.data[i + 2];
+    }
+  }
+  var head = Buffer.alloc(13);
+  head.writeUInt32BE(w, 0);
+  head.writeUInt32BE(h, 4);
+  head[8] = 8;   // bits per channel
+  head[9] = 2;   // colour type: truecolour, no alpha
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk('IHDR', head),
+    chunk('IDAT', zlib.deflateRawSync(rows, {level: 9})),
+    chunk('IEND', Buffer.alloc(0))
+  ]);
 }
 
 var opts = parseArgs(process.argv.slice(2));
@@ -157,11 +212,19 @@ if (opts.help) {
       console.log(core.describe(result));
       return;
     }
+    // The extension picks the encoder: .png gets the PNG writer, anything
+    // else the plain PPM one. With several seeds the name becomes a prefix,
+    // and the suffix keeps whichever extension was asked for.
+    var ext = /\.png$/i.test(opts.out) ? 'png' : 'ppm';
     var name = opts.seeds.length > 1
-      ? opts.out.replace(/(\.ppm)?$/, '-' + (si + 1) + '.ppm')
+      ? opts.out.replace(/\.(ppm|png)?$/i, '-' + (si + 1) + '.' + ext)
       : opts.out;
     // The grid stays as generated for the stats; only the saved pixels grow.
-    fs.writeFileSync(name, toPpm(opts.scale > 1 ? core.upscale(result, opts.scale) : result), 'latin1');
+    var img = opts.scale > 1 ? core.upscale(result, opts.scale) : result;
+    // The PPM body is a one-byte-per-channel string, so it needs the latin1
+    // range kept intact; the PNG is already a Buffer.
+    if (ext === 'png') fs.writeFileSync(name, toPng(img));
+    else fs.writeFileSync(name, toPpm(img), 'latin1');
     console.log(summarise(seed, result, name, opts.json));
   });
 }
