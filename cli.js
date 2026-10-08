@@ -49,8 +49,8 @@ if (opts.help) {
   console.log('       [--detail 0..1] [--polar 0..1] [--light 0..1]');
   console.log('       [--dir nw|ne|sw|se] for the hillshade light bearing,');
   console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
-  console.log('       [--contour] for hypsometric lines every 1/16 of the relief');
-    console.log('       [--no-grain] to skip the Bayer dither on the shading');
+  console.log('       [--contour] for hypsometric lines every 1/14 of the relief');
+  console.log('       [--no-grain] to skip the Bayer dither on the shading');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
 } else {
   var result = core.generate(opts);

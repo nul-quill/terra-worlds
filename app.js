@@ -342,6 +342,28 @@
   });
   document.getElementById('save').addEventListener('click', savePng);
 
+  // The hash already holds every option, so the current URL is the whole state.
+  document.getElementById('copy').addEventListener('click', function () {
+    var url = location.href;
+    var done = function () {
+      var btn = document.getElementById('copy');
+      var was = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(function () { btn.textContent = was; }, 900);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done, done);
+    } else {
+      var tmp = document.createElement('textarea');
+      tmp.value = url;
+      document.body.appendChild(tmp);
+      tmp.select();
+      try { document.execCommand('copy'); } catch (e) { /* older browsers */ }
+      document.body.removeChild(tmp);
+      done();
+    }
+  });
+
   view.addEventListener('mousemove', function (ev) {
     setHoverFromEvent(ev);
     updateReadout(ev);

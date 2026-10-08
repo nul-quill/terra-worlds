@@ -12,6 +12,7 @@ Every control is mirrored into the URL hash (`#seed=...&pal=sepia&sea=0.6&...`),
 so a finished world can be pasted into a chat and reopened identically. Loading a
 hash fills the controls before the first render; anything absent falls back to the
 default. `export` picks the nearest-neighbour multiplier used by Save PNG.
+`Copy link` puts that URL on the clipboard.
 
 ## What it does
 
@@ -45,9 +46,11 @@ Pipeline, all on the CPU:
    the dither for a flat, posterised look; it only touches shading, never a biome
    boundary. `from` picks the compass bearing of the light (NW / NE / SW / SE), which
    is also shading-only. Hovering a legend row isolates that class on the map.
-   The `lines` checkbox adds hypsometric contours: a thin darker rule every 1/16 of
-   the relief above sea level, so the terraces and ridgelines read at a glance. Like
-   the other shading knobs it never moves a biome boundary.
+   The `lines` checkbox adds hypsometric contours: a thin darker rule every
+   1/14 of the relief above sea level, so the terraces and ridgelines read at a
+   glance. Spacing is measured from the shoreline, so the lines stay even however
+   far the `sea` slider floods the map. Like the other shading knobs it never
+   moves a biome boundary.
 
 The noise lattice counts are integers and every octave doubles them, so the field
 tiles seamlessly on both axes — pan or tile the map with no visible seam.

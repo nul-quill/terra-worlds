@@ -583,9 +583,12 @@
         }
 
         // Hypsometric contours: every 0.06 of height gets a slightly darker
-        // line, which makes the relief legible without a gradient ramp.
+        // line above sea level, which makes the relief legible without a
+        // gradient ramp. Measuring from the shoreline keeps the spacing even
+        // when the sea slider floods most of the map.
         if (contour && h >= seaLevel) {
-          var band = h * 16 - Math.floor(h * 16);
+          var above = (h - seaLevel) / Math.max(0.001, 1 - seaLevel);
+          var band = above * 14 - Math.floor(above * 14);
           if (band < 0.10) { r *= 0.88; g *= 0.88; b *= 0.88; }
         }
 
