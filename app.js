@@ -65,6 +65,9 @@
       }
       parts.push(HASH_KEYS[key] + '=' + encodeURIComponent(el.value));
     });
+    // The pinned legend class is not a form control, so it rides along here.
+    // A link with `pin=taiga` should reopen with that class still isolated.
+    if (pinned) parts.push('pin=' + encodeURIComponent(pinned));
     var next = '#' + parts.join('&');
     if (next !== location.hash) {
       history.replaceState(null, '', next);
@@ -82,6 +85,11 @@
       if (el.type === 'checkbox') el.checked = value === '1';
       else el.value = value;
     });
+    // The pin is not an input, so it is read separately. Only a class the
+    // palette actually knows is accepted, which keeps a hand-written link from
+    // producing a map where every cell is faded.
+    var pin = fromUrl.pin;
+    pinned = pin && TerraCore.biomeNames[pin] ? pin : null;
   }
 
   var off = document.createElement('canvas');
@@ -393,6 +401,7 @@
           pinned = pinned === key ? null : key;
           renderLegend(current);
           drawMap();
+          writeHash();
         });
         // A row is in the tab order, so it has to answer to the keyboard too:
         // Enter or Space toggles the same pin a click would. Without this the
@@ -406,6 +415,7 @@
           pinned = pinned === key ? null : key;
           renderLegend(current);
           drawMap();
+          writeHash();
           // Rebuilding the list drops the caret, so put it back on the row that
           // was just activated: a second Enter should release the pin without
           // tabbing through the list again.
