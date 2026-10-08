@@ -503,7 +503,10 @@
     // Where a basin spills: the lowest cell just outside the filled area. A
     // lake is never the end of the hydrology — the surplus leaves over the
     // lowest point of the rim and cuts a channel on the way down.
-    var spill = new Uint8Array(n);
+    // The value is the basin's own number rather than a flag, so hovering the
+    // outlet can name the lake it belongs to. Wide worlds get more than 255
+    // basins, hence the wider type.
+    var spill = new Uint16Array(n);
 
     // Which basin each lake cell belongs to, 1-based. Two lakes that look
     // alike on the map are different bodies of water, and the hover readout
@@ -573,7 +576,7 @@
       // a fill touches the whole grid there is nothing outside it, and the
       // surplus simply stays where it is.
       if (best < 0) return;
-      spill[best] = 1;
+      spill[best] = lakeBasins;
       // Bearing from the middle of the lake to its outlet: the way a walker
       // follows to get off the basin. One entry per basin, same order as the
       // labels in `basin`, so a hover can pair them up.

@@ -150,7 +150,9 @@ depth are easy to tell apart while walking the map. The same readout adds the
 bearing of that basin's spillway — `drains E` — the direction its surplus
 leaves over the lowest point of the rim, which is also where the outflow
 channel starts. Hovering that rim cell itself prints `outlet`, so the seam
-between a lake and the river network is findable by eye. Save PNG uses the same
+channel starts. Hovering that rim cell itself prints `outlet of basin 2/4`, so
+the seam between a lake and the river network is findable by eye and still names
+the water it belongs to. Save PNG uses the same
 idea for the filename: seed, shape, palette, grid size, the export multiplier and
 the pixel checksum, so a folder of exports stays readable and any file can be
 traced back to the link that produced it. The multiplier is in there because

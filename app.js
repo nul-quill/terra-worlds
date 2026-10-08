@@ -943,7 +943,13 @@
     // The one rim cell a basin spills over. It is the seam between a lake and
     // the river network, so it is worth naming on its own: hovering it shows
     // where the water in a closed basin actually goes.
-    if (current.spillway && current.spillway[i]) parts.push('outlet');
+    // The mark carries the basin's own number, which is how an outlet in a
+    // world of a dozen tarns says which one it belongs to. The outlet sits
+    // outside the fill, so this is the only place its lake gets named.
+    if (current.spillway && current.spillway[i]) {
+      parts.push('outlet of basin ' + current.spillway[i] +
+        '/' + current.stats.lakeBasins);
+    }
     if (current.riverMask && current.riverMask[i]) {
       // The catchment behind the channel explains why this cell is a trunk and
       // its neighbour is a tributary: it is the same accumulation number the

@@ -50,6 +50,9 @@ Conventions:
   The spillway cell itself is marked in `result.spillway` (one cell per basin),
   which the readout prints as `outlet` and the river pass uses to keep a
   basin's catchment drawn even when accumulation alone would cut it off.
+  The mark holds the basin's own number rather than a plain flag, so hovering
+  the rim cell says `outlet of basin 2/4` — the outlet sits outside the fill and
+  would otherwise be anonymous. Keep the array wide enough for that number.
   The spillway search caps the rim at `seaLevel + 0.30` on the first pass, then
   retries without the cap — a terraced plateau stacks its rims high enough that
   the capped pass alone would leave a big basin with no outlet at all.

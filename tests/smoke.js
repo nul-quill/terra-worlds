@@ -701,6 +701,24 @@ assert(outlets > 0 && outlets <= bw.stats.lakeBasins && touching === outlets,
   'every basin has one outlet on its own rim (' + outlets + ' of ' +
   bw.stats.lakeBasins + ')');
 
+// The mark also carries the number of the basin it drains, since the readout
+// prints both together. That number has to be one the neighbouring lake cells
+// actually wear — an outlet naming the wrong tarn is worse than a bare one.
+var ownOk = true;
+for (var ai = 0; ai < bw.spillway.length; ai++) {
+  if (!bw.spillway[ai]) continue;
+  var ax = ai % bw.width, ay = (ai / bw.width) | 0;
+  var mine = bw.spillway[ai];
+  var agree = false;
+  if (ax > 0 && bw.basin[ai - 1] === mine) agree = true;
+  if (ax < bw.width - 1 && bw.basin[ai + 1] === mine) agree = true;
+  if (ay > 0 && bw.basin[ai - bw.width] === mine) agree = true;
+  if (ay < bw.height - 1 && bw.basin[ai + bw.width] === mine) agree = true;
+  if (!agree) ownOk = false;
+}
+assert(ownOk,
+  'each outlet names a basin its own shore belongs to');
+
 // The labels a hover prints as `basin 2/4` have to cover every basin exactly:
 // each lake cell carries a number in 1..lakeBasins, and each of those numbers
 // appears at least once. A missing label would make the readout's denominator
