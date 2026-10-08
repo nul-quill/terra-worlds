@@ -850,9 +850,12 @@
     cx.putImageData(img, 0, 0);
     var a = document.createElement('a');
     // The seed alone is not enough to recognise a saved file later: the shape
-    // and the grid size tell you which of the many rerolls this was.
+    // and the grid size tell you which of the many rerolls this was, the
+    // palette separates two looks of the same seed, and the checksum is the
+    // shortest way back from a file to the link that produced it.
     var nameParts = ['terra', inputs.seed.value || 'world', inputs.shape.value,
-      current.width + 'x' + current.height];
+      inputs.palette.value, current.width + 'x' + current.height,
+      current.stats.checksum];
     // Shape comes off the result rather than the select, so a name written from
     // a hash that skipped the control still matches the world on screen.
     nameParts[2] = current.shape || nameParts[2];

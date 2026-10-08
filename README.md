@@ -97,8 +97,9 @@ bearing of that basin's spillway — `drains E` — the direction its surplus
 leaves over the lowest point of the rim, which is also where the outflow
 channel starts. Hovering that rim cell itself prints `outlet`, so the seam
 between a lake and the river network is findable by eye. Save PNG uses the same
-idea for the filename: seed, shape and grid size, so a folder of exports stays
-readable.
+idea for the filename: seed, shape, palette, grid size and the pixel checksum, so
+a folder of exports stays readable and any file can be traced back to the link
+that produced it. The checksum is the same eight digits as the `pixels` row.
 The sidebar ends with a small relief histogram: how much of the grid sits at each
 elevation, bars below the shoreline drawn fainter, with a rule at the current sea
 level. Bins span the world's own height range rather than 0..1, so a flat craton
