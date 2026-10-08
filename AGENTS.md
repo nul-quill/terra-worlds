@@ -106,6 +106,10 @@ Conventions:
   It is the cheap equality test for determinism: same seed + same grid must give
   the same digits, while `stats.ms` is allowed to wander. Keep the multiply in the
   shift-add form so it stays inside 32 bits.
+  The relief word in `describe()` is a bucket of that same number — rugged above
+  70, rolling above 40, plain below — and the smoke suite re-derives the bucket
+  from `stats.max - stats.min` for every shape, so the word cannot drift away
+  from the number printed next to it.
 - The CLI record in `summarise()` carries the parts of the state that the summary
   sentence cannot hold: `palette` and `channel` both change only pixels, so every
   count stays identical without them. Keep both in the record and keep the smoke
