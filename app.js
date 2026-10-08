@@ -300,6 +300,10 @@
 
   // A small height histogram: how much of the grid sits at each elevation, with
   // the sea level marked so the balance of a world can be read without hovering.
+  // The bins are kept around so a hover over the chart can be repainted
+  // without re-binning the whole field.
+  var histState = null;
+
   function drawHistogram(result) {
     // The sidebar width changes with the window, so the backing store is sized
     // to the element rather than the attribute: a fixed-width canvas stretched
@@ -311,9 +315,6 @@
     var bw = Math.round(cssW * dpr), bhPix = Math.round(cssH * dpr);
     if (histCanvas.width !== bw) histCanvas.width = bw;
     if (histCanvas.height !== bhPix) histCanvas.height = bhPix;
-    var hc = histCanvas.getContext('2d');
-    hc.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var w = cssW, h = cssH;
     var BINS = 48;
     var hist = new Array(BINS);
     var hf = result.heightField;
@@ -327,6 +328,22 @@
     }
     var peak = 0;
     for (i = 0; i < BINS; i++) if (hist[i] > peak) peak = hist[i];
+    histState = {
+      bins: BINS, hist: hist, peak: peak, lo: lo, span: span,
+      w: cssW, h: cssH, dpr: dpr, result: result
+    };
+    paintHistogram(-1);
+  }
+
+  // Repaint the chart. `only` dims every bar but that one, which is how a
+  // hovered bin stays readable on a 52px-tall strip.
+  function paintHistogram(only) {
+    if (!histState) return;
+    var st = histState, hc = histCanvas.getContext('2d');
+    hc.setTransform(st.dpr, 0, 0, st.dpr, 0, 0);
+    var w = st.w, h = st.h, BINS = st.bins, hist = st.hist, peak = st.peak;
+    var lo = st.lo, span = st.span, result = st.result;
+    var i;
     hc.clearRect(0, 0, w, h);
     var binW = w / BINS;
     var seaX = ((result.seaLevel - lo) / span) * w;
@@ -341,7 +358,11 @@
     for (i = 0; i < BINS; i++) {
       var bh = peak ? hist[i] / peak * (h - 6) : 0;
       var c = lo + (i + 0.5) / BINS * span < result.seaLevel ? wet : dry;
-      hc.fillStyle = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
+      var keep = only < 0 || i === only ? 1 : 0.45;
+      hc.fillStyle = 'rgb(' +
+        Math.round(c[0] * keep + 255 * (1 - keep)) + ',' +
+        Math.round(c[1] * keep + 255 * (1 - keep)) + ',' +
+        Math.round(c[2] * keep + 255 * (1 - keep)) + ')';
       hc.fillRect(Math.round(i * binW), Math.round(h - bh), Math.ceil(binW), Math.round(bh));
     }
     hc.strokeStyle = 'rgba(30,38,44,0.7)';
@@ -350,6 +371,21 @@
     hc.moveTo(Math.round(seaX) + 0.5, 0);
     hc.lineTo(Math.round(seaX) + 0.5, h);
     hc.stroke();
+    // A hovered bin gets its elevation range and cell count written into the
+    // chart itself, which keeps the sidebar from reflowing on every move.
+    if (only >= 0) {
+      var from = lo + only / BINS * span;
+      var to = lo + (only + 1) / BINS * span;
+      var label = Math.round(from * 100) + '-' + Math.round(to * 100) +
+        '  ' + (hist[only] || 0) + ' cells';
+      hc.font = '10px system-ui, sans-serif';
+      var pad = 3;
+      var tw = hc.measureText(label).width;
+      hc.fillStyle = 'rgba(255,255,255,0.88)';
+      hc.fillRect(pad - 1, 1, tw + 4, 13);
+      hc.fillStyle = 'rgba(30,38,44,0.9)';
+      hc.fillText(label, pad + 1, 11);
+    }
   }
 
   /* ---- interaction ---- */
@@ -466,6 +502,18 @@
     updateReadout(ev);
     drawHover();
   });
+
+  // The relief chart is small, so the readout for a bin is drawn inside the
+  // chart rather than in the hud strip under the map.
+  histCanvas.addEventListener('mousemove', function (ev) {
+    if (!histState) return;
+    var rect = histCanvas.getBoundingClientRect();
+    var x = ev.clientX - rect.left;
+    var bin = Math.floor(x / Math.max(1, rect.width) * histState.bins);
+    paintHistogram(bin < 0 ? 0 : Math.min(histState.bins - 1, bin));
+  });
+  histCanvas.addEventListener('mouseleave', function () { paintHistogram(-1); });
+
   view.addEventListener('mouseleave', function () {
     hover.x = -1; hover.y = -1;
     readout.textContent = 'hover the map';

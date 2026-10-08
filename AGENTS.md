@@ -42,4 +42,5 @@ Verify with:
 1. `node tests/smoke.js`
 2. open `index.html` in the integrated browser, move a slider, hover the map,
   hover a legend row, toggle `grain` and `lines`, click Reroll and Save PNG.
-  The relief histogram at the bottom of the sidebar should follow the `sea` slider.
+  The relief histogram at the bottom of the sidebar should follow the `sea` slider,
+  and hovering one of its bars should print that bin's range inside the chart.

@@ -16,7 +16,9 @@ default. `export` picks the nearest-neighbour multiplier used by Save PNG.
 Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
 The sidebar ends with a small relief histogram: how much of the grid sits at each
 elevation, bars below the shoreline drawn fainter, with a rule at the current sea
-level. It redraws with every slider move.
+level. Bins span the world's own height range rather than 0..1, so a flat craton
+still fills the chart. Hovering a bin dims the rest and prints that bin's elevation
+range and cell count inside the chart. It redraws with every slider move.
 
 ## What it does
 
