@@ -454,9 +454,10 @@
     }
     // Distance to the nearest shoreline, so a green patch in the middle of a
     // continent reads differently from the same colour on a coast.
-    if (current.coastDistance) {
-      parts.push(Math.round(current.coastDistance[i]) + ' from water');
-    }
+    // Only worth printing inland: a water cell is by definition at the shore,
+    // and a beach cell one step in, so those would repeat the biome name.
+    var inland = current.coastDistance ? Math.round(current.coastDistance[i]) : 0;
+    if (above && inland > 1) parts.push(inland + ' from water');
     if (current.riverMask && current.riverMask[i]) {
       parts.push(current.riverMask[i] === 2 ? 'trunk river' : 'river');
     }
