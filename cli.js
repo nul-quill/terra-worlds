@@ -126,7 +126,11 @@ var opts = parseArgs(process.argv.slice(2));
 
 if (opts.help) {
   console.log('usage: node cli.js "<seed>" [--width n] [--height n] [--palette name]');
-  console.log('       [--shape continents|islands|atolls|craton|fjord] [--sea 0..1]');
+  // The shape keys are read from the generator's list rather than repeated
+  // here, so adding a curve in core.js shows up in this listing too.
+  console.log('       [--shape ' + core.shapes.map(function (s) {
+    return s.key;
+  }).join('|') + '] [--sea 0..1]');
   console.log('       [--detail 0..1] [--polar 0..1] [--light 0..1]');
   console.log('       [--dir nw|ne|sw|se] for the hillshade light bearing,');
   console.log('       [--terraces n] [--rivers n] [--out file.ppm]');

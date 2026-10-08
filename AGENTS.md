@@ -177,6 +177,9 @@ Conventions:
   `--shapes` does the same job for the shape curves from `core.shapes`, which is
   also what fills the shape dropdown. Add a curve in `core.js` only; the list,
   the dropdown and the CLI output all follow from that one array.
+  The `--help` usage line builds its `[--shape a|b|c]` list from the same array
+  rather than repeating the keys, and the smoke suite checks every key appears
+  in that listing.
   `core.channels` is the third of these lists: the overlay ramps, with the
   empty-key entry first so "no overlay" is always the default selection. The
   channel dropdown, the `c` cycle and the smoke overlay loop all read that one

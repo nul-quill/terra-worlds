@@ -24,6 +24,9 @@ each one shows in the dropdown and the sky colour the chart is washed with.
 `--shapes` does the same for the shape keys. Both lists come from the generator
 (`TerraCore.palettes`, `TerraCore.shapes`), which is also what fills the two
 dropdowns — one source of truth for each.
+`--help` is the shortest listing of all: it names the shape keys from the same
+array, so the usage line and the dropdown cannot drift apart when a curve is
+added in `src/core.js`.
 `--channels` is the third list of the same kind: the overlay keys that
 `--channel` takes, each with the field it reads.
 `--phrases` is the fourth: the hand-picked seed phrases, numbered in the order
@@ -197,8 +200,8 @@ pixels on any machine, at any window size, in the browser or from the CLI.
 Pipeline, all on the CPU:
 
 1. **Height** — fBm value noise blended with a ridged multifractal for mountain
-   spines, then a shape curve (`continents`, `islands`, `atolls`, `craton`) and an
-   optional high-frequency detail term.
+   spines, then a shape curve (`continents`, `islands`, `atolls`, `craton`,
+   `fjord`) and an optional high-frequency detail term.
 2. **Climate** — a moisture field plus a latitude-driven temperature band, mixed
    with a low-frequency noise so zones are not pure horizontal stripes. The `climate`
    slider blends between a flat temperature profile and a strict latitude ladder.

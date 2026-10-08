@@ -425,6 +425,16 @@ var listsOk = uniqueKeys(core.shapes) && uniqueKeys(core.channels) &&
   uniqueKeys(core.lights) && uniqueKeys(core.grids) && uniqueKeys(core.scales);
 assert(listsOk, 'every dropdown list has distinct keys');
 
+// The help text is the shortest listing, so it must agree with the lists the
+// dropdowns read: a shape key missing from --help would look unavailable even
+// though --shape accepts it.
+var helpOut = require('child_process')
+  .execSync('node cli.js --help', {cwd: __dirname + '/..'}).toString();
+var helpShapes = core.shapes.every(function (s) {
+  return helpOut.indexOf(s.key) >= 0;
+});
+assert(helpShapes, '--help lists every shape key');
+
 // A dashed word that matches no flag is a typo, not a seed: the CLI says so
 // and still renders one world, rather than treating the stray word (and its
 // value) as extra seeds. Checked by counting the summaries it prints.
