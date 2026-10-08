@@ -42,7 +42,7 @@ var opts = parseArgs(process.argv.slice(2));
 
 if (opts.help) {
   console.log('usage: node cli.js "<seed>" [--width n] [--height n] [--palette name]');
-  console.log('       [--shape continents|islands|atolls|craton] [--sea 0..1]');
+  console.log('       [--shape continents|islands|atolls|craton|fjord] [--sea 0..1]');
   console.log('       [--detail 0..1] [--polar 0..1] [--light 0..1]');
   console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));

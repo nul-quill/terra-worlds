@@ -53,10 +53,12 @@
     });
     var next = '#' + parts.join('&');
     if (next !== location.hash) {
-      try { history.replaceState(null, '', next); } catch (e) { location.hash = next; }
+      history.replaceState(null, '', next);
     }
   }
 
+  // Only keys that are actually in the hash overwrite the defaults below, so
+  // a hand-written link with two values still leaves the rest sensible.
   function applyHash() {
     var fromUrl = readHash();
     Object.keys(HASH_KEYS).forEach(function (key) {
@@ -118,22 +120,27 @@
     });
     current = result;
 
-    off.width = result.width;
-    off.height = result.height;
-    var img = offCtx.createImageData(result.width, result.height);
-    img.data.set(result.data);
-    offCtx.putImageData(img, 0, 0);
-
     view.width = Math.round(rect.width * dpr);
     view.height = Math.round(rect.height * dpr);
-    ctx.imageSmoothingEnabled = false;
-    ctx.fillStyle = result.palette.sky;
-    ctx.fillRect(0, 0, view.width, view.height);
-    ctx.drawImage(off, 0, 0, view.width, view.height);
+    drawMap();
 
     drawHover();
     renderLegend(result);
     renderStats(result);
+  }
+
+  // Blit the generated grid onto the visible canvas, nearest-neighbour.
+  function drawMap() {
+    if (!current) return;
+    off.width = current.width;
+    off.height = current.height;
+    var img = offCtx.createImageData(current.width, current.height);
+    img.data.set(current.data);
+    offCtx.putImageData(img, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+    ctx.fillStyle = current.palette.sky;
+    ctx.fillRect(0, 0, view.width, view.height);
+    ctx.drawImage(off, 0, 0, view.width, view.height);
   }
 
   function drawHover() {
@@ -147,6 +154,38 @@
       var py = Math.floor(hover.y / cellY);
       ctx.strokeRect(px * cellX, py * cellY, cellX, cellY);
     }
+  }
+
+  // Repaint the map with one biome kept at full strength and the rest faded
+  // toward the sky colour, so a legend row can show where that class sits.
+  function drawHighlighted(key) {
+    if (!current) return;
+    var w = current.width, h = current.height;
+    var src = current.data;
+    var img = offCtx.createImageData(w, h);
+    var out = img.data;
+    var sky = hexToRgb(current.palette.sky);
+    for (var i = 0, o = 0; i < current.biome.length; i++, o += 4) {
+      var keep = current.biome[i] === key ? 1 : 0.35;
+      out[o] = src[o] * keep + sky[0] * (1 - keep);
+      out[o + 1] = src[o + 1] * keep + sky[1] * (1 - keep);
+      out[o + 2] = src[o + 2] * keep + sky[2] * (1 - keep);
+      out[o + 3] = 255;
+    }
+    off.width = w;
+    off.height = h;
+    offCtx.putImageData(img, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+    ctx.fillStyle = current.palette.sky;
+    ctx.fillRect(0, 0, view.width, view.height);
+    ctx.drawImage(off, 0, 0, view.width, view.height);
+  }
+
+  function hexToRgb(hex) {
+    var s = String(hex).replace('#', '');
+    if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+    var n = parseInt(s, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
   }
 
   function renderLegend(result) {
@@ -168,6 +207,9 @@
         pct.className = 'pct';
         pct.textContent = Math.round(counts[key] / result.stats.pixels * 100) + '%';
         li.appendChild(sw); li.appendChild(label); li.appendChild(pct);
+        // Hovering a row isolates that class on the map; leaving restores it.
+        li.addEventListener('mouseenter', function () { drawHighlighted(key); });
+        li.addEventListener('mouseleave', function () { drawMap(); });
         legendList.appendChild(li);
       });
   }
@@ -216,8 +258,20 @@
     var elev = above
       ? Math.round((h - current.seaLevel) / Math.max(0.001, 1 - current.seaLevel) * 100)
       : -Math.round((current.seaLevel - h) / Math.max(0.001, current.seaLevel) * 100);
-    readout.textContent = '(' + px + ', ' + py + ') — ' + (TerraCore.biomeNames[key] || key) +
-      ' — ' + (elev > 0 ? '+' : '') + elev + ' units';
+    var parts = [
+      '(' + px + ', ' + py + ')',
+      (TerraCore.biomeNames[key] || key),
+      (elev > 0 ? '+' : '') + elev + ' units'
+    ];
+    // Extra context when it costs nothing: how deep the standing water is, and
+    // whether this cell is on the drainage network.
+    if (above && current.lakeMask && current.lakeMask[i]) {
+      parts.push('depth ' + current.lakeMask[i]);
+    } else if (!above && h < current.seaLevel - 0.14) {
+      parts.push('off-shelf');
+    }
+    if (current.riverMask && current.riverMask[i]) parts.push('river');
+    readout.textContent = parts.join(' — ');
   }
 
   function savePng() {

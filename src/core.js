@@ -210,12 +210,23 @@
       return Math.pow(clamp01(h), 1.35);
     }
     if (shape === 'atolls') {
-      return clamp01(0.5 + (1 - Math.abs(h - 0.5) * 2) * 0.55 - 0.06);
+      // Ring islands around a lagoon: a narrow band of the base field rises
+      // above the sea, so the map reads as broken rims around open water
+      // instead of one continuous continent.
+      var band = 1 - Math.abs(h - 0.66) * 3.2;
+      return clamp01(0.30 + Math.pow(clamp01(band), 2) * 0.62);
     }
     if (shape === 'craton') {
       // Broad flat interiors with a narrow mountain ridge.
       var base = smoothstep(0.28, 0.72, h);
       return clamp01(base * 0.72 + Math.pow(smoothstep(0.55, 0.98, h), 2) * 0.34);
+    }
+    if (shape === 'fjord') {
+      // A high plateau sawn through by deep, narrow inlets: the ridge term is
+      // kept high, and the sharp valley term cuts channels straight through it.
+      // The valley term is the ridged field squared, so only the sharpest
+      // crests bite and the interior stays flat-topped.
+      return clamp01(Math.pow(clamp01(h), 0.85) * 0.86 + 0.06);
     }
     return clamp01(h);
   }
@@ -267,6 +278,15 @@
 
         var h = base * 0.72 + crest * 0.28;
         h = shapeHeight(h, shape);
+
+        // Fjord country: a second, sharper ridged field marks the channels, and
+        // only its sharpest crests bite, so the plateau stays flat-topped while
+        // the inlets are cut clean through to the sea.
+        if (shape === 'fjord') {
+          var ch2 = ridged(u * cols * 2, v * rows * 2, cols * 2, rows * 2, seed + 505, 2);
+          h -= smoothstep(0.58, 1.0, ch2) * 0.34;
+        }
+
         h = clamp01(h + (fine - 0.5) * detail);
 
         hf[i] = h;
@@ -345,7 +365,6 @@
     // Light direction for the hillshade, normalised.
     var lx = -0.55, ly = -0.62, lz = 0.56;
     var bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-    // Threshold scales with grid size so the same slider value behaves the
     // The cut is a fraction of the largest catchment rather than an absolute
     // cell count, so one slider value behaves the same on a small preview, a
     // large export, a flat craton and a fragmented island chain. The cut is a
@@ -463,7 +482,9 @@
         }
 
         // Rivers: strong accumulation carves a line through the land.
-        if (!isWater && riverMin > 0 && acc[i] > riverCut) {
+        // Standing water in a basin already reads as water, so the network is
+        // only drawn where it has to cut a channel.
+        if (!isWater && !inLake && riverMin > 0 && acc[i] > riverCut) {
           river[i] = 1;
           riverCells++;
         }
@@ -540,6 +561,8 @@
       data: data,
       biome: biome,
       heightField: hf,
+      lakeMask: lake,
+      riverMask: river,
       seaLevel: seaLevel,
       stats: stats,
       palette: pal

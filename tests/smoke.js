@@ -44,6 +44,20 @@ assert(up.width === 400 && up.height === 240, 'upscale doubles the grid');
 var terraced = core.generate({ seed: 'terraced', width: 165, height: 103, terraces: 8, rivers: 200 });
 assert(terraced.stats.rivers > 0, 'terraced plateaus still drain (' + terraced.stats.rivers + ' cells)');
 
+// Every shape must produce a usable map: non-degenerate land, and heights that
+// actually span the range rather than collapsing to one value.
+['continents', 'islands', 'atolls', 'craton', 'fjord'].forEach(function (shape) {
+  var r = core.generate({ seed: 'shape ' + shape, width: 180, height: 110, shape: shape });
+  var lo = 1, hi = 0;
+  for (var si = 0; si < r.heightField.length; si++) {
+    var hv = r.heightField[si];
+    if (hv < lo) lo = hv;
+    if (hv > hi) hi = hv;
+  }
+  assert(r.stats.land > 0.02 && r.stats.land < 0.99 && hi - lo > 0.2,
+    shape + ' spans a real height range (land=' + Math.round(r.stats.land * 100) + '%)');
+});
+
 var noRiver = core.generate({ seed: 'terraced', width: 165, height: 103, rivers: 0 });
 assert(noRiver.stats.rivers === 0, 'rivers=0 disables the drainage overlay');
 
