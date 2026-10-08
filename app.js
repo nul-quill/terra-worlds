@@ -298,6 +298,11 @@
       ['contours', s.contourBands + ' land / ' + s.basinBands + ' basin'],
       ['generate', s.ms + ' ms']
     ];
+    // When an overlay is on, say which one: the legend below still lists the
+    // biomes, so the two together explain what is being looked at.
+    if (result.channelName) {
+      rows.splice(rows.length - 1, 0, ['channel', result.channelName]);
+    }
     statsBox.textContent = '';
     rows.forEach(function (row) {
       var dt = document.createElement('dt');
@@ -326,7 +331,9 @@
     var bw = Math.round(cssW * dpr), bhPix = Math.round(cssH * dpr);
     if (histCanvas.width !== bw) histCanvas.width = bw;
     if (histCanvas.height !== bhPix) histCanvas.height = bhPix;
-    var BINS = 48;
+    // One bin per ~5 CSS pixels, clamped: a narrow sidebar with 48 bars reads
+    // as mush, a wide one with 24 wastes the space it is given.
+    var BINS = Math.max(20, Math.min(72, Math.round(cssW / 5)));
     var hist = new Array(BINS);
     var hf = result.heightField;
     // Bins span the actual range of this world rather than 0..1, so a low
