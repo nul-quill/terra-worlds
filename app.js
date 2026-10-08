@@ -12,14 +12,58 @@
     seed: document.getElementById('seed'),
     palette: document.getElementById('palette'),
     shape: document.getElementById('shape'),
+    scale: document.getElementById('scale'),
     seaLevel: document.getElementById('seaLevel'),
     detail: document.getElementById('detail'),
+    polar: document.getElementById('polar'),
     terraces: document.getElementById('terraces'),
     hillshade: document.getElementById('hillshade'),
     rivers: document.getElementById('rivers')
   };
 
   var PRESETS = ['aurora basin', 'salt mirror', 'thousand isles', 'red ridge', 'pale shelf'];
+
+  // The whole option set lives in the URL hash, so a finished world can be
+  // pasted into a chat and reopen identically. Keys are short to keep the hash
+  // readable; anything missing falls back to the default below.
+  var HASH_KEYS = {
+    seed: 'seed', palette: 'pal', shape: 'shape', seaLevel: 'sea',
+    detail: 'det', polar: 'cli', terraces: 'stp', hillshade: 'lit',
+    rivers: 'riv', scale: 's'
+  };
+
+  function readHash() {
+    var out = {};
+    var raw = String(location.hash || '').replace(/^#/, '');
+    if (!raw) return out;
+    raw.split('&').forEach(function (pair) {
+      var at = pair.indexOf('=');
+      if (at < 1) return;
+      out[pair.slice(0, at)] = decodeURIComponent(pair.slice(at + 1));
+    });
+    return out;
+  }
+
+  function writeHash() {
+    var parts = [];
+    Object.keys(HASH_KEYS).forEach(function (key) {
+      var el = inputs[key];
+      if (!el) return;
+      parts.push(HASH_KEYS[key] + '=' + encodeURIComponent(el.value));
+    });
+    var next = '#' + parts.join('&');
+    if (next !== location.hash) {
+      try { history.replaceState(null, '', next); } catch (e) { location.hash = next; }
+    }
+  }
+
+  function applyHash() {
+    var fromUrl = readHash();
+    Object.keys(HASH_KEYS).forEach(function (key) {
+      var value = fromUrl[HASH_KEYS[key]];
+      if (value != null && value !== '' && inputs[key]) inputs[key].value = value;
+    });
+  }
 
   var off = document.createElement('canvas');
   var offCtx = off.getContext('2d');
@@ -47,6 +91,7 @@
       shape: inputs.shape.value,
       seaLevel: parseFloat(inputs.seaLevel.value),
       detail: parseFloat(inputs.detail.value),
+      polar: parseFloat(inputs.polar.value),
       terraces: parseInt(inputs.terraces.value, 10),
       hillshade: parseFloat(inputs.hillshade.value),
       rivers: parseInt(inputs.rivers.value, 10)
@@ -57,6 +102,7 @@
 
   function render() {
     var opts = readOptions();
+    writeHash();
     var rect = view.getBoundingClientRect();
     var dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
 
@@ -67,6 +113,7 @@
     var result = TerraCore.generate({
       seed: opts.seed, palette: opts.palette, shape: opts.shape,
       seaLevel: opts.seaLevel, detail: opts.detail, terraces: opts.terraces,
+      polar: opts.polar,
       hillshade: opts.hillshade, rivers: opts.rivers, width: cols, height: rows
     });
     current = result;
@@ -131,6 +178,7 @@
       ['grid', result.width + ' x ' + result.height],
       ['land', Math.round(s.land * 100) + '%'],
       ['water', Math.round(s.water * 100) + '%'],
+      ['lake', Math.round((s.counts.lake || 0) / s.pixels * 100) + '%'],
       ['ice', Math.round(s.ice * 100) + '%'],
       ['river cells', String(s.rivers)],
       ['generate', s.ms + ' ms']
@@ -174,7 +222,7 @@
 
   function savePng() {
     if (!current) return;
-    var big = TerraCore.upscale(current, 3);
+    var big = TerraCore.upscale(current, parseInt(inputs.scale.value, 10) || 3);
     var c = document.createElement('canvas');
     c.width = big.width;
     c.height = big.height;
@@ -195,9 +243,13 @@
   inputs.seed.value = PRESETS[0];
   inputs.seaLevel.value = '0.48';
   inputs.detail.value = '0.35';
+  inputs.polar.value = '0.70';
   inputs.terraces.value = '0';
   inputs.hillshade.value = '0.55';
   inputs.rivers.value = '90';
+  inputs.scale.value = '3';
+  // Anything in the address bar wins over the defaults above.
+  applyHash();
 
   Object.keys(inputs).forEach(function (key) {
     inputs[key].addEventListener('change', render);
@@ -206,6 +258,7 @@
     });
   });
   inputs.seed.addEventListener('input', render);
+  window.addEventListener('hashchange', function () { applyHash(); render(); });
 
   document.getElementById('reroll').addEventListener('click', function () {
     inputs.seed.value = String(TerraCore.randomSeed());

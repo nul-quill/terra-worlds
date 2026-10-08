@@ -106,6 +106,7 @@
       sky: '#eef3ef',
       colors: {
         deep: [43, 86, 108], shallow: [92, 158, 178], beach: [214, 199, 143],
+        lake: [126, 176, 170],
         grass: [110, 160, 82], forest: [61, 120, 71], rain: [44, 106, 68],
         seasonal: [96, 143, 96], savanna: [180, 166, 96], shrub: [136, 152, 110],
         desert: [213, 178, 108], taiga: [74, 116, 100], tundra: [181, 193, 176],
@@ -117,6 +118,7 @@
       sky: '#f3ece4',
       colors: {
         deep: [96, 74, 66], shallow: [140, 106, 88], beach: [206, 168, 130],
+        lake: [168, 128, 104],
         grass: [186, 138, 96], forest: [150, 100, 72], rain: [128, 88, 66],
         seasonal: [172, 128, 90], savanna: [198, 156, 108], shrub: [160, 122, 92],
         desert: [222, 186, 140], taiga: [132, 92, 74], tundra: [214, 196, 176],
@@ -128,6 +130,7 @@
       sky: '#f0eef6',
       colors: {
         deep: [38, 62, 92], shallow: [72, 148, 168], beach: [226, 214, 168],
+        lake: [104, 178, 176],
         grass: [122, 196, 156], forest: [58, 148, 140], rain: [40, 128, 122],
         seasonal: [140, 190, 140], savanna: [196, 190, 128], shrub: [150, 170, 150],
         desert: [226, 190, 130], taiga: [86, 132, 148], tundra: [196, 208, 206],
@@ -139,6 +142,7 @@
       sky: '#f6f8fa',
       colors: {
         deep: [28, 48, 78], shallow: [58, 96, 130], beach: [196, 212, 224],
+        lake: [128, 158, 186],
         grass: [124, 160, 186], forest: [70, 110, 148], rain: [48, 88, 126],
         seasonal: [104, 138, 166], savanna: [150, 176, 196], shrub: [132, 154, 172],
         desert: [206, 218, 228], taiga: [86, 118, 146], tundra: [186, 200, 212],
@@ -150,6 +154,7 @@
       sky: '#f7f2e8',
       colors: {
         deep: [92, 78, 60], shallow: [138, 118, 90], beach: [222, 205, 172],
+        lake: [176, 158, 126],
         grass: [168, 148, 106], forest: [120, 104, 72], rain: [96, 84, 60],
         seasonal: [150, 132, 96], savanna: [190, 170, 124], shrub: [156, 140, 108],
         desert: [226, 206, 166], taiga: [130, 112, 82], tundra: [208, 196, 174],
@@ -161,6 +166,7 @@
       sky: '#ffffff',
       colors: {
         deep: [58, 62, 66], shallow: [104, 110, 116], beach: [226, 228, 230],
+        lake: [140, 146, 152],
         grass: [168, 172, 176], forest: [120, 126, 130], rain: [92, 98, 102],
         seasonal: [146, 152, 156], savanna: [186, 190, 194], shrub: [158, 164, 168],
         desert: [212, 214, 216], taiga: [132, 138, 142], tundra: [200, 203, 206],
@@ -171,6 +177,7 @@
 
   var BIOME_NAMES = {
     deep: 'Deep water', shallow: 'Shallows', beach: 'Coastal sand',
+    lake: 'Inland lake',
     grass: 'Grassland', forest: 'Temperate forest', rain: 'Rain forest',
     seasonal: 'Seasonal forest', savanna: 'Savanna', shrub: 'Shrubland',
     desert: 'Desert', taiga: 'Boreal forest', tundra: 'Tundra',
@@ -272,6 +279,25 @@
       }
     }
 
+    // Orographic moisture: a westerly airmass climbs the terrain and drops its
+    // load, so the leeward side of a ridge comes out drier than the windward
+    // side. Sweeping each row left to right is enough to get the effect, and it
+    // keeps biome choice tied to the relief instead of an independent field.
+    for (y = 0; y < height; y++) {
+      var rowBase = y * width;
+      var air = mf[rowBase];
+      var prev = hf[rowBase];
+      for (x = 1; x < width; x++) {
+        i = rowBase + x;
+        var dh = hf[i] - prev;
+        if (dh > 0) air -= dh * 0.85;
+        else air += -dh * 0.30;
+        air += (mf[i] - air) * 0.35;
+        prev = hf[i];
+        mf[i] = clamp01(air);
+      }
+    }
+
     // Terracing: quantise the land only, so coastlines stay crisp.
     if (terraces > 1) {
       for (i = 0; i < n; i++) {
@@ -293,6 +319,8 @@
     for (i = 0; i < n; i++) acc[i] = 1;
 
     var river = new Uint8Array(n);
+    var lake = new Uint8Array(n);
+
     // Walk from the highest rank downwards, so every upstream cell has already
     // contributed by the time its outlet is visited. On an equal-height plateau
     // the outlet is the higher-indexed neighbour, which still drains it.
@@ -330,6 +358,76 @@
     var qIndex = Math.min(n - 1, Math.round((1 - keep) * (n - 1)));
     var riverCut = accSorted[qIndex];
 
+    // Lakes are closed depressions. A cell holds water when every route off it
+    // climbs: compare its height against the lowest point on a ring of radius
+    // RIM around it, and the gap between ring and cell is the water depth.
+    // Two separable min filters (rows, then columns) give window minima in
+    // linear time; the ring is the four window minima on the ring itself.
+    var RIM = 4;
+    var rowMin = new Float32Array(n);
+    for (y = 0; y < height; y++) {
+      var row = y * width;
+      for (x = 0; x < width; x++) {
+        var loX = x - RIM < 0 ? 0 : x - RIM;
+        var hiX = x + RIM > width - 1 ? width - 1 : x + RIM;
+        var m = hf[row + x];
+        for (var k = loX; k <= hiX; k++) { if (hf[row + k] < m) m = hf[row + k]; }
+        rowMin[row + x] = m;
+      }
+    }
+    var colMin = new Float32Array(n);
+    for (x = 0; x < width; x++) {
+      for (y = 0; y < height; y++) {
+        var loY = y - RIM < 0 ? 0 : y - RIM;
+        var hiY = y + RIM > height - 1 ? height - 1 : y + RIM;
+        var m2 = hf[y * width + x];
+        for (var k2 = loY; k2 <= hiY; k2++) { if (hf[k2 * width + x] < m2) m2 = hf[k2 * width + x]; }
+        colMin[y * width + x] = m2;
+      }
+    }
+
+    function ringMinimum(px, py) {
+      var a = Math.max(0, py - RIM) * width + px;
+      var b = Math.min(height - 1, py + RIM) * width + px;
+      var c = py * width + Math.max(0, px - RIM);
+      var d = py * width + Math.min(width - 1, px + RIM);
+      var best = rowMin[a];
+      if (rowMin[b] < best) best = rowMin[b];
+      if (colMin[c] < best) best = colMin[c];
+      if (colMin[d] < best) best = colMin[d];
+      return best;
+    }
+
+    // Fill the mask: depth is the rim-to-floor gap, capped so a deep basin and
+    // Fill each basin: the water surface sits at the lowest point of the ring
+    // around the seed, and every cell reachable from the seed without climbing
+    // above that surface is under water. Depth is surface minus floor, capped
+    // so a deep basin and a shallow both read as water rather than a hole.
+    var queue = new Int32Array(n);
+    for (y = 0; y < height; y++) {
+      for (x = 0; x < width; x++) {
+        i = y * width + x;
+        if (hf[i] < seaLevel || lake[i]) continue;
+        var gap = ringMinimum(x, y) - hf[i];
+        if (gap <= 0.006) continue;
+        var surface = hf[i] + gap;
+        var head = 0, tail = 0;
+        queue[tail++] = i;
+        while (head < tail) {
+          var cur = queue[head++];
+          var ch = hf[cur];
+          if (ch > surface) continue;
+          var d = surface - ch;
+          lake[cur] = Math.max(1, Math.round(Math.min(1, d / 0.09) * 60));
+          var cx2 = cur % width, cy2 = (cur / width) | 0;
+          if (cx2 > 0 && !lake[cur - 1] && hf[cur - 1] <= surface) queue[tail++] = cur - 1;
+          if (cx2 < width - 1 && !lake[cur + 1] && hf[cur + 1] <= surface) queue[tail++] = cur + 1;
+          if (cy2 > 0 && !lake[cur - width] && hf[cur - width] <= surface) queue[tail++] = cur - width;
+          if (cy2 < height - 1 && !lake[cur + width] && hf[cur + width] <= surface) queue[tail++] = cur + width;
+        }
+      }
+    }
+
     for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
         i = y * width + x;
@@ -342,19 +440,24 @@
           key = h < seaLevel - 0.14 ? 'deep' : 'shallow';
         } else {
           landCells++;
+          var inLake = lake[i] > 0;
           var nearCoast =
             (y > 0 && hf[i - width] < seaLevel) ||
             (y < height - 1 && hf[i + width] < seaLevel) ||
             (x > 0 && hf[i - 1] < seaLevel) ||
             (x < width - 1 && hf[i + 1] < seaLevel);
-          if (h < seaLevel + 0.035 || nearCoast) {
+          if (inLake) {
+            key = 'lake';
+          } else if (h < seaLevel + 0.035 || nearCoast) {
             key = 'beach';
           } else if (tf[i] < 0.20 && h < 0.86) {
             key = 'ice';
           } else if (h > 0.88) {
             key = 'rock';
           } else {
-            var moist = clamp01(mf[i] + (seaLevel + 0.10 - h) * 0.35);
+            // Lakes and rivers green their surroundings slightly.
+            var moist = clamp01(mf[i] + (seaLevel + 0.10 - h) * 0.35 +
+              (lake[i - 1] || lake[i + 1] || lake[i - width] || lake[i + width] ? 0.10 : 0));
             key = biomeFromTempMoist(tf[i], moist);
           }
         }
@@ -376,6 +479,17 @@
           var depth = clamp01((seaLevel - h) / Math.max(0.001, seaLevel));
           var dw = 1 - depth * 0.30;
           r *= dw; g *= dw; b *= dw;
+        } else if (lake[i]) {
+          var ldepth = lake[i] / 60;
+          var lw = 1 - ldepth * 0.22;
+          r *= lw; g *= lw; b *= lw;
+        } else if (h > 0.80) {
+          // Snow line: high ground fades toward the ice colour, so peaks read
+          // as caps on top of whatever biome the slope carries.
+          var sn = clamp01((h - 0.80) / 0.16) * 0.85;
+          r += (colors.ice[0] - r) * sn;
+          g += (colors.ice[1] - g) * sn;
+          b += (colors.ice[2] - b) * sn;
         }
 
         // Hillshade from the height gradient.

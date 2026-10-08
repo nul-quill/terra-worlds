@@ -47,6 +47,23 @@ assert(terraced.stats.rivers > 0, 'terraced plateaus still drain (' + terraced.s
 var noRiver = core.generate({ seed: 'terraced', width: 165, height: 103, rivers: 0 });
 assert(noRiver.stats.rivers === 0, 'rivers=0 disables the drainage overlay');
 
+// Inland lakes: closed depressions must be detected on a plain-ish grid.
+var withLakes = core.generate({ seed: 'pale shelf', width: 200, height: 120 });
+var lakeCells = withLakes.stats.counts.lake || 0;
+assert(lakeCells > 0, 'inland lakes detected (' + lakeCells + ' cells)');
+var lakeFilled = 0;
+for (var li = 0; li < withLakes.biome.length; li++) {
+  if (withLakes.biome[li] === 'lake') lakeFilled++;
+}
+assert(lakeFilled === lakeCells, 'lake biome matches the lake mask');
+
+// Climate: pushing the slider toward the poles must cool the world.
+var warm = core.generate({ seed: 'pale shelf', width: 160, height: 100, polar: 0 });
+var cold = core.generate({ seed: 'pale shelf', width: 160, height: 100, polar: 1 });
+var coldBiomes = function (r) { return (r.stats.counts.ice || 0) + (r.stats.counts.tundra || 0); };
+assert(coldBiomes(cold) > coldBiomes(warm),
+  'climate slider cools the world (' + coldBiomes(warm) + ' -> ' + coldBiomes(cold) + ')');
+
 assert(core.hashString('a') !== core.hashString('b'), 'hash distinguishes seeds');
 
 console.log('\nsummary: ' + a.width + 'x' + a.height +

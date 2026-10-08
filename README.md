@@ -8,6 +8,11 @@ node tests/smoke.js     # headless checks
 node cli.js "aurora basin" --width 320 --height 200 --out world.ppm
 ```
 
+Every control is mirrored into the URL hash (`#seed=...&pal=sepia&sea=0.6&...`),
+so a finished world can be pasted into a chat and reopened identically. Loading a
+hash fills the controls before the first render; anything absent falls back to the
+default. `export` picks the nearest-neighbour multiplier used by Save PNG.
+
 ## What it does
 
 Every world is a pure function of a seed string. The same seed renders the same
@@ -19,14 +24,20 @@ Pipeline, all on the CPU:
    spines, then a shape curve (`continents`, `islands`, `atolls`, `craton`) and an
    optional high-frequency detail term.
 2. **Climate** — a moisture field plus a latitude-driven temperature band, mixed
-   with a low-frequency noise so zones are not pure horizontal stripes.
+   with a low-frequency noise so zones are not pure horizontal stripes. The `climate`
+   slider blends between a flat temperature profile and a strict latitude ladder.
+   A short orographic pass then lets a westerly airmass lose moisture on the windward
+   side of a ridge, so the leeward side comes out a band drier.
 3. **Drainage** — cells are visited highest-first and each one pushes its
    accumulation into its lowest neighbour, which yields dendritic river networks
    without any per-frame work.
-4. **Biomes** — a temperature x moisture lookup gives 11 land/water classes; coast
-   cells, polar ice caps and alpine rock are resolved on top.
-5. **Shading** — a hillshade from the height gradient, a 4x4 Bayer dither to kill
-   banding, and depth falloff under water.
+4. **Basins** — a cell holds water when every route off it climbs. Comparing its
+   height against the minimum on a ring around it gives the water surface, and a
+   flood fill up to that surface fills the basin. Lakes also green their shore.
+5. **Biomes** — a temperature x moisture lookup gives 11 land/water classes; coast
+   cells, polar ice caps, snow caps and alpine rock are resolved on top.
+6. **Shading** — a hillshade from the height gradient, a 4x4 Bayer dither to kill
+   banding, and depth falloff under water and in lakes.
 
 The noise lattice counts are integers and every octave doubles them, so the field
 tiles seamlessly on both axes — pan or tile the map with no visible seam.

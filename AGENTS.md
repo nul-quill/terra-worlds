@@ -22,6 +22,12 @@ Conventions:
   terracing. Do not replace it with a fixed threshold.
 - Drainage walks the height field highest-rank-first with an index tie-break,
   otherwise terraced plateaus stop draining and rivers disappear.
+- Lakes are closed depressions: the water surface is the minimum on a ring of
+  radius `RIM` around the seed cell, and the basin is a flood fill capped at that
+  surface. The old single-cell test (`gap > threshold` only) left one-pixel dots.
+- Moisture is not a standalone field: the orographic pass in `generate` folds the
+  relief into it, so ridges get a windward wet band and a leeward rain shadow.
+  Keep it a per-row sweep — it is O(n) and must stay that way.
 
 Verify with:
 

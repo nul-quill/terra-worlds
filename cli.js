@@ -15,6 +15,8 @@ function parseArgs(argv) {
     else if (a === '--shape') opts.shape = argv[++i];
     else if (a === '--sea') opts.seaLevel = parseFloat(argv[++i]);
     else if (a === '--detail') opts.detail = parseFloat(argv[++i]);
+    else if (a === '--polar') opts.polar = parseFloat(argv[++i]);
+    else if (a === '--light') opts.hillshade = parseFloat(argv[++i]);
     else if (a === '--terraces') opts.terraces = parseInt(argv[++i], 10);
     else if (a === '--rivers') opts.rivers = parseInt(argv[++i], 10);
     else if (a === '--out') opts.out = argv[++i];
@@ -41,7 +43,8 @@ var opts = parseArgs(process.argv.slice(2));
 if (opts.help) {
   console.log('usage: node cli.js "<seed>" [--width n] [--height n] [--palette name]');
   console.log('       [--shape continents|islands|atolls|craton] [--sea 0..1]');
-  console.log('       [--detail 0..1] [--terraces n] [--rivers n] [--out file.ppm]');
+  console.log('       [--detail 0..1] [--polar 0..1] [--light 0..1]');
+  console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
 } else {
   var result = core.generate(opts);
@@ -53,6 +56,7 @@ if (opts.help) {
   console.log('grid      ' + result.width + ' x ' + result.height);
   console.log('land      ' + Math.round(s.land * 100) + '%');
   console.log('water     ' + Math.round(s.water * 100) + '%');
+  console.log('lake      ' + Math.round((s.counts.lake || 0) / s.pixels * 100) + '%');
   console.log('ice       ' + Math.round(s.ice * 100) + '%');
   console.log('rivers    ' + s.rivers + ' cells');
   console.log('biomes    ' + Object.keys(s.counts).length);
