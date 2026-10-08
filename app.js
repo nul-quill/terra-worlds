@@ -1105,7 +1105,19 @@
         }
         var cell = currentCell();
         ev.preventDefault();
-        hoverCell(cell[0] + step[0], cell[1] + step[1]);
+        // Wrap at the edges rather than sticking: walking a coastline in one
+        // direction should keep going, and a clamped walk stalls on the last
+        // column until the other direction is pressed. hoverCell still clamps,
+        // so a hash-restored index outside a smaller grid stays sane.
+        var nx = cell[0] + step[0];
+        var ny = cell[1] + step[1];
+        if (current) {
+          if (nx < 0) nx += current.width;
+          else if (nx >= current.width) nx -= current.width;
+          if (ny < 0) ny += current.height;
+          else if (ny >= current.height) ny -= current.height;
+        }
+        hoverCell(nx, ny);
       }
       return;
     }

@@ -92,7 +92,9 @@ that lake cover resolves into. Each one keeps its own water and spills over its
 own lowest rim cell, so the number says whether the interior is a handful of big
 The CLI record carries the same field as `lakeBasins`.
 Arrow keys walk the hovered cell, so the readout can be inspected without a
-pointer; they are ignored while a form field has the caret.
+pointer; they are ignored while a form field has the caret. The walk wraps at
+the edges, so pressing one direction keeps sweeping the map instead of sticking
+to the last column.
 Hovering a bar in the relief chart also lights up the cells in that height band
 on the map, the same way hovering a legend row isolates a class. A legend row
 takes priority while the pointer is on it, and leaving either one restores the

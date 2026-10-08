@@ -118,6 +118,10 @@ Conventions:
     replays it through `hoverCell()` when no pointer hover is active — that is the
     only writer of the pair, so keep the clamp inside `hoverCell()` rather than
     trimming the indices at parse time.
+    The arrow handler wraps its own pair before calling `hoverCell()`, so a walk
+    in one direction keeps sweeping instead of sticking on the last column; the
+    clamp in `hoverCell()` still handles a hash-restored index outside a smaller
+    grid.
 - Legend isolation lives in `drawMap()`: `solo` follows the pointer/focus,
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend
