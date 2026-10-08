@@ -55,7 +55,9 @@ pointer; they are ignored while a form field has the caret.
 Hovering a bar in the relief chart also lights up the cells in that height band
 on the map, the same way hovering a legend row isolates a class. A legend row
 takes priority while the pointer is on it, and leaving either one restores the
-full map.
+full map. The legend works the other way too: bins that hold no cell of the
+selected class dim in the chart, so a row shows the slice of the height range it
+occupies. Every filter is a preview — only a clicked row ends up in the URL hash.
 The hover crosshair and its hairlines take the palette's own ink, so they stay
 visible on the pale sky of `Sepia` or `Mono` instead of washing out.
 `c` steps through the overlays and back to the biome map. The hover readout

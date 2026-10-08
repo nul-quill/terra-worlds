@@ -255,6 +255,10 @@
     // every cell is exactly the same number of device pixels.
     var cs = cellSize();
     ctx.drawImage(off, 0, 0, current.width * cs.w, current.height * cs.h);
+    // The relief chart reads the same selection, so it is repainted from this
+    // one place too: every path that changes what is highlighted goes through
+    // here, and the two views cannot end up showing different filters.
+    paintHistogram(band);
   }
 
   // Whole-device-pixel cell size, matching what render() chose for the grid.
@@ -547,6 +551,24 @@
     if (seaX > w) seaX = w;
     hc.fillStyle = result.palette.sky;
     hc.fillRect(0, 0, w, h);
+    // Which bins hold the class the legend is pointing at. Without this the
+    // chart always shows the same silhouette, so a hovered row tells you
+    // nothing about where that class sits in the height range. Only computed
+    // when a class is actually selected and no bin is hovered.
+    var member = null;
+    var want = solo || pinned;
+    // Same priority as the map: a legend selection beats a hovered bin, so the
+    // two views cannot disagree while both filters are live.
+    if (want) only = -1;
+    if (only < 0 && want && result.biome) {
+      member = new Array(BINS);
+      var hf = result.heightField;
+      for (i = 0; i < result.biome.length; i++) {
+        if (result.biome[i] !== want) continue;
+        member[Math.min(BINS - 1,
+          Math.floor((hf[i] - lo) / span * BINS))] = 1;
+      }
+    }
     // Bars take the palette's own water and grass triples, so the little chart
     // reads as part of the world it describes rather than the page chrome.
     var wet = result.palette.colors.shallow;
@@ -556,7 +578,8 @@
       // tallest bar never sits on top of the numbers.
       var bh = peak ? hist[i] / peak * (h - 12) : 0;
       var c = lo + (i + 0.5) / BINS * span < result.seaLevel ? wet : dry;
-      var keep = only < 0 || i === only ? 1 : 0.45;
+      var on = only < 0 ? (!member || member[i]) : i === only;
+      var keep = on ? 1 : 0.45;
       hc.fillStyle = 'rgb(' +
         Math.round(c[0] * keep + 255 * (1 - keep)) + ',' +
         Math.round(c[1] * keep + 255 * (1 - keep)) + ',' +
@@ -851,14 +874,14 @@
     var x = ev.clientX - rect.left;
     var bin = Math.floor(x / Math.max(1, rect.width) * histState.bins);
     band = bin < 0 ? 0 : Math.min(histState.bins - 1, bin);
-    paintHistogram(band);
     // And the matching cells on the map, so the two charts can be read against
-    // each other without moving the pointer back and forth.
+    // each other without moving the pointer back and forth. drawHover() goes
+    // through drawMap(), which repaints this chart with the same `band`, so one
+    // call keeps both views in step.
     drawHover();
   });
   histCanvas.addEventListener('mouseleave', function () {
     band = -1;
-    paintHistogram(-1);
     drawHover();
   });
 

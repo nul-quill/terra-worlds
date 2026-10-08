@@ -71,6 +71,10 @@ Conventions:
   same loop: it selects by height instead of by class, and a legend selection
   wins over it. Like `solo` it is a preview and never goes into the hash; both
   are cleared when the pointer leaves the map.
+  The chart reads the same three filters in `paintHistogram()`: a hovered bin
+  dims the other bars, a legend selection dims the bins with none of that class.
+  `drawMap()` calls `paintHistogram()` so one repaint keeps both views in step —
+  do not repaint the chart from the individual handlers.
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.
