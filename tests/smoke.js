@@ -216,6 +216,14 @@ assert(Math.abs(smallShare - bigShare) < 0.04,
   'river density holds across grid sizes (' + (smallShare * 100).toFixed(1) + '% vs ' +
   (bigShare * 100).toFixed(1) + '%)');
 
+// The summary sentence is shared by the page and the CLI, so it must name the
+// shape, the dominant class and stay identical for the same seed.
+var said = core.describe(a);
+assert(said === core.describe(core.generate({ seed: 'aurora basin', width: 200, height: 120 })) &&
+  said.indexOf('continents') === 0 &&
+  /land/.test(said) && said.length > 20,
+  'summary sentence is stable (' + said + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

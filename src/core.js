@@ -723,6 +723,7 @@
       riverMask: river,
       coastDistance: dist,
       seaLevel: seaLevel,
+      shape: shape,
       stats: stats,
       palette: pal
     };
@@ -806,10 +807,34 @@
     return (Math.random() * 4294967295) >>> 0;
   }
 
+  // One line that puts a world into words: the shape it was cut from, how much
+  // relief it carries, how much of it is dry, and which class covers most of
+  // it. Both the sidebar and the CLI print this, so a saved PNG and a terminal
+  // listing describe a world the same way.
+  function describe(result) {
+    var s = result.stats;
+    var top = null, topCount = -1;
+    Object.keys(s.counts).forEach(function (key) {
+      if (s.counts[key] > topCount) { topCount = s.counts[key]; top = key; }
+    });
+    var relief = Math.round((s.max - s.min) * 100);
+    var word = relief > 70 ? 'rugged' : relief > 40 ? 'rolling' : 'plain';
+    var parts = [
+      result.shape,
+      word + ' (' + relief + ')',
+      Math.round(s.land * 100) + '% land',
+      'mostly ' + (BIOME_NAMES[top] || top)
+    ];
+    if (s.counts.lake) parts.push('with lakes');
+    if (s.ice > 0.02) parts.push('polar');
+    return parts.join(' · ');
+  }
+
   global.TerraCore = {
     generate: generate,
     upscale: upscale,
     channelize: channelize,
+    describe: describe,
     hashString: hashString,
     randomSeed: randomSeed,
     palettes: PALETTES,

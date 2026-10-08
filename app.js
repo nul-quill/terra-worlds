@@ -310,23 +310,9 @@
     // One line that describes the world in words rather than numbers: the shape
     // it was cut from, how much of it is dry, how much relief it carries, and
     // which class covers most of it. Reads better than scanning the table below.
+    // Built in the core so the CLI prints the same sentence for the same seed.
     function renderSummary(result) {
-      var s = result.stats;
-      var top = null, topCount = -1;
-      Object.keys(s.counts).forEach(function (key) {
-        if (s.counts[key] > topCount) { topCount = s.counts[key]; top = key; }
-      });
-      var relief = Math.round((s.max - s.min) * 100);
-      var shapeWord = relief > 70 ? 'rugged' : relief > 40 ? 'rolling' : 'plain';
-      var parts = [
-        inputs.shape.value,
-        shapeWord + ' (' + relief + ')',
-        Math.round(s.land * 100) + '% land',
-        'mostly ' + (TerraCore.biomeNames[top] || top)
-      ];
-      if (s.counts.lake) parts.push('with lakes');
-      if (s.ice > 0.02) parts.push('polar');
-      summaryLine.textContent = parts.join(' · ');
+      summaryLine.textContent = TerraCore.describe(result);
     }
 
   function renderStats(result) {
@@ -558,6 +544,9 @@
     // and the grid size tell you which of the many rerolls this was.
     var nameParts = ['terra', inputs.seed.value || 'world', inputs.shape.value,
       current.width + 'x' + current.height];
+    // Shape comes off the result rather than the select, so a name written from
+    // a hash that skipped the control still matches the world on screen.
+    nameParts[2] = current.shape || nameParts[2];
     a.download = nameParts.join('-').replace(/\s+/g, '_') + '.png';
     a.href = c.toDataURL('image/png');
     a.click();

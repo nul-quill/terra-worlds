@@ -101,13 +101,15 @@ function summarise(seed, result, name, asJson) {
     relief: Math.round((s.max - s.min) * 100),
     contourBands: s.contourBands, basinBands: s.basinBands,
     biomes: Object.keys(s.counts).length,
+    summary: core.describe(result),
     ms: s.ms, file: name
   };
   if (asJson) return JSON.stringify(rec);
   var lines = [];
   Object.keys(rec).forEach(function (k) {
     var label = k;
-    while (label.length < 9) label += ' ';
+    // Longest key is 'contourBands', so the value column starts after it.
+    while (label.length < 13) label += ' ';
     lines.push(label + rec[k]);
   });
   return lines.join('\n');
