@@ -263,8 +263,12 @@
     var y0 = Math.max(0, Math.min(current.height - span, py - (span >> 1)));
     var size = Math.round(Math.min(view.width, view.height) * 0.28);
     var pad = Math.round(size * 0.10);
-    var dx = view.width - size - pad;
-    var dy = view.height - size - pad;
+    // Put the inset in whichever half of the canvas the cursor is NOT in, so
+    // the cell being inspected is never hidden behind its own magnifier. The
+    // choice is a comparison, not a random offset, so the same hover still
+    // produces the same pixels.
+    var dx = px * 2 > current.width ? pad : view.width - size - pad;
+    var dy = py * 2 > current.height ? pad : view.height - size - pad;
     ctx.save();
     ctx.fillStyle = 'rgba(255,255,255,0.85)';
     ctx.fillRect(dx - 2, dy - 2, size + 4, size + 4);
