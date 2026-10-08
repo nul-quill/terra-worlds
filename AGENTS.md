@@ -108,6 +108,9 @@ Conventions:
   after it is skipped, so a mistyped `--widht 30` costs one warning instead of
   quietly rendering a second world from the number `30`. Keep that skip in the
   parser rather than filtering the seed list afterwards.
+  `--describe` prints the bare summary for one seed and prefixes each line with
+  its seed when several are given, matching the `--next --describe` form, so a
+  block of sentences is still traceable to its phrase.
 - Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
   (`x` joins that list: it is not a list cycle but a call to `copyLink()`, the
   same function the `Copy link` button is wired to, so the two paths cannot

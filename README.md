@@ -19,6 +19,9 @@ grid the stats are computed from, so a small grid can still fill a screen.
 `--describe` prints only the one-line summary — the same sentence the sidebar
 shows — and skips the `.ppm` file, which is handy for a quick comparison of
 seeds.
+With several seeds at once each line is prefixed with its own seed, so a block
+of sentences can still be traced back to the phrase that produced it; a single
+seed keeps the bare sentence, which is what the sidebar prints.
 `--palettes` lists the palette keys the `--palette` flag takes, with the label
 each one shows in the dropdown and the sky colour the chart is washed with.
 `--shapes` does the same for the shape keys. Both lists come from the generator

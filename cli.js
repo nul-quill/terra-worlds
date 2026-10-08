@@ -141,7 +141,8 @@ if (opts.help) {
   console.log('       [--scale n] nearest-neighbour multiplier applied to the');
   console.log('       saved pixels, so a small grid can still fill a screen');
   console.log('       [--describe] to print only the one-line summary and skip');
-  console.log('       the .ppm file entirely');
+  console.log('       the .ppm file entirely; with several seeds each line');
+  console.log('       also carries its own seed');
   console.log('       [--next n] with one seed to print that seed plus the n-1 seeds');
   console.log('       the Reroll button derives from it, one per line');
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
@@ -260,7 +261,11 @@ if (opts.help) {
     // --describe is the quick look: no file, just the sentence. The stats in
     // the sentence come from the grid as generated, before any upscale.
     if (opts.describe) {
-      console.log(core.describe(result));
+      // One seed: just the sentence. Several: each line also names its seed, so
+      // a block of summaries can still be traced back to a phrase — the same
+      // shape `--next --describe` prints.
+      var saidLine = core.describe(result);
+      console.log(opts.seeds.length > 1 ? seed + '  ' + saidLine : saidLine);
       return;
     }
     // The extension picks the encoder: .png gets the PNG writer, anything

@@ -469,6 +469,16 @@ var typoOut = require('child_process')
 assert(typoOut.length === 1 && typoOut[0].indexOf('(') > 0,
   'a mistyped flag does not add a second world (' + typoOut.length + ')');
 
+// Several seeds at once: every summary line has to name its own seed, or a
+// block of sentences cannot be traced back to the phrase that made it. One
+// seed keeps the bare sentence, which is what the page prints.
+var manyOut = require('child_process')
+  .execSync('node cli.js "pale shelf" "salt mirror" --describe ' +
+    '--width 60 --height 40', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+assert(manyOut.length === 2 && manyOut[0].indexOf('pale shelf') === 0 &&
+  manyOut[1].indexOf('salt mirror') === 0,
+  'each summary line names its seed (' + manyOut.length + ')');
+
 // And the same for the light bearings: the dropdown, the `d` key and the shade
 // pass all read core.lights, so a key printed by the CLI must be one the
 // generator accepts, with the same note the dropdown implies.
