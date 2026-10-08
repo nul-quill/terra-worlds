@@ -957,6 +957,15 @@
     if (ev.pointerType === 'mouse') return;
     hoverHistogram(ev);
   });
+
+  // Keyboard version of the same selection: Shift+arrows walk the bins, so the
+  // height filter is reachable without a pointer. First press starts in the
+  // middle of the range, which is where most worlds keep most of their cells.
+  function stepBand(bin) {
+    if (!histState) return;
+    band = Math.max(0, Math.min(histState.bins - 1, bin));
+    drawHover();
+  }
   histCanvas.addEventListener('mouseleave', function () {
     band = -1;
     drawHover();
@@ -988,6 +997,16 @@
       var ae = document.activeElement;
       var typing = ae && (ae.tagName === 'INPUT' || ae.tagName === 'SELECT');
       if (!typing) {
+        // With Shift the same arrows walk the relief chart instead of the
+        // grid: the height-band filter then has a keyboard path, which a touch
+        // device without a hover state needs. Left/Right move along the bins,
+        // Up/Down are the same pair so either axis works.
+        if (ev.shiftKey && histState) {
+          ev.preventDefault();
+          var dx = step[0] || step[1];
+          stepBand(band < 0 ? Math.round(histState.bins / 2) : band + dx);
+          return;
+        }
         var cell = currentCell();
         ev.preventDefault();
         hoverCell(cell[0] + step[0], cell[1] + step[1]);

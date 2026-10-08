@@ -106,6 +106,9 @@ Conventions:
   do not repaint the chart from the individual handlers.
   `hoverHistogram()` is shared by `mousemove` and a touch `pointerdown`, so a tap
   on the chart selects a bin the same way a cursor does. Keep the one function.
+  Shift+arrows walk the same bin through `stepBand()`, which is the keyboard
+  path for the height filter; plain arrows still walk cells. Both are previews —
+  neither goes into the hash.
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.
