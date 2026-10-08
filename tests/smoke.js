@@ -35,6 +35,19 @@ assert(a.stats.rivers > 0, 'drainage produced river cells (' + a.stats.rivers + 
 var keys = Object.keys(a.stats.counts);
 assert(keys.length >= 5, 'multiple biomes present (' + keys.length + ')');
 
+// Every class the biome lookup can return must have a colour in every palette,
+// otherwise a cell falls back and one biome renders as the sky. Both sides are
+// read from the generator, so the check follows a new class or palette.
+var classes = Object.keys(core.biomeNames);
+var colourOk = true;
+Object.keys(core.palettes).forEach(function (name) {
+  var colors = core.palettes[name].colors;
+  classes.forEach(function (cls) {
+    if (!colors[cls]) colourOk = false;
+  });
+});
+assert(colourOk, 'every palette colours every biome class (' + classes.length + ')');
+
 var t = core.generate({ seed: 'perf', width: 480, height: 300 });
 assert(t.stats.ms < 900, 'generation under 900ms (' + t.stats.ms + 'ms)');
 
