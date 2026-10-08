@@ -843,6 +843,7 @@
     relief: ['deep', 'ice'],
     moist: ['desert', 'rain'],
     drain: ['beach', 'rock'],
+    lake: ['shallow', 'lake'],
     coast: ['beach', 'deep']
   };
 
@@ -854,6 +855,7 @@
     {key: 'relief', label: 'relief', note: 'height field at full contrast'},
     {key: 'moist', label: 'moisture', note: 'wetness after the orographic pass'},
     {key: 'drain', label: 'drainage', note: 'catchment size, log ramp'},
+    {key: 'lake', label: 'lake depth', note: 'standing water, by basin depth'},
     {key: 'coast', label: 'coast dist', note: 'steps to the nearest shore, log ramp'}
   ];
 
@@ -870,6 +872,7 @@
     return key === 'relief' ? result.heightField
       : key === 'moist' ? result.moisture
         : key === 'drain' ? result.accumulation
+          : key === 'lake' ? result.lakeMask
           : result.coastDistance;
   }
 
@@ -896,7 +899,13 @@
     var key = CHANNELS[name] ? name : 'relief';
     var useLog = key === 'drain' || key === 'coast';
     var src = fieldFor(key, result);
-    var sc = scaleFor(src, n, useLog);
+    var sc;
+    // The lake mask is already normalised by its own basin: 1..60 steps from
+    // the shore to the deepest cell. Percentiles would be wrong here — most of
+    // the grid is dry and reads as zero, so the 98% mark of a world with two
+    // small tarns is still zero. The mask's own range is the honest scale.
+    if (key === 'lake') sc = {lo: 0, hi: 60};
+    else sc = scaleFor(src, n, useLog);
     // Keep the scale on the result: a hover wants to print the very number the
     // ramp was built from, and re-deriving the percentiles per cell would sort
     // the whole field again.

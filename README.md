@@ -118,10 +118,12 @@ which ties a colour on the map back to its place in the elevation spread; moving
 the pointer off the map clears it again.
 The `channel` select replaces the biome colours with one scalar field of the same
 world: `relief` (height), `moist` (the orographic moisture field), `drain`
-(catchment accumulation, logged so one big river does not wash out the rest) or
-`coast` (distance to the nearest shoreline). Each is stretched over its own
-percentiles and ramped between two colours taken from the active palette, so an
-overlay looks like the map it came from. Everything underneath is untouched:
+(catchment accumulation, logged so one big river does not wash out the rest),
+`lake` (standing water, scaled by its own basin depth rather than percentiles,
+since most of a grid is dry) or `coast` (distance to the nearest shoreline).
+Each is stretched over its own percentiles and ramped between two colours taken
+from the active palette, so an overlay looks like the map it came from.
+Everything underneath is untouched:
 legend, stats, chart and hover readout all still describe the same cells. The CLI
 accepts the same names through `--channel`.
 

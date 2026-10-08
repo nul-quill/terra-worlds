@@ -116,7 +116,8 @@ if (opts.help) {
   console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
   console.log('       [--contour] for hypsometric lines on land and bathymetric');
   console.log('       steps under water, both spaced by this world\'s relief');
-  console.log('       [--channel relief|moist|drain|coast] to flatten the world');
+  console.log('       [--channel relief|moist|drain|lake|coast] to flatten the');
+  console.log('       world');
   console.log('       to one scalar field instead of the biome colours');
   console.log('       [--scale n] nearest-neighbour multiplier applied to the');
   console.log('       saved pixels, so a small grid can still fill a screen');
