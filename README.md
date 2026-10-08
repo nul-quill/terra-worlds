@@ -23,6 +23,9 @@ so a finished world can be pasted into a chat and reopened identically. Loading 
 hash fills the controls before the first render; anything absent falls back to the
 default. `export` picks the nearest-neighbour multiplier used by Save PNG.
 `Copy link` puts that URL on the clipboard.
+A pinned legend class rides along as `pin=taiga`, so a shared link reopens with
+the same class isolated. An unknown key in that field is ignored rather than
+fading the whole map.
 `grid` pins the column count instead of deriving it from the window width, so the
 same seed produces the same number of cells on a phone and on a wide monitor. The
 row count keeps the canvas aspect, which is what makes the cells square. Because
