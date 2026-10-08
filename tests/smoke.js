@@ -154,6 +154,13 @@ assert(flooded.stats.contourBands >= 6 && flooded.stats.contourBands <= 20 &&
   'contour bands follow the relief (' + flooded.stats.contourBands + ' flooded, ' +
   dryWorld.stats.contourBands + ' dry)');
 
+// The basin count tracks the depth range instead: a high sea level means a
+// thicker column of water, so more bathymetric steps, capped at 12.
+assert(flooded.stats.basinBands >= 3 && flooded.stats.basinBands <= 12 &&
+  flooded.stats.basinBands >= dryWorld.stats.basinBands,
+  'basin bands follow the depth range (' + flooded.stats.basinBands + ' flooded, ' +
+  dryWorld.stats.basinBands + ' dry)');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

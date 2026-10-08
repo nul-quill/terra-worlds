@@ -59,6 +59,9 @@ Pipeline, all on the CPU:
    still shows steps. Spacing is measured from the shoreline, so the lines stay
    even however far the `sea` slider floods the map. Like the other shading knobs
    it never moves a biome boundary.
+   Under water the same switch draws bathymetric lines, a lighter set of steps
+   between the deepest cell and the shoreline, with their own count derived from
+   the depth range (3 to 12). Both counts are listed in the stats block.
 
 The noise lattice counts are integers and every octave doubles them, so the field
 tiles seamlessly on both axes — pan or tile the map with no visible seam.

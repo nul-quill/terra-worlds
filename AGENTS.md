@@ -32,6 +32,8 @@ Conventions:
 - Hypsometric band count is derived from the relief above the shoreline
   (`contourBands`, clamped 6..20) and published in `stats`, so a flat craton
   does not turn into stripes. Keep it derived, not a fixed constant.
+  The water gets its own count from the depth range (`basinBands`, clamped 3..12)
+  drawn by the same `contour` switch. Both stay derived, never constants.
 - Shading-only knobs (`hillshade`, `lightDir`, `dither`) must never move a biome
     boundary: classification happens before the colour pass. The smoke suite
     asserts that, so keep it that way. `contour` (hypsometric lines) belongs to

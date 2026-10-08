@@ -345,6 +345,12 @@
     var reliefAboveSea = Math.max(0.001, maxH - seaLevel);
     var contourBands = Math.max(6, Math.min(20, Math.round(reliefAboveSea * 26)));
 
+    // The basin gets its own count from the depth range, so a shallow shelf
+    // is not crossed by lines every few pixels while a deep ocean still shows
+    // a few steps.
+    var reliefBelowSea = Math.max(0.001, seaLevel - minH);
+    var basinBands = Math.max(3, Math.min(12, Math.round(reliefBelowSea * 22)));
+
     /* ---- Drainage: flow accumulation over the height field. ---- */
 
     var sortArr = new Array(n);
@@ -610,6 +616,13 @@
           var above = (h - seaLevel) / Math.max(0.001, 1 - seaLevel);
           var band = above * contourBands - Math.floor(above * contourBands);
           if (band < 0.10) { r *= 0.88; g *= 0.88; b *= 0.88; }
+        } else if (contour && isWater) {
+          // Bathymetric lines: the same idea under water, measured from the
+          // deepest cell up to the shoreline. Lighter touch than the land
+          // lines, since the depth falloff already carries most of the shape.
+          var below = (h - minH) / Math.max(0.001, seaLevel - minH);
+          var wband = below * basinBands - Math.floor(below * basinBands);
+          if (wband < 0.10) { r *= 1.10; g *= 1.10; b *= 1.10; }
         }
 
         // Coastline ink: the first ring of water against land catches a little
@@ -659,6 +672,7 @@
       // How many hypsometric bands the current relief can carry, so the CLI
       // and the tests can see the spacing without duplicating the formula.
       contourBands: contourBands,
+      basinBands: basinBands,
       ms: Date.now() - started,
       counts: counts
     };
