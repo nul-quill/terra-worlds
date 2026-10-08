@@ -839,6 +839,39 @@ var labelCount = Object.keys(labelSeen).length;
 assert(labelOk && labelCount === bw.stats.lakeBasins,
   'every lake cell is labelled with its basin (' + labelCount + ' labels)');
 
+// The hash is only useful if it carries every control on screen, so the two
+// lists are checked against each other: each INPUT or SELECT id in the page
+// must appear in HASH_KEYS, and every name in HASH_KEYS must be a real id.
+// A control left out of the map would silently drop out of shared links.
+var fs = require('fs');
+var html = fs.readFileSync(__dirname + '/../index.html', 'utf8');
+var appSrc = fs.readFileSync(__dirname + '/../app.js', 'utf8');
+var controlIds = [];
+html.replace(/<(?:input|select)[^>]*id="([^"]+)"/g, function (m, id) {
+  controlIds.push(id);
+  return m;
+});
+var hashBlock = /var HASH_KEYS = \{([\s\S]*?)\n  \};/.exec(appSrc);
+var hashNames = [];
+if (hashBlock) {
+  // The KEY of each pair is the element id, the value is the short name that
+  // shows up in the URL, so the ids are what has to line up with the page.
+  hashBlock[1].replace(/([A-Za-z]+)\s*:/g, function (m, name) {
+    hashNames.push(name);
+    return m;
+  });
+}
+var unmapped = controlIds.filter(function (id) {
+  return hashNames.indexOf(id) < 0;
+});
+var unknown = hashNames.filter(function (name) {
+  return controlIds.indexOf(name) < 0;
+});
+assert(controlIds.length > 8 && hashNames.length > 8 &&
+  unmapped.length === 0 && unknown.length === 0,
+  'every control is carried by the hash (' + controlIds.length +
+  ' controls, unmapped ' + unmapped.join(',') + ', extra ' + unknown.join(',') + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

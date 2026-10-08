@@ -162,6 +162,9 @@ Conventions:
     `hasOption()` before assigning, so a link saved against a key that has since
     been dropped keeps the current default instead of leaving the select blank.
     Keep the check in `applyHash()` — the lists are filled before it runs.
+  Every INPUT or SELECT id in `index.html` is a key of `HASH_KEYS`, and every
+  key there names a real control: the smoke suite compares the two lists, so a
+  new dropdown cannot arrive without also surviving a shared link.
 - Legend isolation lives in `drawMap()`: `solo` follows the pointer/focus,
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend
