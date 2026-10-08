@@ -22,6 +22,7 @@
     rivers: document.getElementById('rivers'),
     lightDir: document.getElementById('lightDir'),
     dither: document.getElementById('dither'),
+    channel: document.getElementById('channel'),
     contour: document.getElementById('contour')
   };
 
@@ -35,7 +36,7 @@
     seed: 'seed', palette: 'pal', shape: 'shape', seaLevel: 'sea',
     detail: 'det', polar: 'cli', terraces: 'stp', hillshade: 'lit',
     rivers: 'riv', scale: 's', dither: 'gr', lightDir: 'dir'
-    , contour: 'ln'
+    , contour: 'ln', channel: 'ch'
   };
 
   function readHash() {
@@ -113,6 +114,7 @@
       rivers: parseInt(inputs.rivers.value, 10),
       lightDir: inputs.lightDir.value,
       dither: inputs.dither.checked,
+      channel: inputs.channel.value,
       contour: inputs.contour.checked
     };
   }
@@ -139,6 +141,14 @@
       width: cols, height: rows
     });
     current = result;
+
+    // A scalar overlay replaces the colour buffer only: every field stays as
+    // generated, so the readout, legend and chart still describe this world.
+    if (opts.channel) {
+      var chan = TerraCore.channelize(result, opts.channel);
+      result.data = chan.data;
+      result.channelName = chan.channel;
+    }
 
     view.width = Math.round(rect.width * dpr);
     view.height = Math.round(rect.height * dpr);

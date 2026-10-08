@@ -24,6 +24,14 @@ elevation, bars below the shoreline drawn fainter, with a rule at the current se
 level. Bins span the world's own height range rather than 0..1, so a flat craton
 still fills the chart. Hovering a bin dims the rest and prints that bin's elevation
 range and cell count inside the chart. It redraws with every slider move.
+The `channel` select replaces the biome colours with one scalar field of the same
+world: `relief` (height), `moist` (the orographic moisture field), `drain`
+(catchment accumulation, logged so one big river does not wash out the rest) or
+`coast` (distance to the nearest shoreline). Each is stretched over its own
+percentiles and ramped between two colours taken from the active palette, so an
+overlay looks like the map it came from. Everything underneath is untouched:
+legend, stats, chart and hover readout all still describe the same cells. The CLI
+accepts the same names through `--channel`.
 
 ## What it does
 

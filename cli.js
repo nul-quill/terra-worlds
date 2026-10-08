@@ -22,6 +22,7 @@ function parseArgs(argv) {
     else if (a === '--rivers') opts.rivers = parseInt(argv[++i], 10);
     else if (a === '--no-grain') opts.dither = false;
     else if (a === '--contour') opts.contour = true;
+    else if (a === '--channel') opts.channel = argv[++i];
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--help' || a === '-h') opts.help = true;
     else if (a === '--json') opts.json = true;
@@ -53,6 +54,8 @@ if (opts.help) {
   console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
   console.log('       [--contour] for hypsometric lines on land and bathymetric');
   console.log('       steps under water, both spaced by this world\'s relief');
+  console.log('       [--channel relief|moist|drain|coast] to flatten the world');
+  console.log('       to one scalar field instead of the biome colours');
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
@@ -65,6 +68,10 @@ if (opts.help) {
     Object.keys(opts).forEach(function (k) { runOpts[k] = opts[k]; });
     runOpts.seed = seed;
     var result = core.generate(runOpts);
+    if (opts.channel) {
+      var chan = core.channelize(result, opts.channel);
+      result.data = chan.data;
+    }
     // With several seeds the output name becomes a prefix, so nothing is
     // silently overwritten.
     var name = opts.seeds.length > 1

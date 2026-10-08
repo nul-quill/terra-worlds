@@ -177,6 +177,34 @@ assert(cdMin === 0 && cdMax > cdMin && cdBad === 0,
   'coast distance is a real field (min ' + cdMin + ', max ' + cdMax +
   ', ' + cdBad + ' water cells off by one)');
 
+// Overlays: every channel must be a real scalar rendering — some spread in
+// the output, opaque, and reproducible — without disturbing the fields the
+// readout depends on.
+['relief', 'moist', 'drain', 'coast'].forEach(function (name) {
+  var chan = core.channelize(spread, name);
+  var loC = 255, hiC = 0, badAlpha = 0;
+  for (var cpi = 0; cpi < chan.data.length; cpi += 4) {
+    var lum = chan.data[cpi] + chan.data[cpi + 1] + chan.data[cpi + 2];
+    if (lum < loC) loC = lum;
+    if (lum > hiC) hiC = lum;
+    if (chan.data[cpi + 3] !== 255) badAlpha++;
+  }
+  var again = core.channelize(spread, name);
+  var stable = again.data.length === chan.data.length;
+  for (var cqi = 0; stable && cqi < chan.data.length; cqi++) {
+    if (again.data[cqi] !== chan.data[cqi]) stable = false;
+  }
+  assert(chan.channel === name && hiC - loC > 40 && badAlpha === 0 && stable,
+    name + ' overlay spans a ramp and repeats (' + loC + '..' + hiC + ')');
+});
+
+// The overlay reads the fields rather than the colour buffer, so the biome
+// classification underneath is untouched.
+assert(spread.biome.length === spread.width * spread.height &&
+  spread.moisture.length === spread.biome.length &&
+  spread.accumulation.length === spread.biome.length,
+  'scalar fields are exported at grid size');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

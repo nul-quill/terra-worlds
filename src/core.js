@@ -717,6 +717,8 @@
       data: data,
       biome: biome,
       heightField: hf,
+      moisture: mf,
+      accumulation: acc,
       lakeMask: lake,
       riverMask: river,
       coastDistance: dist,
@@ -729,6 +731,58 @@
   /* ------------------------------------------------------------------ *
    * Export helpers.
    * ------------------------------------------------------------------ */
+
+  // Each overlay reads one field of the world at full contrast. The pairs are
+  // taken from the active palette so a channel looks like the map it came from
+  // rather than a generic heatmap.
+  var CHANNELS = {
+    relief: ['deep', 'ice'],
+    moist: ['desert', 'rain'],
+    drain: ['beach', 'rock'],
+    coast: ['beach', 'deep']
+  };
+
+  // Spread a field over 0..1 by its own extremes, so a low-contrast field
+  // still fills the ramp. The top and bottom 2% are clipped away, which keeps
+  // a single deep trench or one huge catchment from washing out the rest.
+  function scaleFor(values, n, useLog) {
+    var sample = new Array(n);
+    for (var i = 0; i < n; i++) {
+      sample[i] = useLog ? Math.log(1 + values[i]) : values[i];
+    }
+    sample.sort(function (a, b) { return a - b; });
+    var lo = sample[Math.round((n - 1) * 0.02)];
+    var hi = sample[Math.round((n - 1) * 0.98)];
+    if (!(hi > lo)) hi = lo + 1;
+    return { lo: lo, hi: hi };
+  }
+
+  // Redraw a result as a single scalar field. Deterministic: the buffer only
+  // depends on the fields already computed by generate, never on the canvas.
+  function channelize(result, name) {
+    var w = result.width, h = result.height, n = w * h;
+    var out = new Uint8ClampedArray(n * 4);
+    var key = CHANNELS[name] ? name : 'relief';
+    var src = key === 'relief' ? result.heightField
+      : key === 'moist' ? result.moisture
+        : key === 'drain' ? result.accumulation
+          : result.coastDistance;
+    var useLog = key === 'drain' || key === 'coast';
+    var sc = scaleFor(src, n, useLog);
+    var colors = result.palette.colors;
+    var lo = colors[CHANNELS[key][0]];
+    var hi = colors[CHANNELS[key][1]];
+    for (var i = 0; i < n; i++) {
+      var v = useLog ? Math.log(1 + src[i]) : src[i];
+      var t = clamp01((v - sc.lo) / (sc.hi - sc.lo));
+      var o = i * 4;
+      out[o] = lo[0] + (hi[0] - lo[0]) * t;
+      out[o + 1] = lo[1] + (hi[1] - lo[1]) * t;
+      out[o + 2] = lo[2] + (hi[2] - lo[2]) * t;
+      out[o + 3] = 255;
+    }
+    return { width: w, height: h, data: out, channel: key };
+  }
 
   // Nearest-neighbour upscale into a fresh RGBA buffer (crisp pixels).
   function upscale(result, factor) {
@@ -755,6 +809,7 @@
   global.TerraCore = {
     generate: generate,
     upscale: upscale,
+    channelize: channelize,
     hashString: hashString,
     randomSeed: randomSeed,
     palettes: PALETTES,

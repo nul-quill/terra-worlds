@@ -45,6 +45,11 @@ Conventions:
   (forward, then backward) over the grid: O(n), no queue. It both dries the
   continental interior in the biome lookup and feeds the hover readout. Do not
   replace it with a BFS from the coast.
+- `channelize(result, name)` is a separate pass over the already-computed fields
+  (`heightField`, `moisture`, `accumulation`, `coastDistance`). It never feeds back
+  into `generate`: an overlay must not change the biome map. Stretch each field by
+  its own 2%/98% percentiles, and keep the log transform on `drain` and `coast` —
+  both are heavy-tailed and a linear ramp collapses them into one colour.
 
 Verify with:
 
