@@ -331,6 +331,26 @@ var fallback = core.channelize(spread, 'no-such-ramp');
 assert(fallback.channel === 'relief' && fallback.data.length === spread.data.length,
   'an unknown overlay falls back to relief (' + fallback.channel + ')');
 
+// `slope` is the one field built by the lookup rather than by generate, so its
+// definition is worth pinning: the steepest of the four neighbour differences,
+// never an average. Recomputed here by hand on sampled cells, which also
+// catches a field that would drift into smoothing the relief away.
+core.channelize(spread, 'slope');
+var spSlope = spread.slopeField;
+var spW = spread.width, spH = spread.height, spHf = spread.heightField;
+var slopeOk = !!spSlope && spSlope.length === spW * spH;
+for (var sy = 0; slopeOk && sy < spH; sy += 3) {
+  for (var sx = 0; slopeOk && sx < spW; sx += 7) {
+    var si = sy * spW + sx;
+    var sBest = Math.abs(spHf[si] - spHf[sx > 0 ? si - 1 : si]);
+    if (sx + 1 < spW) sBest = Math.max(sBest, Math.abs(spHf[si] - spHf[si + 1]));
+    if (sy > 0) sBest = Math.max(sBest, Math.abs(spHf[si] - spHf[si - spW]));
+    if (sy + 1 < spH) sBest = Math.max(sBest, Math.abs(spHf[si] - spHf[si + spW]));
+    if (Math.abs(spSlope[si] - sBest) > 1e-5) slopeOk = false;
+  }
+}
+assert(slopeOk, 'slope is the steepest neighbour difference');
+
 // The overlay reads the fields rather than the colour buffer, so the biome
 // classification underneath is untouched.
 assert(spread.biome.length === spread.width * spread.height &&
