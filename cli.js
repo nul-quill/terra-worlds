@@ -31,6 +31,7 @@ function parseArgs(argv) {
     else if (a === '--palettes') opts.palettes = true;
     else if (a === '--shapes') opts.shapes = true;
     else if (a === '--channels') opts.channels = true;
+    else if (a === '--phrases') opts.phrases = true;
     else if (a === '--json') opts.json = true;
     else opts.seeds.push(a);
   }
@@ -73,6 +74,8 @@ if (opts.help) {
   console.log('       [--shapes] to list the shape keys and what each one cuts');
   console.log('       [--channels] to list the overlay keys and the field each');
   console.log('       one reads, in the order the c key cycles them');
+  console.log('       [--phrases] to list the hand-picked seed phrases the p key');
+  console.log('       walks, one per line, ready to paste after this command');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
   console.log('       JSON per world instead of the table');
@@ -101,6 +104,12 @@ if (opts.help) {
   // line is never a blank column.
   core.channels.forEach(function (c) {
     console.log((c.key || 'biome').padEnd(11) + c.note);
+  });
+} else if (opts.phrases) {
+  // The hand-picked seed phrases the `p` key walks. Each one is a whole
+  // world in two words, so this is the shortest way to a good first render.
+  core.phrases.forEach(function (p, i) {
+    console.log(String(i + 1).padEnd(3) + p);
   });
 } else {
   var fs = require('fs');

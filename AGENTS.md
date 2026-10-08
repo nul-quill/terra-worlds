@@ -114,6 +114,10 @@ Conventions:
   empty-key entry first so "no overlay" is always the default selection. The
   channel dropdown, the `c` cycle and the smoke overlay loop all read that one
   array — add a ramp there, never in `app.js`.
+  `core.phrases` is the fourth: the hand-picked seed phrases. `PRESETS` in
+  `app.js` is that array, the `p` key walks it, `cli.js --phrases` prints it and
+  the smoke suite renders every entry, so a phrase is only worth adding if it
+  produces a non-degenerate world at the default grid.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
 
@@ -123,6 +127,8 @@ Verify with:
 2. open `index.html` in the integrated browser, move a slider, hover the map,
   hover a legend row, walk the cursor with the arrow keys, toggle `grain` and
   `lines`, click Reroll and Save PNG.
+  Press `p` a few times: the seed box should walk the phrase list and wrap,
+  then keep typing in the seed box to check the letter keys stay out of the way.
   The relief histogram at the bottom of the sidebar should follow the `sea` slider,
   and hovering one of its bars should print that bin's range inside the chart.
   Hovering the map highlights the hovered cell's bin in that same chart.

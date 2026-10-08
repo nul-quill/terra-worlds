@@ -857,6 +857,13 @@
     {key: 'coast', label: 'coast dist', note: 'steps to the nearest shore, log ramp'}
   ];
 
+  // Seed phrases worth starting from: each one is a hand-picked world that
+  // shows off a different combination of shape, sea level and climate. The
+  // dropdown-free `p` key walks this list, and the CLI prints it, so a phrase
+  // seen in the terminal is always one the page knows.
+  var PHRASES = ['aurora basin', 'salt mirror', 'thousand isles', 'red ridge',
+    'pale shelf'];
+
   // Which stored field an overlay reads. One lookup so the renderer and the
   // hover readout cannot drift to different columns of the same result.
   function fieldFor(key, result) {
@@ -1005,6 +1012,7 @@
     palettes: PALETTES,
     shapes: SHAPES,
     channels: CHANNEL_LIST,
+    phrases: PHRASES,
     biomeNames: BIOME_NAMES
   };
 })(typeof window !== 'undefined' ? window : globalThis);

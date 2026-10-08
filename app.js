@@ -28,7 +28,9 @@
     contour: document.getElementById('contour')
   };
 
-  var PRESETS = ['aurora basin', 'salt mirror', 'thousand isles', 'red ridge', 'pale shelf'];
+  // The starting phrases come from the generator's list, which is also what
+  // `cli --phrases` prints and what the `p` key walks.
+  var PRESETS = TerraCore.phrases;
 
   // The whole option set lives in the URL hash, so a finished world can be
   // pasted into a chat and reopen identically. Keys are short to keep the hash
@@ -1010,6 +1012,18 @@
     }
     // The two checkboxes and the export are the only things left that a
     // keyboard user has to reach for: one key each, no modifiers.
+    // 'p' steps through the hand-picked seed phrases, which is a quicker way
+    // to browse good worlds than rerolling at random. The phrase that is
+    // already in the box is replaced rather than appended, so the list never
+    // drifts away from itself.
+    if (!typingLetter && (ev.key === 'p' || ev.key === 'P')) {
+      ev.preventDefault();
+      var phrases = TerraCore.phrases;
+      var pi = phrases.indexOf(inputs.seed.value);
+      inputs.seed.value = phrases[(pi + 1) % phrases.length];
+      render();
+      return;
+    }
     var toggle = { g: 'dither', l: 'contour' }[ev.key.toLowerCase()];
     if (!typingLetter && toggle) {
       ev.preventDefault();

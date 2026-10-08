@@ -331,6 +331,23 @@ assert(chanList.length === coreChannels.length &&
   chanNames.join(',') === coreChannels.join(','),
   'cli --channels lists every overlay (' + chanNames.length + ')');
 
+// The hand-picked phrases are a list too, and each one must actually render:
+// a phrase in that list is a suggestion, so a dead or degenerate one would be
+// a bad first impression. The CLI numbering is checked alongside the phrases.
+var phraseOut = require('child_process')
+  .execSync('node cli.js --phrases', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var phraseNames = phraseOut.map(function (line) {
+  return line.replace(/^\s*\d+\s+/, '');
+});
+var phraseOk = phraseOut.length === core.phrases.length &&
+  phraseNames.join(',') === core.phrases.join(',');
+core.phrases.forEach(function (p) {
+  var r = core.generate({seed: p, width: 60, height: 40});
+  if (!(r.stats.land > 0.02 && r.stats.water > 0.02)) phraseOk = false;
+});
+assert(phraseOk,
+  'cli --phrases lists phrases that each render a world (' + phraseNames.length + ')');
+
 // The per-class shares the CLI prints must agree with the counts the generator
 // reported, so the two views of the same world cannot drift apart.
 var jsonLine = JSON.parse(require('child_process')
