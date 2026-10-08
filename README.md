@@ -14,6 +14,9 @@ hash fills the controls before the first render; anything absent falls back to t
 default. `export` picks the nearest-neighbour multiplier used by Save PNG.
 `Copy link` puts that URL on the clipboard.
 Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
+The sidebar ends with a small relief histogram: how much of the grid sits at each
+elevation, bars below the shoreline drawn fainter, with a rule at the current sea
+level. It redraws with every slider move.
 
 ## What it does
 

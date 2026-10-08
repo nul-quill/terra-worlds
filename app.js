@@ -7,6 +7,7 @@
   var readout = document.getElementById('readout');
   var legendList = document.getElementById('legend');
   var statsBox = document.getElementById('stats');
+  var histCanvas = document.getElementById('hist');
 
   var inputs = {
     seed: document.getElementById('seed'),
@@ -146,6 +147,7 @@
     drawHover();
     renderLegend(result);
     renderStats(result);
+    drawHistogram(result);
   }
 
   // Blit the generated grid onto the visible canvas, nearest-neighbour.
@@ -267,6 +269,39 @@
       statsBox.appendChild(dt);
       statsBox.appendChild(dd);
     });
+  }
+
+  // A small height histogram: how much of the grid sits at each elevation, with
+  // the sea level marked so the balance of a world can be read without hovering.
+  function drawHistogram(result) {
+        var hc = histCanvas.getContext('2d');
+        var w = histCanvas.width, h = histCanvas.height;
+        var BINS = 48;
+        var hist = new Array(BINS);
+        var hf = result.heightField;
+        for (var i = 0; i < hf.length; i++) {
+          var b = Math.min(BINS - 1, Math.floor(hf[i] * BINS));
+          hist[b] = (hist[b] || 0) + 1;
+        }
+        var peak = 0;
+        for (i = 0; i < BINS; i++) if (hist[i] > peak) peak = hist[i];
+        hc.clearRect(0, 0, w, h);
+        var bw = w / BINS;
+        var seaX = result.seaLevel * w;
+        hc.fillStyle = result.palette.sky;
+        hc.fillRect(0, 0, w, h);
+        for (i = 0; i < BINS; i++) {
+          var bh = peak ? hist[i] / peak * (h - 6) : 0;
+          hc.fillStyle = (i + 0.5) / BINS < result.seaLevel
+            ? 'rgba(47,125,106,0.35)' : 'rgba(47,125,106,0.85)';
+          hc.fillRect(Math.round(i * bw), Math.round(h - bh), Math.ceil(bw), Math.round(bh));
+        }
+        hc.strokeStyle = 'rgba(30,38,44,0.7)';
+        hc.lineWidth = 1;
+        hc.beginPath();
+        hc.moveTo(Math.round(seaX) + 0.5, 0);
+        hc.lineTo(Math.round(seaX) + 0.5, h);
+        hc.stroke();
   }
 
   /* ---- interaction ---- */
