@@ -497,6 +497,25 @@ assert(cli.length === 5 && cli[0] === 'aurora basin' &&
   cli.slice(1).join(',') === walkA.join(','),
   'cli --next matches the button chain (' + cli[1] + ')');
 
+// The same chain with --describe has to keep both halves of each line: the
+// seed first, then the sentence that seed renders. That pairing is the whole
+// point of the combination — a block of sentences is only traceable if every
+// line still names the phrase it came from.
+var nextSaid = require('child_process')
+  .execSync('node cli.js "salt mirror" --next 3 --describe ' +
+    '--width 60 --height 40', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var nextPairs = ['salt mirror'];
+for (var nn = 1; nn < 3; nn++) {
+  nextPairs.push(String(core.nextSeed(nextPairs[nn - 1])));
+}
+var nextOk = nextSaid.length === nextPairs.length;
+nextPairs.forEach(function (np, ni) {
+  var line = nextSaid[ni] || '';
+  if (line.indexOf(np + '  ') !== 0 || !/\(\d+\)/.test(line)) nextOk = false;
+});
+assert(nextOk,
+  'cli --next --describe pairs each seed with its sentence (' + nextPairs.length + ')');
+
 // The palette keys the CLI lists must be the ones the generator knows, so a
 // name copied from the terminal is guaranteed to be accepted by --palette.
 var listed = require('child_process')
