@@ -61,6 +61,8 @@ that.
 Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
 `c` cycles the overlays and `h` the shape curves, both walking the list the
 matching dropdown shows.
+Hold `Shift` with any of the cycle keys (`c`, `h`, `k`, `p`) and the same list
+walks backwards, so backing out of a choice never needs a full lap.
 `p` steps through the seed phrases listed by `--phrases`, which is a quicker way
 to browse good worlds than rerolling at random — and unlike reroll it returns to
 the first phrase after the last.

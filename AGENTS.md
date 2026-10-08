@@ -103,7 +103,9 @@ Conventions:
   SELECT owns the caret, so a seed phrase can still be typed. Each cycle key
   reads the same array its dropdown does — `TerraCore.channels` for `c`,
   `TerraCore.shapes` for `h`, `TerraCore.phrases` for `p` — so a key and the
-  select can never disagree about the order. `styles.css` ends with two
+  select can never disagree about the order. Every cycle key also answers to
+  `Shift`: one branch, a `±1` step, so a mis-press backs out instead of looping
+  the whole list. `styles.css` ends with two
   `@media` blocks: `print` (hides the chrome, one column) and
   `prefers-color-scheme: dark` (only the CSS variables change). Both are checked
   with `page.emulateMedia()` followed by a reload.

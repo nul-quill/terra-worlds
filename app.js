@@ -1102,8 +1102,11 @@
     if (!typingLetter && (ev.key === 'c' || ev.key === 'C')) {
       ev.preventDefault();
       var order = TerraCore.channels.map(function (ch) { return ch.key; });
+      // Shift walks the list backwards, the same way it does for the legend
+      // pins: backing out of an overlay should not need a full lap.
       var at = order.indexOf(inputs.channel.value);
-      inputs.channel.value = order[(at + 1) % order.length];
+      var dir = ev.shiftKey ? -1 : 1;
+      inputs.channel.value = order[((at + dir) % order.length + order.length) % order.length];
       render();
       return;
     }
@@ -1114,7 +1117,8 @@
       ev.preventDefault();
       var shapeKeys = TerraCore.shapes.map(function (s) { return s.key; });
       var si = shapeKeys.indexOf(inputs.shape.value);
-      inputs.shape.value = shapeKeys[(si + 1) % shapeKeys.length];
+      var sdir = ev.shiftKey ? -1 : 1;
+      inputs.shape.value = shapeKeys[((si + sdir) % shapeKeys.length + shapeKeys.length) % shapeKeys.length];
       render();
       return;
     }
@@ -1147,7 +1151,8 @@
       ev.preventDefault();
       var phrases = TerraCore.phrases;
       var pi = phrases.indexOf(inputs.seed.value);
-      inputs.seed.value = phrases[(pi + 1) % phrases.length];
+      var pdir = ev.shiftKey ? -1 : 1;
+      inputs.seed.value = phrases[((pi + pdir) % phrases.length + phrases.length) % phrases.length];
       render();
       return;
     }
