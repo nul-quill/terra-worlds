@@ -161,6 +161,22 @@ assert(flooded.stats.basinBands >= 3 && flooded.stats.basinBands <= 12 &&
   'basin bands follow the depth range (' + flooded.stats.basinBands + ' flooded, ' +
   dryWorld.stats.basinBands + ' dry)');
 
+// Distance to the shoreline: a cell adjacent to water must be at most one step
+// from it, and the widest inland cell must be further. The readout and the
+// continental drying both depend on this being a real distance field.
+var spread = core.generate({ seed: 'aurora basin', width: 160, height: 100 });
+var cd = spread.coastDistance;
+var cdMin = Infinity, cdMax = 0, cdBad = 0;
+for (var ci2 = 0; ci2 < cd.length; ci2++) {
+  if (cd[ci2] < cdMin) cdMin = cd[ci2];
+  if (cd[ci2] > cdMax) cdMax = cd[ci2];
+  // Water cells are their own coast, so their distance is zero by definition.
+  if (spread.heightField[ci2] < spread.seaLevel && cd[ci2] !== 0) cdBad++;
+}
+assert(cdMin === 0 && cdMax > cdMin && cdBad === 0,
+  'coast distance is a real field (min ' + cdMin + ', max ' + cdMax +
+  ', ' + cdBad + ' water cells off by one)');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

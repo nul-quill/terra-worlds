@@ -379,6 +379,34 @@
       if (bj >= 0) acc[bj] += acc[i];
     }
 
+    /* ---- Distance to the nearest shoreline, by a two-pass chamfer sweep. ---- */
+
+    // Every cell wants to know how far the sea is: the readout uses it, and it
+    // is the cheapest way to tell a coast from a continental interior. Two
+    // sweeps over the grid (forward, then backward) give a good approximation
+    // of the city-block distance in O(n), with no queue.
+    var dist = new Float32Array(n);
+    var BIG = width + height;
+    for (i = 0; i < n; i++) dist[i] = hf[i] < seaLevel ? 0 : BIG;
+    for (y = 0; y < height; y++) {
+      for (x = 0; x < width; x++) {
+        i = y * width + x;
+        var dmin = dist[i];
+        if (x > 0 && dist[i - 1] + 1 < dmin) dmin = dist[i - 1] + 1;
+        if (y > 0 && dist[i - width] + 1 < dmin) dmin = dist[i - width] + 1;
+        dist[i] = dmin;
+      }
+    }
+    for (y = height - 1; y >= 0; y--) {
+      for (x = width - 1; x >= 0; x--) {
+        i = y * width + x;
+        dmin = dist[i];
+        if (x < width - 1 && dist[i + 1] + 1 < dmin) dmin = dist[i + 1] + 1;
+        if (y < height - 1 && dist[i + width] + 1 < dmin) dmin = dist[i + width] + 1;
+        dist[i] = dmin;
+      }
+    }
+
     /* ---- Colour pass: biome + hillshade + dither. ---- */
 
     var data = new Uint8ClampedArray(n * 4);
@@ -542,8 +570,14 @@
             key = 'rock';
           } else {
             // Lakes and rivers green their surroundings slightly.
+            // A continental interior is drier than the coast at the same
+            // latitude: an airmass gives up most of its moisture in the first
+            // dozen cells inland. The distance field is already computed, so
+            // this costs one multiply.
+            var far = Math.min(12, dist[i]) / 12;
             var moist = clamp01(mf[i] + (seaLevel + 0.10 - h) * 0.35 +
-              (lake[i - 1] || lake[i + 1] || lake[i - width] || lake[i + width] ? 0.10 : 0));
+              (lake[i - 1] || lake[i + 1] || lake[i - width] || lake[i + width] ? 0.10 : 0) -
+              far * 0.10);
             key = biomeFromTempMoist(tf[i], moist);
           }
         }
@@ -685,6 +719,7 @@
       heightField: hf,
       lakeMask: lake,
       riverMask: river,
+      coastDistance: dist,
       seaLevel: seaLevel,
       stats: stats,
       palette: pal

@@ -41,6 +41,10 @@ Conventions:
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
+- Distance to the shoreline (`coastDistance`) comes from two chamfer sweeps
+  (forward, then backward) over the grid: O(n), no queue. It both dries the
+  continental interior in the biome lookup and feeds the hover readout. Do not
+  replace it with a BFS from the coast.
 
 Verify with:
 

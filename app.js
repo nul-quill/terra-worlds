@@ -423,6 +423,11 @@
     } else if (!above && h < current.seaLevel - 0.14) {
       parts.push('off-shelf');
     }
+    // Distance to the nearest shoreline, so a green patch in the middle of a
+    // continent reads differently from the same colour on a coast.
+    if (current.coastDistance) {
+      parts.push(Math.round(current.coastDistance[i]) + ' from water');
+    }
     if (current.riverMask && current.riverMask[i]) {
       parts.push(current.riverMask[i] === 2 ? 'trunk river' : 'river');
     }

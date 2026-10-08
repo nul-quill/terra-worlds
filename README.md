@@ -40,6 +40,9 @@ Pipeline, all on the CPU:
    without any per-frame work. The cut is a quantile of the accumulation field, so
    one slider value behaves the same on a small preview and a large export; the top
    slice of that same field is drawn as a trunk river with a stronger blend.
+   A two-pass chamfer sweep also measures the distance to the nearest shoreline,
+   which dries the continental interior a little and is printed in the hover
+   readout as `N from water`.
 4. **Basins** — a cell holds water when every route off it climbs. Comparing its
    height against the minimum on a ring around it gives the water surface, and a
    flood fill up to that surface fills the basin. Lakes also green their shore.
