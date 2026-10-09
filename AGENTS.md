@@ -227,6 +227,10 @@ Conventions:
   same loop: it selects by height instead of by class, and a legend selection
   wins over it. Like `solo` it is a preview and never goes into the hash; both
   are cleared when the pointer leaves the map.
+  Every site that clears `solo` repaints through `drawHover()`, never a bare
+  `drawMap()`: the grid pass alone drops the crosshair on the cell picked out of
+  the hash, so a hover over the legend list would erase a mark the link promised.
+  The smoke suite counts the clear sites and asks each one for that repaint.
   The chart reads the same three filters in `paintHistogram()`: a hovered bin
   dims the other bars, a legend selection dims the bins with none of that class.
   `drawMap()` calls `paintHistogram()` so one repaint keeps both views in step —

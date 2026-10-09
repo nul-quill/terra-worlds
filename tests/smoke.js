@@ -1419,6 +1419,30 @@ assert(Object.keys(handled).length > 8 && undocumented.length === 0,
   'the note names every shortcut key (' + Object.keys(handled).length +
   ' keys, missing ' + undocumented.join(',') + ')');
 
+// The keys are only half of how the view is driven: a legend row and a chart
+// bar are both reachable with a pointer, and neither has a letter of its own.
+// The note is the only prose on the page, so each of those two has to be
+// described there too — otherwise a first-time visitor sees a chart that
+// responds to nothing they were told about.
+var pointerNotes = [];
+if (!/Click a legend row/.test(note)) pointerNotes.push('legend click');
+if (!/[Hh]over or tap a bar/.test(note)) pointerNotes.push('chart hover');
+assert(pointerNotes.length === 0,
+  'the note covers the pointer paths too (' + pointerNotes.join(', ') + ')');
+
+// Dropping a legend hover has to repaint through the same path that draws the
+// crosshair, or the cell picked out of the hash loses its mark the moment the
+// pointer crosses the list. Each clear site is a `solo = null;` followed by a
+// repaint, so the pairs are counted and compared: one repaint per clear, and
+// none of them the plain grid pass that would drop the mark.
+var pairs = appSrc.match(/solo = null;\s*\w+\(\);/g) || [];
+var plainRepaint = pairs.filter(function (pair) {
+  return !/drawHover\(\)/.test(pair);
+}).length;
+assert(pairs.length >= 2 && plainRepaint === 0,
+  'leaving a legend row keeps the picked cell marked (' + pairs.length +
+  ' clear sites, ' + plainRepaint + ' without the hover repaint)');
+
 // The map canvas is drawn in twelve different looks, so every colour the shell
 // paints on it has to come from the palette in use: a fixed ink would read as a
 // bright slab under a dark scheme. The chart in the sidebar keeps its own fixed

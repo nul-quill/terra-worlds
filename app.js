@@ -539,8 +539,11 @@
         pct.textContent = shareText(counts[key], result.stats.pixels);
         li.appendChild(sw); li.appendChild(label); li.appendChild(pct);
         // Hovering a row isolates that class on the map; leaving restores it.
+        // Both halves repaint through drawHover(), so a cell picked earlier —
+        // from the hash or a previous hover — keeps its mark when the pointer
+        // leaves the list. drawMap() alone would repaint the grid and lose it.
         li.addEventListener('mouseenter', function () { drawHighlighted(key); });
-        li.addEventListener('mouseleave', function () { solo = null; drawMap(); });
+        li.addEventListener('mouseleave', function () { solo = null; drawHover(); });
         // Clicking keeps the choice after the pointer moves away, which is how
         // to compare a class against the relief chart without holding the
         // cursor on its row. Clicking the same row again releases it.
@@ -576,7 +579,7 @@
         // order deliberately.
         li.tabIndex = 0;
         li.addEventListener('focus', function () { drawHighlighted(key); });
-        li.addEventListener('blur', function () { solo = null; drawMap(); });
+        li.addEventListener('blur', function () { solo = null; drawHover(); });
         legendList.appendChild(li);
       });
   }
