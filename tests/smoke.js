@@ -2192,17 +2192,23 @@ assert(bandLabels === 1 && bandTally && !bandFixed,
 // a bin against a different scale than the one that lit it, so the count of both
 // is checked rather than either alone.
 var bandDefs = (appSrc.match(/function bandSummary\(/g) || []).length;
+var bandDefs = (appSrc.match(/function bandSummary\(/g) || []).length;
 var bandEnds = (appSrc.match(/\/ st\.bins \* st\.span/g) || []).length;
 var bandCalls = (appSrc.match(/= bandSummary\(/g) || []).length;
 var bandStray = (appSrc.match(/histState\.bins \* histState\.span/g) ||
   []).length;
 var bandBracket = /'band ' \+ \(cellBand \+ 1\)[\s\S]{0,160}\+ '-' \+ hundred\(sum\.to\)/
   .test(appSrc);
-assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 3 && !bandStray &&
-  bandBracket,
+// Four callers: the chart's own caption, the hovered-cell reading, the note
+// under the map, and the in/out pair that tells a hovered cell whether the
+// selected bar covers it. The last one reads the SELECTED bin rather than the
+// cell's own, so it cannot reuse the other result and has to be counted.
+var bandInside = /cellBand === band \? 'in ' : 'not in '/.test(appSrc);
+assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 4 && !bandStray &&
+  bandBracket && bandInside,
   'a lit bar says what height range it covers (' + bandDefs + ' lookup, ' +
   bandEnds + ' ends, ' + bandCalls + ' callers, stray ' + bandStray +
-  ', bracket ' + bandBracket + ')');
+  ', bracket ' + bandBracket + ', inside ' + bandInside + ')');
 
 // A bin selected on the chart is a filter over the whole grid, so its reading
 // A bin selected on the chart is a filter over the whole grid, so its reading

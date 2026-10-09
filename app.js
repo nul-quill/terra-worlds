@@ -1025,6 +1025,16 @@
       parts.push('band ' + (cellBand + 1) + '/' + histState.bins +
         ' (' + hundred(sum.from) + '-' + hundred(sum.to) + ')');
     }
+    // A selected bar dims every cell outside its height range, which is why a
+    // hovered cell can look washed out next to a bright one. Saying which side
+    // of the selection the cell falls on is the shortest link between the two
+    // views, and it is read from the same lookup that draws the bar — so the
+    // note and the lit bar are always the same slice of the height range.
+    if (band >= 0 && histState) {
+      var sel = bandSummary(band);
+      parts.push((cellBand === band ? 'in ' : 'not in ') + (band + 1) + '/' +
+        histState.bins + ' (' + hundred(sel.from) + '-' + hundred(sel.to) + ')');
+    }
     readout.textContent = parts.join(' — ');
     paintHistogram(cellBand);
   }
