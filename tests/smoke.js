@@ -1090,6 +1090,29 @@ assert(shelfCore && shelfShell && shelfBad === 0 &&
   'the off-shelf note is the deep class (' + (shelfCore && shelfCore[1]) +
   ' vs ' + (shelfShell && shelfShell[1]) + ', ' + shelfBad + ' cells)');
 
+// Every legend row is a colour key in the palette in use, printed through the
+// display-name lookup with the raw key as its fallback. So each scheme has to
+// carry exactly the set of keys the lookup knows: a colour with no name would
+// show up as `taiga` in the list, and a name with no colour could never be
+// drawn at all. Walked over every palette rather than the default one.
+var nameKeys = Object.keys(core.biomeNames);
+var schemeBad = [];
+Object.keys(core.palettes).forEach(function (sk) {
+  var ck = Object.keys(core.palettes[sk].colors);
+  var unnamed = ck.filter(function (uk) {
+    return nameKeys.indexOf(uk) < 0;
+  });
+  var undrawn = nameKeys.filter(function (nk) {
+    return ck.indexOf(nk) < 0;
+  });
+  if (unnamed.length || undrawn.length) {
+    schemeBad.push(sk + ': ' + unnamed.join('/') + ' | ' + undrawn.join('/'));
+  }
+});
+assert(schemeBad.length === 0 && nameKeys.length >= 12,
+  'every scheme colours exactly the named classes (' + nameKeys.length +
+  ' names, ' + schemeBad.join('; ') + ')');
+
 // Writing several worlds at once must not overwrite: --out becomes a prefix and
 // each world gets its own numbered file. The record names that file, so the
 // two records of one call have to point at two different paths — and each path

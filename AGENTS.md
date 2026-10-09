@@ -324,6 +324,12 @@ Conventions:
   one class, so the counts sum to `stats.pixels` and no listed class is empty.
   The smoke suite checks that on every hand-picked phrase, along with the
   sentence's `mostly X` naming the same biggest class the first row does.
+  A row's label comes from `biomeNames` with the raw key as its fallback, so the
+  two key sets have to be identical in every scheme: a colour key with no name
+  would print as `taiga`, a name with no colour could never be drawn. The suite
+  compares both directions for each entry of `core.palettes`, so a scheme that
+  renames one key in its own table is caught even when the default scheme is
+  fine — the legend of that scheme alone would read differently.
   `Shift+k` walks the same array backwards, which is why the cycle is a
   `(ki + step + rows.length) % rows.length` step rather than a plain increment:
   a mis-press should not need a whole lap to undo. Keep the one branch handling
