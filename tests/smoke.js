@@ -673,6 +673,23 @@ assert(manyOut.length === 2 && manyOut[0].indexOf('pale shelf') === 0 &&
   manyOut[1].indexOf('salt mirror') === 0,
   'each summary line names its seed (' + manyOut.length + ')');
 
+// Writing several worlds at once must not overwrite: --out becomes a prefix and
+// each world gets its own numbered file. The record names that file, so the
+// two records of one call have to point at two different paths — and each path
+// has to be the file actually written.
+var manyJson = require('child_process')
+  .execSync('node cli.js "pale shelf" "salt mirror" --json --width 24 --height 16 ' +
+    '--out many-check.ppm', {cwd: __dirname + '/..'}).toString().trim().split('\n')
+  .map(function (line) { return JSON.parse(line); });
+var manyFs = require('fs');
+var manyFiles = manyJson.map(function (rec) { return rec.file; });
+var manyWritten = manyFiles.every(function (name) {
+  return manyFs.existsSync(__dirname + '/../' + name);
+});
+assert(manyJson.length === 2 && manyFiles[0] !== manyFiles[1] && manyWritten &&
+  manyJson[0].checksum !== manyJson[1].checksum,
+  'several seeds write one numbered file each (' + manyFiles.join(', ') + ')');
+
 // And the same for the light bearings: the dropdown, the `d` key and the shade
 // pass all read core.lights, so a key printed by the CLI must be one the
 // generator accepts, with the same note the dropdown implies.
