@@ -1430,6 +1430,18 @@ if (!/[Hh]over or tap a bar/.test(note)) pointerNotes.push('chart hover');
 assert(pointerNotes.length === 0,
   'the note covers the pointer paths too (' + pointerNotes.join(', ') + ')');
 
+// The note also promises a digit range for the palettes ("1-9 pick a
+// palette"), and that promise is only true while the list fits inside the
+// advertised span: a tenth scheme would be unreachable by key while the note
+// still said the digits were enough. Both halves are read from the page, so
+// neither can drift from the other.
+var span = /(\d)-(\d)\s+pick a palette/.exec(note);
+var hi = span ? parseInt(span[2], 10) : 0;
+var paletteCount = Object.keys(core.palettes).length;
+assert(!!span && paletteCount <= hi && paletteCount >= parseInt(span[1], 10),
+  'the digit range in the note reaches every palette (' + paletteCount +
+  ' schemes, note says ' + (span ? span[1] + '-' + span[2] : 'nothing') + ')');
+
 // Dropping a legend hover has to repaint through the same path that draws the
 // crosshair, or the cell picked out of the hash loses its mark the moment the
 // pointer crosses the list. Each clear site is a `solo = null;` followed by a

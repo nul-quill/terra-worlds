@@ -285,6 +285,10 @@ Conventions:
   The listing covers the other lists too — palette, overlay, light, grid and
   export keys are each echoed by name — so one `--help` is enough to choose any
   value, and the suite walks all five arrays against that output.
+  The same reachability rule holds in the page: the note advertises `1-9` for the
+  palette digits, so the suite compares that span with the length of
+  `core.palettes`. A tenth scheme has to widen the note rather than sit beyond the
+  last digit, which is why the count and the span are checked together.
   The six `--listings` themselves are checked too: every line must carry a
   note beside its key, since a terminal has no dropdown label to explain it.
   Each curve must also be its own picture: the suite renders one seed through
