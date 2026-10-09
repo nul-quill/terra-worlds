@@ -100,6 +100,12 @@ Conventions:
   the smoke suite checks between a small and a large world — while the biome
   drying reads it through a capped `min(12, dist) / 12`. Keep both: the cap is
   what stops a big grid from turning its whole interior into desert.
+  The readout's `N from water` part prints on dry ground only, and it can rely
+  on that because the sweeps seed at the shoreline: every water cell is already
+  at zero, so the note's own threshold does the filtering and the dry/wet test
+  only skips the repeat of the biome name. The suite checks that per cell, since
+  a field that left a wet cell at a non-zero distance would quietly lose its
+  reading from the hover.
 - `channelize(result, name)` is a separate pass over the already-computed fields
   (`heightField`, `moisture`, `accumulation`, `coastDistance`). It never feeds back
   into `generate`: an overlay must not change the biome map. Stretch each field by

@@ -1113,6 +1113,23 @@ assert(schemeBad.length === 0 && nameKeys.length >= 12,
   'every scheme colours exactly the named classes (' + nameKeys.length +
   ' names, ' + schemeBad.join('; ') + ')');
 
+// The readout prints `N from water` only on dry ground, and it does so on the
+// strength of one fact: the sweeps start at the shoreline, so every water cell
+// already sits at zero and the `above` guard in the readout is never what
+// filters it. Checked cell by cell — each cell with a distance above the note's
+// own threshold has to be a cell at or above the sea line. Were that not so,
+// the note would be hiding a real reading on half the ocean.
+var distWorld = core.generate({seed: 'thousand isles', width: 130, height: 80});
+var wetFar = 0;
+for (var di = 0; di < distWorld.heightField.length; di++) {
+  if (distWorld.coastDistance[di] > 1 &&
+    distWorld.heightField[di] < distWorld.seaLevel) wetFar++;
+}
+var farthest = Math.max.apply(null, distWorld.coastDistance);
+assert(wetFar === 0 && farthest > 1,
+  'only dry cells are ever far from water (' + wetFar + ' wet, furthest ' +
+  farthest + ')');
+
 // Writing several worlds at once must not overwrite: --out becomes a prefix and
 // each world gets its own numbered file. The record names that file, so the
 // two records of one call have to point at two different paths — and each path
