@@ -8,23 +8,32 @@ var zlib = require('zlib');
 
 function parseArgs(argv) {
   var opts = { seeds: [], unknown: [], width: 480, height: 300, out: 'world.ppm' };
+  // A flag value that is not a number would otherwise reach the generator as
+  // NaN, where every comparison against it is false: the sea level in
+  // particular turns a whole world into dry land that way. Reading the number
+  // through this helper leaves the option unset instead, so the generator's
+  // own default applies and a mistyped value costs nothing but the typo.
+  function nextNum(value, isInt) {
+    var n = isInt ? parseInt(value, 10) : parseFloat(value);
+    return isNaN(n) ? undefined : n;
+  }
   for (var i = 0; i < argv.length; i++) {
     var a = argv[i];
-    if (a === '--width') opts.width = parseInt(argv[++i], 10);
-    else if (a === '--height') opts.height = parseInt(argv[++i], 10);
+    if (a === '--width') opts.width = nextNum(argv[++i], true);
+    else if (a === '--height') opts.height = nextNum(argv[++i], true);
     else if (a === '--palette') opts.palette = argv[++i];
     else if (a === '--shape') opts.shape = argv[++i];
-    else if (a === '--sea') opts.seaLevel = parseFloat(argv[++i]);
-    else if (a === '--detail') opts.detail = parseFloat(argv[++i]);
-    else if (a === '--polar') opts.polar = parseFloat(argv[++i]);
-    else if (a === '--light') opts.hillshade = parseFloat(argv[++i]);
+    else if (a === '--sea') opts.seaLevel = nextNum(argv[++i], false);
+    else if (a === '--detail') opts.detail = nextNum(argv[++i], false);
+    else if (a === '--polar') opts.polar = nextNum(argv[++i], false);
+    else if (a === '--light') opts.hillshade = nextNum(argv[++i], false);
     else if (a === '--dir') opts.lightDir = argv[++i];
-    else if (a === '--terraces') opts.terraces = parseInt(argv[++i], 10);
-    else if (a === '--rivers') opts.rivers = parseInt(argv[++i], 10);
+    else if (a === '--terraces') opts.terraces = nextNum(argv[++i], true);
+    else if (a === '--rivers') opts.rivers = nextNum(argv[++i], true);
     else if (a === '--no-grain') opts.dither = false;
     else if (a === '--contour') opts.contour = true;
     else if (a === '--channel') opts.channel = argv[++i];
-    else if (a === '--scale') opts.scale = parseInt(argv[++i], 10);
+    else if (a === '--scale') opts.scale = nextNum(argv[++i], true);
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--describe') opts.describe = true;
     else if (a === '--next') opts.next = parseInt(argv[++i], 10) || 5;
