@@ -86,6 +86,8 @@ Conventions:
   (forward, then backward) over the grid: O(n), no queue. It both dries the
   continental interior in the biome lookup and feeds the hover readout. Do not
   replace it with a BFS from the coast.
+  The BFS is still the oracle: the smoke suite walks the same field with a
+  plain FIFO queue and compares every cell, so the sweeps cannot drift from it.
   The field itself is unclamped — the furthest cell grows with the grid, which
   the smoke suite checks between a small and a large world — while the biome
   drying reads it through a capped `min(12, dist) / 12`. Keep both: the cap is

@@ -296,6 +296,42 @@ assert(bigInland.max > smallInland.max * 2 && bigInland.max <= 300 / 2 &&
   'the interior reaches further on a bigger grid (' + smallInland.max +
   ' -> ' + bigInland.max + ' cells from water)');
 
+// The two sweeps are only worth the name if they compute what a breadth-first
+// walk from the water computes. Do that walk here — a plain FIFO queue, four
+// neighbours, seeded from every water cell — and compare cell by cell. A
+// chamfer that drifted from the real distance still looks plausible on a small
+// grid, so this runs on a wide one where the interior matters.
+var bfsWorld = core.generate({seed: 'thousand isles', width: 200, height: 120});
+var bfsN = bfsWorld.heightField.length;
+var bfsWant = new Int32Array(bfsN).fill(-1);
+var bfsQ = [];
+for (var bi = 0; bi < bfsN; bi++) {
+  if (bfsWorld.heightField[bi] < bfsWorld.seaLevel) {
+    bfsWant[bi] = 0;
+    bfsQ.push(bi);
+  }
+}
+for (var bh = 0; bh < bfsQ.length; bh++) {
+  var bq = bfsQ[bh];
+  var bx2 = bq % bfsWorld.width, by2 = (bq / bfsWorld.width) | 0;
+  var bn = [bx2 > 0 ? bq - 1 : -1, bx2 < bfsWorld.width - 1 ? bq + 1 : -1,
+    by2 > 0 ? bq - bfsWorld.width : -1,
+    by2 < bfsWorld.height - 1 ? bq + bfsWorld.width : -1];
+  for (var bj = 0; bj < 4; bj++) {
+    var bnn = bn[bj];
+    if (bnn >= 0 && bfsWant[bnn] < 0) {
+      bfsWant[bnn] = bfsWant[bq] + 1;
+      bfsQ.push(bnn);
+    }
+  }
+}
+var bfsDiff = 0;
+for (var bk = 0; bk < bfsN; bk++) {
+  if (bfsWorld.coastDistance[bk] !== bfsWant[bk]) bfsDiff++;
+}
+assert(bfsQ.length > 0 && bfsDiff === 0,
+  'the sweeps match a walk from the coast (' + bfsDiff + ' cells apart)');
+
 // Overlays: every channel must be a real scalar rendering — some spread in
 // the output, opaque, and reproducible — without disturbing the fields the
 // readout depends on.
