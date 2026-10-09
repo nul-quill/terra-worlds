@@ -183,6 +183,10 @@ Conventions:
   world look twice as wet in a wide window. It goes through
   `percentText()` like every other share, which is what lets the suite
   re-derive the string from `stats.rivers / stats.pixels`.
+  The same string is rebuilt a second time from the CLI record — `rivers` over
+  `width` x `height` — since a saved PNG keeps nothing but that JSON line, and
+  a record that rounded on its own would describe a drier world than the one
+  on screen.
   The stats list itself opens with the `seed` row, before `grid`: a print or a
   screenshot keeps no URL, so the phrase has to be readable off the page. The
   smoke suite reads the row labels out of `renderStats()` and checks that first

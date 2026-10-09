@@ -1265,6 +1265,17 @@ assert(jsonSorted && jsonPairs[0][1] > 0 &&
   'cli classes rank like the legend (' + jsonPairs[0][0] + ' first at ' +
   jsonPairs[0][1] + '%)');
 
+// The drainage share in the sentence has to be reproducible from the record's
+// own numbers, since that is the only trace a saved file keeps: `rivers` over
+// `width` x `height` through the shared formatter must be the string printed
+// after it. A second rounding in the record would leave a terminal describing
+// a drier world than the one on screen.
+var recDrain = /([\d.]+)% drained/.exec(jsonLine.summary);
+var recWant = core.percentText(jsonLine.rivers / (jsonLine.width * jsonLine.height));
+assert(!!recDrain && recDrain[1] + '%' === recWant,
+  'the drained share rebuilds from the record (' +
+  (recDrain ? recDrain[1] + '%' : 'nothing') + ' vs ' + recWant + ')');
+
 // The record also names the look it was drawn with, so two worlds that share a
 // seed and a grid but differ only in palette are still tellable apart from the
 // JSON alone. Checked against a non-default palette to prove it is not a
