@@ -1,3 +1,4 @@
+Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `m`, `p`, `s`) are skipped while an INPUT or
 # AGENTS.md — working notes for this repo
 
 Layout (plain static site, no build step, no package manager):
@@ -237,6 +238,10 @@ Conventions:
   neither goes into the hash.
   `stepBand()` wraps its bin with the same modulo the cell walk uses, so one
   direction keeps sweeping the height range instead of sticking on the last bar.
+  The magnifier in `drawInset()` is the one overlay that covers map rather than
+  tinting it, so `m` drops it: `insetOn` gates the call in `drawHover()` and
+  nothing else. Like `solo` and `band` it is a view setting and stays out of
+  the hash — a shared link should reopen with the panel drawn.
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.

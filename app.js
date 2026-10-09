@@ -145,6 +145,11 @@
   // Height band picked by hovering the relief chart: a bin index, or -1. Like
   // `solo` this is a preview, so it is not written into the hash.
   var band = -1;
+  // Whether the magnifier panel is drawn. It is the one overlay that covers
+  // part of the map rather than tinting it, so on a small window it is worth
+  // being able to drop. Like the hovered bin this is a view setting, not part
+  // of the world, so it stays out of the hash.
+  var insetOn = true;
 
   /* ---- defaults ---- */
 
@@ -421,7 +426,7 @@
       ctx.strokeStyle = edge;
       ctx.lineWidth = Math.max(1, Math.round(cellX * 0.25));
       ctx.strokeRect(px * cellX, py * cellY, cellX, cellY);
-      drawInset(px, py);
+      if (insetOn) drawInset(px, py);
     }
   }
 
@@ -1304,6 +1309,15 @@
     }
     // The two checkboxes and the export are the only things left that a
     // keyboard user has to reach for: one key each, no modifiers.
+    // 'm' drops the magnifier panel. It is the only overlay that hides part of
+    // the map rather than tinting it, so it is the one worth being able to
+    // switch off — and unlike the legend pin it changes no pixel of the world.
+    if (!typingLetter && /^(m|M)$/.test(ev.key)) {
+      ev.preventDefault();
+      insetOn = !insetOn;
+      drawHover();
+      return;
+    }
     // 'k' walks the legend: each press pins the next class, and the cycle wraps
     // back through "nothing pinned". Same list the rows are built from, so the
     // order under the key is the order on screen.
