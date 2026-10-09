@@ -226,17 +226,26 @@
   }
 
   function readOptions() {
+    // Same rule the CLI parser follows: a value that does not read as a
+    // number is dropped rather than passed on as NaN. In the generator every
+    // comparison against NaN is false, so a single unparsed field turns a
+    // whole world into flat dry land. Leaving the key undefined lets the
+    // generator's own default stand.
+    function num(value, isInt) {
+      var n = isInt ? parseInt(value, 10) : parseFloat(value);
+      return isNaN(n) ? undefined : n;
+    }
     return {
       seed: inputs.seed.value || 'terra',
       palette: inputs.palette.value,
       shape: inputs.shape.value,
-      gridSize: parseInt(inputs.gridSize.value, 10) || 0,
-      seaLevel: parseFloat(inputs.seaLevel.value),
-      detail: parseFloat(inputs.detail.value),
-      polar: parseFloat(inputs.polar.value),
-      terraces: parseInt(inputs.terraces.value, 10),
-      hillshade: parseFloat(inputs.hillshade.value),
-      rivers: parseInt(inputs.rivers.value, 10),
+      gridSize: num(inputs.gridSize.value, true) || 0,
+      seaLevel: num(inputs.seaLevel.value, false),
+      detail: num(inputs.detail.value, false),
+      polar: num(inputs.polar.value, false),
+      terraces: num(inputs.terraces.value, true),
+      hillshade: num(inputs.hillshade.value, false),
+      rivers: num(inputs.rivers.value, true),
       lightDir: inputs.lightDir.value,
       dither: inputs.dither.checked,
       channel: inputs.channel.value,
