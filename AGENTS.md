@@ -226,6 +226,11 @@ Conventions:
   The same suite compares the key set with the note under the chart, which is
   the only place the shortcuts are written down: a new letter has to appear
   there as its own token, not merely be handled.
+  Those two extras are checked on their own, since they sit outside the
+  `HASH_KEYS` loop: each has exactly one `parts.push()` in `writeHash()` and at
+  least one `fromUrl.` read in `applyHash()`. A pair that only went out would
+  still look right in the address bar while the reopened link lost the pin or
+  the cell it promised.
   Every colour painted on the map canvas comes from the palette in use — the
   isolation blend, the crosshair and the magnifier panel in `drawInset()` all
   read `palette.sky` and the biome triples. A fixed ink would read as a bright

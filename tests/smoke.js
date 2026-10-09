@@ -1428,6 +1428,24 @@ assert(shortNames.length === hashNames.length &&
   'each hash name is short and unique (' + shortNames.length +
   ' names, dupe ' + dupeShort + ', long ' + tooLong + ')');
 
+// The two pairs that are not form controls — the pinned legend class and the
+// hovered cell — are written outside the HASH_KEYS loop, so nothing else
+// guarantees that a link carrying them also restores them. Walk each name and
+// ask for one write in `writeHash()` and at least one read in `applyHash()`:
+// a pair that only ever goes out would make a shared link lose its selection
+// on the second load, which is the whole reason the pair exists.
+var extraPairs = ['pin', 'at'];
+var writeBody = (/function writeHash\(\)([\s\S]*?)\n  \}/.exec(appSrc) || ['', ''])[1];
+var applyBody = (/function applyHash\(\)([\s\S]*?)\n  \}/.exec(appSrc) || ['', ''])[1];
+var oneWay = [];
+extraPairs.forEach(function (name) {
+  var pushed = (writeBody.match(new RegExp("parts\\.push\\('" + name + '=')) || []).length;
+  var taken = (applyBody.match(new RegExp('fromUrl\\.' + name + '\\b')) || []).length;
+  if (pushed !== 1 || taken < 1) oneWay.push(name + ':' + pushed + '/' + taken);
+});
+assert(oneWay.length === 0,
+  'the non-control hash pairs round-trip (' + oneWay.join(', ') + ')');
+
 // The note under the chart is the only place the keyboard is documented, so
 // every single-letter shortcut the shell handles must be named there. Pulled
 // out of the handler with the same comparison it uses, then matched against
