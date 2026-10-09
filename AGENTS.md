@@ -58,6 +58,9 @@ Conventions:
   The spillway search caps the rim at `seaLevel + 0.30` on the first pass, then
   retries without the cap — a terraced plateau stacks its rims high enough that
   the capped pass alone would leave a big basin with no outlet at all.
+  The chosen cell is the lowest DRY neighbour on the whole rim, which is what
+  lets a filled basin keep draining; the smoke suite re-derives that minimum
+  from the height field, so a mark on a higher step or inside the fill fails.
   The flood fill marks cells in `queued` with the fill number at enqueue time,
   not at dequeue: without that a cell offered by two neighbours is pushed twice
   and overflows the one-slot-per-cell queue.

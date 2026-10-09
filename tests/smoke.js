@@ -840,6 +840,39 @@ for (var ai = 0; ai < bw.spillway.length; ai++) {
 assert(ownOk,
   'each outlet names a basin its own shore belongs to');
 
+// The outlet is supposed to be the LOWEST dry cell on its basin's rim — that is
+// the whole reason a basin keeps draining after it fills. Walk every lake cell,
+// keep the lowest dry neighbour of each, and check no such neighbour is lower
+// than the cell that was actually marked. Also check the mark is not itself
+// standing water: a spillway inside the lake would hold the surplus in.
+var outletOf = {};
+for (var wi = 0; wi < bw.spillway.length; wi++) {
+  if (bw.spillway[wi]) outletOf[bw.spillway[wi]] = bw.heightField[wi];
+}
+var rimOk = true, rimDry = true, rimSeen = 0;
+for (var ri = 0; ri < bw.basin.length; ri++) {
+  if (!bw.basin[ri]) continue;
+  var rx = ri % bw.width, ry = (ri / bw.width) | 0;
+  var low = -1;
+  if (rx > 0 && !bw.lakeMask[ri - 1]) low = ri - 1;
+  if (rx < bw.width - 1 && !bw.lakeMask[ri + 1] &&
+    (low < 0 || bw.heightField[ri + 1] < bw.heightField[low])) low = ri + 1;
+  if (ry > 0 && !bw.lakeMask[ri - bw.width] &&
+    (low < 0 || bw.heightField[ri - bw.width] < bw.heightField[low])) low = ri - bw.width;
+  if (ry < bw.height - 1 && !bw.lakeMask[ri + bw.width] &&
+    (low < 0 || bw.heightField[ri + bw.width] < bw.heightField[low])) low = ri + bw.width;
+  if (low < 0) continue;
+  rimSeen++;
+  var marked = outletOf[bw.basin[ri]];
+  if (marked === undefined) rimOk = false;
+  else if (bw.heightField[low] > marked + 1e-9) rimOk = false;
+}
+for (var di = 0; di < bw.spillway.length; di++) {
+  if (bw.spillway[di] && bw.lakeMask[di]) rimDry = false;
+}
+assert(rimSeen > 0 && rimOk && rimDry,
+  'each outlet is the lowest dry cell on its rim (' + rimSeen + ' rims)');
+
 // The labels a hover prints as `basin 2/4` have to cover every basin exactly:
 // each lake cell carries a number in 1..lakeBasins, and each of those numbers
 // appears at least once. A missing label would make the readout's denominator
