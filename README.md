@@ -146,6 +146,9 @@ While an overlay is on, the readout also prints that overlay's own ramp position
 for the hovered cell — `drain 68` — which is the number the colour was mixed
 from, not the raw field value. The scale is cached on the result when the overlay
 is built, so walking the map does not re-sort the field.
+`lake depth` is the one overlay that skips the percentile step: its mask is
+already normalised by its own basin, and most of any grid is dry, so it scales
+over the mask's own 0..60 steps instead. Both halves of that are asserted.
 At the top of the sidebar, one line puts the world into words — shape, a relief
 word with its range, the land share, the dominant class, plus how many separate
 lake basins the world has (`4 lakes`) and `polar` when they apply. Hovering a

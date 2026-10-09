@@ -105,6 +105,9 @@ Conventions:
   already normalised by its own basin (1..60 steps), and most of a grid is dry,
   so the 98% mark of a world with two small tarns is still zero. It scales over
   0..60 instead.
+  The smoke suite checks both halves of that: the filled cells stay visibly
+  graded, and the published scale is the mask's own range rather than a
+  percentile pair.
   `slope` is the one field built inside `fieldFor` rather than by `generate`:
   it is a difference of the height field, so it still cannot move a biome
   boundary, and it is cached on `result.slopeField` for the same reason the

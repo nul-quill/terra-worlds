@@ -370,6 +370,28 @@ overlayKeys.forEach(function (name) {
     name + ' overlay spans a ramp and repeats (' + loC + '..' + hiC + ')');
 });
 
+// The lake ramp is the one field that keeps its own scale: a mask of 1..60
+// steps, where most of the grid is dry and reads as zero. Percentiles would
+// collapse that to one colour — the 98% mark of a world with a handful of
+// small tarns is still zero — so the filled cells have to be distinguishable
+// from each other while the scale stays the mask's own range.
+var tarns = core.generate({seed: 'salt mirror', width: 120, height: 80});
+var tarnChan = core.channelize(tarns, 'lake');
+var tarnLo = 255, tarnHi = 0, tarnCells = 0;
+for (var tli = 0; tli < tarns.lakeMask.length; tli++) {
+  if (!tarns.lakeMask[tli]) continue;
+  tarnCells++;
+  var tLum = tarnChan.data[tli * 4] + tarnChan.data[tli * 4 + 1] +
+    tarnChan.data[tli * 4 + 2];
+  if (tLum < tarnLo) tarnLo = tLum;
+  if (tLum > tarnHi) tarnHi = tLum;
+}
+assert(tarnCells > 0 && tarnCells < tarns.lakeMask.length / 4 &&
+  tarnHi - tarnLo > 40 && tarns.channelScale.lo === 0 &&
+  tarns.channelScale.hi === 60,
+  'lake depth keeps its own scale (' + tarnCells + ' filled cells, ' +
+  tarnLo + '..' + tarnHi + ')');
+
 // The readout prints the overlay's own ramp position, so it has to agree with
 // the pixels: the colour under the cursor must be the palette pair lerped by
 // exactly that number. Checked on the log-scaled field, whose raw values are
