@@ -97,6 +97,11 @@ Conventions:
   so a third field for tributaries would be one more number that can disagree
   with the other two. The suite re-derives the pair from `riverMask` (values 1
   and 2) and checks both halves reach the record.
+  Because the cut is a quantile, the `rivers` slider is a keep-fraction: each
+  step up widens the network on the same grid, never narrows it. The smoke suite
+  walks the slider's own range and asks for a share that only rises (and stays
+  under a fifth of the grid), which is what lets the `N% drained` figure in the
+  sentence be read as the slider's effect without opening the page.
   `stats.median` is the middle of the sorted height field, published for the
   same reason: min/max alone cannot tell a plateau from a peaked plain. It is
   grid-size dependent like the band counts, so any assertion comparing it with

@@ -622,6 +622,23 @@ assert(Math.abs(smallShare - bigShare) < 0.04,
   'river density holds across grid sizes (' + (smallShare * 100).toFixed(1) + '% vs ' +
   (bigShare * 100).toFixed(1) + '%)');
 
+// The same quantile cut is what makes the `rivers` slider behave: each step up
+// keeps a larger share of the network, on the same grid, so the figure in the
+// sentence moves in one direction only. Walked over the slider's own range —
+// a step that ever went backwards would make the control unreadable, and a
+// second threshold with its own scale is how that happens.
+var slidePrev = -1, slideOk = true, slideLast = 0;
+[0, 40, 90, 150, 240, 400].forEach(function (rv) {
+  var sw2 = core.generate({seed: 'red ridge', width: 120, height: 80, rivers: rv});
+  var share = sw2.stats.rivers / sw2.stats.pixels;
+  if (share < slidePrev || share > 0.20) slideOk = false;
+  slidePrev = share;
+  slideLast = sw2.stats.rivers;
+});
+assert(slideOk && slideLast > 0,
+  'the rivers slider only ever widens the network (' +
+  (slidePrev * 100).toFixed(1) + '% at the top of the range)');
+
 // The summary sentence is shared by the page and the CLI, so it must name the
 // shape, the dominant class and stay identical for the same seed.
 var said = core.describe(a);
