@@ -213,6 +213,10 @@ Conventions:
   `@media` blocks: `print` (hides the chrome, one column) and
   `prefers-color-scheme: dark` (only the CSS variables change). Both are checked
   with `page.emulateMedia()` followed by a reload.
+  The dark block only works by replacing every variable in `:root`, so the suite
+  compares the two name lists: a variable declared once and never restated keeps
+  its light value under a dark background, which is the one way this scheme can
+  go wrong. A new colour has to appear on both sides.
   - The URL hash is written by `writeHash()` only, and every pair in it comes from
     a form control in `HASH_KEYS` plus two extras that are not controls: `pin=` for
     the clicked legend class and `at=x,y` for the hovered cell. Both pointer paths

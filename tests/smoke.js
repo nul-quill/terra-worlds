@@ -1759,6 +1759,32 @@ assert(bandLabels === 1 && bandTally && !bandFixed,
   'the readout numbers the bar it lights (' + bandLabels + ' label, tally ' +
   bandTally + ', fixed ' + bandFixed + ')');
 
+// The dark scheme is meant to change nothing but the colour variables, which
+// only works if it replaces every one of them: a variable declared once in
+// `:root` and left alone by the dark block would keep its light value under a
+// dark background. Both blocks are read out of the stylesheet and compared by
+// name, so a new variable cannot arrive on one side only.
+var cssSrc = require('fs').readFileSync(__dirname + '/../styles.css', 'utf8');
+var rootBlock = /:root\s*\{([\s\S]*?)\}/.exec(cssSrc);
+var darkBlock = /@media \(prefers-color-scheme: dark\)\s*\{([\s\S]*?)\n\}/
+  .exec(cssSrc);
+function varNames(block) {
+  var found = [];
+  (block || '').replace(/(--[a-z-]+)\s*:/g, function (m, name) {
+    if (found.indexOf(name) < 0) found.push(name);
+    return m;
+  });
+  return found;
+}
+var rootVars = varNames(rootBlock && rootBlock[1]);
+var darkVars = varNames(darkBlock && darkBlock[1]);
+var halfSet = rootVars.filter(function (rv) {
+  return darkVars.indexOf(rv) < 0;
+});
+assert(rootVars.length >= 4 && darkVars.length >= 4 && halfSet.length === 0,
+  'the dark scheme restates every colour variable (' + darkVars.length +
+  ' of ' + rootVars.length + ', unset ' + halfSet.join(',') + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
