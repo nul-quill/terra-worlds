@@ -220,6 +220,11 @@ Conventions:
 - `cli.js --palettes` lists the palette keys from `core.palettes`, so a name
   copied from the terminal is always valid for `--palette`. The smoke suite
   compares that listing against `Object.keys(core.palettes)` — keep both in step.
+  Each entry is a `label`, a `sky` written as a CSS hex string, and one rgb
+  triple per biome key. The shade pass mixes those triples into a pixel without
+  clamping, so they stay whole numbers in 0..255; the smoke suite checks both
+  the triples and the sky string, since the sky is also the isolation blend
+  target in `drawMap()`.
   `--shapes` does the same job for the shape curves from `core.shapes`, which is
   also what fills the shape dropdown. Add a curve in `core.js` only; the list,
   the dropdown and the CLI output all follow from that one array.

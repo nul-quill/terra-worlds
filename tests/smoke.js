@@ -48,6 +48,29 @@ Object.keys(core.palettes).forEach(function (name) {
 });
 assert(colourOk, 'every palette colours every biome class (' + classes.length + ')');
 
+// The shade pass mixes those numbers straight into a pixel without clamping, so
+// each entry has to be a triple of whole numbers inside 0..255. The sky is the
+// one exception: it is a CSS string, because it is also the page background and
+// the blend target for an isolated class. Each palette also needs a label: that
+// is what the dropdown and the digit keys show.
+function tripleOk(v) {
+  return !!v && v.length === 3 && v.every(function (n) {
+    return n === Math.round(n) && n >= 0 && n <= 255;
+  });
+}
+var formatBad = [];
+Object.keys(core.palettes).forEach(function (name) {
+  var pal = core.palettes[name];
+  if (!pal.label) formatBad.push(name + ' label');
+  if (!/^#[0-9a-f]{6}$/i.test(pal.sky)) formatBad.push(name + ' sky');
+  Object.keys(pal.colors).forEach(function (cls) {
+    if (!tripleOk(pal.colors[cls])) formatBad.push(name + '.' + cls);
+  });
+});
+assert(formatBad.length === 0 && Object.keys(core.palettes).length >= 4,
+  'every palette colour is a whole-number triple (' +
+  Object.keys(core.palettes).length + ' palettes, bad ' + formatBad.join(',') + ')');
+
 var t = core.generate({ seed: 'perf', width: 480, height: 300 });
 assert(t.stats.ms < 900, 'generation under 900ms (' + t.stats.ms + 'ms)');
 
