@@ -145,6 +145,12 @@
   // Height band picked by hovering the relief chart: a bin index, or -1. Like
   // `solo` this is a preview, so it is not written into the hash.
   var band = -1;
+  // Bin the hovered map cell falls in, as a bin index, or -1. Kept beside
+  // `band` rather than folded into it: the chart hover is a choice, this is a
+  // reading, and a repaint has to be able to restore the reading without
+  // pretending the pointer had picked a bar. Also a preview, also out of the
+  // hash.
+  var cellBand = -1;
   // Whether the magnifier panel is drawn. It is the one overlay that covers
   // part of the map rather than tinting it, so on a small window it is worth
   // being able to drop. Like the hovered bin this is a view setting, not part
@@ -353,6 +359,11 @@
     // by height instead of by class, so a band of the histogram lights up the
     // matching cells on the map. Same blend, one more test in the same loop.
     var hs = histState;
+    // The bin a hovered cell falls in is a reading rather than a filter: it
+    // lights the matching bar in the chart, but only a bar the pointer picked
+    // dims the map. Both still have to reach the chart repaint, so the pair is
+    // resolved once here — the picked bar wins where both are set.
+    var litBand = band >= 0 ? band : cellBand;
     var bandLo = 0, bandSpan = 1, bandOn = band >= 0 && hs;
     // A legend selection wins over a hovered band: the row is what the pointer
     // is on, and two stacked filters would read as a third, dimmer state.
@@ -382,7 +393,7 @@
     // The relief chart reads the same selection, so it is repainted from this
     // one place too: every path that changes what is highlighted goes through
     // here, and the two views cannot end up showing different filters.
-    paintHistogram(band);
+    paintHistogram(litBand);
   }
 
   // Whole-device-pixel cell size, matching what render() chose for the grid.
@@ -681,7 +692,7 @@
     var lo = result.stats.min, hi = result.stats.max;
     var span = Math.max(0.001, hi - lo);
     for (var i = 0; i < hf.length; i++) {
-      var b = Math.min(BINS - 1, Math.floor((hf[i] - lo) / span * BINS));
+      var b = binIndex(hf[i], lo, span, BINS);
       hist[b] = (hist[b] || 0) + 1;
     }
     var peak = 0;
@@ -725,8 +736,7 @@
       var hf = result.heightField;
       for (i = 0; i < result.biome.length; i++) {
         if (result.biome[i] !== want) continue;
-        member[Math.min(BINS - 1,
-          Math.floor((hf[i] - lo) / span * BINS))] = 1;
+        member[binIndex(hf[i], lo, span, BINS)] = 1;
       }
     }
     // Bars take the palette's own water and grass triples, so the little chart
@@ -829,7 +839,7 @@
       var tally = {};
       if (biome) {
         for (i = 0; i < biome.length; i++) {
-          var bb = Math.floor((st.result.heightField[i] - lo) / span * BINS);
+          var bb = binIndex(st.result.heightField[i], lo, span, BINS);
           if (bb !== only) continue;
           var bk = biome[i];
           tally[bk] = (tally[bk] || 0) + 1;
@@ -987,18 +997,33 @@
       parts.push((current.riverMask[i] === 2 ? 'trunk river' : 'river') +
         (catchment > 1 ? ' (' + catchment + ' cells)' : ''));
     }
-    readout.textContent = parts.join(' — ');
     // Tie the readout to the relief chart: the bin this cell falls in is
     // highlighted, so a colour on the map can be traced back to where it sits
-    // in the world's elevation spread.
-    paintHistogram(histBinFor(h));
+    // in the world's elevation spread. The bin number is printed here too, from
+    // the same lookup, so the sentence and the lit bar cannot disagree about
+    // which slice of the height range this cell is in.
+    // Kept in `cellBand` rather than passed straight to the chart, so the
+    // repaint that follows (drawHover, and the grid pass inside it) restores
+    // the same bar instead of painting the chart with no selection.
+    cellBand = histBinFor(h);
+    if (cellBand >= 0 && histState) {
+      parts.push('band ' + (cellBand + 1) + '/' + histState.bins);
+    }
+    readout.textContent = parts.join(' — ');
+    paintHistogram(cellBand);
   }
 
   // Bin index for a height, using the range the chart was binned over.
+  // Both the binning pass and the hover read go through this one function, so
+  // the cell under a cursor always lights the bar that counted it.
+  function binIndex(h, lo, span, bins) {
+    var b = Math.floor((h - lo) / span * bins);
+    return Math.max(0, Math.min(bins - 1, b));
+  }
+
   function histBinFor(h) {
     if (!histState) return -1;
-    var b = Math.floor((h - histState.lo) / histState.span * histState.bins);
-    return Math.max(0, Math.min(histState.bins - 1, b));
+    return binIndex(h, histState.lo, histState.span, histState.bins);
   }
 
   function savePng() {
@@ -1180,6 +1205,9 @@
     // map never keeps a height filter after the pointer has gone while the
     // chart itself shows no selection.
     band = -1;
+    // The cell reading goes with it: nothing is under the cursor any more, so
+    // the chart should show the whole silhouette again.
+    cellBand = -1;
     drawHover();
     // The chart keeps the last hovered bin until something else picks one, so
     // dropping the pointer off the map clears it along with the readout.

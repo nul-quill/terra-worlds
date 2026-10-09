@@ -1590,6 +1590,46 @@ assert(orderBad.length === 0 && orderDiffers > 0 && legendDefs === 1 &&
   'legend rows sort by share and one lookup feeds both paths (' + orderDiffers +
   ' reordered, ' + legendDefs + ' def, ' + legendUses + ' uses)');
 
+// Turning a height into a chart bin happens in four places: the binning pass,
+// the legend-members pass, the hovered-bin tally and the hover readout. Each
+// has to agree with the others or the bar lit under a cursor is not the bar
+// that counted the cell. Checked as text: one definition holding the clamp, and
+// every site going through it rather than repeating the arithmetic.
+var binDefs = (appSrc.match(/function binIndex\(/g) || []).length;
+var binCalls = (appSrc.match(/binIndex\(/g) || []).length - binDefs;
+var binClamps = (appSrc.match(/Math\.min\(bins - 1/g) || []).length;
+assert(binDefs === 1 && binCalls >= 3 && binClamps === 1,
+  'one height-to-bin mapping feeds the chart and the readout (' + binDefs +
+  ' def, ' + binCalls + ' uses, ' + binClamps + ' clamp)');
+
+// The bin a hovered cell falls in has to survive the repaint that follows the
+// hover: the readout records it, the grid pass reads it back, and leaving the
+// map drops it again. Held in one variable with one write from the bin lookup,
+// so no second copy can go stale while the chart is being redrawn.
+var cellReadDefs = (appSrc.match(/var cellBand = -1;/g) || []).length;
+var cellReadWrites = (appSrc.match(/cellBand = histBinFor\(/g) || []).length;
+// The declaration also reads `cellBand = -1`, so the clear sites are matched at
+// the start of their own line: that is a handler resetting the reading, not the
+// variable being introduced.
+var cellReadClears = (appSrc.match(/^\s+cellBand = -1;/gm) || []).length;
+var cellReadShared = /band >= 0 \? band : cellBand/.test(appSrc);
+assert(cellReadDefs === 1 && cellReadWrites === 1 && cellReadClears === 1 &&
+  cellReadShared,
+  'a hovered cell keeps its bar through the next repaint (' + cellReadDefs +
+  ' def, ' + cellReadWrites + ' write, ' + cellReadClears + ' clear, shared ' +
+  cellReadShared + ')');
+
+// The readout also names the bin it just lit, so the pair has to be built from
+// that same reading: a one-based number off `cellBand`, over the bin count the
+// chart was binned with. A second denominator — a fixed bar count, or the raw
+// zero-based index — would print a row the lit bar cannot match.
+var bandLabels = (appSrc.match(/'band ' \+ \(cellBand \+ 1\)/g) || []).length;
+var bandTally = /\+ '\/' \+ histState\.bins/.test(appSrc);
+var bandFixed = /'band ' \+ \d+\/\d+/.test(appSrc);
+assert(bandLabels === 1 && bandTally && !bandFixed,
+  'the readout numbers the bar it lights (' + bandLabels + ' label, tally ' +
+  bandTally + ', fixed ' + bandFixed + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

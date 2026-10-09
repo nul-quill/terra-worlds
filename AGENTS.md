@@ -245,6 +245,17 @@ Conventions:
   neither goes into the hash.
   `stepBand()` wraps its bin with the same modulo the cell walk uses, so one
   direction keeps sweeping the height range instead of sticking on the last bar.
+  Turning a height into a bin index is `binIndex(h, lo, span, bins)` and it is
+  the only place the clamp to the last bar lives: the binning pass, the
+  legend-members pass, the hovered-bin tally and `histBinFor()` all go through
+  it, so the bar lit under a cursor is always the bar that counted the cell.
+  The hovered cell's own bin is held in `cellBand` — a reading, not a filter.
+  `updateReadout()` writes it once from `histBinFor()`, prints it as
+  `band 38/72` in the readout, and hands it to the chart; `drawMap()` lights
+  that bar through `band >= 0 ? band : cellBand`, which is what keeps the
+  highlight alive across the repaint a hover triggers. A picked bar (`band`)
+  still wins over it. Both are cleared when the pointer leaves, and neither
+  goes into the hash — the link carries the cell, and the bin follows from it.
   The magnifier in `drawInset()` is the one overlay that covers map rather than
   tinting it, so `m` drops it: `insetOn` gates the call in `drawHover()` and
   nothing else. Like `solo` and `band` it is a view setting and stays out of
