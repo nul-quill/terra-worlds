@@ -2184,18 +2184,39 @@ assert(bandLabels === 1 && bandTally && !bandFixed,
   bandTally + ', fixed ' + bandFixed + ')');
 
 // The band label is a measurement rather than a position in a list, so both of
-// its ends come from the range the chart was binned over — the same arithmetic
-// the chart uses for its own hovered-bin label. Counted on both sides: two ends
-// in the readout, two in the chart, so neither view can round a bin against a
-// different scale than the one that lit it.
-var readoutEnds = (appSrc.match(/histState\.bins \* histState\.span/g) ||
+// The band label is a measurement rather than a position in a list, so both of
+// its ends come from the range the chart was binned over. That arithmetic lives
+// in one lookup — `bandSummary()` — which the chart caption, the hovered-cell
+// note and the selected-band line all go through: two ends in the lookup, and a
+// caller for each of the three views. A second copy of the division could round
+// a bin against a different scale than the one that lit it, so the count of both
+// is checked rather than either alone.
+var bandDefs = (appSrc.match(/function bandSummary\(/g) || []).length;
+var bandEnds = (appSrc.match(/\/ st\.bins \* st\.span/g) || []).length;
+var bandCalls = (appSrc.match(/= bandSummary\(/g) || []).length;
+var bandStray = (appSrc.match(/histState\.bins \* histState\.span/g) ||
   []).length;
-var chartEnds = (appSrc.match(/\/ BINS \* span/g) || []).length;
-var bandBracket = /'band ' \+ \(cellBand \+ 1\)[\s\S]{0,160}\+ '-' \+ hundred\(bHi\)/
+var bandBracket = /'band ' \+ \(cellBand \+ 1\)[\s\S]{0,160}\+ '-' \+ hundred\(sum\.to\)/
   .test(appSrc);
-assert(readoutEnds === 2 && chartEnds >= 2 && bandBracket,
-  'a lit bar says what height range it covers (' + readoutEnds + ' readout ends, ' +
-  chartEnds + ' chart ends, bracket ' + bandBracket + ')');
+assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 3 && !bandStray &&
+  bandBracket,
+  'a lit bar says what height range it covers (' + bandDefs + ' lookup, ' +
+  bandEnds + ' ends, ' + bandCalls + ' callers, stray ' + bandStray +
+  ', bracket ' + bandBracket + ')');
+
+// A bin selected on the chart is a filter over the whole grid, so its reading
+// A bin selected on the chart is a filter over the whole grid, so its reading
+// also goes into the line under the map — that line is the only place the count
+// is big enough to read. Every path that moves the selection has to refresh it:
+// a pointer over the chart, a tap, a Shift+arrow walk, and either pointer
+// leaving. Four sites, one definition, and the placeholder is restored by that
+// same function rather than by a second write of the literal.
+var noteDefs = (appSrc.match(/function bandNote\(/g) || []).length;
+var noteCalls = (appSrc.match(/bandNote\(\);/g) || []).length;
+var notePlaceholder = (appSrc.match(/= 'hover the map'/g) || []).length;
+assert(noteDefs === 1 && noteCalls === 4 && notePlaceholder === 1,
+  'a selected band is readable under the map (' + noteDefs + ' def, ' +
+  noteCalls + ' sites, ' + notePlaceholder + ' placeholder)');
 
 // The magnifier covers the map rather than tinting it, so the cell a hover
 // picked has to be findable inside the panel: the mark is one patch cell,

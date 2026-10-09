@@ -852,34 +852,15 @@
     // A hovered bin gets its elevation range and cell count written into the
     // chart itself, which keeps the sidebar from reflowing on every move.
     if (only >= 0) {
-      var from = lo + only / BINS * span;
-      var to = lo + (only + 1) / BINS * span;
-      // Which class fills this slice of the height range. The map colours come
-      // from biome, not height, so a bin that looks bimodal in the chart is
-      // usually two classes sharing a band — naming the bigger one makes the
-      // bump readable without hovering each cell.
-      var biome = st.result.biome;
-      var tally = {};
-      if (biome) {
-        for (i = 0; i < biome.length; i++) {
-          var bb = binIndex(st.result.heightField[i], lo, span, BINS);
-          if (bb !== only) continue;
-          var bk = biome[i];
-          tally[bk] = (tally[bk] || 0) + 1;
-        }
-      }
-      var top = null, topN = 0;
-      Object.keys(tally).forEach(function (k) {
-        if (tally[k] > topN) { topN = tally[k]; top = k; }
-      });
+      var sum = bandSummary(only);
       hc.font = '10px system-ui, sans-serif';
       // The full label is the range, the count and the class. On a narrow
       // sidebar that runs past the chart, so the least useful parts are
       // dropped first: class, then count. The range always survives — it is
       // what ties the bump back to the map.
-      var parts = [hundred(from) + '-' + hundred(to),
-        (hist[only] || 0) + ' cells',
-        top ? (TerraCore.biomeNames[top] || top) : null];
+      var parts = [hundred(sum.from) + '-' + hundred(sum.to),
+        sum.cells + ' cells',
+        sum.top ? (TerraCore.biomeNames[sum.top] || sum.top) : null];
       var label = parts.filter(Boolean).join('  ');
       while (parts.length > 1 &&
         hc.measureText(label).width > w - pad * 2) {
@@ -1040,10 +1021,9 @@
       // covers, so the reading is a measurement rather than a position in a
       // list. Both ends come from the range the chart was binned over, which is
       // the same arithmetic the lit bar is chosen with.
-      var bLo = histState.lo + cellBand / histState.bins * histState.span;
-      var bHi = histState.lo + (cellBand + 1) / histState.bins * histState.span;
+      var sum = bandSummary(cellBand);
       parts.push('band ' + (cellBand + 1) + '/' + histState.bins +
-        ' (' + hundred(bLo) + '-' + hundred(bHi) + ')');
+        ' (' + hundred(sum.from) + '-' + hundred(sum.to) + ')');
     }
     readout.textContent = parts.join(' — ');
     paintHistogram(cellBand);
@@ -1060,6 +1040,34 @@
   function histBinFor(h) {
     if (!histState) return -1;
     return binIndex(h, histState.lo, histState.span, histState.bins);
+  }
+
+  // Everything one bar of the chart knows: the height range it covers, how
+  // many cells fell in it, and which biome fills most of it. The chart's own
+  // caption and the hover readout both read this one lookup, so a bin cannot
+  // describe itself one way inside the chart and another way in the strip
+  // under the map.
+  function bandSummary(bin) {
+    if (!histState) return null;
+    var st = histState;
+    var from = st.lo + bin / st.bins * st.span;
+    var to = st.lo + (bin + 1) / st.bins * st.span;
+    var tally = {};
+    var biome = st.result.biome;
+    if (biome) {
+      for (var i = 0; i < biome.length; i++) {
+        if (binIndex(st.result.heightField[i], st.lo, st.span, st.bins) !== bin) {
+          continue;
+        }
+        var bk = biome[i];
+        tally[bk] = (tally[bk] || 0) + 1;
+      }
+    }
+    var top = null, topN = 0;
+    Object.keys(tally).forEach(function (k) {
+      if (tally[k] > topN) { topN = tally[k]; top = k; }
+    });
+    return { from: from, to: to, cells: st.hist[bin] || 0, top: top, n: topN };
   }
 
   function savePng() {
@@ -1208,6 +1216,7 @@
     // through drawMap(), which repaints this chart with the same `band`, so one
     // call keeps both views in step.
     drawHover();
+    bandNote();
   }
 
   histCanvas.addEventListener('mousemove', hoverHistogram);
@@ -1217,6 +1226,26 @@
     if (ev.pointerType === 'mouse') return;
     hoverHistogram(ev, true);
   });
+
+  // The chart's caption is a 10px strip inside a 52px canvas, so the same
+  // reading goes into the line under the map: a selected bin is a filter over
+  // the whole grid, and its cell count is the figure worth reading at full
+  // size. Both halves come from bandSummary(), so the two views cannot state
+  // different ranges for one bar. With no selection the line goes back to its
+  // placeholder, which is also what a pointer leaving the chart leaves behind.
+  function bandNote() {
+    if (band < 0 || !histState) {
+      readout.textContent = 'hover the map';
+      return;
+    }
+    var sum = bandSummary(band);
+    if (!sum) return;
+    var parts = ['band ' + (band + 1) + '/' + histState.bins +
+      ' (' + hundred(sum.from) + '-' + hundred(sum.to) + ')',
+      sum.cells + ' cells'];
+    if (sum.top) parts.push(TerraCore.biomeNames[sum.top] || sum.top);
+    readout.textContent = parts.join(' — ');
+  }
 
   // Keyboard version of the same selection: Shift+arrows walk the bins, so the
   // height filter is reachable without a pointer. First press starts in the
@@ -1228,15 +1257,16 @@
     var n = histState.bins;
     band = ((bin % n) + n) % n;
     drawHover();
+    bandNote();
   }
   histCanvas.addEventListener('mouseleave', function () {
     band = -1;
     drawHover();
+    bandNote();
   });
 
   view.addEventListener('mouseleave', function () {
     hover.x = -1; hover.y = -1;
-    readout.textContent = 'hover the map';
     // The chart's hovered bin is cleared together with the crosshair, so the
     // map never keeps a height filter after the pointer has gone while the
     // chart itself shows no selection.
@@ -1244,6 +1274,9 @@
     // The cell reading goes with it: nothing is under the cursor any more, so
     // the chart should show the whole silhouette again.
     cellBand = -1;
+    // One writer for the line under the map: with the selection gone this
+    // restores the placeholder rather than a stale range.
+    bandNote();
     drawHover();
     // The chart keeps the last hovered bin until something else picks one, so
     // dropping the pointer off the map clears it along with the readout.

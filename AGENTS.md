@@ -388,10 +388,20 @@ Conventions:
   still wins over it. Both are cleared when the pointer leaves, and neither
   goes into the hash — the link carries the cell, and the bin follows from it.
   That label is a measurement rather than a position in a list, so both ends of
+  That label is a measurement rather than a position in a list, so both ends of
   the bin's height range go beside it — `band 45/72 (53-54)` — built from the
-  range the chart was binned over, which is the same arithmetic the chart's own
-  hovered-bin caption uses. The suite counts the pair on both sides, so a bin
-  cannot round against one scale in the readout and another in the chart.
+  range the chart was binned over. That arithmetic lives in one lookup,
+  `bandSummary(bin)`, which the chart's hovered-bin caption, the hovered-cell
+  note and the selected-band line all call: three callers, two ends, and the
+  suite counts both so a bin cannot round against one scale in one view and
+  another in the second.
+  A bin picked on the chart is a filter over the whole grid, so `bandNote()`
+  writes the same reading into the line under the map — `band 40/72 (48-49) —
+  485 cells — Deep water` — where the count is big enough to read. Every path
+  that moves the selection calls it (chart hover, tap, `Shift`+arrow walk, and
+  either pointer leaving), and with no selection the same function restores the
+  `hover the map` placeholder, which is why that literal appears once. The suite
+  counts the four sites and the one placeholder.
   The magnifier in `drawInset()` is the one overlay that covers map rather than
   tinting it, so `m` drops it: `insetOn` gates the call in `drawHover()` and
   nothing else. Like `solo` and `band` it is a view setting and stays out of
