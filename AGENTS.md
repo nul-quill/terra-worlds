@@ -195,6 +195,11 @@ Conventions:
   `--describe` prints the bare summary for one seed and prefixes each line with
   its seed when several are given, matching the `--next --describe` form, so a
   block of sentences is still traceable to its phrase.
+  Both views of a world go through one `describe()` call — the sidebar takes the
+  string from the record it just generated, the CLI from its own — so the suite
+  compares the two for one seed and one grid. A field the CLI forgets to pass,
+  or a phrase edited on one side only, shows up there as a difference rather
+  than as two sentences that each look reasonable on their own.
 - Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `m`, `p`, `s`) are skipped while an INPUT or
   (`x` joins that list: it is not a list cycle but a call to `copyLink()`, the
   same function the `Copy link` button is wired to, so the two paths cannot

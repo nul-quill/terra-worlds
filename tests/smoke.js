@@ -1053,6 +1053,20 @@ assert(manyOut.length === 2 && manyOut[0].indexOf('pale shelf') === 0 &&
   manyOut[1].indexOf('salt mirror') === 0,
   'each summary line names its seed (' + manyOut.length + ')');
 
+// Both views of one world go through `describe()`: the sidebar takes it from
+// the generated record, the terminal prints it from the same call. Compared
+// here as strings on one seed and one grid, so a phrase edited on one side —
+// or a field the CLI forgets to pass — shows up as a difference rather than as
+// two sentences that both look reasonable.
+var saidCli = require('child_process')
+  .execSync('node cli.js "thousand isles" --describe --width 100 --height 64',
+    {cwd: __dirname + '/..'}).toString().trim();
+var saidCore = core.describe(core.generate({
+  seed: 'thousand isles', width: 100, height: 64
+}));
+assert(saidCli === saidCore,
+  'the cli sentence is the page sentence (' + saidCli + ')');
+
 // Writing several worlds at once must not overwrite: --out becomes a prefix and
 // each world gets its own numbered file. The record names that file, so the
 // two records of one call have to point at two different paths — and each path
