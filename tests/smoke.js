@@ -1053,6 +1053,21 @@ assert(pngHeadOk && pngBuf.toString('ascii', 12, 16) === 'IHDR' &&
 assert(pngRec.scale === 2 && jsonLine.scale === 1,
   'cli record carries the export multiplier (' + pngRec.scale + ')');
 
+// The record holds the relief twice: once as a number of its own, once inside
+// the summary sentence in brackets. Both come from the same difference in
+// stats, so they must agree — a record saying `relief 74` above a sentence
+// saying `rolling (52)` would make the two halves of one line disagree.
+var reliefRec = JSON.parse(require('child_process')
+  .execSync('node cli.js "red ridge" --shape fjord --width 100 --height 60 ' +
+    '--json --out relief-check.ppm', {cwd: __dirname + '/..'}).toString().trim());
+var reliefSaid = parseInt(/\((\d+)\)/.exec(reliefRec.summary)[1], 10);
+assert(reliefSaid === reliefRec.relief &&
+  reliefRec.relief === Math.round((function () {
+    var rr = core.generate({seed: 'red ridge', shape: 'fjord', width: 100, height: 60});
+    return (rr.stats.max - rr.stats.min) * 100;
+  })()),
+  'record relief matches the number in its sentence (' + reliefRec.relief + ')');
+
 // The median must sit inside the world's own range and really split the grid
 // in half, which is the whole point of publishing it: the relief range on its
 // own cannot tell a plateau from a plain with one peak. Same world as the

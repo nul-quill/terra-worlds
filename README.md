@@ -167,8 +167,11 @@ already normalised by its own basin, and most of any grid is dry, so it scales
 over the mask's own 0..60 steps instead. Both halves of that are asserted.
 At the top of the sidebar, one line puts the world into words — shape, a relief
 word with its range, the land share, the dominant class, plus how many separate
-lake basins the world has (`4 lakes`) and `polar` when they apply. Hovering a
-lake cell names its own basin — `basin 2/4` — so two bodies of water of the same
+lake basins the world has (`4 lakes`) and `polar` when they apply. The bracketed
+range is the same number the CLI record publishes as `relief`, so a sentence and
+a record of one world cannot disagree about how tall it is; the word in front of
+it is only a bucket of that number. Hovering a lake cell names its own basin —
+`basin 2/4` — so two bodies of water of the same
 depth are easy to tell apart while walking the map. The same readout adds the
 bearing of that basin's spillway — `drains E` — the direction its surplus
 leaves over the lowest point of the rim, which is also where the outflow
