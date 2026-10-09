@@ -220,10 +220,11 @@ Conventions:
   second rounding on either side shows up as a mismatch rather than as two
   plausible-looking numbers.
   The readout's `off-shelf` note and the core's `deep` class are the same depth
-  below the sea line, written once in each file. The suite reads both numbers,
-  compares them, and walks one world cell by cell asking that every water cell
-  the note would fire on is the cell the core called `deep`. A pair that drifted
-  apart would print a note about a class the legend does not list.
+  below the sea line, so it is one constant — `TerraCore.deepDrop` — that the
+  classification and the hover note both read. The suite asks for the definition,
+  both uses and walks one world cell by cell, so a second literal in the shell is
+  caught even when the two numbers happen to agree. A pair that drifted apart
+  would print a note about a class the legend does not list.
 - The CLI record in `summarise()` carries the parts of the state that the summary
   sentence cannot hold: `palette` and `channel` both change only pixels, so every
   count stays identical without them. Keep both in the record and keep the smoke

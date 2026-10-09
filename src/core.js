@@ -648,7 +648,7 @@
         var key;
         if (isWater) {
           waterCells++;
-          key = h < seaLevel - 0.14 ? 'deep' : 'shallow';
+          key = h < seaLevel - DEEP_DROP ? 'deep' : 'shallow';
         } else {
           landCells++;
           var inLake = lake[i] > 0;
@@ -904,6 +904,12 @@
   // basin. The depth shading, the `lake` overlay's scale and the hover readout
   // all divide by this one number rather than repeating it.
   var LAKE_STEPS = 60;
+
+  // How far below the shoreline a cell has to sit before it stops being a
+  // shelf and reads as open ocean. The classification and the hover note are
+  // the same measurement — a note about a depth the map did not use would
+  // describe a class the legend never lists — so both read this one number.
+  var DEEP_DROP = 0.14;
 
   // Look up a bearing, falling back to the first entry so an empty or unknown
   // --dir still renders rather than dropping the shading entirely.
@@ -1161,6 +1167,7 @@
     tickStep: tickStep,
     binCount: binCount,
     lakeSteps: LAKE_STEPS,
+    deepDrop: DEEP_DROP,
     phrases: PHRASES,
     lights: LIGHTS,
     grids: GRIDS,

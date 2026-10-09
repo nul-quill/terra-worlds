@@ -987,7 +987,7 @@
           current.basinSpill[current.basin[i] - 1];
         if (bearing) parts.push('drains ' + bearing);
       }
-    } else if (!above && h < current.seaLevel - 0.14) {
+    } else if (!above && h < current.seaLevel - TerraCore.deepDrop) {
       parts.push('off-shelf');
     }
     // Moisture is the other axis of the biome lookup, so printing it explains

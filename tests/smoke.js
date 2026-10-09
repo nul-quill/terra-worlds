@@ -1160,9 +1160,13 @@ assert(saidCli === saidCore,
 // would print a note about a class the legend does not list.
 var shelfSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
 var shelfShellSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
-var shelfCore = /seaLevel - ([\d.]+) \? 'deep'/.exec(shelfSrc);
-var shelfShell = /seaLevel - ([\d.]+)\) \{\s*\n?\s*parts\.push\('off-shelf'\)/
-  .exec(shelfShellSrc);
+// The cut is one constant in the core, and the shell reads it through that
+// name rather than writing its own number: the pair is checked as a definition
+// plus a reference, so a second literal in the shell shows up here even when
+// both numbers happen to agree today.
+var shelfCore = /var DEEP_DROP = ([\d.]+);/.exec(shelfSrc);
+var shelfUsed = /seaLevel - DEEP_DROP \? 'deep'/.test(shelfSrc);
+var shelfShell = /seaLevel - TerraCore\.deepDrop\)/.test(shelfShellSrc);
 var shelfWorld = core.generate({seed: 'salt mirror', width: 120, height: 70});
 var shelfBad = 0;
 for (var si = 0; si < shelfWorld.heightField.length; si++) {
@@ -1170,10 +1174,10 @@ for (var si = 0; si < shelfWorld.heightField.length; si++) {
   var shWant = sh < shelfWorld.seaLevel - Number(shelfCore && shelfCore[1]);
   if (shWant !== (shelfWorld.biome[si] === 'deep')) shelfBad++;
 }
-assert(shelfCore && shelfShell && shelfBad === 0 &&
-  Number(shelfCore[1]) === Number(shelfShell[1]),
+assert(shelfCore && shelfUsed && shelfShell && shelfBad === 0 &&
+  Number(shelfCore[1]) === Number(core.deepDrop),
   'the off-shelf note is the deep class (' + (shelfCore && shelfCore[1]) +
-  ' vs ' + (shelfShell && shelfShell[1]) + ', ' + shelfBad + ' cells)');
+  ', used ' + shelfUsed + ', shell ' + shelfShell + ', ' + shelfBad + ' cells)');
 
 // Every legend row is a colour key in the palette in use, printed through the
 // display-name lookup with the raw key as its fallback. So each scheme has to
