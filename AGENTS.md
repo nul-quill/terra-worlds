@@ -509,6 +509,11 @@ Conventions:
   comparison would report a mismatch that no rendering can show.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
+  That rule is also the wet/dry split of the bars, so it has to agree with the
+  counted `water` share: the suite walks each phrase at three sea levels and
+  asks that both figures rise together and land in the same neighbourhood. A
+  second source for the rule — the median, or a fixed pixel — would read against
+  the `water` row sitting right beside the chart.
   The median mark prints its number in the same bottom strip, squeezed between
   the two corner labels: measure all three first and skip the median label when
   the strip cannot hold the whole row, rather than overlapping the corners.

@@ -1993,6 +1993,36 @@ core.shapes.forEach(function (tk) {
 assert(tickBad.length === 0 && core.tickStep(15) === 5 && core.tickStep(500) === 50,
   'relief ticks stay between two and ten marks (' + tickBad.join(', ') + ')');
 
+// The chart draws one vertical rule at the sea level, and the bars either side
+// of it are the whole reading of the strip. That split has to track the counted
+// water share: both follow the sea slider in the same direction, and the two
+// figures stay in the same neighbourhood. A rule drawn from a second number —
+// a fixed pixel, or the median instead of the sea level — would drift into a
+// chart that reads opposite to the `water` row beside it.
+var splitBad = [];
+core.phrases.forEach(function (sp) {
+  var prevBars = -1, prevWater = -1;
+  [0.3, 0.48, 0.65].forEach(function (sl) {
+    var sw3 = core.generate({seed: sp, width: 120, height: 80, seaLevel: sl});
+    var bins = core.binCount(250);
+    var lo = sw3.stats.min, span = Math.max(0.001, sw3.stats.max - lo);
+    var wet = 0, bi;
+    for (bi = 0; bi < bins; bi++) {
+      if (lo + (bi + 0.5) / bins * span < sw3.seaLevel) wet++;
+    }
+    var barShare = wet / bins, waterShare = sw3.stats.water;
+    if (barShare < prevBars - 1e-9 || waterShare < prevWater - 1e-9 ||
+      Math.abs(barShare - waterShare) > 0.30) {
+      splitBad.push(sp + ' ' + sl + ' ' + barShare.toFixed(2) + '/' +
+        waterShare.toFixed(2));
+    }
+    prevBars = barShare; prevWater = waterShare;
+  });
+});
+assert(splitBad.length === 0,
+  'the sea rule splits the bars like the water count (' +
+  splitBad.join('; ') + ')');
+
 // The number of bars comes from the same place, for the same reason: the chart
 // and this check have to agree on what a sidebar width buys. Three properties:
 // a wider strip never gets fewer bars, the count stays inside the readable
