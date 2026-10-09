@@ -538,6 +538,14 @@
       // caller then retries without it, so a basin always has an outlet.
       if (cap && hf[candidate] >= seaLevel + 0.30) return best;
       if (best < 0) return candidate;
+      // Prefer a rim cell no earlier basin has claimed. Two tarns sharing one
+      // saddle otherwise leave the second write on top of the first label, and
+      // the lake whose number was overwritten loses its `outlet of basin N`
+      // reading even though its own fill is labelled fine. Height still breaks
+      // ties between two free cells, so this only reshuffles equal rims.
+      var freeCandidate = spill[candidate] ? 0 : 1;
+      var freeBest = spill[best] ? 0 : 1;
+      if (freeCandidate !== freeBest) return freeCandidate ? candidate : best;
       return lower(hf[candidate], candidate, hf[best], best) ? candidate : best;
     }
 

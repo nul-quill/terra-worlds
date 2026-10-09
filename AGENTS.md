@@ -62,6 +62,11 @@ Conventions:
   The mark holds the basin's own number rather than a plain flag, so hovering
   the rim cell says `outlet of basin 2/4` — the outlet sits outside the fill and
   would otherwise be anonymous. Keep the array wide enough for that number.
+  The three arrays are one-to-one: `stats.lakeBasins` marks, that many distinct
+  numbers inside `result.spillway`, one bearing each. The suite counts all three
+  on the most crowded world it keeps, so a shared rim cell — where the second
+  fill overwrites the first label — shows up as a short count rather than as a
+  sentence nobody hovers.
   The spillway search caps the rim at `seaLevel + 0.30` on the first pass, then
   retries without the cap — a terraced plateau stacks its rims high enough that
   the capped pass alone would leave a big basin with no outlet at all.

@@ -1543,6 +1543,31 @@ assert(pointTotal > 20 && usedNames.length === POINTS8.length,
   'spillways use the whole compass (' + usedNames.length + ' of ' +
   POINTS8.length + ' points, ' + pointTotal + ' basins)');
 
+// The outlet marks are the third array in that trio, and they have to stay one
+// per basin too: `result.spillway` holds the basin's own number, so a world
+// with 42 tarns needs 42 marked rim cells and 42 distinct numbers among them.
+// Two fills sharing one rim cell would leave one lake anonymous, and a mark
+// that overflowed its array would do the same for every basin above 255. Walk
+// the crowded world rather than a tidy one, since both failure modes need
+// several basins to show.
+var markSeen = {};
+var markCount = 0;
+for (var mi = 0; mi < manyBasin.spillway.length; mi++) {
+  var mb = manyBasin.spillway[mi];
+  if (!mb) continue;
+  markCount++;
+  markSeen[mb] = 1;
+}
+var markNames = Object.keys(markSeen).length;
+var markInRange = true;
+for (var mj = 1; mj <= manyBasin.stats.lakeBasins; mj++) {
+  if (!markSeen[mj]) markInRange = false;
+}
+assert(markCount === manyBasin.stats.lakeBasins &&
+  markNames === markCount && markInRange && manyBasin.stats.lakeBasins > 4,
+  'every basin marks exactly one outlet cell (' + markCount + ' marks, ' +
+  markNames + ' labels, ' + manyBasin.stats.lakeBasins + ' basins)');
+
 // The hash is only useful if it carries every control on screen, so the two
 // lists are checked against each other: each INPUT or SELECT id in the page
 // must appear in HASH_KEYS, and every name in HASH_KEYS must be a real id.
