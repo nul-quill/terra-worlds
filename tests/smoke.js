@@ -1509,6 +1509,18 @@ assert(outlets > 0 && outlets <= bw.stats.lakeBasins && touching === outlets,
   'every basin has one outlet on its own rim (' + outlets + ' of ' +
   bw.stats.lakeBasins + ')');
 
+// The seam has to be dry ground: the readout prints a depth for a filled cell
+// and the outlet note for its basin, and a mark sitting inside its own fill
+// would print both at once while the catchment it carries stopped draining at
+// the water's edge. Re-derived from the mask rather than trusted from the pick.
+var wetMark = 0;
+for (var wi2 = 0; wi2 < bw.spillway.length; wi2++) {
+  if (bw.spillway[wi2] && bw.lakeMask[wi2]) wetMark++;
+}
+assert(wetMark === 0 && outlets > 0,
+  'an outlet is dry land beside its lake (' + wetMark + ' wet marks of ' +
+  outlets + ')');
+
 // The mark also carries the number of the basin it drains, since the readout
 // prints both together. That number has to be one the neighbouring lake cells
 // actually wear — an outlet naming the wrong tarn is worse than a bare one.

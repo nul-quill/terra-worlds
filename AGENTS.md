@@ -73,6 +73,9 @@ Conventions:
   The chosen cell is the lowest DRY neighbour on the whole rim, which is what
   lets a filled basin keep draining; the smoke suite re-derives that minimum
   from the height field, so a mark on a higher step or inside the fill fails.
+  Both halves of that readout are one cell, so the suite also asks that no mark
+  lands on a filled cell: a mark inside its own fill would print a depth and an
+  outlet at once, and the carried catchment would stop at the water's edge.
   The flood fill marks cells in `queued` with the fill number at enqueue time,
   not at dequeue: without that a cell offered by two neighbours is pushed twice
   and overflows the one-slot-per-cell queue.
