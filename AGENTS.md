@@ -209,6 +209,12 @@ Conventions:
   The same suite compares the key set with the note under the chart, which is
   the only place the shortcuts are written down: a new letter has to appear
   there as its own token, not merely be handled.
+  Every colour painted on the map canvas comes from the palette in use — the
+  isolation blend, the crosshair and the magnifier panel in `drawInset()` all
+  read `palette.sky` and the biome triples. A fixed ink would read as a bright
+  slab under a dark scheme, so the suite walks the `ctx` assignments and asks
+  for none of them to be a literal string. The relief chart keeps its own fixed
+  ink: it sits on the page, not on the map.
 - Legend isolation lives in `drawMap()`: `solo` follows the pointer/focus,
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend

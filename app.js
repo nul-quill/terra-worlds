@@ -441,11 +441,16 @@
     var dx = px * 2 > current.width ? pad : view.width - size - pad;
     var dy = py * 2 > current.height ? pad : view.height - size - pad;
     ctx.save();
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    // The panel backing is the palette's own sky, at the same alpha the crosshair
+    // uses, so a dark scheme keeps a dark mat under the magnified patch instead
+    // of a bright slab. Both colours come from the lookup above, which is also
+    // what the isolation blend reads — one source for every overlay colour.
+    var sky = hexToRgb(current.palette.sky);
+    ctx.fillStyle = rgba(sky, 0.85);
     ctx.fillRect(dx - 2, dy - 2, size + 4, size + 4);
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(off, x0, y0, span, span, dx, dy, size, size);
-    ctx.strokeStyle = 'rgba(30,38,44,0.55)';
+    ctx.strokeStyle = rgba(mix(current.palette.colors.deep, sky, 0.35), 0.55);
     ctx.lineWidth = 1;
     ctx.strokeRect(dx - 2.5, dy - 2.5, size + 5, size + 5);
     ctx.restore();

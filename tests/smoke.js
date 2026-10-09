@@ -1419,6 +1419,19 @@ assert(Object.keys(handled).length > 8 && undocumented.length === 0,
   'the note names every shortcut key (' + Object.keys(handled).length +
   ' keys, missing ' + undocumented.join(',') + ')');
 
+// The map canvas is drawn in twelve different looks, so every colour the shell
+// paints on it has to come from the palette in use: a fixed ink would read as a
+// bright slab under a dark scheme. The chart in the sidebar keeps its own fixed
+// ink on purpose — it sits on the page, not on the map — so only the assignments
+// on the map context are walked here.
+var literalInk = [];
+appSrc.replace(/\bctx\.(?:fill|stroke)Style = ([^\n]*)/g, function (m, rhs) {
+  if (/^['"]/.test(rhs.trim())) literalInk.push(rhs.trim());
+  return m;
+});
+assert(literalInk.length === 0,
+  'map overlay colours come from the palette (' + literalInk.join(' | ') + ')');
+
 // The stats list is the only trace of a world once it is printed or screenshotted,
 // so it has to open with the thing every other number hangs off: the seed. Read
 // the row labels straight out of the shell and check the order, plus that no label
