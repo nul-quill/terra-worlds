@@ -1503,6 +1503,27 @@ var labelCount = Object.keys(labelSeen).length;
 assert(labelOk && labelCount === bw.stats.lakeBasins,
   'every lake cell is labelled with its basin (' + labelCount + ' labels)');
 
+// The readout pairs that label with a compass point, looked up as
+// `basinSpill[basin - 1]`, so the two arrays have to be the same length and
+// every entry has to be a real bearing. A short array would print `drains
+// undefined` on the last lake in a crowded world; a stray entry would shift
+// every bearing by one. Walked over a one-basin world and a crowded one, since
+// the denominator in `basin 2/4` is the other half of the same pair.
+var spillBad = [];
+[bw, manyBasin].forEach(function (sw) {
+  if (sw.basinSpill.length !== sw.stats.lakeBasins) {
+    spillBad.push(sw.stats.lakeBasins + '!=' + sw.basinSpill.length);
+  }
+  for (var bi2 = 0; bi2 < sw.basinSpill.length; bi2++) {
+    if (POINTS8.indexOf(sw.basinSpill[bi2]) < 0) {
+      spillBad.push(bi2 + '->' + sw.basinSpill[bi2]);
+    }
+  }
+});
+assert(spillBad.length === 0 && bw.basinSpill.length === 1 &&
+  manyBasin.basinSpill.length > 4,
+  'every basin has one bearing to print (' + spillBad.join(', ') + ')');
+
 // The hash is only useful if it carries every control on screen, so the two
 // lists are checked against each other: each INPUT or SELECT id in the page
 // must appear in HASH_KEYS, and every name in HASH_KEYS must be a real id.

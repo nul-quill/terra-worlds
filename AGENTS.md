@@ -49,6 +49,10 @@ Conventions:
   `recordSpill()` also pushes one compass point per basin into
   `result.basinSpill`, indexed by basin number minus one: the bearing from the
   fill's centroid to its spillway, printed by the hover readout as `drains E`.
+  That array is the readout's only source for the pair, so its length must be
+  exactly `stats.lakeBasins` and every entry one of the eight points — a short
+  array prints `drains undefined` on the last lake, a long one shifts every
+  bearing. The suite checks both halves on a one-basin and a crowded world.
   The spillway cell itself is marked in `result.spillway` (one cell per basin),
   which the readout prints as `outlet` and the river pass uses to keep a
   basin's catchment drawn even when accumulation alone would cut it off.
