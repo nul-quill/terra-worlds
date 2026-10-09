@@ -1785,6 +1785,32 @@ assert(rootVars.length >= 4 && darkVars.length >= 4 && halfSet.length === 0,
   'the dark scheme restates every colour variable (' + darkVars.length +
   ' of ' + rootVars.length + ', unset ' + halfSet.join(',') + ')');
 
+// The print block is the other half of the stylesheet's last two rules: it is
+// meant to drop the chrome and keep the reading. So the two it exists to hide
+// have to be in it, and the three that carry the numbers must not be — a
+// printed page that lost the stats list would keep the picture and throw away
+// every number behind it.
+var printBlock = /@media print\s*\{([\s\S]*?)\n\}/.exec(cssSrc);
+var printSrc = (printBlock && printBlock[1]) || '';
+var hiddenInPrint = [];
+printSrc.replace(/([^{}\n]+)\s*\{[^}]*display:\s*none/g, function (m, sel) {
+  sel.split(',').forEach(function (one) {
+    hiddenInPrint.push(one.trim().replace(/^[.#]/, ''));
+  });
+  return m;
+});
+var wantedHidden = ['controls', 'hist', 'note'];
+var lostChrome = wantedHidden.filter(function (wh) {
+  return hiddenInPrint.indexOf(wh) < 0;
+});
+var wantedShown = ['legend', 'stats', 'summary', 'view'];
+var overHidden = wantedShown.filter(function (ws) {
+  return hiddenInPrint.indexOf(ws) >= 0;
+});
+assert(printBlock !== null && lostChrome.length === 0 && overHidden.length === 0,
+  'the print block drops the chrome and keeps the numbers (' +
+  lostChrome.concat(overHidden).join(',') + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

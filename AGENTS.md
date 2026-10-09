@@ -217,6 +217,11 @@ Conventions:
   compares the two name lists: a variable declared once and never restated keeps
   its light value under a dark background, which is the one way this scheme can
   go wrong. A new colour has to appear on both sides.
+  The print block is checked by the names it hides: the controls, the chart and
+  the key note are chrome, the legend, the stats list, the summary sentence and
+  the canvas are the content. A printed page that lost the stats list would keep
+  the picture and throw away every number behind it, so the suite asks for those
+  four to sit outside the `display: none` rules.
   - The URL hash is written by `writeHash()` only, and every pair in it comes from
     a form control in `HASH_KEYS` plus two extras that are not controls: `pin=` for
     the clicked legend class and `at=x,y` for the hovered cell. Both pointer paths
