@@ -183,7 +183,8 @@ if (opts.help) {
   console.log('       the .ppm file entirely; with several seeds each line');
   console.log('       also carries its own seed');
   console.log('       [--next n] with one seed to print that seed plus the n-1 seeds');
-  console.log('       the Reroll button derives from it, one per line');
+  console.log('       the Reroll button derives from it, one per line; with');
+  console.log('       [--json] each line of that chain is a full record');
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
   console.log('       [--palettes] to list the palette keys and their labels');
   console.log('       [--shapes] to list the shape keys and what each one cuts');
@@ -280,6 +281,20 @@ if (opts.help) {
           hillshade: opts.hillshade, lightDir: opts.lightDir
         });
         return s + '  ' + core.describe(r);
+      }).join('\n'));
+    } else if (opts.json) {
+      // One record per seed in the chain, in the order the Reroll button
+      // visits them. This is how to compare a run of clicks from a terminal:
+      // the plain listing gives the phrases, this gives the numbers behind
+      // each of them, and the `seed` field ties a record back to its line.
+      console.log(chain.map(function (s) {
+        var r = core.generate({
+          seed: s, width: opts.width, height: opts.height, palette: opts.palette,
+          shape: opts.shape, seaLevel: opts.seaLevel, detail: opts.detail,
+          polar: opts.polar, terraces: opts.terraces, rivers: opts.rivers,
+          hillshade: opts.hillshade, lightDir: opts.lightDir
+        });
+        return summarise(s, r, opts.out, true);
       }).join('\n'));
     } else {
       console.log(chain.join('\n'));

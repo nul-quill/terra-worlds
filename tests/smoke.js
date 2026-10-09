@@ -769,6 +769,24 @@ nextPairs.forEach(function (np, ni) {
 assert(nextOk,
   'cli --next --describe pairs each seed with its sentence (' + nextPairs.length + ')');
 
+// The chain is also readable as records, which is how to compare a run of
+// clicks without opening the page. Each record must carry the seed of its own
+// line in the plain listing, and each must be a different world — a chain that
+// collapsed onto one picture would make the Reroll button pointless.
+var nextJson = require('child_process')
+  .execSync('node cli.js "salt mirror" --next 3 --json --width 40 --height 24 ' +
+    '--out next-json.ppm', {cwd: __dirname + '/..'}).toString().trim().split('\n')
+  .map(function (line) { return JSON.parse(line); });
+var nextSeedOk = nextJson.length === nextPairs.length;
+var nextSums = {};
+nextJson.forEach(function (rec, ri) {
+  if (rec.seed !== nextPairs[ri]) nextSeedOk = false;
+  nextSums[rec.checksum] = 1;
+});
+assert(nextSeedOk && Object.keys(nextSums).length === nextJson.length,
+  'cli --next --json records the whole chain (' + nextJson.length +
+  ' records, ' + Object.keys(nextSums).length + ' distinct)');
+
 // The palette keys the CLI lists must be the ones the generator knows, so a
 // name copied from the terminal is guaranteed to be accepted by --palette.
 var listed = require('child_process')
