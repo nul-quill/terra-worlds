@@ -155,6 +155,12 @@ Conventions:
   comes back as dry land; `undefined` lets the generator's own default stand.
   Keep the `argv[++i]` advance at the call site — moving it inside the helper
   reads each value twice and shifts every later flag by one.
+  Key-valued flags (`--palette`, `--shape`, `--channel`, `--dir`) read theirs
+  through `nextKey()`, which matches against the same array its dropdown is
+  filled from and pushes a miss onto the one `unknown` list. Both kinds of typo
+  — an unknown flag and an unknown value — share that single stderr note. The
+  smoke suite feeds each advertised flag a value taken from its own list, so a
+  warning there means the flag is missing rather than the sample being wrong.
   `--describe` prints the bare summary for one seed and prefixes each line with
   its seed when several are given, matching the `--next --describe` form, so a
   block of sentences is still traceable to its phrase.
