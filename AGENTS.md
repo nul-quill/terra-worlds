@@ -401,6 +401,11 @@ Conventions:
   two defaults be equal and sit inside that span. A first default outside the
   span would be clamped by the browser before the first render, which is one way
   a link and a fresh page could draw different worlds from the same phrase.
+  The same three-way read runs over every range slider, each one's core fallback
+  scraped from `src/core.js` rather than repeated here, so a new slider is
+  covered by the rule the moment it gets a `== null` default. Compare the pair as
+  numbers: `0.7` in the core and `'0.70'` in the shell are one value, and a text
+  comparison would report a mismatch that no rendering can show.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
   The median mark prints its number in the same bottom strip, squeezed between

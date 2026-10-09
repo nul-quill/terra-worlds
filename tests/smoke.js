@@ -1832,6 +1832,35 @@ assert(coreSea && shellSea && seaMin && seaMax && seaStep &&
   (coreSea && coreSea[1]) + ', ' + (shellSea && shellSea[1]) + ', ' +
   (seaMin && seaMin[1]) + '-' + (seaMax && seaMax[1]) + ')');
 
+// The other sliders are the same shape of problem, so the same three-way read
+// runs over each: the generator's fallback, the shell's first value, and the
+// span in the markup. A `0.70` in the box against a `0.7` in the core is the
+// same number and must not be reported as a mismatch, which is why every pair
+// compares as a Number rather than as text.
+var sliderBad = [];
+['detail', 'polar', 'terraces', 'hillshade', 'rivers'].forEach(function (sName) {
+  // The core's own fallback is read from its source rather than repeated here,
+  // so the comparison stays core-vs-shell rather than a copy of either.
+  var sCore = new RegExp('opts\\.' + sName +
+    ' == null \\?\\s*([\\d.]+)').exec(coreSrc);
+  var sShell = new RegExp('inputs\\.' + sName + '\\.value = \'([\\d.]+)\'')
+    .exec(appSrc);
+  var sInput = new RegExp('<input id="' + sName + '"[^>]*>').exec(html);
+  var sMin = sInput && /min="([\d.]+)"/.exec(sInput[0]);
+  var sMax = sInput && /max="([\d.]+)"/.exec(sInput[0]);
+  if (!sCore || !sShell || !sMin || !sMax) {
+    sliderBad.push(sName + ' unreadable');
+  } else if (Number(sShell[1]) !== Number(sCore[1]) ||
+    Number(sShell[1]) < Number(sMin[1]) ||
+    Number(sShell[1]) > Number(sMax[1])) {
+    sliderBad.push(sName + ' ' + sShell[1] + ' vs ' + sCore[1] + ' in ' +
+      sMin[1] + '-' + sMax[1]);
+  }
+});
+assert(sliderBad.length === 0,
+  'every slider starts on the number its generator would pick (' +
+  sliderBad.join('; ') + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
