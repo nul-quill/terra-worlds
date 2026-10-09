@@ -1039,6 +1039,29 @@ var chanRec = JSON.parse(require('child_process')
 assert(chanRec.channel === 'drain' && jsonLine.channel === '',
   'cli record names the overlay it flattened (' + chanRec.channel + ')');
 
+// An overlay is a recolour of an already-classified world, so every count has
+// to survive it. Checked through the CLI record rather than in memory, since
+// the record is what a terminal reads back: the same seed through every named
+// ramp must report the numbers the plain biome render does.
+var chanPlain = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --width 60 --height 40 --json ' +
+    '--out chan-plain.ppm', {cwd: __dirname + '/..'}).toString().trim());
+var chanDrift = [];
+core.channels.forEach(function (ch) {
+  if (!ch.key) return;
+  var rec = JSON.parse(require('child_process')
+    .execSync('node cli.js "salt mirror" --width 60 --height 40 --channel ' + ch.key +
+      ' --json --out chan-' + ch.key + '.ppm', {cwd: __dirname + '/..'})
+    .toString().trim());
+  ['land', 'water', 'rivers', 'ice', 'lakeBasins', 'relief', 'biomes', 'checksum']
+    .forEach(function (k) {
+      if (rec[k] !== chanPlain[k]) chanDrift.push(ch.key + '.' + k);
+    });
+  if (rec.channel !== ch.key) chanDrift.push(ch.key + ' name');
+});
+assert(chanDrift.length === 0,
+  'every overlay keeps the counts of its own world (' + chanDrift.join(', ') + ')');
+
 // A .png name must produce a real PNG rather than a PPM with a new suffix:
 // signature, then IHDR carrying the scaled size, then the image data. The
 // pixels themselves are the same buffer the PPM writer emits, so the two
