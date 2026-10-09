@@ -1055,6 +1055,19 @@
     return hex;
   }
 
+  // Tick spacing for the relief chart: the first candidate step that leaves at
+  // most ten marks over this world's own relief, in height units. A flat craton
+  // spanning fifteen units would otherwise get a single tick, a tall fjord close
+  // to twenty. Lives here rather than in the shell so the chart and the tests
+  // share one formula for what "readable by eye" means.
+  var TICK_STEPS = [5, 10, 20, 25, 50];
+  function tickStep(units) {
+    for (var i = 0; i < TICK_STEPS.length; i++) {
+      if (units / TICK_STEPS[i] <= 10) return TICK_STEPS[i];
+    }
+    return TICK_STEPS[TICK_STEPS.length - 1];
+  }
+
   // One line that puts a world into words: the shape it was cut from, how much
   // relief it carries, how much of it is dry, and which class covers most of
   // it. Both the sidebar and the CLI print this, so a saved PNG and a terminal
@@ -1092,6 +1105,7 @@
     palettes: PALETTES,
     shapes: SHAPES,
     channels: CHANNEL_LIST,
+    tickStep: tickStep,
     phrases: PHRASES,
     lights: LIGHTS,
     grids: GRIDS,

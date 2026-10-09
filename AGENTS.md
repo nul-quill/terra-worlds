@@ -341,6 +341,11 @@ Conventions:
   The decade ticks under the bars do not use a fixed ten-unit step: the step is
   the first of 5/10/20/25/50 that leaves at most ten marks over this world's own
   relief. A flat craton would otherwise get one tick, a tall fjord twenty.
+  The candidate list and that rule live in `core.tickStep(units)`, which the
+  chart calls through `TerraCore.tickStep` and the smoke suite walks over every
+  shape — one formula for "readable by eye", so a chart cannot quietly drift to
+  a spacing the tests never saw. Keep the helper in the core; the shell only
+  reads it.
 
 Verify with:
 

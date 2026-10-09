@@ -1495,6 +1495,23 @@ assert(missingField.length === 0 && missingKey.length === 0,
   'every sidebar row has a field in the cli record (' + rowLabels.length +
   ' rows, missing ' + missingField.concat(missingKey).join(',') + ')');
 
+// The tick spacing under the relief bars comes from the core, so the chart and
+// this check share one formula. Two properties make a strip readable: the step
+// has to be one of the offered candidates, and it has to leave at most ten
+// marks over this world's own relief — one tick on a flat craton is as useless
+// as twenty on a fjord. Walked over every shape, since each one sets its own
+// relief range.
+var tickBad = [];
+core.shapes.forEach(function (tk) {
+  var tw = core.generate({seed: 'pale shelf', shape: tk.key, width: 140, height: 90});
+  var relief = (tw.stats.max - tw.stats.min) * 100;
+  var step = core.tickStep(relief);
+  var marks = Math.floor(relief / step);
+  if (marks > 10 || relief / step < 2) tickBad.push(tk.key + ' ' + marks);
+});
+assert(tickBad.length === 0 && core.tickStep(15) === 5 && core.tickStep(500) === 50,
+  'relief ticks stay between two and ten marks (' + tickBad.join(', ') + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

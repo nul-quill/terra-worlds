@@ -756,11 +756,9 @@
     // The spacing follows the relief of this world: a flat craton spanning
     // fifteen units would otherwise get a single tick, a tall fjord close to
     // twenty. Pick the first step that leaves at most ten marks.
-    var STEPS = [5, 10, 20, 25, 50];
-    var stepUnits = STEPS[STEPS.length - 1];
-    for (i = 0; i < STEPS.length; i++) {
-      if ((span * 100) / STEPS[i] <= 10) { stepUnits = STEPS[i]; break; }
-    }
+    // The formula lives in the core, so the suite can check the same spacing a
+    // chart is drawn with rather than repeating the candidate list here.
+    var stepUnits = TerraCore.tickStep(span * 100);
     hc.strokeStyle = 'rgba(30,38,44,0.35)';
     for (var u = Math.ceil(lo * 100 / stepUnits) * stepUnits;
       u <= (lo + span) * 100; u += stepUnits) {
