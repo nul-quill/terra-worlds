@@ -647,7 +647,10 @@
       // How many separate basins that lake cover is split into.
       ['basins', String(s.lakeBasins)],
       ['ice', percentText(s.ice)],
-      ['river cells', String(s.rivers)],
+      // Both halves of the network, same split as the `contours` row: the
+      // weight of a line on the map comes from this pair, so the numbers that
+      // explain the drawing sit next to it.
+      ['rivers', (s.rivers - s.trunks) + ' tri / ' + s.trunks + ' trunk'],
       ['relief', hundred(s.max - s.min) + ' units'],
       // Half the grid sits below this height, which is what separates a broad
       // plateau from a plain with one peak when both share a relief range.

@@ -433,6 +433,7 @@
     var biome = new Array(n);
     var counts = {};
     var landCells = 0, waterCells = 0, riverCells = 0, iceCells = 0;
+      var trunkCells = 0;
     // How many separate basins the lake mask resolves into. Filled by
     // recordSpill(), which runs once per basin. A handful of large lakes and a
     // scatter of small ones look the same by cell count, so the count itself
@@ -687,7 +688,9 @@
           river[i] = 1;
           riverCells++;
           // A trunk river gets a stronger blend than its tributaries.
-          if (acc[i] > majorCut) { river[i] = 2; onRiver = 2; }
+          if (acc[i] > majorCut) {
+            river[i] = 2; onRiver = 2; trunkCells++;
+          }
         }
 
         biome[i] = key;
@@ -794,6 +797,11 @@
       land: landCells / n,
       water: waterCells / n,
       rivers: riverCells,
+      // Of those cells, how many are trunk rather than tributary. The two ink
+      // weights are visible on the map, but a count is what says whether a
+      // world is one big drainage with a few threads or a tight braid, and the
+      // tributary figure is just `rivers - trunks`.
+      trunks: trunkCells,
       ice: iceCells / n,
       // Extremes of the height field, so a world's relief range is readable
       // without sampling the buffer from the outside.

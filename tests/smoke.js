@@ -163,6 +163,15 @@ for (var hi = 0; hi < hier.riverMask.length; hi++) {
 assert(minor > 0 && major > 0 && major < minor,
   'trunk rivers are a subset of the network (' + major + ' of ' + (minor + major) + ')');
 
+// The published pair has to be that same split: `trunks` is the count of mask
+// value 2, and the tributary figure the row prints is everything else. A
+// `trunks` that counted something else would keep the sum right while
+// inverting which weight the sidebar calls the big one.
+assert(hier.stats.trunks === major && hier.stats.rivers === minor + major &&
+  hier.stats.trunks < hier.stats.rivers,
+  'stats.trunks is the trunk half of the network (' + hier.stats.trunks +
+  ' of ' + hier.stats.rivers + ')');
+
 // Inland lakes: closed depressions must be detected on a plain-ish grid.
 var withLakes = core.generate({ seed: 'pale shelf', width: 200, height: 120 });
 var lakeCells = withLakes.stats.counts.lake || 0;
@@ -1250,6 +1259,8 @@ core.channels.forEach(function (ch) {
       ' --json --out chan-' + ch.key + '.ppm', {cwd: __dirname + '/..'})
     .toString().trim());
   ['land', 'water', 'rivers', 'ice', 'lakeBasins', 'relief', 'biomes', 'checksum']
+    // `trunks` belongs here too: an overlay recolours pixels, so the split of
+    // the drainage network must not move either.
     .forEach(function (k) {
       if (rec[k] !== chanPlain[k]) chanDrift.push(ch.key + '.' + k);
     });
@@ -1773,11 +1784,11 @@ assert(rowLabels.length > 10 && rowLabels[0] === 'seed' &&
 
 // Every number the sidebar prints has to be reachable from a terminal too,
 // or a record cannot stand in for a screenshot. The two lists are named
-// differently — the page says `river cells`, the record says `rivers` — so the
-// mapping is spelled out here and each side is then checked against it.
+// differently in places — the page says `grid`, the record says `width` — so
+// the mapping is spelled out here and each side is then checked against it.
 var ROW_TO_RECORD = {
   seed: 'seed', grid: 'width', export: 'scale', land: 'land', water: 'water',
-  lake: 'lake', basins: 'lakeBasins', ice: 'ice', 'river cells': 'rivers',
+  lake: 'lake', basins: 'lakeBasins', ice: 'ice', rivers: 'rivers',
   relief: 'relief', median: 'median', biomes: 'biomes',
   contours: 'contourBands', checksum: 'checksum', generate: 'ms'
 };
@@ -1814,6 +1825,25 @@ assert(contourMissing.length === 0 && unprinted.length === 0 &&
   /\//.test(contourRowSrc),
   'both halves of the contours row reach a terminal (' +
   contourMissing.concat(unprinted).join(',') + ')');
+
+// The `rivers` row carries the same kind of pair — tributary cells and trunk
+// cells — and the record keeps both as separate fields. The row's first number
+// is a difference rather than a stored count, so check it is written as one:
+// a row that printed only the trunk figure would still look plausible next to
+// a `rivers` field that counts every cell in the network.
+var riverFields = ['rivers', 'trunks'];
+var riverMissing = riverFields.filter(function (field) {
+  return recordKeys.indexOf(field) < 0;
+});
+var riverRowSrc = (/rivers',\s*([\s\S]{0,120}?)\]/.exec(appSrc) ||
+  ['', ''])[1];
+var riverUnprinted = riverFields.filter(function (field) {
+  return riverRowSrc.indexOf('.' + field) < 0;
+});
+assert(riverMissing.length === 0 && riverUnprinted.length === 0 &&
+  /\//.test(riverRowSrc) && riverRowSrc.indexOf('-') > 0,
+  'both halves of the rivers row reach a terminal (' +
+  riverMissing.concat(riverUnprinted).join(',') + ')');
 
 // The tick spacing under the relief bars comes from the core, so the chart and
 // this check share one formula. Two properties make a strip readable: the step

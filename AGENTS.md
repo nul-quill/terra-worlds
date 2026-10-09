@@ -91,6 +91,12 @@ Conventions:
   the smoke suite checks both halves: each field is in that row's own source and
   each is a key of the CLI record, so a terminal can reproduce the stripes under
   the sea as well as the ones on the highlands.
+  The `rivers` row is a second pair of that kind — `19 tri / 4 trunk` — where the
+  first number is `stats.rivers - stats.trunks` rather than a stored count. Keep
+  the arithmetic in the row: `rivers` already counts every cell in the network,
+  so a third field for tributaries would be one more number that can disagree
+  with the other two. The suite re-derives the pair from `riverMask` (values 1
+  and 2) and checks both halves reach the record.
   `stats.median` is the middle of the sorted height field, published for the
   same reason: min/max alone cannot tell a plateau from a peaked plain. It is
   grid-size dependent like the band counts, so any assertion comparing it with
