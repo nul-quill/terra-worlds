@@ -433,7 +433,7 @@
     var biome = new Array(n);
     var counts = {};
     var landCells = 0, waterCells = 0, riverCells = 0, iceCells = 0;
-      var trunkCells = 0;
+    var trunkCells = 0;
     // How many separate basins the lake mask resolves into. Filled by
     // recordSpill(), which runs once per basin. A handful of large lakes and a
     // scatter of small ones look the same by cell count, so the count itself
