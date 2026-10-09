@@ -66,6 +66,10 @@ Conventions:
   and overflows the one-slot-per-cell queue.
 - The trunk/tributary split is a second quantile of the SAME accumulation field
   (`majorCut`), never a separate threshold. `riverMask` holds 1 or 2.
+  The smoke suite re-derives that ordering: for every hand-picked phrase the
+  lowest trunk catchment must sit at or above the highest tributary one, and no
+  cell may carry a mask outside 0/1/2. A second field with its own threshold
+  would let a thin headwater print as a trunk while its own mouth stayed thin.
 - Hypsometric band count is derived from the relief above the shoreline
   (`contourBands`, clamped 6..20) and published in `stats`, so a flat craton
   does not turn into stripes. Keep it derived, not a fixed constant.

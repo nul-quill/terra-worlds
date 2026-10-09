@@ -1937,6 +1937,36 @@ var sliderBad = [];
 assert(sliderBad.length === 0,
   'every slider starts on the number its generator would pick (' +
   sliderBad.join('; ') + ')');
+// The trunk/tributary split is a second quantile of the SAME accumulation
+// field, so it has to behave like one cut: every trunk cell drains at least as
+// much water as every tributary, and no cell carries a third kind of mark. A
+// separate threshold on a second field would let a small headwater stream be
+// drawn as a trunk while a wide lower course stayed thin, which is the one way
+// this hierarchy can read as noise. Walked over every hand-picked phrase, since
+// each one has its own catchment sizes.
+var cutBad = [];
+core.phrases.forEach(function (ck) {
+  var cw = core.generate({seed: ck, width: 170, height: 100});
+  var trunkLow = Infinity, minorHigh = -Infinity, stray = 0;
+  var ci2, cm, ca;
+  for (ci2 = 0; ci2 < cw.riverMask.length; ci2++) {
+    cm = cw.riverMask[ci2];
+    ca = cw.accumulation[ci2];
+    if (cm === 2) {
+      if (ca < trunkLow) trunkLow = ca;
+    } else if (cm === 1) {
+      if (ca > minorHigh) minorHigh = ca;
+    } else if (cm !== 0) {
+      stray++;
+    }
+  }
+  if (stray || !(trunkLow >= minorHigh)) {
+    cutBad.push(ck + ' ' + trunkLow + '/' + minorHigh + ' stray ' + stray);
+  }
+});
+assert(cutBad.length === 0,
+  'one accumulation cut splits trunks from tributaries (' +
+  cutBad.join('; ') + ')');
 
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
