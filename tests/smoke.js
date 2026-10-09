@@ -864,6 +864,56 @@ for (var ai = 0; ai < bw.spillway.length; ai++) {
 assert(ownOk,
   'each outlet names a basin its own shore belongs to');
 
+// The bearing and the mark are two arrays describing one fact: which way the
+// surplus leaves. Recompute the compass point from the basin's own centroid to
+// its marked outlet and compare, so a `drains E` in the readout has to agree
+// with the rim cell it prints next to. Same eight buckets as the core, with y
+// growing downwards.
+var CENT = {};
+for (var ci3 = 0; ci3 < bw.basin.length; ci3++) {
+  if (!bw.basin[ci3]) continue;
+  var cb = bw.basin[ci3];
+  if (!CENT[cb]) CENT[cb] = {n: 0, x: 0, y: 0};
+  CENT[cb].n++;
+  CENT[cb].x += ci3 % bw.width;
+  CENT[cb].y += (ci3 / bw.width) | 0;
+}
+var POINTS8 = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+function bearingsAgree(world) {
+  var cent = {};
+  for (var ci3 = 0; ci3 < world.basin.length; ci3++) {
+    if (!world.basin[ci3]) continue;
+    var cb = world.basin[ci3];
+    if (!cent[cb]) cent[cb] = {n: 0, x: 0, y: 0};
+    cent[cb].n++;
+    cent[cb].x += ci3 % world.width;
+    cent[cb].y += (ci3 / world.width) | 0;
+  }
+  var ok = true, seen = 0;
+  for (var si2 = 0; si2 < world.spillway.length; si2++) {
+    if (!world.spillway[si2]) continue;
+    var sb = world.spillway[si2];
+    var c = cent[sb];
+    if (!c) { ok = false; continue; }
+    var sdx = (si2 % world.width) - c.x / c.n;
+    var sdy = ((si2 / world.width) | 0) - c.y / c.n;
+    var sdeg = Math.atan2(sdy, sdx) * 180 / Math.PI + 90;
+    var sstep = Math.round(sdeg / 45) % 8;
+    if (sstep < 0) sstep += 8;
+    seen++;
+    if (world.basinSpill[sb - 1] !== POINTS8[sstep]) ok = false;
+  }
+  return ok && seen === world.stats.lakeBasins;
+}
+// One terraced plateau world (a single wide tarn) and one with a crowd of small
+// ones: the centroid of a big fill and of a two-cell both have to land in the
+// same compass bucket the core picked.
+var manyBasin = core.generate({seed: 'red ridge', shape: 'fjord', width: 200, height: 120});
+assert(bearingsAgree(bw) && bearingsAgree(manyBasin) && bw.stats.lakeBasins === 1 &&
+  manyBasin.stats.lakeBasins > 4,
+  'each bearing points from its lake to the marked outlet (' + bw.stats.lakeBasins +
+  ' + ' + manyBasin.stats.lakeBasins + ' basins)');
+
 // The outlet is supposed to be the LOWEST dry cell on its basin's rim — that is
 // the whole reason a basin keeps draining after it fills. Walk every lake cell,
 // keep the lowest dry neighbour of each, and check no such neighbour is lower
