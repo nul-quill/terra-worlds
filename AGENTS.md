@@ -1,4 +1,3 @@
-Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `m`, `p`, `s`) are skipped while an INPUT or
 # AGENTS.md — working notes for this repo
 
 Layout (plain static site, no build step, no package manager):
@@ -170,10 +169,14 @@ Conventions:
   `--describe` prints the bare summary for one seed and prefixes each line with
   its seed when several are given, matching the `--next --describe` form, so a
   block of sentences is still traceable to its phrase.
-- Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `p`, `s`) are skipped while an INPUT or
+- Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `m`, `p`, `s`) are skipped while an INPUT or
   (`x` joins that list: it is not a list cycle but a call to `copyLink()`, the
   same function the `Copy link` button is wired to, so the two paths cannot
   disagree about what lands on the clipboard. Keep that one function for both.)
+  The button's own name is remembered in a `data-label` attribute the first
+  time it is pressed, and the restore is one shared timer that each press
+  clears before scheduling again — otherwise a second click inside the feedback
+  window leaves the button reading `Copied` for good.
   SELECT owns the caret, so a seed phrase can still be typed. Each cycle key
   reads the same array its dropdown does — `TerraCore.channels` for `c`,
   `TerraCore.shapes` for `h`, `TerraCore.phrases` for `p`, `TerraCore.lights` for

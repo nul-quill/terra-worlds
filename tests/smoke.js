@@ -1432,6 +1432,21 @@ appSrc.replace(/\bctx\.(?:fill|stroke)Style = ([^\n]*)/g, function (m, rhs) {
 assert(literalInk.length === 0,
   'map overlay colours come from the palette (' + literalInk.join(' | ') + ')');
 
+// The Copy button shows a short confirmation and then puts its own name back.
+// Pressing it twice inside that window has to be one pending restore, not two:
+// the second press clears the first timer before scheduling its own, otherwise
+// the older callback wins and the button is left reading its feedback word
+// forever. Both halves are checked on the function body itself.
+var copyBody = (/function copyLink\(\) \{([\s\S]*?)\n  \}/.exec(appSrc) ||
+  ['', ''])[1];
+var timers = (copyBody.match(/setTimeout/g) || []).length;
+var clears = (copyBody.match(/clearTimeout/g) || []).length;
+assert(timers === 1 && clears === 1 &&
+  copyBody.indexOf('clearTimeout(copyTimer)') >= 0 &&
+  copyBody.indexOf('copyTimer = setTimeout') >= 0,
+  'the copy button keeps one restore timer (' + timers + ' set, ' + clears +
+  ' clear)');
+
 // The stats list is the only trace of a world once it is printed or screenshotted,
 // so it has to open with the thing every other number hangs off: the seed. Read
 // the row labels straight out of the shell and check the order, plus that no label

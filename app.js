@@ -1034,13 +1034,25 @@
   // The hash already holds every option, so the current URL is the whole
   // state. Both the button and the `x` key go through this one path, so a
   // copied link always carries what is on screen — including a hovered cell.
+  // The timer is kept outside the handler so a second click during the
+  // feedback window replaces the pending restore instead of stacking on it.
+  var copyTimer = 0;
   function copyLink() {
     var url = location.href;
+    var btn = document.getElementById('copy');
+    // The button's real name is remembered the first time it is pressed, so a
+    // second click while "Copied" is showing restores the label rather than
+    // freezing the feedback word in its place.
+    if (!btn.getAttribute('data-label')) {
+      btn.setAttribute('data-label', btn.textContent);
+    }
     var done = function () {
-      var btn = document.getElementById('copy');
-      var was = btn.textContent;
       btn.textContent = 'Copied';
-      setTimeout(function () { btn.textContent = was; }, 900);
+      if (copyTimer) clearTimeout(copyTimer);
+      copyTimer = setTimeout(function () {
+        copyTimer = 0;
+        btn.textContent = btn.getAttribute('data-label');
+      }, 900);
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(url).then(done, done);
