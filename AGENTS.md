@@ -352,6 +352,11 @@ Conventions:
   one class, so the counts sum to `stats.pixels` and no listed class is empty.
   The smoke suite checks that on every hand-picked phrase, along with the
   sentence's `mostly X` naming the same biggest class the first row does.
+  That one partition is also the `biomes` row, the rows of the legend and the
+  `classes` column of the CLI record, so the suite counts all three on one world
+  and asks for the same number: a class counted but not drawn would drop a row
+  off the legend while the stats still said it was there, and the swatch keeps a
+  palette-derived fallback for exactly that case.
   A row's label comes from `biomeNames` with the raw key as its fallback, so the
   two key sets have to be identical in every scheme: a colour key with no name
   would print as `taiga`, a name with no colour could never be drawn. The suite

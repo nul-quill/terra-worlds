@@ -1879,6 +1879,34 @@ assert(orderBad.length === 0 && orderDiffers > 0 && legendDefs === 1 &&
   'legend rows sort by share and one lookup feeds both paths (' + orderDiffers +
   ' reordered, ' + legendDefs + ' def, ' + legendUses + ' uses)');
 
+// The same partition shows up in three places: the `biomes` row in the stats
+// list, the rows of the legend, and the `classes` column of the record. All
+// three count the classes that actually occur, so the numbers have to be equal
+// for one world — and every counted class needs both a colour to draw it and a
+// name to label its row, or a row would print a raw key or a blank swatch.
+var partBad = [];
+core.phrases.forEach(function (pk) {
+  var pw = core.generate({seed: pk, width: 170, height: 100});
+  var pc = pw.stats.counts;
+  var counted = Object.keys(pc).filter(function (ck) { return pc[ck] > 0; });
+  var rowsAgain = Object.keys(pw.palette.colors).filter(function (rk) {
+    return pc[rk];
+  });
+  var bare = counted.filter(function (bk) {
+    return !pw.palette.colors[bk] || !core.biomeNames[bk];
+  });
+  if (counted.length !== rowsAgain.length || counted.length < 6 || bare.length) {
+    partBad.push(pk + ':' + counted.length + '/' + rowsAgain.length +
+      '/' + bare.join('|'));
+  }
+});
+var partDefs = (appSrc.match(/function biomeCount\(/g) || []).length;
+var partUses = (appSrc.match(/biomeCount\(/g) || []).length - partDefs;
+assert(partBad.length === 0 && partDefs === 1 && partUses >= 1 &&
+  jsonPairs.length === jsonLine.biomes,
+  'one partition feeds the row, the legend and the record (' +
+  jsonLine.biomes + ' classes, ' + partDefs + ' def, ' + partUses + ' uses)');
+
 // Turning a height into a chart bin happens in four places: the binning pass,
 // the legend-members pass, the hovered-bin tally and the hover readout. Each
 // has to agree with the others or the bar lit under a cursor is not the bar

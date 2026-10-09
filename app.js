@@ -550,7 +550,7 @@
         li.setAttribute('data-key', key);
         var sw = document.createElement('span');
         sw.className = 'sw';
-        var c = result.palette.colors[key];
+        var c = result.palette.colors[key] || result.palette.colors.grass;
         sw.style.background = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
         var label = document.createElement('span');
         label.textContent = TerraCore.biomeNames[key] || key;
