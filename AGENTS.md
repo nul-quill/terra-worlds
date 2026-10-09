@@ -112,6 +112,11 @@ Conventions:
   70, rolling above 40, plain below — and the smoke suite re-derives the bucket
   from `stats.max - stats.min` for every shape, so the word cannot drift away
   from the number printed next to it.
+  The stats list itself opens with the `seed` row, before `grid`: a print or a
+  screenshot keeps no URL, so the phrase has to be readable off the page. The
+  smoke suite reads the row labels out of `renderStats()` and checks that first
+  pair plus that no label is reused — two rows with one name would make the
+  list ambiguous to read back.
 - The CLI record in `summarise()` carries the parts of the state that the summary
   sentence cannot hold: `palette` and `channel` both change only pixels, so every
   count stays identical without them. Keep both in the record and keep the smoke

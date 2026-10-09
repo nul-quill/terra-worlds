@@ -112,6 +112,10 @@ The stats list ends with a `checksum` row: eight hex digits of an FNV-1a hash ov
 the rendered RGBA buffer. Same seed and same grid, same digits — so a change in
 the number means the world really changed, while a different `generate` time
 does not. The CLI prints the same value.
+It opens with the `seed` row for the same reason in the other direction: a print
+or a screenshot keeps no URL, so the phrase has to be readable off the page. The
+first two labels are checked in that order by the smoke suite, and no label is
+allowed to appear twice.
 Right after `lake` the list shows `basins`: how many separate closed depressions
 that lake cover resolves into. Each one keeps its own water and spills over its
 own lowest rim cell, so the number says whether the interior is a handful of big

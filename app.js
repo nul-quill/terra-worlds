@@ -592,6 +592,9 @@
     var s = result.stats;
     var factor = exportFactor();
     var rows = [
+      // First so a printed page or a screenshot of the sidebar still says
+      // which phrase the world came from — the hash is not on paper.
+      ['seed', inputs.seed.value || 'world'],
       ['grid', result.width + ' x ' + result.height],
       // The multiplier only ever touches the saved file, so without this row
       // the `e` key would look like it did nothing until a PNG was opened.

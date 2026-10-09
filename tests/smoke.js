@@ -917,6 +917,29 @@ assert(Object.keys(handled).length > 8 && undocumented.length === 0,
   'the note names every shortcut key (' + Object.keys(handled).length +
   ' keys, missing ' + undocumented.join(',') + ')');
 
+// The stats list is the only trace of a world once it is printed or screenshotted,
+// so it has to open with the thing every other number hangs off: the seed. Read
+// the row labels straight out of the shell and check the order, plus that no label
+// is repeated — two rows with one name would make the list ambiguous.
+var rowsBlock = /var rows = \[([\s\S]*?)\n    \];/.exec(appSrc);
+var rowLabels = [];
+if (rowsBlock) {
+  rowsBlock[1].replace(/\['([a-z ]+)'[,:]/g, function (m, label) {
+    rowLabels.push(label);
+    return m;
+  });
+}
+var dupeRow = '';
+var seenRow = {};
+rowLabels.forEach(function (label) {
+  if (seenRow[label]) dupeRow = label;
+  seenRow[label] = 1;
+});
+assert(rowLabels.length > 10 && rowLabels[0] === 'seed' &&
+  rowLabels[1] === 'grid' && dupeRow === '',
+  'the stats list opens with the seed (' + rowLabels.slice(0, 3).join('/') +
+  ', dupe ' + dupeRow + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
