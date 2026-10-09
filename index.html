@@ -92,9 +92,10 @@
 
 <main class="stage">
   <section class="canvasWrap">
-    <canvas id="view" width="960" height="600"></canvas>
+    <canvas id="view" width="960" height="600" role="img"
+      aria-label="Generated pixel-art world map for the seed above"></canvas>
     <div class="hud">
-      <span id="readout">hover the map</span>
+      <span id="readout" aria-live="polite">hover the map</span>
     </div>
   </section>
 
@@ -105,7 +106,8 @@
     <h2>Stats</h2>
     <dl id="stats" class="stats"></dl>
     <h2>Relief</h2>
-    <canvas id="hist" width="240" height="52"></canvas>
+    <canvas id="hist" width="240" height="52" role="img"
+      aria-label="Histogram of elevations, with the sea level marked"></canvas>
     <p class="note">
       Same seed, same seed-phrase, same world on any machine. Everything is computed
       on the CPU from a hash of the seed string — no images, no fonts, no libraries.

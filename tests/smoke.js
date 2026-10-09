@@ -1756,6 +1756,34 @@ assert(controlIds.length > 8 && hashNames.length > 8 &&
   'every control is carried by the hash (' + controlIds.length +
   ' controls, unmapped ' + unmapped.join(',') + ', extra ' + unknown.join(',') + ')');
 
+// A link can carry the whole view, but only if a screen reader can name the
+// parts it restores. Every control sits inside its own LABEL, so the visible
+// caption is already its name; the two canvases and the hover readout are not
+// labels at all, so each has to say what it is in the markup. Walk the four by
+// id and ask each for the attribute that gives it a name.
+var a11yBad = [];
+['view', 'hist', 'readout'].forEach(function (aid) {
+  var tag = new RegExp('<(canvas|span)[^>]*id="' + aid + '"[^>]*>')
+    .exec(html);
+  if (!tag) { a11yBad.push(aid + ' missing'); return; }
+  if (aid === 'readout') {
+    if (!/aria-live="polite"/.test(tag[0])) a11yBad.push(aid + ' silent');
+    return;
+  }
+  if (!/role="img"/.test(tag[0]) || !/aria-label="[^"]{3,}"/.test(tag[0])) {
+    a11yBad.push(aid + ' unnamed');
+  }
+});
+// A caption can sit before its control, or after it when the field is a
+// checkbox — both are inside the same LABEL, so both name it.
+var captioned = (html.match(/<label class="field[^>]*>\s*(?:<input[^>]*>\s*)?<span>[^<]+/g) || []).length;
+var fieldLabels = (html.match(/<label class="field/g) || []).length;
+assert(a11yBad.length === 0 && fieldLabels === controlIds.length &&
+  captioned === fieldLabels,
+  'every control and canvas has a name a reader can speak (' +
+  captioned + ' captions, ' + fieldLabels + ' labels, ' +
+  a11yBad.join(', ') + ')');
+
 // The short names are what a person reads back out of a pasted link, so each
 // one has to point at exactly one control: two controls sharing `sea` would
 // make a shared link ambiguous, and a name longer than four characters stops

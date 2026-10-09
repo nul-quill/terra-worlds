@@ -333,6 +333,11 @@ Conventions:
   The same suite compares the key set with the note under the chart, which is
   the only place the shortcuts are written down: a new letter has to appear
   there as its own token, not merely be handled.
+  Each control also gets its spoken name from the LABEL wrapping it, so a new
+  dropdown needs a caption there rather than an `aria-label`. The three things
+  that are not labels — both canvases and the hover readout — carry their own
+  attribute instead, and the suite walks those three by id. A control added
+  without its caption shows up as a caption count below the control count.
   Those two extras are checked on their own, since they sit outside the
   `HASH_KEYS` loop: each has exactly one `parts.push()` in `writeHash()` and at
   least one `fromUrl.` read in `applyHash()`. A pair that only went out would
