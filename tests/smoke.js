@@ -1512,6 +1512,18 @@ core.shapes.forEach(function (tk) {
 assert(tickBad.length === 0 && core.tickStep(15) === 5 && core.tickStep(500) === 50,
   'relief ticks stay between two and ten marks (' + tickBad.join(', ') + ')');
 
+// The `export` row and the name of the saved file are two views of one number,
+// so both have to come from the same lookup. A second parse of the dropdown in
+// either path could disagree the moment the default changes — which is exactly
+// the case the row exists to make visible. Checked as text: one definition, a
+// call at each of the three sites, and the dropdown parsed in one place only.
+var factorDefs = (appSrc.match(/function exportFactor\(\)/g) || []).length;
+var factorUses = (appSrc.match(/exportFactor\(\)/g) || []).length - factorDefs;
+var factorParses = (appSrc.match(/parseInt\(inputs\.scale\.value/g) || []).length;
+assert(factorDefs === 1 && factorUses === 3 && factorParses === 1,
+  'the export row and the file name share one factor lookup (' + factorDefs +
+  ' def, ' + factorUses + ' uses, ' + factorParses + ' parse)');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
