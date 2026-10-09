@@ -240,6 +240,9 @@ Conventions:
   The `--help` usage line builds its `[--shape a|b|c]` list from the same array
   rather than repeating the keys, and the smoke suite checks every key appears
   in that listing.
+  The listing covers the other lists too — palette, overlay, light, grid and
+  export keys are each echoed by name — so one `--help` is enough to choose any
+  value, and the suite walks all five arrays against that output.
   Each curve must also be its own picture: the suite renders one seed through
   every entry and compares the checksums, so a new curve that only re-skims an
   existing one loses its slot in the `h` cycle rather than diluting it.

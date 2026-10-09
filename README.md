@@ -34,6 +34,9 @@ the `h` cycle.
 `--help` is the shortest listing of all: it names the shape keys from the same
 array, so the usage line and the dropdown cannot drift apart when a curve is
 added in `src/core.js`.
+It echoes the other lists by name as well — palettes, overlays, light bearings,
+pinned column counts and export multipliers — so one `--help` is enough to pick
+a value for any flag, and the smoke suite walks each array against that output.
 `--channels` is the third list of the same kind: the overlay keys that
 `--channel` takes, each with the field it reads.
 `--phrases` is the fourth: the hand-picked seed phrases, numbered in the order

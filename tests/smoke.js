@@ -865,6 +865,29 @@ var helpShapes = core.shapes.every(function (s) {
 });
 assert(helpShapes, '--help lists every shape key');
 
+// The same has to hold for the other shared lists: each one is both a dropdown
+// and a CLI value, so a key that never appears in the usage line would look
+// unavailable from a terminal even though the parser takes it. The empty
+// overlay key is the one exception — it prints as "biome".
+var helpMissing = [];
+Object.keys(core.palettes).forEach(function (hk) {
+  if (helpOut.indexOf(hk) < 0) helpMissing.push('palette ' + hk);
+});
+core.channels.forEach(function (hc) {
+  if (helpOut.indexOf(hc.key || 'biome') < 0) helpMissing.push('channel ' + (hc.key || 'biome'));
+});
+core.lights.forEach(function (hl) {
+  if (helpOut.indexOf(hl.key) < 0) helpMissing.push('light ' + hl.key);
+});
+core.grids.forEach(function (hg) {
+  if (helpOut.indexOf(hg.key || 'auto') < 0) helpMissing.push('grid ' + (hg.key || 'auto'));
+});
+core.scales.forEach(function (hs) {
+  if (helpOut.indexOf(hs.key) < 0) helpMissing.push('scale ' + hs.key);
+});
+assert(helpMissing.length === 0,
+  '--help names every key the dropdowns offer (' + helpMissing.join(', ') + ')');
+
 // The other direction is worth checking too: every flag the help text names
 // must be one the parser knows, or the usage line advertises something that
 // silently falls through to the unknown-flag warning. Each token is run with a
