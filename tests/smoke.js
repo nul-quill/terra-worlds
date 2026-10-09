@@ -71,6 +71,25 @@ assert(formatBad.length === 0 && Object.keys(core.palettes).length >= 4,
   'every palette colour is a whole-number triple (' +
   Object.keys(core.palettes).length + ' palettes, bad ' + formatBad.join(',') + ')');
 
+// A palette is the one knob that moves only pixels, so each entry has to be
+// worth a slot in the dropdown: one seed through every palette must give a
+// different picture each time, while every count in stats stays the same.
+// That pair of checks is what keeps a new entry a real recolour rather than a
+// duplicate of the default, or a scheme that quietly re-classifies the world.
+var palCounts = '';
+var palSums = {};
+var palSame = false;
+Object.keys(core.palettes).forEach(function (pk) {
+  var pr = core.generate({seed: 'salt mirror', palette: pk, width: 120, height: 80});
+  var pCounts = JSON.stringify(pr.stats.counts);
+  if (!palCounts) palCounts = pCounts;
+  if (pCounts !== palCounts) palSame = true;
+  palSums[pr.stats.checksum] = 1;
+});
+assert(!palSame && Object.keys(palSums).length === Object.keys(core.palettes).length,
+  'every palette recolours the same world differently (' +
+  Object.keys(palSums).length + ')');
+
 var t = core.generate({ seed: 'perf', width: 480, height: 300 });
 assert(t.stats.ms < 900, 'generation under 900ms (' + t.stats.ms + 'ms)');
 

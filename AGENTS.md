@@ -230,6 +230,10 @@ Conventions:
   clamping, so they stay whole numbers in 0..255; the smoke suite checks both
   the triples and the sky string, since the sky is also the isolation blend
   target in `drawMap()`.
+  Each scheme must also earn its slot: the suite renders one seed through every
+  palette and asks for a different checksum each time while every count in
+  `stats` stays put — that is the pair that says a palette is a recolour and
+  not a second classification path.
   `--shapes` does the same job for the shape curves from `core.shapes`, which is
   also what fills the shape dropdown. Add a curve in `core.js` only; the list,
   the dropdown and the CLI output all follow from that one array.

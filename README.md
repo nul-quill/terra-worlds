@@ -56,6 +56,9 @@ without opening it.
 Alongside it the record names the `palette` it was drawn with, which is the one
 part of the state a summary sentence cannot carry: two worlds sharing a seed, a
 shape and a grid can still be different pictures, and the palette is why.
+Each scheme earns that column too: the smoke suite renders one seed through
+every palette and wants a different picture each time, with every count in the
+record unchanged — a recolour, not a second classification.
 The `channel` key rides along for the same reason. An overlay keeps every count
 in the record identical while changing only the pixels, so without it a drained
 world and a moist one look like the same entry.
