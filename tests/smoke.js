@@ -217,6 +217,23 @@ core.lights.forEach(function (lt) {
 assert(worstLen < 0.01,
   'every light vector is a unit vector (worst drift ' + worstLen.toFixed(4) + ')');
 
+// The strength slider is the last of the shading-only knobs: a flat world and
+// a strongly lit one have to agree on every class while differing in pixels.
+// Unlike the bearing it is a magnitude, so both ends of its range are checked
+// — one that washed the relief out entirely would look the same at either end.
+var softLight = core.generate({seed: 'red ridge', width: 160, height: 100, hillshade: 0});
+var hardLight = core.generate({seed: 'red ridge', width: 160, height: 100, hillshade: 1});
+var hsDiff = 0, hsBiome = 0;
+for (var hsI = 0; hsI < softLight.data.length; hsI += 4) {
+  if (softLight.data[hsI] !== hardLight.data[hsI]) hsDiff++;
+}
+for (var hsJ = 0; hsJ < softLight.biome.length; hsJ++) {
+  if (softLight.biome[hsJ] !== hardLight.biome[hsJ]) hsBiome++;
+}
+assert(hsDiff > 0 && hsBiome === 0,
+  'light strength changes shading only (' + hsDiff + ' pixels, ' +
+  hsBiome + ' biome moves)');
+
 // Hypsometric contours behave like the other shading knobs: more pixels move,
 // no biome boundary does.
 var lined = core.generate({ seed: 'craton step', width: 160, height: 100, contour: true });
