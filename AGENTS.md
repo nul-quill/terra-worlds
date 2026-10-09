@@ -395,6 +395,12 @@ Conventions:
   reading `min`/`max`/`step` off the input itself so the key and the slider
   cannot disagree about the size of a step. Keep the clamp there rather than
   hard-coding the range in the handler.
+  The number the slider starts on is written three times — the generator's
+  `seaLevel == null` fallback, the value the shell assigns on first load, and the
+  `min`/`max` span in the markup — so the suite reads all three and asks that the
+  two defaults be equal and sit inside that span. A first default outside the
+  span would be clamped by the browser before the first render, which is one way
+  a link and a fresh page could draw different worlds from the same phrase.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
   The median mark prints its number in the same bottom strip, squeezed between

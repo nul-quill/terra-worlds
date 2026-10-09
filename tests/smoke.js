@@ -1811,6 +1811,27 @@ assert(printBlock !== null && lostChrome.length === 0 && overHidden.length === 0
   'the print block drops the chrome and keeps the numbers (' +
   lostChrome.concat(overHidden).join(',') + ')');
 
+// The sea level is the one number written in three places: the generator's own
+// fallback, the value the shell puts in the box on first load, and the span the
+// slider is allowed to move across. If the first two disagree, a link and a
+// fresh page draw different worlds from one phrase; if the third is narrower
+// than the other two, the browser clamps the number the core just chose. All
+// three are read out of their own file and compared here.
+var coreSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var coreSea = /seaLevel == null \?\s*([\d.]+)/.exec(coreSrc);
+var shellSea = /inputs\.seaLevel\.value = '([\d.]+)'/.exec(appSrc);
+var seaInput = /<input id="seaLevel"[^>]*>/.exec(html);
+var seaMin = seaInput && /min="([\d.]+)"/.exec(seaInput[0]);
+var seaMax = seaInput && /max="([\d.]+)"/.exec(seaInput[0]);
+var seaStep = seaInput && /step="([\d.]+)"/.exec(seaInput[0]);
+var seaNum = Number(shellSea && shellSea[1]);
+assert(coreSea && shellSea && seaMin && seaMax && seaStep &&
+  Number(coreSea[1]) === seaNum && seaNum >= Number(seaMin[1]) &&
+  seaNum <= Number(seaMax[1]),
+  'one sea default fits the slider it starts in (' +
+  (coreSea && coreSea[1]) + ', ' + (shellSea && shellSea[1]) + ', ' +
+  (seaMin && seaMin[1]) + '-' + (seaMax && seaMax[1]) + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
