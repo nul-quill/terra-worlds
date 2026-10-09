@@ -114,6 +114,9 @@ Reroll is not random: the next seed is a hash of the current one, so a run of
 clicks from the same starting phrase walks the same sequence of worlds every
 time. `node cli.js "aurora basin" --next 6` prints that sequence, one seed per
 line, which is the quickest way back to a world found by clicking.
+The walk also has to keep being worth clicking: twelve chained seeds render
+twelve different pictures with a different land share in most of them, which is
+what the smoke suite checks so a chain cannot settle into a rut.
 Add `--describe` to that call and each seed also gets its summary line.
 `g` and `l` toggle grain and lines, `s` saves the PNG; the letters are ignored
 while the caret is in a text field, so a seed phrase can still be typed. The

@@ -141,6 +141,9 @@ Conventions:
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not
   replace it with a plain `randomSeed()` call in the button.
+  The suite walks twelve chained seeds and asks for twelve distinct checksums,
+  so a derivation that collapsed onto a short cycle would be caught here rather
+  than by someone clicking Reroll twice.
 - `parseArgs()` in `cli.js` treats a bare word as a seed and a dashed word as a
   flag. A dashed word that matches nothing is named on stderr, and the word
   after it is skipped, so a mistyped `--widht 30` costs one warning instead of

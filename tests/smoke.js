@@ -725,6 +725,22 @@ var chainWorld = core.generate({ seed: String(walkA[0]), width: 120, height: 80 
 assert(/^[0-9a-f]{8}$/.test(chainWorld.stats.checksum),
   'a chained seed renders a world (' + chainWorld.stats.checksum + ')');
 
+// Pressing Reroll repeatedly has to keep producing worlds rather than cycling
+// back onto an earlier one, so a longer walk is checked on pixels instead of
+// on the seed strings: twelve chained seeds must give twelve pictures, and the
+// land shares have to move around rather than pin to one value.
+var runSum = {};
+var runLand = {};
+for (var rs = 'red ridge', rk = 0; rk < 12; rk++) {
+  var runWorld = core.generate({seed: String(rs), width: 120, height: 80});
+  runSum[runWorld.stats.checksum] = 1;
+  runLand[Math.round(runWorld.stats.land * 100)] = 1;
+  rs = core.nextSeed(rs);
+}
+assert(Object.keys(runSum).length === 12 && Object.keys(runLand).length >= 6,
+  'a reroll walk keeps making new worlds (' + Object.keys(runSum).length +
+  ' worlds, ' + Object.keys(runLand).length + ' land shares)');
+
 // The CLI prints the same chain the button walks, so a phrase found in the
 // browser can be replayed from a terminal. Both go through nextSeed, which is
 // the only place the derivation is defined.
