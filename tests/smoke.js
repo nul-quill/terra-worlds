@@ -453,6 +453,30 @@ var fallback = core.channelize(spread, 'no-such-ramp');
 assert(fallback.channel === 'relief' && fallback.data.length === spread.data.length,
   'an unknown overlay falls back to relief (' + fallback.channel + ')');
 
+// Each ramp has to be a picture of its own: two overlays that render the same
+// pixels would make one of the dropdown entries pointless, and the empty key —
+// the plain biome map — is deliberately not a ramp at all, so the buffer it
+// leaves behind is the one generate() built. Only the named ramps are compared.
+var rampSeen = {};
+var rampDistinct = true;
+core.channels.forEach(function (dc) {
+  if (!dc.key) return;
+  var dr = core.generate({seed: 'pale shelf', width: 120, height: 80});
+  var dim = core.channelize(dr, dc.key);
+  var dig = '';
+  for (var dpi = 0; dpi < dim.data.length; dpi += 4) {
+    dig += dim.data[dpi] + ',' + dim.data[dpi + 1] + ',' + dim.data[dpi + 2] + ';';
+  }
+  if (rampSeen[dig]) rampDistinct = false;
+  rampSeen[dig] = dc.key;
+});
+var plainRamp = core.generate({seed: 'pale shelf', width: 120, height: 80});
+var untouched = core.channelize(plainRamp, '');
+assert(rampDistinct && Object.keys(rampSeen).length === core.channels.length - 1 &&
+  untouched.channel === 'relief',
+  'each ramp is its own picture, empty key means relief (' +
+  Object.keys(rampSeen).length + ')');
+
 // `slope` is the one field built by the lookup rather than by generate, so its
 // definition is worth pinning: the steepest of the four neighbour differences,
 // never an average. Recomputed here by hand on sampled cells, which also
