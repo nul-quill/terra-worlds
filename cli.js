@@ -17,22 +17,38 @@ function parseArgs(argv) {
     var n = isInt ? parseInt(value, 10) : parseFloat(value);
     return isNaN(n) ? undefined : n;
   }
+  // A key that no dropdown offers is a typo rather than a style: `--palette
+  // terraa` would otherwise render the default scheme and look like the flag
+  // was ignored. Naming it on stderr is the same treatment an unknown flag
+  // gets, and leaving the option unset means the generator's default stands.
+  function nextKey(value, keys) {
+    if (value == null) return undefined;
+    for (var k = 0; k < keys.length; k++) {
+      if (keys[k] === value) return value;
+    }
+    opts.unknown.push(value);
+    return undefined;
+  }
+  var PALETTE_KEYS = Object.keys(core.palettes);
+  var SHAPE_KEYS = core.shapes.map(function (s) { return s.key; });
+  var CHANNEL_KEYS = core.channels.map(function (c) { return c.key; });
+  var LIGHT_KEYS = core.lights.map(function (lt) { return lt.key; });
   for (var i = 0; i < argv.length; i++) {
     var a = argv[i];
     if (a === '--width') opts.width = nextNum(argv[++i], true);
     else if (a === '--height') opts.height = nextNum(argv[++i], true);
-    else if (a === '--palette') opts.palette = argv[++i];
-    else if (a === '--shape') opts.shape = argv[++i];
+    else if (a === '--palette') opts.palette = nextKey(argv[++i], PALETTE_KEYS);
+    else if (a === '--shape') opts.shape = nextKey(argv[++i], SHAPE_KEYS);
     else if (a === '--sea') opts.seaLevel = nextNum(argv[++i], false);
     else if (a === '--detail') opts.detail = nextNum(argv[++i], false);
     else if (a === '--polar') opts.polar = nextNum(argv[++i], false);
     else if (a === '--light') opts.hillshade = nextNum(argv[++i], false);
-    else if (a === '--dir') opts.lightDir = argv[++i];
+    else if (a === '--dir') opts.lightDir = nextKey(argv[++i], LIGHT_KEYS);
     else if (a === '--terraces') opts.terraces = nextNum(argv[++i], true);
     else if (a === '--rivers') opts.rivers = nextNum(argv[++i], true);
     else if (a === '--no-grain') opts.dither = false;
     else if (a === '--contour') opts.contour = true;
-    else if (a === '--channel') opts.channel = argv[++i];
+    else if (a === '--channel') opts.channel = nextKey(argv[++i], CHANNEL_KEYS);
     else if (a === '--scale') opts.scale = nextNum(argv[++i], true);
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--describe') opts.describe = true;
@@ -58,8 +74,11 @@ function parseArgs(argv) {
   // always a typo, and swallowing it as a seed would render a world nobody
   // asked for. Saying so is cheaper than a surprise file.
   if (opts.unknown.length) {
-    console.error('unknown flag: ' + opts.unknown.join(', ') +
-      ' (--help lists the ones that exist)');
+    // The same list carries both kinds of typo: a dashed word the parser does
+    // not know, and a key no dropdown offers. One note covers both, and the
+    // two listings named here are where the valid spellings are.
+    console.error('unknown flag or value: ' + opts.unknown.join(', ') +
+      ' (--help lists the flags, --palettes and friends list their values)');
   }
   if (!opts.seeds.length) opts.seeds.push('terra');
   return opts;

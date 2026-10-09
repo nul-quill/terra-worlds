@@ -952,11 +952,23 @@ var helpFlags = (helpOut.match(/(?:^|[\s[(])--?[a-z][a-z-]*/gm) || [])
   .map(function (fl) { return fl.replace(/^[\s[(]/, ''); });
 var quietFlags = {};
 var rejected = [];
+// Each flag is fed a value its own list offers, so a warning means the flag
+// itself is unknown rather than the sample being wrong. The four key-valued
+// flags take their sample from the array behind their dropdown; the rest are
+// numeric and read fine from a small integer.
+function sampleFor(fl) {
+  if (fl === '--palette') return Object.keys(core.palettes)[0];
+  if (fl === '--shape') return core.shapes[0].key;
+  if (fl === '--channel') return core.channels[1].key || core.channels[0].key;
+  if (fl === '--dir') return core.lights[0].key;
+  return '24';
+}
 helpFlags.forEach(function (fl) {
   if (quietFlags[fl]) return;
   quietFlags[fl] = 1;
   var err = require('child_process')
-    .execSync('node cli.js "salt mirror" --describe ' + fl + ' 24 2>&1',
+    .execSync('node cli.js "salt mirror" --describe ' + fl + ' ' +
+      sampleFor(fl) + ' 2>&1',
       {cwd: __dirname + '/..', stdio: ['ignore', 'pipe', 'ignore']})
     .toString();
   if (/unknown flag/.test(err)) rejected.push(fl);
