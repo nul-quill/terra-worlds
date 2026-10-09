@@ -53,6 +53,9 @@ Conventions:
   exactly `stats.lakeBasins` and every entry one of the eight points — a short
   array prints `drains undefined` on the last lake, a long one shifts every
   bearing. The suite checks both halves on a one-basin and a crowded world.
+  The bucket stays 45 degrees with the north offset: coarsen it and a whole set
+  of points goes unused, so the suite walks every hand-picked world and asks
+  that all eight points appear somewhere in that array.
   The spillway cell itself is marked in `result.spillway` (one cell per basin),
   which the readout prints as `outlet` and the river pass uses to keep a
   basin's catchment drawn even when accumulation alone would cut it off.

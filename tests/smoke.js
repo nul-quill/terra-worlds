@@ -1524,6 +1524,25 @@ assert(spillBad.length === 0 && bw.basinSpill.length === 1 &&
   manyBasin.basinSpill.length > 4,
   'every basin has one bearing to print (' + spillBad.join(', ') + ')');
 
+// Those bearings are worth having at eight points rather than four, which only
+// holds while the bucket is 45 degrees with the north offset applied. Coarsen
+// either and a whole set of points goes unused: every lake would drain along an
+// axis, and a rim that leaves to the north-east would print `drains N`. So walk
+// every hand-picked world and require that all eight points show up somewhere.
+var usedPoints = {};
+var pointTotal = 0;
+core.phrases.forEach(function (pk) {
+  var pw = core.generate({seed: pk, shape: 'craton', width: 200, height: 130});
+  for (var pi = 0; pi < pw.basinSpill.length; pi++) {
+    usedPoints[pw.basinSpill[pi]] = 1;
+    pointTotal++;
+  }
+});
+var usedNames = Object.keys(usedPoints);
+assert(pointTotal > 20 && usedNames.length === POINTS8.length,
+  'spillways use the whole compass (' + usedNames.length + ' of ' +
+  POINTS8.length + ' points, ' + pointTotal + ' basins)');
+
 // The hash is only useful if it carries every control on screen, so the two
 // lists are checked against each other: each INPUT or SELECT id in the page
 // must appear in HASH_KEYS, and every name in HASH_KEYS must be a real id.
