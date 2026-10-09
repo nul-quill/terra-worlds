@@ -609,6 +609,24 @@ core.phrases.forEach(function (ph) {
 });
 assert(saidOk, 'every phrase writes a full sentence on every shape');
 
+// Every class the lookup can name has to turn up somewhere in those worlds:
+// a key with no cells is a dead entry in the palette table and a row the
+// legend can never show. Walked from both lists, so a new class or a new
+// curve is covered without editing this file.
+var touched = {};
+core.phrases.forEach(function (tc) {
+  core.shapes.forEach(function (ts) {
+    var tw = core.generate({seed: tc, shape: ts.key, width: 160, height: 100});
+    Object.keys(tw.stats.counts).forEach(function (tk) { touched[tk] = 1; });
+  });
+});
+var neverSeen = Object.keys(core.biomeNames).filter(function (nk) {
+  return !touched[nk];
+});
+assert(neverSeen.length === 0,
+  'every biome class appears on some world (' +
+  Object.keys(touched).length + ' of ' + Object.keys(core.biomeNames).length + ')');
+
 // The phrase list is what the `p` key walks, so each entry has to be a
 // different world rather than a near-copy of the last: distinct checksums at
 // one grid, and a land share that stays in the middle band so no phrase is a

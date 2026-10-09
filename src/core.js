@@ -194,7 +194,7 @@
     var table = [
       ['tundra', 'tundra', 'ice'],
       ['shrub', 'taiga', 'taiga'],
-      ['grass', 'grass', 'forest'],
+      ['grass', 'seasonal', 'forest'],
       ['savanna', 'grass', 'forest'],
       ['desert', 'savanna', 'rain']
     ];

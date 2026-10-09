@@ -237,6 +237,8 @@ Pipeline, all on the CPU:
    outflow channel and the catchment continues downstream instead of stopping.
 5. **Biomes** — a temperature x moisture lookup gives 11 land/water classes; coast
    cells, polar ice caps, snow caps and alpine rock are resolved on top.
+   Every one of those classes has to appear on at least one of the hand-picked
+   worlds, which the smoke suite checks from both lists.
 6. **Shading** — a hillshade from the height gradient, a 4x4 Bayer dither to kill
    banding, and depth falloff under water and in lakes. The `grain` checkbox drops
    the dither for a flat, posterised look; it only touches shading, never a biome
