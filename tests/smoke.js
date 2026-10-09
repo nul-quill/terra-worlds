@@ -465,6 +465,20 @@ assert(stepsConst === tarns.channelScale.hi && stepsTop <= stepsConst &&
   'one constant is the whole lake depth range (' + stepsLow + '..' + stepsTop +
   ', ' + stepsLiterals + ' literal divides)');
 
+// Heights are stored 0..1 and printed out of a hundred, in the stats rows and
+// in the chart labels. Both go through one helper, so `median 49` in the list
+// and `median 49` under the bars are the same measurement. Checked as text: one
+// definition, several uses, and no leftover inline `* 100` rounding beside it.
+var hundredSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var hundredDefs = (hundredSrc.match(/function hundred\(/g) || []).length;
+var hundredCalls = (hundredSrc.match(/hundred\(/g) || []).length - hundredDefs;
+var hundredInline = (hundredSrc.match(
+  /Math\.round\((?:s\.|lo|hi|result\.stats|from|to|result\.seaLevel)[^)]*\* 100\)/g
+  ) || []).length;
+assert(hundredDefs === 1 && hundredCalls >= 5 && hundredInline === 0,
+  'one helper scales every printed height (' + hundredDefs + ' def, ' +
+  hundredCalls + ' uses, ' + hundredInline + ' inline)');
+
 // The readout prints the overlay's own ramp position, so it has to agree with
 // the pixels: the colour under the cursor must be the palette pair lerped by
 // exactly that number. Checked on the log-scaled field, whose raw values are

@@ -134,6 +134,14 @@ Conventions:
   smoke suite reads the row labels out of `renderStats()` and checks that first
   pair plus that no label is reused — two rows with one name would make the
   list ambiguous to read back.
+  Every height on the page is stored 0..1 and printed out of a hundred, through
+  one helper — `hundred(value)` — shared by the `relief` and `median` rows, the
+  chart's corner labels, the sea rule, the median mark, the hovered-bin range and
+  the readout's elevation, moisture and ramp numbers. That is what makes
+  `median 49` in the stats list and `median 49` under the bars one measurement
+  rather than two roundings that happen to agree. Keep the scaling there rather
+  than writing `Math.round(x * 100)` at a call site; the suite counts the
+  definition, the uses and any leftover inline rounding.
 - The CLI record in `summarise()` carries the parts of the state that the summary
   sentence cannot hold: `palette` and `channel` both change only pixels, so every
   count stays identical without them. Keep both in the record and keep the smoke

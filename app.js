@@ -519,6 +519,15 @@
     return (pct >= 10 ? Math.round(pct) : pct.toFixed(1)) + '%';
   }
 
+  // Every height on the page is stored 0..1 and printed as a whole number out
+  // of a hundred, so the scaling lives in one place: the stats rows, the chart's
+  // corner labels, the sea rule and the hover readout all go through it. That is
+  // what makes `median 49` in the stats list and `median 49` under the bars the
+  // same measurement rather than two roundings that happen to agree.
+  function hundred(value) {
+    return Math.round(value * 100);
+  }
+
   // How many classes actually occur on this map. The legend only lists those,
   // so the count has to be taken from the occupancy map rather than the
   // fixed list of fourteen names.
@@ -640,10 +649,10 @@
       ['basins', String(s.lakeBasins)],
       ['ice', percentText(s.ice)],
       ['river cells', String(s.rivers)],
-      ['relief', Math.round((s.max - s.min) * 100) + ' units'],
+      ['relief', hundred(s.max - s.min) + ' units'],
       // Half the grid sits below this height, which is what separates a broad
       // plateau from a plain with one peak when both share a relief range.
-      ['median', Math.round(s.median * 100) + ' units'],
+      ['median', hundred(s.median) + ' units'],
       ['biomes', String(biomeCount(s.counts))],
       ['contours', s.contourBands + ' land / ' + s.basinBands + ' basin'],
       ['checksum', s.checksum],
@@ -786,7 +795,7 @@
     // is the knob that moves it most, so the number rides next to the rule.
     // Flipped to the left of the line when it would otherwise run off the edge.
     hc.font = '9px system-ui, sans-serif';
-    var seaLabel = 'sea ' + Math.round(result.seaLevel * 100);
+    var seaLabel = 'sea ' + hundred(result.seaLevel);
     var seaTw = hc.measureText(seaLabel).width;
     hc.fillStyle = 'rgba(30,38,44,0.75)';
     hc.fillText(seaLabel,
@@ -795,8 +804,8 @@
     // spread is readable but the numbers are not. Drawn before the hovered-bin
     // label so a hover can cover them when space is tight.
     hc.fillStyle = 'rgba(30,38,44,0.55)';
-    var loLabel = String(Math.round(lo * 100));
-    var hiLabel = String(Math.round((lo + span) * 100));
+    var loLabel = String(hundred(lo));
+    var hiLabel = String(hundred(lo + span));
     hc.fillText(loLabel, pad, h - 1);
     hc.fillText(hiLabel, w - pad - hc.measureText(hiLabel).width, h - 1);
     // The median gets a taller mark than the decade ticks: it is the one
@@ -812,7 +821,7 @@
       // The mark alone says "most of the grid is around here"; the number says
       // how high that is, which is the difference between a shape and a
       // measurement. Kept inside the corner labels so the strip never overlaps.
-      var medLabel = 'median ' + Math.round(result.stats.median * 100);
+      var medLabel = 'median ' + hundred(result.stats.median);
       var medTw = hc.measureText(medLabel).width;
       var loTw = hc.measureText(loLabel).width;
       var hiTw = hc.measureText(hiLabel).width;
@@ -854,7 +863,7 @@
       // sidebar that runs past the chart, so the least useful parts are
       // dropped first: class, then count. The range always survives — it is
       // what ties the bump back to the map.
-      var parts = [Math.round(from * 100) + '-' + Math.round(to * 100),
+      var parts = [hundred(from) + '-' + hundred(to),
         (hist[only] || 0) + ' cells',
         top ? (TerraCore.biomeNames[top] || top) : null];
       var label = parts.filter(Boolean).join('  ');
@@ -933,8 +942,8 @@
     var h = current.heightField[i];
     var above = h >= current.seaLevel;
     var elev = above
-      ? Math.round((h - current.seaLevel) / Math.max(0.001, 1 - current.seaLevel) * 100)
-      : -Math.round((current.seaLevel - h) / Math.max(0.001, current.seaLevel) * 100);
+      ? hundred((h - current.seaLevel) / Math.max(0.001, 1 - current.seaLevel))
+      : -hundred((current.seaLevel - h) / Math.max(0.001, current.seaLevel));
     var parts = [
       '(' + px + ', ' + py + ')',
       (TerraCore.biomeNames[key] || key),
@@ -945,7 +954,7 @@
     // is what makes two similar shades distinguishable.
     if (current.channelName) {
       parts.push(current.channelName + ' ' +
-        Math.round(TerraCore.channelValue(current, i) * 100));
+        hundred(TerraCore.channelValue(current, i)));
     }
     // Extra context when it costs nothing: how deep the standing water is, and
     // whether this cell is on the drainage network.
@@ -953,8 +962,7 @@
       // The mask stores 1..60 steps of the basin's own depth range, so the
       // readout converts it to a percentage: "depth 42" means nothing, "62%
       // deep" says how full this part of the basin is.
-      parts.push(Math.round(current.lakeMask[i] / TerraCore.lakeSteps * 100) +
-        '% deep');
+      parts.push(hundred(current.lakeMask[i] / TerraCore.lakeSteps) + '% deep');
       // Which of the world's lakes this is. Two basins of the same depth read
       // alike otherwise, and the number matches the `basins` row in the stats.
       if (current.basin && current.basin[i]) {
@@ -971,7 +979,7 @@
     // Moisture is the other axis of the biome lookup, so printing it explains
     // why two cells at the same height land in different classes.
     if (current.moisture) {
-      parts.push('moist ' + Math.round(current.moisture[i] * 100));
+      parts.push('moist ' + hundred(current.moisture[i]));
     }
     // Distance to the nearest shoreline, so a green patch in the middle of a
     // continent reads differently from the same colour on a coast.
