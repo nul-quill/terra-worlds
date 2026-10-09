@@ -1329,6 +1329,25 @@ assert(reliefSaid === reliefRec.relief &&
   })()),
   'record relief matches the number in its sentence (' + reliefRec.relief + ')');
 
+// The same row also carries the two ends of the range in brackets, which are
+// the numbers printed at the corners of the relief chart. A record that only
+// kept the spread could not reproduce those corners, so check the pair: each
+// endpoint out of a hundred must be what the shell would print for it, and the
+// row's own source must show both.
+var endsWorld = core.generate({seed: 'red ridge', shape: 'fjord',
+  width: 100, height: 60});
+var endsSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var endsOk = reliefRec.low === Math.round(endsWorld.stats.min * 100) &&
+  reliefRec.high === Math.round(endsWorld.stats.max * 100) &&
+  reliefRec.low < reliefRec.high;
+var reliefRowSrc = (/relief',\s*([\s\S]{0,160}?)\],/.exec(endsSrc) ||
+  ['', ''])[1];
+var endsPrinted = reliefRowSrc.indexOf('.min') >= 0 &&
+  reliefRowSrc.indexOf('.max') >= 0 && /\(/.test(reliefRowSrc);
+assert(endsOk && endsPrinted,
+  'the relief row carries both ends of the range (' + reliefRec.low + '-' +
+  reliefRec.high + ')');
+
 // The median must sit inside the world's own range and really split the grid
 // in half, which is the whole point of publishing it: the relief range on its
 // own cannot tell a plateau from a plain with one peak. Same world as the

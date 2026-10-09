@@ -384,6 +384,11 @@ function summarise(seed, result, name, asJson) {
     trunks: s.trunks,
     lakeBasins: s.lakeBasins,
     relief: Math.round((s.max - s.min) * 100),
+    // The two ends behind that difference, out of a hundred: the spread alone
+    // cannot say whether a world climbs from a deep shelf or from a damp
+    // plain, and those are the numbers printed at the corners of the chart.
+    low: Math.round(s.min * 100),
+    high: Math.round(s.max * 100),
     contourBands: s.contourBands, basinBands: s.basinBands,
     biomes: Object.keys(s.counts).length,
     classes: classes,

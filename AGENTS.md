@@ -105,6 +105,11 @@ Conventions:
   suite rounds each the same way and asks for one number across every phrase —
   a record a terminal cannot turn into the figure on screen is no substitute for
   a screenshot.
+  The `relief` row carries the spread and its two ends — `70 units (10-80)` —
+  where the pair in brackets is what the chart prints at its corners. The record
+  keeps those ends as `low` and `high`, already out of a hundred, so a terminal
+  can reproduce the corner labels from the JSON alone. The suite re-derives both
+  from the height field and asks that the row's own source show both halves.
 - Shading-only knobs (`hillshade`, `lightDir`, `dither`) must never move a biome
     boundary: classification happens before the colour pass. The smoke suite
     asserts that, so keep it that way. `contour` (hypsometric lines) belongs to

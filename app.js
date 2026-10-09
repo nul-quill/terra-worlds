@@ -1,3 +1,4 @@
+      // The spread plus its two ends: the difference alone cannot say whether a
 /* Terra app shell — draws the core result onto a crisp canvas. */
 (function () {
   'use strict';
@@ -651,7 +652,11 @@
       // weight of a line on the map comes from this pair, so the numbers that
       // explain the drawing sit next to it.
       ['rivers', (s.rivers - s.trunks) + ' tri / ' + s.trunks + ' trunk'],
-      ['relief', hundred(s.max - s.min) + ' units'],
+      // The spread plus its two ends: the difference alone cannot say whether a
+      // world climbs from a deep shelf or from a damp plain, and the pair in
+      // brackets is the same two numbers printed at the corners of the chart.
+      ['relief', hundred(s.max - s.min) + ' units (' + hundred(s.min) +
+        '-' + hundred(s.max) + ')'],
       // Half the grid sits below this height, which is what separates a broad
       // plateau from a plain with one peak when both share a relief range.
       ['median', hundred(s.median) + ' units'],
