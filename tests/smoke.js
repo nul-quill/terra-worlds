@@ -1251,6 +1251,19 @@ jsonPairs.forEach(function (p) {
 assert(fmtOk,
   'cli shares use the sidebar formatter (' + jsonPairs[0][0] + '=' + jsonPairs[0][1] + '%)');
 
+// The `median` row prints a height out of a hundred while the record keeps the
+// same height as a 0..1 number, so the two only agree if the record scales the
+// way the row does. Compare the pair on one world: a record that rounded on its
+// own would put a different figure under the bars than the one in the list.
+// `appSrc` is only read into a variable further down this file, so this block
+// reads the shell itself here rather than waiting for it.
+var medSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var medianRowSrc = (/median',\s*([\s\S]{0,80}?)\]/.exec(medSrc) || ['', ''])[1];
+assert(medianRowSrc.indexOf('hundred(') >= 0 && medianRowSrc.indexOf('.median') >= 0 &&
+  Math.round(jsonLine.median * 100) === Math.round(jsonWorld.stats.median * 100),
+  'the median row and the record are one measurement (' +
+  Math.round(jsonLine.median * 100) + ' vs ' + Math.round(jsonWorld.stats.median * 100) + ')');
+
 // The order of that column is the legend's order — biggest share first — so
 // the first pair is the class the sentence calls dominant, and no later pair
 // may be bigger than the one before it. A record read in a terminal has to

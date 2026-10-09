@@ -105,6 +105,9 @@ Conventions:
   suite rounds each the same way and asks for one number across every phrase —
   a record a terminal cannot turn into the figure on screen is no substitute for
   a screenshot.
+  That check also reads the row's own source for the `hundred(` call, so the
+  scaling cannot be dropped at the call site while the record keeps its three
+  decimals: the two halves of the pair are compared, not just printed.
   The `relief` row carries the spread and its two ends — `70 units (10-80)` —
   where the pair in brackets is what the chart prints at its corners. The record
   keeps those ends as `low` and `high`, already out of a hundred, so a terminal
