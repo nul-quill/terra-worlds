@@ -71,6 +71,10 @@ Conventions:
   does not turn into stripes. Keep it derived, not a fixed constant.
   The water gets its own count from the depth range (`basinBands`, clamped 3..12)
   drawn by the same `contour` switch. Both stay derived, never constants.
+  The sidebar prints the pair on one `contours` row — `12 land / 7 basin` — and
+  the smoke suite checks both halves: each field is in that row's own source and
+  each is a key of the CLI record, so a terminal can reproduce the stripes under
+  the sea as well as the ones on the highlands.
   `stats.median` is the middle of the sorted height field, published for the
   same reason: min/max alone cannot tell a plateau from a peaked plain. It is
   grid-size dependent like the band counts, so any assertion comparing it with

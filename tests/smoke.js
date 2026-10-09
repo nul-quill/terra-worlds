@@ -1586,6 +1586,25 @@ assert(missingField.length === 0 && missingKey.length === 0,
   'every sidebar row has a field in the cli record (' + rowLabels.length +
   ' rows, missing ' + missingField.concat(missingKey).join(',') + ')');
 
+// One row carries two numbers rather than one: `contours` prints the land
+// band count and the basin band count side by side, so the mapping above only
+// names half of it. Both halves have to be printed by that row and both have
+// to be in the record, or a terminal could reproduce the stripes on the
+// highlands while saying nothing about the ones under the sea.
+var contourFields = ['contourBands', 'basinBands'];
+var contourMissing = contourFields.filter(function (field) {
+  return recordKeys.indexOf(field) < 0;
+});
+var contourRowSrc = (/contours',\s*([\s\S]{0,120}?)\]/.exec(appSrc) ||
+  ['', ''])[1];
+var unprinted = contourFields.filter(function (field) {
+  return contourRowSrc.indexOf('.' + field) < 0;
+});
+assert(contourMissing.length === 0 && unprinted.length === 0 &&
+  /\//.test(contourRowSrc),
+  'both halves of the contours row reach a terminal (' +
+  contourMissing.concat(unprinted).join(',') + ')');
+
 // The tick spacing under the relief bars comes from the core, so the chart and
 // this check share one formula. Two properties make a strip readable: the step
 // has to be one of the offered candidates, and it has to leave at most ten
