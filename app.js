@@ -470,6 +470,13 @@
     ctx.strokeStyle = rgba(mix(current.palette.colors.deep, sky, 0.35), 0.55);
     ctx.lineWidth = 1;
     ctx.strokeRect(dx - 2.5, dy - 2.5, size + 5, size + 5);
+    // The patch is a dozen cells wide, so the one under the cursor still has
+    // to be identifiable inside it. Same ink as the crosshair, one cell of the
+    // patch's own scale — the offset is the difference of two clamped indices,
+    // so it stays inside the panel at every edge of the grid.
+    var patch = size / span;
+    ctx.strokeStyle = rgba(mix(current.palette.colors.deep, sky, 0.15), 0.9);
+    ctx.strokeRect(dx + (px - x0) * patch, dy + (py - y0) * patch, patch, patch);
     ctx.restore();
   }
 

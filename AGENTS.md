@@ -395,6 +395,10 @@ Conventions:
   tinting it, so `m` drops it: `insetOn` gates the call in `drawHover()` and
   nothing else. Like `solo` and `band` it is a view setting and stays out of
   the hash — a shared link should reopen with the panel drawn.
+  The patch is a dozen cells wide, so it also marks the hovered cell inside
+  itself: the offset is the difference of the two clamped indices times the
+  patch's own cell size, which is why a mark at a fixed offset would sit on the
+  wrong cell everywhere but one. The suite counts both halves of that pair.
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.

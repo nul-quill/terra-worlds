@@ -2193,6 +2193,19 @@ assert(readoutEnds === 2 && chartEnds >= 2 && bandBracket,
   'a lit bar says what height range it covers (' + readoutEnds + ' readout ends, ' +
   chartEnds + ' chart ends, bracket ' + bandBracket + ')');
 
+// The magnifier covers the map rather than tinting it, so the cell a hover
+// picked has to be findable inside the panel: the mark is one patch cell,
+// offset by the difference of the two clamped indices. Both halves of that are
+// counted in `drawInset()`, since a mark at a fixed offset would sit on the
+// wrong cell everywhere but one.
+var insetDefs = (appSrc.match(/function drawInset\(/g) || []).length;
+var insetMark = (appSrc.match(/dx \+ \(px - x0\) \* patch/g) || []).length;
+var insetRows = (appSrc.match(/dy \+ \(py - y0\) \* patch/g) || []).length;
+var insetGate = (appSrc.match(/if \(insetOn\) drawInset\(/g) || []).length;
+assert(insetDefs === 1 && insetMark === 1 && insetRows === 1 && insetGate === 1,
+  'the magnifier marks the cell it magnifies (' + insetDefs + ' def, ' +
+  insetMark + '/' + insetRows + ' mark, ' + insetGate + ' gate)');
+
 // The dark scheme is meant to change nothing but the colour variables, which
 // only works if it replaces every one of them: a variable declared once in
 // `:root` and left alone by the dark block would keep its light value under a
