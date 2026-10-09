@@ -953,7 +953,8 @@
       // The mask stores 1..60 steps of the basin's own depth range, so the
       // readout converts it to a percentage: "depth 42" means nothing, "62%
       // deep" says how full this part of the basin is.
-      parts.push(Math.round(current.lakeMask[i] / 60 * 100) + '% deep');
+      parts.push(Math.round(current.lakeMask[i] / TerraCore.lakeSteps * 100) +
+        '% deep');
       // Which of the world's lakes this is. Two basins of the same depth read
       // alike otherwise, and the number matches the `basins` row in the stats.
       if (current.basin && current.basin[i]) {

@@ -616,7 +616,7 @@
           var ch = hf[cur];
           if (ch > surface) continue;
           var d = surface - ch;
-          lake[cur] = Math.max(1, Math.round(Math.min(1, d / 0.09) * 60));
+          lake[cur] = Math.max(1, Math.round(Math.min(1, d / 0.09) * LAKE_STEPS));
           var cx2 = cur % width, cy2 = (cur / width) | 0;
           // `queued` marks a cell the moment it enters the queue: the depth is
           // only written on dequeue, so without this a cell offered by two
@@ -879,6 +879,12 @@
     {key: 'se', label: 'SE', note: 'from the lower right', vec: [0.55, 0.62, 0.56]}
   ];
 
+  // Steps the lake mask is written in: a filled cell stores its depth as an
+  // integer from 1 to this number, so the mask is already normalised by its own
+  // basin. The depth shading, the `lake` overlay's scale and the hover readout
+  // all divide by this one number rather than repeating it.
+  var LAKE_STEPS = 60;
+
   // Look up a bearing, falling back to the first entry so an empty or unknown
   // --dir still renders rather than dropping the shading entirely.
   function lightVector(key) {
@@ -975,7 +981,7 @@
     // the shore to the deepest cell. Percentiles would be wrong here — most of
     // the grid is dry and reads as zero, so the 98% mark of a world with two
     // small tarns is still zero. The mask's own range is the honest scale.
-    if (key === 'lake') sc = {lo: 0, hi: 60};
+    if (key === 'lake') sc = {lo: 0, hi: LAKE_STEPS};
     else sc = scaleFor(src, n, useLog);
     // Keep the scale on the result: a hover wants to print the very number the
     // ramp was built from, and re-deriving the percentiles per cell would sort
@@ -1106,6 +1112,7 @@
     shapes: SHAPES,
     channels: CHANNEL_LIST,
     tickStep: tickStep,
+    lakeSteps: LAKE_STEPS,
     phrases: PHRASES,
     lights: LIGHTS,
     grids: GRIDS,

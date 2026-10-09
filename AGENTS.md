@@ -108,6 +108,11 @@ Conventions:
   The smoke suite checks both halves of that: the filled cells stay visibly
   graded, and the published scale is the mask's own range rather than a
   percentile pair.
+  That step count is one constant — `TerraCore.lakeSteps` — shared by the depth
+  written into the mask, the overlay's scale and the `% deep` division in the
+  hover readout. Keep it a lookup rather than repeating `60`: a shallow tarn
+  tops out below the cap, so the suite asks that every filled cell sit inside
+  1..the constant and that the published scale be that same number.
   `slope` is the one field built inside `fieldFor` rather than by `generate`:
   it is a difference of the height field, so it still cannot move a biome
   boundary, and it is cached on `result.slopeField` for the same reason the

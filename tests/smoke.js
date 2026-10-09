@@ -442,6 +442,29 @@ assert(tarnCells > 0 && tarnCells < tarns.lakeMask.length / 4 &&
   'lake depth keeps its own scale (' + tarnCells + ' filled cells, ' +
   tarnLo + '..' + tarnHi + ')');
 
+// That range is one number in the core rather than a literal in three places:
+// the mask is written with it, the `lake` overlay scales by it, and the readout
+// divides by it. The constant is the cap the mask saturates against, so every
+// filled cell must land inside 1..the constant — a shallow tarn tops out below
+// it, which is fine — while the overlay's published scale is that same number
+// rather than a second cap. The shell reads it from the core instead of
+// repeating a bare number next to its own division.
+var stepsConst = core.lakeSteps;
+var stepsTop = 0, stepsLow = Infinity;
+for (var sli = 0; sli < tarns.lakeMask.length; sli++) {
+  if (!tarns.lakeMask[sli]) continue;
+  if (tarns.lakeMask[sli] > stepsTop) stepsTop = tarns.lakeMask[sli];
+  if (tarns.lakeMask[sli] < stepsLow) stepsLow = tarns.lakeMask[sli];
+}
+// Read the shell directly: the shared `appSrc` string is not populated until
+// much later in this file.
+var stepsLiterals = (require('fs').readFileSync(__dirname + '/../app.js', 'utf8')
+  .match(/\/ 60 \* 100/g) || []).length;
+assert(stepsConst === tarns.channelScale.hi && stepsTop <= stepsConst &&
+  stepsLow >= 1 && stepsTop > stepsLow && stepsLiterals === 0,
+  'one constant is the whole lake depth range (' + stepsLow + '..' + stepsTop +
+  ', ' + stepsLiterals + ' literal divides)');
+
 // The readout prints the overlay's own ramp position, so it has to agree with
 // the pixels: the colour under the cursor must be the palette pair lerped by
 // exactly that number. Checked on the log-scaled field, whose raw values are
