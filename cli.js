@@ -132,7 +132,12 @@ if (opts.help) {
     return s.key;
   }).join('|') + '] [--sea 0..1]');
   console.log('       [--detail 0..1] [--polar 0..1] [--light 0..1]');
-  console.log('       [--dir nw|ne|sw|se] for the hillshade light bearing,');
+  // Like the shape list above, the bearings come from the generator's own
+  // array, so a new compass point appears in the usage line without a second
+  // edit here.
+  console.log('       [--dir ' + core.lights.map(function (lt) {
+    return lt.key;
+  }).join('|') + '] for the hillshade light bearing,');
   console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
   console.log('       [--contour] for hypsometric lines on land and bathymetric');
   console.log('       steps under water, both spaced by this world\'s relief');
