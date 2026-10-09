@@ -35,6 +35,9 @@ added in `src/core.js`.
 `--phrases` is the fourth: the hand-picked seed phrases, numbered in the order
 the `p` key walks them. Every phrase in that list is also rendered by the smoke
 suite, so a suggestion copied from the terminal is never a dead one.
+Each one also has to earn its slot: a distinct checksum against the other
+phrases, and a land share in the middle band, so the cycle never walks onto a
+near-copy or a world that is all ocean.
 `--lights` is the fifth: the four compass bearings the `--dir` flag takes, each
 with the side of the frame the light comes from. The `from` dropdown, the `d`
 key and the shade pass all read that same list.

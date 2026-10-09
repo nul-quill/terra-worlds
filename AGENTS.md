@@ -244,6 +244,9 @@ Conventions:
   `app.js` is that array, the `p` key walks it, `cli.js --phrases` prints it and
   the smoke suite renders every entry, so a phrase is only worth adding if it
   produces a non-degenerate world at the default grid.
+  Two more things the suite holds each entry to: its checksum must differ from
+  every other phrase at one grid, and its land share must stay in the middle
+  band, so the cycle never spends a slot on a near-copy or an all-water world.
   `core.lights` is the fifth: the four compass bearings the hillshade accepts.
   Each entry carries its own normalised vector, so `lightVector()` is the only
   lookup and the shade pass, the `from` dropdown, the `d` cycle and

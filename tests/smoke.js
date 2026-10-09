@@ -568,6 +568,22 @@ core.phrases.forEach(function (ph) {
 });
 assert(saidOk, 'every phrase writes a full sentence on every shape');
 
+// The phrase list is what the `p` key walks, so each entry has to be a
+// different world rather than a near-copy of the last: distinct checksums at
+// one grid, and a land share that stays in the middle band so no phrase is a
+// water world or a single continent with nothing around it. A phrase that
+// fails either test is not worth a slot in the cycle.
+var seenSum = {}, phraseOk = true;
+core.phrases.forEach(function (ph) {
+  var pr = core.generate({seed: ph, width: 160, height: 100});
+  if (seenSum[pr.stats.checksum]) phraseOk = false;
+  seenSum[pr.stats.checksum] = true;
+  if (!(pr.stats.land > 0.35 && pr.stats.land < 0.75)) phraseOk = false;
+});
+assert(phraseOk && Object.keys(seenSum).length === core.phrases.length,
+  'each phrase is its own middle-of-the-road world (' +
+  Object.keys(seenSum).length + ')');
+
 // A pushed climate is the one knob that reliably crosses the ice threshold, so
 // at least one sentence has to grow the `polar` tail rather than every world
 // sitting under it. Same rule as above, checked from the other side.
