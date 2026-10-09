@@ -149,6 +149,12 @@ Conventions:
   after it is skipped, so a mistyped `--widht 30` costs one warning instead of
   quietly rendering a second world from the number `30`. Keep that skip in the
   parser rather than filtering the seed list afterwards.
+  Numeric flags read their value through `nextNum()`, which returns
+  `undefined` for anything that does not parse. A raw `parseFloat` would hand
+  the generator a `NaN`, where every comparison is false and the whole grid
+  comes back as dry land; `undefined` lets the generator's own default stand.
+  Keep the `argv[++i]` advance at the call site — moving it inside the helper
+  reads each value twice and shifts every later flag by one.
   `--describe` prints the bare summary for one seed and prefixes each line with
   its seed when several are given, matching the `--next --describe` form, so a
   block of sentences is still traceable to its phrase.
