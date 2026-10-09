@@ -1337,6 +1337,30 @@ assert(controlIds.length > 8 && hashNames.length > 8 &&
   'every control is carried by the hash (' + controlIds.length +
   ' controls, unmapped ' + unmapped.join(',') + ', extra ' + unknown.join(',') + ')');
 
+// The short names are what a person reads back out of a pasted link, so each
+// one has to point at exactly one control: two controls sharing `sea` would
+// make a shared link ambiguous, and a name longer than four characters stops
+// being readable in a hash that already carries fifteen pairs.
+var shortNames = [];
+if (hashBlock) {
+  hashBlock[1].replace(/:\s*'([^']+)'/g, function (m, shortName) {
+    shortNames.push(shortName);
+    return m;
+  });
+}
+var dupeShort = '';
+var tooLong = '';
+var seenShort = {};
+shortNames.forEach(function (name) {
+  if (seenShort[name]) dupeShort = name;
+  seenShort[name] = 1;
+  if (name.length > 5) tooLong = name;
+});
+assert(shortNames.length === hashNames.length &&
+  dupeShort === '' && tooLong === '',
+  'each hash name is short and unique (' + shortNames.length +
+  ' names, dupe ' + dupeShort + ', long ' + tooLong + ')');
+
 // The note under the chart is the only place the keyboard is documented, so
 // every single-letter shortcut the shell handles must be named there. Pulled
 // out of the handler with the same comparison it uses, then matched against
