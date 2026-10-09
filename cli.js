@@ -141,7 +141,13 @@ if (opts.help) {
   console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
   console.log('       [--contour] for hypsometric lines on land and bathymetric');
   console.log('       steps under water, both spaced by this world\'s relief');
-  console.log('       [--channel relief|moist|drain|lake|slope|coast] to flatten');
+  // Same rule as the two lists above: the overlay keys are read from
+  // core.channels, so a ramp added there is immediately nameable from a
+  // terminal. The empty-key entry is shown as 'biome', which is what the
+  // dropdown calls it.
+  console.log('       [--channel ' + core.channels.map(function (c) {
+    return c.key || 'biome';
+  }).join('|') + '] to flatten');
   console.log('       the world to one scalar field instead of the biome colours');
   console.log('       [--scale n] nearest-neighbour multiplier applied to the');
   console.log('       saved pixels, so a small grid can still fill a screen');
