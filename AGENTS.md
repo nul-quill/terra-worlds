@@ -256,6 +256,9 @@ Conventions:
   biggest first. The `k` cycle walks that same array, so the key follows the
   order on screen instead of the order the palette declares. Like the click it
   pins, so it writes the hash; unlike `solo` and `band` it is not a preview.
+  The suite re-derives that order from `stats.counts` and asks that it differs
+  from the palette's own declaration for at least one world, so the sort cannot
+  be dropped without the list losing its biggest-class-first reading.
   `stats.counts` is the partition behind those rows: every cell lands in exactly
   one class, so the counts sum to `stats.pixels` and no listed class is empty.
   The smoke suite checks that on every hand-picked phrase, along with the

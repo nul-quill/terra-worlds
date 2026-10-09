@@ -1560,6 +1560,36 @@ assert(factorDefs === 1 && factorUses === 3 && factorParses === 1,
   'the export row and the file name share one factor lookup (' + factorDefs +
   ' def, ' + factorUses + ' uses, ' + factorParses + ' parse)');
 
+// The legend is ordered biggest-class-first, and that order is what both the
+// list and the `k` cycle walk. Rebuilt here from the same counts, the order has
+// to be non-increasing and — for at least one world — actually differ from the
+// order the palette declares its classes in. Otherwise the sort is doing no
+// work and could silently be dropped, leaving a list that no longer starts
+// with the class covering most of the grid.
+var orderBad = [];
+var orderDiffers = 0;
+core.phrases.slice(0, 4).forEach(function (ok) {
+  var ow = core.generate({seed: ok, width: 170, height: 100});
+  var declared = Object.keys(ow.palette.colors).filter(function (dk) {
+    return ow.stats.counts[dk];
+  });
+  var sorted = declared.slice().sort(function (sa, sb) {
+    return ow.stats.counts[sb] - ow.stats.counts[sa];
+  });
+  for (var oi = 1; oi < sorted.length; oi++) {
+    if (ow.stats.counts[sorted[oi]] > ow.stats.counts[sorted[oi - 1]]) {
+      orderBad.push(ok + ' ' + oi);
+    }
+  }
+  if (sorted.join(',') !== declared.join(',')) orderDiffers++;
+});
+var legendDefs = (appSrc.match(/function legendKeys\(/g) || []).length;
+var legendUses = (appSrc.match(/legendKeys\(/g) || []).length - legendDefs;
+assert(orderBad.length === 0 && orderDiffers > 0 && legendDefs === 1 &&
+  legendUses >= 2,
+  'legend rows sort by share and one lookup feeds both paths (' + orderDiffers +
+  ' reordered, ' + legendDefs + ' def, ' + legendUses + ' uses)');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
