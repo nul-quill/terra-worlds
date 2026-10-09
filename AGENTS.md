@@ -117,6 +117,13 @@ Conventions:
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
+  The biome lookup is a two-axis table, so `temperature` is published beside
+  `moisture` and the readout prints both — `moist 48 — temp 84` says which axis
+  moved a cell, which a single colour cannot. The climate slider is the mix
+  between the noise term and the latitude curve, so the smoke suite compares
+  the middle-over-edge difference at `polar` 0 and 1: the noisy world has only
+  a small gap, the polar one must show a wider one. A mean would pass either
+  way, since the whole field cools together.
 - Distance to the shoreline (`coastDistance`) comes from two chamfer sweeps
   (forward, then backward) over the grid: O(n), no queue. It both dries the
   continental interior in the biome lookup and feeds the hover readout. Do not

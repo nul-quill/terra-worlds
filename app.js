@@ -988,6 +988,12 @@
     if (current.moisture) {
       parts.push('moist ' + hundred(current.moisture[i]));
     }
+    // The lookup is a two-axis table, so the second axis goes in too: a cell
+    // that reads `tundra` next to one that reads `boreal` differ here, not in
+    // height, and only the pair of numbers says which of the two moved.
+    if (current.temperature) {
+      parts.push('temp ' + hundred(current.temperature[i]));
+    }
     // Distance to the nearest shoreline, so a green patch in the middle of a
     // continent reads differently from the same colour on a coast.
     // Only worth printing inland: a water cell is by definition at the shore,

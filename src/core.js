@@ -833,6 +833,10 @@
       biome: biome,
       heightField: hf,
       moisture: mf,
+      // The other axis of the biome lookup. Moisture alone cannot explain why
+      // the same green on a cold row reads as boreal and on a warm one as
+      // temperate, and the readout prints both numbers side by side.
+      temperature: tf,
       accumulation: acc,
       lakeMask: lake,
       basin: basin,

@@ -6,3 +6,4 @@ __pycache__/
 # they are always regenerable from a seed and never worth a diff.
 *.ppm
 /*.png
+out.txt

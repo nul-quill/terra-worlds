@@ -189,6 +189,34 @@ var coldBiomes = function (r) { return (r.stats.counts.ice || 0) + (r.stats.coun
 assert(coldBiomes(cold) > coldBiomes(warm),
   'climate slider cools the world (' + coldBiomes(warm) + ' -> ' + coldBiomes(cold) + ')');
 
+// The temperature axis is published next to moisture, since the biome lookup
+// The temperature axis is published next to moisture, since the biome lookup
+// is a table of both. Two properties make it worth printing in the readout:
+// every cell has a value in 0..1, and the climate slider makes latitude
+// dominate — the gap between an edge row and the middle row has to widen as
+// `polar` goes up. A field that ignored the slider would keep the sentence
+// saying `polar` over a world whose own numbers never cooled at the top.
+function rowMean(r, y) {
+  var t = r.temperature, sum = 0;
+  if (t.length !== r.biome.length) return -1;
+  for (var xi = 0; xi < r.width; xi++) {
+    var v = t[y * r.width + xi];
+    if (v < 0 || v > 1) return -1;
+    sum += v;
+  }
+  return sum / r.width;
+}
+function latGap(r) {
+  return rowMean(r, (r.height / 2) | 0) - Math.min(rowMean(r, 0), rowMean(r, r.height - 1));
+}
+var warmGap = latGap(warm), coldGap = latGap(cold);
+// With the slider at zero the field is mostly noise, so only the sign of the
+// gap is interesting: at full polar the latitude curve has to take over, which
+// means a wider middle-over-edge difference than the noisy world shows.
+assert(coldGap > warmGap && coldGap > 0,
+  'the temperature field follows the climate slider (' +
+  Math.round(warmGap * 100) + ' -> ' + Math.round(coldGap * 100) + ')');
+
 assert(core.hashString('a') !== core.hashString('b'), 'hash distinguishes seeds');
 
 // Stats must report the real extremes of the height field: the histogram bins
