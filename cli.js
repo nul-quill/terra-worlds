@@ -326,8 +326,12 @@ if (opts.help) {
     // else the plain PPM one. With several seeds the name becomes a prefix,
     // and the suffix keeps whichever extension was asked for.
     var ext = /\.png$/i.test(opts.out) ? 'png' : 'ppm';
+    // The extension is optional, so the split has to work without one too:
+    // a prefix written as `map` still needs a number per world, and dropping
+    // the suffix whenever no dot is present would let every world after the
+    // first overwrite the one before it.
     var name = opts.seeds.length > 1
-      ? opts.out.replace(/\.(ppm|png)?$/i, '-' + (si + 1) + '.' + ext)
+      ? opts.out.replace(/\.(ppm|png)$/i, '') + '-' + (si + 1) + '.' + ext
       : opts.out;
     // The grid stays as generated for the stats; only the saved pixels grow.
     var img = opts.scale > 1 ? core.upscale(result, opts.scale) : result;

@@ -1147,6 +1147,24 @@ assert(manyJson.length === 2 && manyFiles[0] !== manyFiles[1] && manyWritten &&
   manyJson[0].checksum !== manyJson[1].checksum,
   'several seeds write one numbered file each (' + manyFiles.join(', ') + ')');
 
+// The prefix is not required to carry an extension, and that is the case where
+// a suffix rule can quietly fail: a pattern anchored on the dot matches
+// nothing, so every world after the first overwrites the one before it and the
+// call leaves a single file behind. Same call without the `.ppm`, so the two
+// records must still name two paths and both must exist on disk.
+var bareJson = require('child_process')
+  .execSync('node cli.js "pale shelf" "salt mirror" --json --width 24 --height 16 ' +
+    '--out bare-prefix', {cwd: __dirname + '/..'}).toString().trim().split('\n')
+  .map(function (line) { return JSON.parse(line); });
+var bareFs = require('fs');
+var bareFiles = bareJson.map(function (rec) { return rec.file; });
+var bareWritten = bareFiles.every(function (name) {
+  return bareFs.existsSync(__dirname + '/../' + name);
+});
+assert(bareJson.length === 2 && bareFiles[0] !== bareFiles[1] && bareWritten,
+  'an extension-less prefix still numbers its files (' +
+  bareFiles.join(', ') + ')');
+
 // And the same for the light bearings: the dropdown, the `d` key and the shade
 // pass all read core.lights, so a key printed by the CLI must be one the
 // generator accepts, with the same note the dropdown implies.

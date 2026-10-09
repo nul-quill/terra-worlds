@@ -215,6 +215,12 @@ Conventions:
   compares the two for one seed and one grid. A field the CLI forgets to pass,
   or a phrase edited on one side only, shows up there as a difference rather
   than as two sentences that each look reasonable on their own.
+  With several seeds, `--out` is a prefix: the suffix is built by stripping an
+  optional extension and appending `-<n>.<ext>`. Strip with an anchored
+  `/\.(ppm|png)$/` rather than an optional one — a prefix with no dot at all
+  (`--out map`) must still get its numbers, or every world after the first
+  overwrites the one before it and the call leaves a single file behind. The
+  suite checks both a dotted and a bare prefix.
 - Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `m`, `p`, `s`) are skipped while an INPUT or
   (`x` joins that list: it is not a list cycle but a call to `copyLink()`, the
   same function the `Copy link` button is wired to, so the two paths cannot
