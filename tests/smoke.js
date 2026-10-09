@@ -1585,6 +1585,24 @@ core.shapes.forEach(function (tk) {
 assert(tickBad.length === 0 && core.tickStep(15) === 5 && core.tickStep(500) === 50,
   'relief ticks stay between two and ten marks (' + tickBad.join(', ') + ')');
 
+// The number of bars comes from the same place, for the same reason: the chart
+// and this check have to agree on what a sidebar width buys. Three properties:
+// a wider strip never gets fewer bars, the count stays inside the readable
+// band, and the two ends of that band are actually reachable — a clamp that
+// never engages is a constant wearing a formula's clothes.
+var binWidths = [90, 100, 120, 160, 200, 240, 300, 360, 500, 900];
+var binBad = [];
+var binPrev = 0;
+binWidths.forEach(function (bwpx) {
+  var n = core.binCount(bwpx);
+  if (n < binPrev || n < 20 || n > 72) binBad.push(bwpx + '->' + n);
+  binPrev = n;
+});
+assert(binBad.length === 0 && core.binCount(90) === 20 && core.binCount(900) === 72 &&
+  core.binCount(240) === 48,
+  'bar count grows with the sidebar and stays inside its band (' +
+  binBad.join(', ') + ')');
+
 // The `export` row and the name of the saved file are two views of one number,
 // so both have to come from the same lookup. A second parse of the dropdown in
 // either path could disagree the moment the default changes — which is exactly

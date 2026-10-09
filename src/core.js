@@ -1074,6 +1074,17 @@
     return TICK_STEPS[TICK_STEPS.length - 1];
   }
 
+  // How many bars the relief chart gets for a given sidebar width: one bin per
+  // ~5 CSS pixels, clamped at both ends. The floor is what keeps a narrow
+  // column readable — twenty bars still show a shoreline bump and a snow-line
+  // bump as separate marks — and the ceiling is what stops a wide window from
+  // turning the strip into mush. Lives next to `tickStep` for the same reason:
+  // the shell only reads the number, and the suite can ask the same question a
+  // chart answers.
+  function binCount(cssWidth) {
+    return Math.max(20, Math.min(72, Math.round(cssWidth / 5)));
+  }
+
   // One line that puts a world into words: the shape it was cut from, how much
   // relief it carries, how much of it is dry, and which class covers most of
   // it. Both the sidebar and the CLI print this, so a saved PNG and a terminal
@@ -1112,6 +1123,7 @@
     shapes: SHAPES,
     channels: CHANNEL_LIST,
     tickStep: tickStep,
+    binCount: binCount,
     lakeSteps: LAKE_STEPS,
     phrases: PHRASES,
     lights: LIGHTS,

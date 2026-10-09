@@ -693,7 +693,7 @@
     if (histCanvas.height !== bhPix) histCanvas.height = bhPix;
     // One bin per ~5 CSS pixels, clamped: a narrow sidebar with 48 bars reads
     // as mush, a wide one with 24 wastes the space it is given.
-    var BINS = Math.max(20, Math.min(72, Math.round(cssW / 5)));
+    var BINS = TerraCore.binCount(cssW);
     var hist = new Array(BINS);
     var hf = result.heightField;
     // Bins span the actual range of this world rather than 0..1, so a low

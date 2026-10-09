@@ -381,6 +381,11 @@ Conventions:
   shape — one formula for "readable by eye", so a chart cannot quietly drift to
   a spacing the tests never saw. Keep the helper in the core; the shell only
   reads it.
+  The number of bars follows the same rule through `core.binCount(cssWidth)`:
+  one bar per five CSS pixels, clamped 20..72. The clamp ends are part of the
+  contract, not decoration — the suite asks that a narrow strip reaches the
+  floor and a wide one the ceiling, so a band that never engages is caught
+  rather than mistaken for a formula. Keep the count out of the shell too.
 
 Verify with:
 
