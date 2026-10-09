@@ -79,6 +79,10 @@ Conventions:
   same reason: min/max alone cannot tell a plateau from a peaked plain. It is
   grid-size dependent like the band counts, so any assertion comparing it with
   the CLI record must generate the same grid in both places.
+  The record keeps three decimals while the row prints out of a hundred, so the
+  suite rounds each the same way and asks for one number across every phrase —
+  a record a terminal cannot turn into the figure on screen is no substitute for
+  a screenshot.
 - Shading-only knobs (`hillshade`, `lightDir`, `dither`) must never move a biome
     boundary: classification happens before the colour pass. The smoke suite
     asserts that, so keep it that way. `contour` (hypsometric lines) belongs to

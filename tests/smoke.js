@@ -1210,6 +1210,26 @@ assert(med >= medWorld.stats.min && med <= medWorld.stats.max &&
   'median splits the grid and matches the cli (' + Math.round(med * 100) +
   ' units, ' + Math.round(belowShare * 100) + '% below)');
 
+// The record keeps the median to three decimals while the sidebar prints it
+// out of a hundred, so the two only agree if the rounding survives that. That
+// is the contract worth testing: a person with nothing but the JSON has to be
+// able to write down the same number the `median` row shows. Checked across
+// every phrase at one grid, since the middle cell of the sorted field moves
+// with the size.
+var medDrift = [];
+core.phrases.forEach(function (ms) {
+  var mrec = JSON.parse(require('child_process')
+    .execSync('node cli.js "' + ms + '" --width 120 --height 80 --json ' +
+      '--out median-drift.ppm', {cwd: __dirname + '/..'}).toString().trim());
+  var mworld = core.generate({seed: ms, width: 120, height: 80});
+  if (Math.round(mrec.median * 100) !== Math.round(mworld.stats.median * 100)) {
+    medDrift.push(ms + ':' + Math.round(mrec.median * 100) + '/' +
+      Math.round(mworld.stats.median * 100));
+  }
+});
+assert(medDrift.length === 0,
+  'the printed median is readable from the record (' + medDrift.join(', ') + ')');
+
 // The basin count must agree with the lake cover it summarises: at least one
 // basin when there is standing water, never more basins than lake cells, and
 // none at all when the whole grid is open water.
