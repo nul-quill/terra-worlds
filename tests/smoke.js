@@ -249,6 +249,30 @@ assert(cdMin === 0 && cdMax > cdMin && cdBad === 0,
   'coast distance is a real field (min ' + cdMin + ', max ' + cdMax +
   ', ' + cdBad + ' water cells off by one)');
 
+// The same field is what dries a continental interior, so the furthest cell
+// from the shore has to track the size of the grid: a bigger world reaches
+// further inland, and the chamfer sweeps must not saturate at some fixed
+// number. Bounded by half the short side, since that is the most any cell can
+// be from a coast. Land share is compared too — the field is a distance, not a
+// second sea level, so growing it must not flood or drain the world.
+function inland(seed, w, h) {
+  var ir = core.generate({seed: seed, width: w, height: h});
+  var irMax = 0;
+  for (var ii = 0; ii < ir.coastDistance.length; ii++) {
+    if (ir.coastDistance[ii] > irMax) irMax = ir.coastDistance[ii];
+  }
+  return {max: irMax, land: ir.stats.land};
+}
+var smallInland = inland('salt mirror', 120, 80);
+var bigInland = inland('salt mirror', 480, 300);
+// Four times the columns should buy roughly four times the reach, so a factor
+// of two is a safe floor; the ceiling is half the short side, which no cell can
+// beat by definition.
+assert(bigInland.max > smallInland.max * 2 && bigInland.max <= 300 / 2 &&
+  Math.abs(bigInland.land - smallInland.land) < 0.05,
+  'the interior reaches further on a bigger grid (' + smallInland.max +
+  ' -> ' + bigInland.max + ' cells from water)');
+
 // Overlays: every channel must be a real scalar rendering — some spread in
 // the output, opaque, and reproducible — without disturbing the fields the
 // readout depends on.

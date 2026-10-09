@@ -86,6 +86,10 @@ Conventions:
   (forward, then backward) over the grid: O(n), no queue. It both dries the
   continental interior in the biome lookup and feeds the hover readout. Do not
   replace it with a BFS from the coast.
+  The field itself is unclamped — the furthest cell grows with the grid, which
+  the smoke suite checks between a small and a large world — while the biome
+  drying reads it through a capped `min(12, dist) / 12`. Keep both: the cap is
+  what stops a big grid from turning its whole interior into desert.
 - `channelize(result, name)` is a separate pass over the already-computed fields
   (`heightField`, `moisture`, `accumulation`, `coastDistance`). It never feeds back
   into `generate`: an overlay must not change the biome map. Stretch each field by
