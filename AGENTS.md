@@ -435,6 +435,11 @@ Conventions:
   The listing covers the other lists too — palette, overlay, light, grid and
   export keys are each echoed by name — so one `--help` is enough to choose any
   value, and the suite walks all five arrays against that output.
+  Reachability goes both ways. The suite reads the flag names out of the
+  parser's own comparisons in `cli.js` and asks that each one appears in that
+  text, so a flag added to the parser without a line in `--help` is caught
+  there rather than staying unknown. `--help` itself is in the listing, since
+  the note is where a terminal looks for the rest.
   The same reachability rule holds in the page: the note advertises `1-9` for the
   palette digits, so the suite compares that span with the length of
   `core.palettes`. A tenth scheme has to widen the note rather than sit beyond the

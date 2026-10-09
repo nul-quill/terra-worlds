@@ -195,6 +195,8 @@ if (opts.help) {
   console.log('       [--lights] to list the light bearings --dir takes');
   console.log('       [--grids] to list the column counts the grid dropdown pins');
   console.log('       [--scales] to list the export multipliers --scale takes');
+  console.log('       [--help] prints this listing, so a terminal can find');
+  console.log('       the flags without opening the source; -h does the same');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
   console.log('       JSON per world instead of the table');

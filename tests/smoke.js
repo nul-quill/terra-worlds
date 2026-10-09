@@ -1098,6 +1098,26 @@ assert(rejected.length === 0 && Object.keys(quietFlags).length > 8,
   Object.keys(quietFlags).length + ' checked' +
   (rejected.length ? ', stuck on ' + rejected.join(', ') : '') + ')');
 
+// The other direction is worth a look too: a flag the parser accepts but the
+// usage line never names is invisible from a terminal, since `--help` is the
+// only listing most people read before opening the source. Read the names out
+// of the parser's own comparisons and ask that each one show up in that text.
+// A single-dash form needs no note of its own — `-h` is an alias of `--help`,
+// which the pattern below skips by requiring two dashes.
+var parserFlags = {};
+require('fs').readFileSync(__dirname + '/../cli.js', 'utf8')
+  .replace(/a === '(--[a-z][a-z-]*)'/g, function (m, fl) {
+    parserFlags[fl] = 1;
+    return m;
+  });
+var hiddenFlags = Object.keys(parserFlags).filter(function (fl) {
+  return helpOut.indexOf(fl) < 0;
+});
+assert(hiddenFlags.length === 0 && Object.keys(parserFlags).length > 15,
+  'the parser takes no flag that --help hides (' +
+  Object.keys(parserFlags).length + ' flags, missing ' +
+  hiddenFlags.join(', ') + ')');
+
 // A dashed word that matches no flag is a typo, not a seed: the CLI says so
 // and still renders one world, rather than treating the stray word (and its
 // value) as extra seeds. Checked by counting the summaries it prints.
