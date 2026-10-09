@@ -641,6 +641,17 @@ assert(saidLand === Math.round(saidRec.stats.land * 100) &&
   saidLakes === saidRec.stats.lakeBasins,
   'summary numbers match the stats (' + saidLand + '%, ' + saidLakes + ' lakes)');
 
+// The drainage figure in the same sentence is a share of the grid rather than
+// a cell count, so it has to come from the same pair the `rivers` row uses.
+// Both halves are checked: the number in the string, and the fact that the
+// formatter behind it is the one the legend and the CLI record already use —
+// a second rounding here would put two different wetness figures on one page.
+var saidDrain = /([\d.]+)% drained/.exec(saidText);
+var drainWant = core.percentText(saidRec.stats.rivers / saidRec.stats.pixels);
+assert(!!saidDrain && saidDrain[1] + '%' === drainWant,
+  'the sentence counts drainage as a share (' +
+  (saidDrain ? saidDrain[1] + '%' : 'nothing') + ' vs ' + drainWant + ')');
+
 // The relief word and the number in brackets are two views of one difference,
 // so they must agree: the word is a bucket of the number, and the number is
 // the relief in stats. A sentence that says `plain (88)` would be a bug in the

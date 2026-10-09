@@ -177,6 +177,12 @@ Conventions:
   70, rolling above 40, plain below — and the smoke suite re-derives the bucket
   from `stats.max - stats.min` for every shape, so the word cannot drift away
   from the number printed next to it.
+  The sentence also carries a drainage figure, as a share of the grid
+  (`0.1% drained`) rather than a cell count: the count grows with the grid
+  while the quantile cut holds the density steady, so a count would make one
+  world look twice as wet in a wide window. It goes through
+  `percentText()` like every other share, which is what lets the suite
+  re-derive the string from `stats.rivers / stats.pixels`.
   The stats list itself opens with the `seed` row, before `grid`: a print or a
   screenshot keeps no URL, so the phrase has to be readable off the page. The
   smoke suite reads the row labels out of `renderStats()` and checks that first

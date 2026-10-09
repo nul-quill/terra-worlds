@@ -1123,6 +1123,11 @@
       Math.round(s.land * 100) + '% land',
       'mostly ' + (BIOME_NAMES[top] || top)
     ];
+    // How much of the grid carries a channel. A share rather than a cell
+    // count, since the count grows with the grid while the density is what
+    // the quantile cut holds steady — a sentence that printed the count would
+    // make the same world look twice as wet in a wide window.
+    parts.push(percentText(s.rivers / s.pixels) + ' drained');
     // The count is more useful than the bare fact: three large basins and
     // thirty puddles both have lakes, and the number is already computed.
     if (s.counts.lake) parts.push(s.lakeBasins + ' lake' + (s.lakeBasins === 1 ? '' : 's'));
