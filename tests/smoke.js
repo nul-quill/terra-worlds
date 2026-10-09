@@ -2179,6 +2179,20 @@ assert(bandLabels === 1 && bandTally && !bandFixed,
   'the readout numbers the bar it lights (' + bandLabels + ' label, tally ' +
   bandTally + ', fixed ' + bandFixed + ')');
 
+// The band label is a measurement rather than a position in a list, so both of
+// its ends come from the range the chart was binned over — the same arithmetic
+// the chart uses for its own hovered-bin label. Counted on both sides: two ends
+// in the readout, two in the chart, so neither view can round a bin against a
+// different scale than the one that lit it.
+var readoutEnds = (appSrc.match(/histState\.bins \* histState\.span/g) ||
+  []).length;
+var chartEnds = (appSrc.match(/\/ BINS \* span/g) || []).length;
+var bandBracket = /'band ' \+ \(cellBand \+ 1\)[\s\S]{0,160}\+ '-' \+ hundred\(bHi\)/
+  .test(appSrc);
+assert(readoutEnds === 2 && chartEnds >= 2 && bandBracket,
+  'a lit bar says what height range it covers (' + readoutEnds + ' readout ends, ' +
+  chartEnds + ' chart ends, bracket ' + bandBracket + ')');
+
 // The dark scheme is meant to change nothing but the colour variables, which
 // only works if it replaces every one of them: a variable declared once in
 // `:root` and left alone by the dark block would keep its light value under a

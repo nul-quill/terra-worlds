@@ -1029,7 +1029,14 @@
     // the same bar instead of painting the chart with no selection.
     cellBand = histBinFor(h);
     if (cellBand >= 0 && histState) {
-      parts.push('band ' + (cellBand + 1) + '/' + histState.bins);
+      // The index says which bar is lit; the pair beside it says what that bar
+      // covers, so the reading is a measurement rather than a position in a
+      // list. Both ends come from the range the chart was binned over, which is
+      // the same arithmetic the lit bar is chosen with.
+      var bLo = histState.lo + cellBand / histState.bins * histState.span;
+      var bHi = histState.lo + (cellBand + 1) / histState.bins * histState.span;
+      parts.push('band ' + (cellBand + 1) + '/' + histState.bins +
+        ' (' + hundred(bLo) + '-' + hundred(bHi) + ')');
     }
     readout.textContent = parts.join(' — ');
     paintHistogram(cellBand);

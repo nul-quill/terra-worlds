@@ -386,6 +386,11 @@ Conventions:
   highlight alive across the repaint a hover triggers. A picked bar (`band`)
   still wins over it. Both are cleared when the pointer leaves, and neither
   goes into the hash — the link carries the cell, and the bin follows from it.
+  That label is a measurement rather than a position in a list, so both ends of
+  the bin's height range go beside it — `band 45/72 (53-54)` — built from the
+  range the chart was binned over, which is the same arithmetic the chart's own
+  hovered-bin caption uses. The suite counts the pair on both sides, so a bin
+  cannot round against one scale in the readout and another in the chart.
   The magnifier in `drawInset()` is the one overlay that covers map rather than
   tinting it, so `m` drops it: `insetOn` gates the call in `drawHover()` and
   nothing else. Like `solo` and `band` it is a view setting and stays out of
