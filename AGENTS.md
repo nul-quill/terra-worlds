@@ -284,6 +284,9 @@ Conventions:
   `upscale()` replicates each cell as a solid f x f block rather than blending
   it, which is what keeps a 6x save the same picture as a 2x one; the smoke
   suite checks that block-for-block on a small grid.
+  The same list is checked from a terminal too: each multiplier must report
+  itself in the JSON record while the checksum and the river count stay put,
+  which is what lets the `export` row change size without changing a number.
   Because it moves no count, the multiplier is shown in its own `export` row
   right under `grid`: the factor plus the pixel size it saves at. Both the row
   and `savePng()` read it through `exportFactor()`, so the number on screen is

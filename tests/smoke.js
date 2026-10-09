@@ -855,6 +855,27 @@ core.scales.forEach(function (sc) {
 });
 assert(scaleOk, 'every export multiplier upscales by that factor');
 
+// The same list seen from a terminal: each multiplier has to say so in its own
+// record, and must not disturb a single count on the way. That is the pair of
+// facts behind the `export` row in the sidebar — the factor is the only thing
+// a saved file gains from it.
+var scalePlain = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --width 40 --height 24 --json ' +
+    '--out scale-plain.ppm', {cwd: __dirname + '/..'}).toString().trim());
+var scaleDrift = [];
+core.scales.forEach(function (sc) {
+  var rec = JSON.parse(require('child_process')
+    .execSync('node cli.js "salt mirror" --width 40 --height 24 --scale ' +
+      sc.key + ' --json --out scale-' + sc.key + '.ppm',
+      {cwd: __dirname + '/..'}).toString().trim());
+  if (rec.scale !== parseInt(sc.key, 10)) scaleDrift.push(sc.key + '!=' + rec.scale);
+  if (rec.checksum !== scalePlain.checksum) scaleDrift.push(sc.key + ' pixels');
+  if (rec.rivers !== scalePlain.rivers) scaleDrift.push(sc.key + ' rivers');
+});
+assert(scaleDrift.length === 0,
+  'every export multiplier reports itself and moves no count (' +
+  scaleDrift.join(', ') + ')');
+
 // Every one of those listings is read in a terminal, where the dropdown's
 // label is not there to explain a key. So each line has to carry a note after
 // its key rather than a bare column of words — a key with nothing beside it
