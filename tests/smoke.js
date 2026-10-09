@@ -1412,6 +1412,31 @@ assert(rowLabels.length > 10 && rowLabels[0] === 'seed' &&
   'the stats list opens with the seed (' + rowLabels.slice(0, 3).join('/') +
   ', dupe ' + dupeRow + ')');
 
+// Every number the sidebar prints has to be reachable from a terminal too,
+// or a record cannot stand in for a screenshot. The two lists are named
+// differently — the page says `river cells`, the record says `rivers` — so the
+// mapping is spelled out here and each side is then checked against it.
+var ROW_TO_RECORD = {
+  seed: 'seed', grid: 'width', export: 'scale', land: 'land', water: 'water',
+  lake: 'lake', basins: 'lakeBasins', ice: 'ice', 'river cells': 'rivers',
+  relief: 'relief', median: 'median', biomes: 'biomes',
+  contours: 'contourBands', checksum: 'checksum', generate: 'ms'
+};
+var missingField = [];
+rowLabels.forEach(function (label) {
+  if (!ROW_TO_RECORD[label]) missingField.push(label);
+});
+var recordKeys = Object.keys(jsonLine);
+var missingKey = [];
+Object.keys(ROW_TO_RECORD).forEach(function (label) {
+  if (recordKeys.indexOf(ROW_TO_RECORD[label]) < 0) {
+    missingKey.push(label + '->' + ROW_TO_RECORD[label]);
+  }
+});
+assert(missingField.length === 0 && missingKey.length === 0,
+  'every sidebar row has a field in the cli record (' + rowLabels.length +
+  ' rows, missing ' + missingField.concat(missingKey).join(',') + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
