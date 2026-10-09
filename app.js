@@ -885,6 +885,11 @@
     var cs = cellSize();
     var px = Math.floor(hover.x / cs.w);
     var py = Math.floor(hover.y / cs.h);
+    // Same clamp the readout applies, so the pair in the hash is the pair a
+    // person sees on screen. A pointer resting above the canvas would
+    // otherwise write a negative row that `applyHash()` then throws away.
+    px = Math.max(0, Math.min(current.width - 1, px));
+    py = Math.max(0, Math.min(current.height - 1, py));
     return [px, py];
   }
 

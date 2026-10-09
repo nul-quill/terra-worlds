@@ -180,6 +180,10 @@ Conventions:
     replays it through `hoverCell()` when no pointer hover is active — that is the
     only writer of the pair, so keep the clamp inside `hoverCell()` rather than
     trimming the indices at parse time.
+    `currentCell()` — the reader that builds the `at=` pair — clamps the same
+    way, so a pointer resting above or right of the canvas cannot write
+    `at=48,-159` while the readout prints `(48, 0)`. Both the clamp and the
+    wrap live in those two functions, never in `applyHash()`.
     The arrow handler wraps its own pair before calling `hoverCell()`, so a walk
     in one direction keeps sweeping instead of sticking on the last column; the
     clamp in `hoverCell()` still handles a hash-restored index outside a smaller
