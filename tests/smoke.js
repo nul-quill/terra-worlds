@@ -872,6 +872,34 @@ assert(controlIds.length > 8 && hashNames.length > 8 &&
   'every control is carried by the hash (' + controlIds.length +
   ' controls, unmapped ' + unmapped.join(',') + ', extra ' + unknown.join(',') + ')');
 
+// The note under the chart is the only place the keyboard is documented, so
+// every single-letter shortcut the shell handles must be named there. Pulled
+// out of the handler with the same comparison it uses, then matched against
+// the paragraph in the page.
+var note = (/class="note">([\s\S]*?)<\/p>/m.exec(html) || ['', ''])[1];
+var handled = {};
+appSrc.replace(/ev\.key === '(.+?)'/g, function (m, keyName) {
+  if (/^[A-Za-z]$/.test(keyName)) handled[keyName.toLowerCase()] = 1;
+  return m;
+});
+// The other half of the handlers match with a regex instead of a comparison,
+// The other half of the handlers match with a regex instead of a comparison —
+// /^(d|D)$/ and friends — so both forms have to be walked or the count
+// understates the key set. The first letter of the pair is the lowercase one.
+appSrc.replace(/\(([A-Za-z])\|[A-Za-z]\)/g, function (m, keyName) {
+  handled[keyName.toLowerCase()] = 1;
+  return m;
+});
+var undocumented = Object.keys(handled).filter(function (keyName) {
+  // Match the letter as its own token ("C cycles channels") rather than as a
+  // letter inside any word, or the check would pass on prose alone.
+  var re = new RegExp('(^|[\\s,])' + keyName.toUpperCase() + '([\\s,]|$)');
+  return !re.test(note);
+});
+assert(Object.keys(handled).length > 8 && undocumented.length === 0,
+  'the note names every shortcut key (' + Object.keys(handled).length +
+  ' keys, missing ' + undocumented.join(',') + ')');
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');

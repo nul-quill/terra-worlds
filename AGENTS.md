@@ -165,6 +165,9 @@ Conventions:
   Every INPUT or SELECT id in `index.html` is a key of `HASH_KEYS`, and every
   key there names a real control: the smoke suite compares the two lists, so a
   new dropdown cannot arrive without also surviving a shared link.
+  The same suite compares the key set with the note under the chart, which is
+  the only place the shortcuts are written down: a new letter has to appear
+  there as its own token, not merely be handled.
 - Legend isolation lives in `drawMap()`: `solo` follows the pointer/focus,
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend
