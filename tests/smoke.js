@@ -1007,6 +1007,20 @@ assert(jsonPairs.length === jsonLine.biomes && jsonTotal >= 96 && jsonTotal <= 1
   'cli class shares match the biome count (' + jsonPairs.length + ' classes, ' +
   jsonTotal + '%)');
 
+// The order of that column is the legend's order — biggest share first — so
+// the first pair is the class the sentence calls dominant, and no later pair
+// may be bigger than the one before it. A record read in a terminal has to
+// rank the classes the same way the sidebar does.
+var jsonSorted = true;
+for (var js = 1; js < jsonPairs.length; js++) {
+  if (jsonPairs[js - 1][1] < jsonPairs[js][1]) jsonSorted = false;
+}
+var jsonTopName = core.biomeNames[jsonPairs[0][0]];
+assert(jsonSorted && jsonPairs[0][1] > 0 &&
+  jsonLine.summary.indexOf('mostly ' + jsonTopName) > 0,
+  'cli classes rank like the legend (' + jsonPairs[0][0] + ' first at ' +
+  jsonPairs[0][1] + '%)');
+
 // The record also names the look it was drawn with, so two worlds that share a
 // seed and a grid but differ only in palette are still tellable apart from the
 // JSON alone. Checked against a non-default palette to prove it is not a
