@@ -1067,6 +1067,29 @@ var saidCore = core.describe(core.generate({
 assert(saidCli === saidCore,
   'the cli sentence is the page sentence (' + saidCli + ')');
 
+// The readout calls a water cell `off-shelf` at one fixed depth below the sea
+// line, and the core calls the same cell `deep` at that same depth. Two numbers
+// written in two files, so both are read out of their own source and compared,
+// then walked over one world: every cell the readout would mark has to be a
+// cell the core classified as deep, and vice versa. A pair that drifted apart
+// would print a note about a class the legend does not list.
+var shelfSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var shelfShellSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var shelfCore = /seaLevel - ([\d.]+) \? 'deep'/.exec(shelfSrc);
+var shelfShell = /seaLevel - ([\d.]+)\) \{\s*\n?\s*parts\.push\('off-shelf'\)/
+  .exec(shelfShellSrc);
+var shelfWorld = core.generate({seed: 'salt mirror', width: 120, height: 70});
+var shelfBad = 0;
+for (var si = 0; si < shelfWorld.heightField.length; si++) {
+  var sh = shelfWorld.heightField[si];
+  var shWant = sh < shelfWorld.seaLevel - Number(shelfCore && shelfCore[1]);
+  if (shWant !== (shelfWorld.biome[si] === 'deep')) shelfBad++;
+}
+assert(shelfCore && shelfShell && shelfBad === 0 &&
+  Number(shelfCore[1]) === Number(shelfShell[1]),
+  'the off-shelf note is the deep class (' + (shelfCore && shelfCore[1]) +
+  ' vs ' + (shelfShell && shelfShell[1]) + ', ' + shelfBad + ' cells)');
+
 // Writing several worlds at once must not overwrite: --out becomes a prefix and
 // each world gets its own numbered file. The record names that file, so the
 // two records of one call have to point at two different paths — and each path

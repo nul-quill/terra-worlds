@@ -150,6 +150,11 @@ Conventions:
   rather than two roundings that happen to agree. Keep the scaling there rather
   than writing `Math.round(x * 100)` at a call site; the suite counts the
   definition, the uses and any leftover inline rounding.
+  The readout's `off-shelf` note and the core's `deep` class are the same depth
+  below the sea line, written once in each file. The suite reads both numbers,
+  compares them, and walks one world cell by cell asking that every water cell
+  the note would fire on is the cell the core called `deep`. A pair that drifted
+  apart would print a note about a class the legend does not list.
 - The CLI record in `summarise()` carries the parts of the state that the summary
   sentence cannot hold: `palette` and `channel` both change only pixels, so every
   count stays identical without them. Keep both in the record and keep the smoke
