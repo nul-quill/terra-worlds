@@ -236,6 +236,9 @@ Conventions:
   The `--help` usage line builds its `[--shape a|b|c]` list from the same array
   rather than repeating the keys, and the smoke suite checks every key appears
   in that listing.
+  Each curve must also be its own picture: the suite renders one seed through
+  every entry and compares the checksums, so a new curve that only re-skims an
+  existing one loses its slot in the `h` cycle rather than diluting it.
   `core.channels` is the third of these lists: the overlay ramps, with the
   empty-key entry first so "no overlay" is always the default selection. The
   channel dropdown, the `c` cycle and the smoke overlay loop all read that one

@@ -116,6 +116,20 @@ core.shapes.forEach(function (shape) {
     shape.key + ' spans a real height range (land=' + Math.round(r.stats.land * 100) + '%)');
 });
 
+// A curve in that list has to be worth having: each one is a dropdown entry,
+// so two curves that render the same pixels would waste a slot in the cycle.
+// One seed is rendered through every shape and the checksums are compared.
+var shapeSeen = {};
+var shapeSame = false;
+core.shapes.forEach(function (sc) {
+  var scSum = core.generate({seed: 'pale shelf', shape: sc.key, width: 160, height: 100})
+    .stats.checksum;
+  if (shapeSeen[scSum]) shapeSame = true;
+  shapeSeen[scSum] = sc.key;
+});
+assert(!shapeSame && Object.keys(shapeSeen).length === core.shapes.length,
+  'every shape renders its own world (' + Object.keys(shapeSeen).length + ')');
+
 var noRiver = core.generate({ seed: 'terraced', width: 165, height: 103, rivers: 0 });
 assert(noRiver.stats.rivers === 0, 'rivers=0 disables the drainage overlay');
 

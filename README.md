@@ -27,6 +27,10 @@ each one shows in the dropdown and the sky colour the chart is washed with.
 `--shapes` does the same for the shape keys. Both lists come from the generator
 (`TerraCore.palettes`, `TerraCore.shapes`), which is also what fills the two
 dropdowns — one source of truth for each.
+Each curve has to earn its entry too: one seed rendered through every shape
+must give a different picture each time, which the smoke suite checks from the
+same array. A curve that only re-skims an existing one would waste a slot in
+the `h` cycle.
 `--help` is the shortest listing of all: it names the shape keys from the same
 array, so the usage line and the dropdown cannot drift apart when a curve is
 added in `src/core.js`.
