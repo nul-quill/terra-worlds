@@ -158,6 +158,11 @@ Conventions:
   which is why the PNG assertion in the smoke suite can check the IHDR from the
   record alone. It reads `opts.scale > 1 ? opts.scale : 1`, so a plain render
   reports 1 rather than an empty string.
+  Those fields are also everything the saved file's name is made of — seed,
+  shape, palette, grid, factor, checksum — so the suite refills each slot from
+  one record and asks that none come back empty, with the shape compared
+  against the first word of `summary`. A name is the only trace a downloaded
+  PNG keeps, and every token in it has to be recoverable from a line of JSON.
 - `nextSeed(value)` derives the next seed from the current one (FNV-1a over the
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not

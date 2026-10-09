@@ -1178,6 +1178,23 @@ assert(pngHeadOk && pngBuf.toString('ascii', 12, 16) === 'IHDR' &&
 assert(pngRec.scale === 2 && jsonLine.scale === 1,
   'cli record carries the export multiplier (' + pngRec.scale + ')');
 
+// The name the browser gives a saved PNG is built from six of these fields:
+// seed, shape, palette, the grid, the multiplier and the checksum. A record
+// that could not refill all six would leave a person holding a file they
+// cannot trace back to a link, so each slot is filled from the record alone
+// and asked to be non-empty — with the shape compared against the first word
+// of the summary, which is where a terminal reads it.
+var nameSlots = ['seed', 'palette', 'width', 'height', 'scale', 'checksum'];
+var emptySlot = nameSlots.filter(function (nk) {
+  return pngRec[nk] === undefined || pngRec[nk] === null || pngRec[nk] === '';
+});
+var nameShape = pngRec.summary.split(' · ')[0];
+assert(emptySlot.length === 0 && /\w/.test(nameShape) &&
+  core.shapes.map(function (sk) { return sk.key; }).indexOf(nameShape) >= 0,
+  'a saved file name is rebuildable from the record (' +
+  [nameShape].concat(nameSlots.map(function (nk) { return pngRec[nk]; }))
+    .join('-') + ')');
+
 // The record holds the relief twice: once as a number of its own, once inside
 // the summary sentence in brackets. Both come from the same difference in
 // stats, so they must agree — a record saying `relief 74` above a sentence
