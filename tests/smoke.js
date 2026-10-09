@@ -544,6 +544,30 @@ core.shapes.forEach(function (sp) {
     sp.key + ' sentence only says what is true (' + st + ')');
 });
 
+// Every hand-picked phrase is rendered by the `p` key and printed by the CLI,
+// so each one has to produce a whole sentence on every shape it can be paired
+// with: four fields at minimum, a land share that matches the stats, and a
+// dominant class after `mostly` that is a real biome name rather than an empty
+// capture or a raw key. A phrase that renders a hollow sentence is worse than
+// one that is not in the list at all.
+var saidOk = true;
+core.phrases.forEach(function (ph) {
+  core.shapes.forEach(function (phShape) {
+    var pw = core.generate({seed: ph, shape: phShape.key, width: 160, height: 100});
+    var ps = core.describe(pw);
+    var pParts = ps.split(' · ');
+    var pLand = /^(\d+)% land$/.exec(pParts[2]);
+    var pTop = /^mostly (.+)$/.exec(pParts[3]);
+    if (pParts.length < 4 || !pLand || !pTop ||
+      Number(pLand[1]) !== Math.round(pw.stats.land * 100) ||
+      Object.keys(core.biomeNames).map(function (bk) {
+        return core.biomeNames[bk];
+      }).indexOf(pTop[1]) < 0 ||
+      ps.indexOf(pw.shape) !== 0) saidOk = false;
+  });
+});
+assert(saidOk, 'every phrase writes a full sentence on every shape');
+
 // A pushed climate is the one knob that reliably crosses the ice threshold, so
 // at least one sentence has to grow the `polar` tail rather than every world
 // sitting under it. Same rule as above, checked from the other side.
