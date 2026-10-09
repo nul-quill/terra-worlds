@@ -354,7 +354,7 @@ function summarise(seed, result, name, asJson) {
   var classes = Object.keys(s.counts)
     .sort(function (a, b) { return s.counts[b] - s.counts[a]; })
     .map(function (k) {
-      return k + '=' + Math.round(s.counts[k] / s.pixels * 100) + '%';
+      return k + '=' + core.percentText(s.counts[k] / s.pixels);
     })
     .join(' ');
   var rec = {

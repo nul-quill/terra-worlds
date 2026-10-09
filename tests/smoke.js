@@ -1183,12 +1183,25 @@ var jsonLine = JSON.parse(require('child_process')
     {cwd: __dirname + '/..'}).toString().trim());
 var jsonPairs = jsonLine.classes.split(' ').map(function (p) {
   var at = p.indexOf('=');
-  return [p.slice(0, at), parseInt(p.slice(at + 1), 10)];
+  return [p.slice(0, at), parseFloat(p.slice(at + 1))];
 });
 var jsonTotal = jsonPairs.reduce(function (n, p) { return n + p[1]; }, 0);
 assert(jsonPairs.length === jsonLine.biomes && jsonTotal >= 96 && jsonTotal <= 104,
   'cli class shares match the biome count (' + jsonPairs.length + ' classes, ' +
-  jsonTotal + '%)');
+  Math.round(jsonTotal) + '%)');
+
+// The shares in that column are the same strings the sidebar prints, because
+// both go through one formatter. Recomputing each pair from the counts proves
+// the CLI did not round on its own: a class shown as `0.6%` on the page must
+// read `0.6%` in the record, not `1%`.
+var jsonWorld = core.generate({ seed: 'salt mirror', width: 120, height: 80 });
+var fmtOk = jsonPairs.length === Object.keys(jsonWorld.stats.counts).length;
+jsonPairs.forEach(function (p) {
+  var want = core.percentText(jsonWorld.stats.counts[p[0]] / jsonWorld.stats.pixels);
+  if (p[1] !== parseFloat(want)) fmtOk = false;
+});
+assert(fmtOk,
+  'cli shares use the sidebar formatter (' + jsonPairs[0][0] + '=' + jsonPairs[0][1] + '%)');
 
 // The order of that column is the legend's order — biggest share first — so
 // the first pair is the class the sentence calls dominant, and no later pair

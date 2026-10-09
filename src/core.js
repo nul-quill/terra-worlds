@@ -1118,12 +1118,23 @@
     return parts.join(' · ');
   }
 
+  // Share of the grid, as printed text. Whole numbers above ten percent; below
+  // that one decimal, so a two-percent class and a nought-point-two-percent
+  // class never collapse onto the same string. Both the sidebar rows and the
+  // CLI's per-class list go through here, which is what lets a terminal
+  // reproduce the figures on screen instead of a rounded echo of them.
+  function percentText(fraction) {
+    var pct = fraction * 100;
+    return (pct >= 10 ? Math.round(pct) : pct.toFixed(1)) + '%';
+  }
+
   global.TerraCore = {
     generate: generate,
     upscale: upscale,
     channelize: channelize,
     describe: describe,
     channelValue: channelValue,
+    percentText: percentText,
     hashString: hashString,
     randomSeed: randomSeed,
     nextSeed: nextSeed,

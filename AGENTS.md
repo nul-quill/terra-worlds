@@ -172,6 +172,14 @@ Conventions:
   rather than two roundings that happen to agree. Keep the scaling there rather
   than writing `Math.round(x * 100)` at a call site; the suite counts the
   definition, the uses and any leftover inline rounding.
+  Shares of the grid go through `TerraCore.percentText(fraction)` — whole percent
+  at or above ten, one decimal below, so a 2% class and a 0.2% class keep their
+  order in the legend. The `land`, `water` and `ice` rows, the legend's right
+  column and the CLI's `classes` pairs all use it, which is what lets a terminal
+  read `seasonal=6.2%` and find `Seasonal forest 6.2%` on the page. The suite
+  re-derives every pair in that column from the counts with the same helper, so a
+  second rounding on either side shows up as a mismatch rather than as two
+  plausible-looking numbers.
   The readout's `off-shelf` note and the core's `deep` class are the same depth
   below the sea line, written once in each file. The suite reads both numbers,
   compares them, and walks one world cell by cell asking that every water cell

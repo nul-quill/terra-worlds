@@ -515,8 +515,7 @@
   // ten percent, one decimal below, so a two-percent class and a
   // zero-two-percent class never print the same string.
   function percentText(fraction) {
-    var pct = fraction * 100;
-    return (pct >= 10 ? Math.round(pct) : pct.toFixed(1)) + '%';
+    return TerraCore.percentText(fraction);
   }
 
   // Every height on the page is stored 0..1 and printed as a whole number out
