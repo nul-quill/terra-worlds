@@ -855,6 +855,22 @@ core.scales.forEach(function (sc) {
 });
 assert(scaleOk, 'every export multiplier upscales by that factor');
 
+// Every one of those listings is read in a terminal, where the dropdown's
+// label is not there to explain a key. So each line has to carry a note after
+// its key rather than a bare column of words — a key with nothing beside it
+// forces a reader back to the source to find out what it does.
+var bareLines = [];
+['--palettes', '--shapes', '--channels', '--phrases', '--lights', '--grids',
+  '--scales'].forEach(function (lf) {
+  var lines = require('child_process')
+    .execSync('node cli.js ' + lf, {cwd: __dirname + '/..'}).toString().trim().split('\n');
+  lines.forEach(function (ln) {
+    if (ln.trim().split(/\s+/).length < 2) bareLines.push(lf + ' ' + ln);
+  });
+});
+assert(bareLines.length === 0,
+  'every listing explains its key (' + bareLines.join(' | ') + ')');
+
 // Every shared list is also what a URL hash is matched against, so its keys
 // must be unique: two options sharing a key would make a restored link depend
 // on which of the two the dropdown happened to reach first.
