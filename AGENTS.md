@@ -136,6 +136,10 @@ Conventions:
   the two ends of the range are `low` and `high`, the column count is `bins`.
   The suite re-reads the caption with those three and compares, so a block of
   bars and a line of JSON cannot describe two different worlds.
+  `sea` joins them: the ruler's `|` is the one mark a reader has to place by
+  hand from a record, so the level itself is a field rather than something to
+  infer from the `water` share. Like the other numbers it keeps three decimals
+  and the caption rounds it out of a hundred.
   The ruler carries two marks: `|` on the sea column and `:` on the column the
   median falls in, since a spread cannot tell a plateau from a peak squeezed
   between its own two ends. Both are the core's `binOf` over the same range, so

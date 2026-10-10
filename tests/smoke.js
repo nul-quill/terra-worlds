@@ -1200,10 +1200,23 @@ assert(histMedCol === histMedWant && histCaption.indexOf('median') > 0,
 // parse of the caption, which is what makes a drift on either side visible.
 var capEnds = /^(\d+) \.\. (\d+) relief/.exec(histCaption);
 var capBins = /(\d+) bins/.exec(histCaption);
+var capSea = /sea (\d+)/.exec(histCaption);
 assert(capEnds && Number(capEnds[1]) === Math.round(histWorld.stats.min * 100) &&
   Number(capEnds[2]) === Math.round(histWorld.stats.max * 100) &&
-  capBins && Number(capBins[1]) === histBins,
+  capBins && Number(capBins[1]) === histBins &&
+  capSea && Number(capSea[1]) === Math.round(histWorld.seaLevel * 100),
   'the caption repeats the record it came from (' + histCaption + ')');
+// The sea line is the one figure the ruler marks, so it has to be a field of
+// the record as well: the two ends and the column count only place the block,
+// while the rule's own column comes from the level. Read from a record of the
+// same world, since the caption rounds and the record keeps three decimals.
+var seaRec = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --width 120 --height 80 --json ' +
+    '--out sea-rec.ppm', {cwd: __dirname + '/..'}).toString().trim());
+assert(Math.round(seaRec.sea * 100) === Number(capSea[1]) &&
+  seaRec.sea === histWorld.seaLevel,
+  'the record keeps the sea the ruler marks (' + seaRec.sea + ' -> ' +
+  capSea[1] + ')');
 
 // The readout calls a water cell `off-shelf` at one fixed depth below the sea
 // line, and the core calls the same cell `deep` at that same depth. Two numbers
