@@ -171,6 +171,10 @@ Conventions:
   alone are not enough — a lower row could drop one column and gain two
   elsewhere — so the suite also asks that every filled column stay filled in
   the rows beneath it, which is what a stack of thresholds actually looks like.
+  Shape alone would still pass for the wrong world, so the suite re-derives
+  each row from the record's own counts and compares the whole string: a column
+  is filled when its count reaches that row's share of `peak`. That is what
+  makes a pasted block of bars plus one line of JSON enough to redraw a picture.
   The `relief` row carries the spread and its two ends — `70 units (10-80)` —
   where the pair in brackets is what the chart prints at its corners. The record
   keeps those ends as `low` and `high`, already out of a hundred, so a terminal

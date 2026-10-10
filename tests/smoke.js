@@ -1254,6 +1254,23 @@ assert(stackBad.length === 0 && peakFilled && rowCounts[0] >= 1,
   'the text profile stacks its rows by height (' + rowCounts.join('/') +
   ', peak column ' + peakCol + ' filled ' + peakFilled +
   ', gaps ' + nestBad.join(',') + ')');
+// Those three checks describe the block's shape; none of them says the block
+// was built from THIS world. Re-derive each row from the histogram and the
+// peak the record publishes — one threshold per row, a column filled when its
+// count reaches that share of the tallest one — and compare the whole row.
+// That is what lets a saved PNG plus one line of JSON redraw the silhouette.
+var shapeBad = [];
+histRows.forEach(function (row, ri) {
+  var level = (histRows.length - ri) / histRows.length;
+  var want = '';
+  for (var wi = 0; wi < histBins; wi++) {
+    want += (hpHist[wi] / hpHist[peakCol]) >= level ? '#' : ' ';
+  }
+  if (row !== want.replace(/\s+$/, '')) shapeBad.push(ri);
+});
+assert(shapeBad.length === 0,
+  'each row is one threshold over the record\'s counts (' +
+  histRows.length + ' rows, off at ' + shapeBad.join(',') + ')');
 // The caption under the ruler names the picture the block belongs to, so the
 // last line has to carry the same eight hex digits the record prints. Without
 // it a pasted block of bars could not be tied back to a saved PNG at all.
