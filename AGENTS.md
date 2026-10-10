@@ -132,6 +132,10 @@ Conventions:
   The caption under the ruler also carries the world's checksum, which is the
   only link a pasted block of bars has back to the picture it describes — a
   saved PNG keeps nothing but its name, and the checksum is in that name.
+  Every other figure in that caption is a field of the JSON record as well:
+  the two ends of the range are `low` and `high`, the column count is `bins`.
+  The suite re-reads the caption with those three and compares, so a block of
+  bars and a line of JSON cannot describe two different worlds.
   The ruler carries two marks: `|` on the sea column and `:` on the column the
   median falls in, since a spread cannot tell a plateau from a peak squeezed
   between its own two ends. Both are the core's `binOf` over the same range, so

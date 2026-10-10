@@ -1193,6 +1193,17 @@ assert(histCaption.indexOf(histWorld.stats.checksum) > 0,
   'the text profile names its own world (' + histCaption + ')');
 assert(histMedCol === histMedWant && histCaption.indexOf('median') > 0,
   'the ruler marks the middle as well as the sea (' + histMedCol + ')');
+// Every figure in that caption is also a field of the JSON record, so a pasted
+// block of bars and a line of JSON have to say the same numbers: the two ends
+// of the range are the record's `low` and `high`, the column count is its
+// `bins`. Re-derived from the height field here rather than from a second
+// parse of the caption, which is what makes a drift on either side visible.
+var capEnds = /^(\d+) \.\. (\d+) relief/.exec(histCaption);
+var capBins = /(\d+) bins/.exec(histCaption);
+assert(capEnds && Number(capEnds[1]) === Math.round(histWorld.stats.min * 100) &&
+  Number(capEnds[2]) === Math.round(histWorld.stats.max * 100) &&
+  capBins && Number(capBins[1]) === histBins,
+  'the caption repeats the record it came from (' + histCaption + ')');
 
 // The readout calls a water cell `off-shelf` at one fixed depth below the sea
 // line, and the core calls the same cell `deep` at that same depth. Two numbers
