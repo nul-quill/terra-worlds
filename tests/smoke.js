@@ -2297,6 +2297,16 @@ assert(noteDefs === 1 && noteCalls === 11 && notePlaceholder === 1 &&
   noteCalls + ' sites, ' + notePlaceholder + ' placeholder, note precedence ' +
   notePrecedence + ', blit ' + blitPrecedence + ')');
 
+// The word beside a selected class also has to match what the map does with
+// it. A clicked row keeps its class after the pointer moves — that one is
+// pinned. A hovered row is a preview that the next mouse-move takes away, so
+// the same word there would promise more than the state delivers. The note
+// picks its word off `solo`, the preview half of the same pair the blit reads,
+// so one lookup decides both the fade and the caption.
+var wordGate = /\(solo \? '' : ' pinned'\)/.test(noteBody);
+assert(wordGate,
+  'the note only says pinned for a clicked row (' + wordGate + ')');
+
 // The magnifier covers the map rather than tinting it, so the cell a hover
 // picked has to be findable inside the panel: the mark is one patch cell,
 // offset by the difference of the two clamped indices. Both halves of that are

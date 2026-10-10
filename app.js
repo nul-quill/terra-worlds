@@ -1269,7 +1269,13 @@
       // The share comes from the same counts the legend rows are built from, so
       // the figure beside a hovered row and the one in this line are one
       // measurement rather than two roundings of it.
-      readout.textContent = (TerraCore.biomeNames[want] || want) + ' pinned — ' +
+      // The word "pinned" belongs to the clicked selection only: a hovered row
+      // is a preview that ends when the pointer moves, so calling that pinned
+      // would promise a state the next mouse-move takes away. Which of the two
+      // is in charge is the same test the blit makes, so this says "pinned"
+      // exactly when the map keeps the class after the pointer leaves.
+      readout.textContent = (TerraCore.biomeNames[want] || want) +
+        (solo ? '' : ' pinned') + ' — ' +
         shareText(current.stats.counts[want] || 0, current.stats.pixels);
       return;
     }
