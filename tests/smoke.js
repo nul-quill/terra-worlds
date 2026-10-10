@@ -2384,6 +2384,15 @@ assert(tintRule && tintDeclared === 2,
   'the legend tint reads a variable both schemes restate (' + tintRule +
   ', ' + tintDeclared + ' declarations)');
 
+// The tint is only a wash of colour, which is hard to follow as a tab stop on
+// a ten-row list, so focus also gets the inset ring a pinned row wears. Both
+// are lookups rather than literals, which is what keeps the ring readable in
+// either scheme without a third colour to keep in step.
+var focusRing = /\.legend li:focus-visible\s*\{\s*box-shadow:\s*inset 0 0 0 1px var\(--accent\)/
+  .test(cssSrc);
+assert(focusRing,
+  'a focused legend row shows a ring and not only the tint (' + focusRing + ')');
+
 // The print block is the other half of the stylesheet's last two rules: it is
 // meant to drop the chrome and keep the reading. So the two it exists to hide
 // have to be in it, and the three that carry the numbers must not be — a

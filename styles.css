@@ -222,6 +222,12 @@ button:last-child {
 .legend li:hover,
 .legend li:focus { background: var(--accent-soft); outline: none; }
 
+/* The tint alone is too faint to follow as a tab stop: with ten rows in the
+  list, a keyboard user needs to see where the caret landed. The ring is the
+  same inset hairline a pinned row wears, drawn from the accent so both
+  schemes keep their own ink. */
+.legend li:focus-visible { box-shadow: inset 0 0 0 1px var(--accent); }
+
 /* A clicked row stays marked so the pinned class is visible after the pointer
   has moved back onto the map. */
 .legend li.on { box-shadow: inset 0 0 0 1px var(--accent); }

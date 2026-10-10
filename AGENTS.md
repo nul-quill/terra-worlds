@@ -314,6 +314,9 @@ Conventions:
   a literal rgba — that is what lets the dark block raise both halves at once.
   The suite asks for the lookup in the rule and for exactly two declarations,
   one per scheme.
+  The tint alone is too faint to follow as a tab stop on a ten-row list, so
+  `:focus-visible` also draws the inset ring a pinned row wears — both halves
+  from `--accent`, so neither scheme needs a third colour for the caret.
   The print block is checked by the names it hides: the controls, the chart and
   the key note are chrome, the legend, the stats list, the summary sentence and
   the canvas are the content. A printed page that lost the stats list would keep
