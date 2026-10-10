@@ -711,7 +711,7 @@
     // to the element rather than the attribute: a fixed-width canvas stretched
     // to 100% reads as a blur. Drawing math stays in CSS pixels because the
     // device-pixel scale is applied with a transform.
-    var cssW = histCanvas.clientWidth || 240;
+    var cssW = histCanvas.clientWidth || TerraCore.histWidth;
     var cssH = histCanvas.clientHeight || 52;
     var dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
     var bw = Math.round(cssW * dpr), bhPix = Math.round(cssH * dpr);

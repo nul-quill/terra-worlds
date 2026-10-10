@@ -1111,6 +1111,12 @@
     return Math.max(20, Math.min(72, Math.round(cssWidth / 5)));
   }
 
+  // The width the sidebar's chart strip is drawn into when nothing better is
+  // known: the shell uses it when the canvas has not been laid out yet, the
+  // CLI when it has no window at all. One number so a terminal's text profile
+  // and the page's bars land on the same column count.
+  var HIST_WIDTH = 240;
+
   // Bin the height field into `bins` bars over this world's own range. The
   // range is the actual min/max rather than 0..1, so a low-relief craton still
   // fills the chart instead of crowding the middle. Every reader of the relief
@@ -1197,6 +1203,7 @@
     channels: CHANNEL_LIST,
     tickStep: tickStep,
     binCount: binCount,
+    histWidth: HIST_WIDTH,
     lakeSteps: LAKE_STEPS,
     deepDrop: DEEP_DROP,
     phrases: PHRASES,

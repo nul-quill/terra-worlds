@@ -359,7 +359,7 @@ if (opts.help) {
 // redrawn by eye. The bins come from `core.histogram` at the sidebar's own
 // width, which is what ties these columns to the bars on screen.
 function profile(result) {
-  var h = core.histogram(result, core.binCount(240));
+  var h = core.histogram(result, core.binCount(core.histWidth));
   var rows = 6;
   var lines = [];
   for (var r = 0; r < rows; r++) {
@@ -401,7 +401,7 @@ function summarise(seed, result, name, asJson) {
   // width is the sidebar's own default rather than this world's grid, since
   // the chart bins by the strip it is drawn into — 240 CSS pixels is what the
   // core maps to 48 bars, which is also what the suite compares against.
-  var hist = core.histogram(result, core.binCount(240));
+  var hist = core.histogram(result, core.binCount(core.histWidth));
   // Per-class shares, biggest first. The one-line summary only names the
   // dominant class, which is not enough to tell two worlds apart when most of
   // the grid is water. Kept as "key=NN%" pairs so the table form stays a

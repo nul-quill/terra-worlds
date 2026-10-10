@@ -1160,7 +1160,7 @@ assert(saidCli === saidCore,
 // The record's own four numbers, read straight from the core: the bins the
 // profile must match, and the range its sea marker is placed over.
 var histWorld = core.generate({seed: 'salt mirror', width: 120, height: 80});
-var histBins = core.binCount(240);
+var histBins = core.binCount(core.histWidth);
 var histOut = require('child_process')
   .execSync('node cli.js "salt mirror" --width 120 --height 80 --describe --hist',
     {cwd: __dirname + '/..'}).toString().replace(/\r/g, '').split('\n');
@@ -2300,13 +2300,22 @@ assert(binDefs === 1 && binCalls >= 3 && binClamps === 1,
 // The whole binning pass is the core's too, so the bars a terminal counts from
 // the record are the bars on screen: one definition, one call from the shell,
 // and the counts have to add up to the grid the record lists.
-var histSummed = core.histogram(jsonWorld, core.binCount(240));
+var histSummed = core.histogram(jsonWorld, core.binCount(core.histWidth));
 var histTotal = histSummed.hist.reduce(function (n, v) { return n + v; }, 0);
 assert(binHistDefs === 1 && binHistUses === 1 &&
   histTotal === jsonWorld.stats.pixels &&
   histSummed.bins === jsonLine.bins && histSummed.peak === jsonLine.peak,
   'the relief bins are counted once, in the core (' + histSummed.bins +
   ' bars, peak ' + histSummed.peak + ', ' + histTotal + ' cells)');
+// The width those bins are counted over is one number too: the shell reads it
+// as the fallback when its canvas has no layout yet, the CLI when it has no
+// window at all. Both go through the core's lookup, so a text profile and the
+// bars on screen cannot disagree about how many columns a sidebar buys.
+var histCliSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+assert(/clientWidth \|\| TerraCore\.histWidth/.test(appSrc) &&
+  (histCliSrc.match(/core\.binCount\(core\.histWidth\)/g) || []).length === 2,
+  'one sidebar width feeds the chart and the text profile (' +
+  core.histWidth + ' -> ' + histSummed.bins + ' bars)');
 
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the
