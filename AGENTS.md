@@ -150,6 +150,10 @@ Conventions:
   the two columns coincide — a near-flat world whose middle sits on its own
   shoreline — the ruler prints one `+` rather than dropping a mark, and the
   suite walks every phrase asking for exactly one glyph per marked column.
+  Above the ruler sit six rows of blocks, one threshold each, so the counts can
+  only grow going down — an inverted level still prints a correct caption while
+  showing the silhouette upside down. The suite checks that ramp, and that the
+  column the record's `peak` describes is filled in every row.
   The `relief` row carries the spread and its two ends — `70 units (10-80)` —
   where the pair in brackets is what the chart prints at its corners. The record
   keeps those ends as `low` and `high`, already out of a hundred, so a terminal

@@ -1178,6 +1178,31 @@ assert(histRuler.length === histBins && histSeaCol === histWantCol &&
   histRows.length === 6 && /#/.test(histRows[histRows.length - 1]),
   'the text profile matches the chart bins (' + histRuler.length + ' columns, ' +
   histRows.length + ' rows, sea at ' + histSeaCol + ')');
+// Each row is one threshold over the same bins, so the blocks can only pile up
+// downward: a row with fewer blocks than the one above it means the levels are
+// inverted, which prints the silhouette upside down while leaving every figure
+// in the caption correct. The tallest column is also asked to appear in every
+// row, since that is the column the record's `peak` describes.
+var hpHist = core.histogram(histWorld, histBins).hist;
+var peakCol = 0;
+for (var hpi = 1; hpi < hpHist.length; hpi++) {
+  if (hpHist[hpi] > hpHist[peakCol]) peakCol = hpi;
+}
+var rowCounts = histRows.map(function (row) {
+  return (row.match(/#/g) || []).length;
+});
+var stackBad = [];
+rowCounts.forEach(function (n, ri) {
+  if (ri && n < rowCounts[ri - 1]) {
+    stackBad.push(ri + ':' + n + '<' + rowCounts[ri - 1]);
+  }
+});
+var peakFilled = histRows.every(function (row) {
+  return row.charAt(peakCol) === '#';
+});
+assert(stackBad.length === 0 && peakFilled && rowCounts[0] >= 1,
+  'the text profile stacks its rows by height (' + rowCounts.join('/') +
+  ', peak column ' + peakCol + ' filled ' + peakFilled + ')');
 // The caption under the ruler names the picture the block belongs to, so the
 // last line has to carry the same eight hex digits the record prints. Without
 // it a pasted block of bars could not be tied back to a saved PNG at all.
