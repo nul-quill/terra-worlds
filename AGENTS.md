@@ -59,6 +59,12 @@ Conventions:
   The spillway cell itself is marked in `result.spillway` (one cell per basin),
   which the readout prints as `outlet` and the river pass uses to keep a
   basin's catchment drawn even when accumulation alone would cut it off.
+  That last clause is load-bearing: the pass tests each cell against a
+  quantile, and a tarn on a wide plain fills a rim cell whose own count sits
+  well below the cut, so without the mark the lake would print as a puddle with
+  no way out. The suite counts the still-dry outlets of a one-basin and a
+  crowded world and asks that each carries a mask. An outlet a later fill
+  swallows is excluded — by then it is water, and water is skipped on purpose.
   The mark holds the basin's own number rather than a plain flag, so hovering
   the rim cell says `outlet of basin 2/4` — the outlet sits outside the fill and
   would otherwise be anonymous. Keep the array wide enough for that number.

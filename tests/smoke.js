@@ -1908,6 +1908,29 @@ assert(carriesCatchment(bw) && carriesCatchment(manyBasin),
   'a basin drains into its outlet rather than stopping there (' +
   bw.stats.lakeBasins + ' + ' + manyBasin.stats.lakeBasins + ' basins)');
 
+// The carried catchment only reads as drainage if the outlet is drawn: the
+// river pass tests the accumulation of each cell against a quantile, and a
+// small tarn on a wide plain fills a rim cell whose own count is far below
+// that cut. The spillway mark is what keeps such a cell in the network, so
+// every outlet that is still dry ground at the end has to carry a mask. Outlets
+// that a later fill swallows are excluded — those are water by then, and the
+// pass skips water on purpose. Counted rather than sampled, since one missing
+// mark is the whole difference between a lake that drains and a puddle.
+function outletsAreDrawn(world) {
+  var seen = 0, drawn = 0;
+  for (var di = 0; di < world.spillway.length; di++) {
+    if (!world.spillway[di]) continue;
+    if (world.heightField[di] < world.seaLevel) continue;
+    if (world.lakeMask[di]) continue;
+    seen++;
+    if (world.riverMask[di] >= 1) drawn++;
+  }
+  return seen > 0 && drawn === seen;
+}
+assert(outletsAreDrawn(bw) && outletsAreDrawn(manyBasin),
+  'every dry outlet is part of the drawn network (' +
+  bw.stats.lakeBasins + ' + ' + manyBasin.stats.lakeBasins + ' basins)');
+
 // The mark also carries the number of the basin it drains, since the readout
 // prints both together. That number has to be one the neighbouring lake cells
 // actually wear — an outlet naming the wrong tarn is worse than a bare one.
