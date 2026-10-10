@@ -1802,22 +1802,32 @@ assert(wetMark === 0 && outlets > 0,
   'an outlet is dry land beside its lake (' + wetMark + ' wet marks of ' +
   outlets + ')');
 
+// One terraced plateau world (a single wide tarn) and one with a crowd of small
+// ones: both are used below, since a one-cell fill and a two-cell fill are two
+// different ways a rim can be shared.
+var manyBasin = core.generate({seed: 'red ridge', shape: 'fjord', width: 200, height: 120});
+
 // The mark also carries the number of the basin it drains, since the readout
 // prints both together. That number has to be one the neighbouring lake cells
 // actually wear — an outlet naming the wrong tarn is worse than a bare one.
-var ownOk = true;
-for (var ai = 0; ai < bw.spillway.length; ai++) {
-  if (!bw.spillway[ai]) continue;
-  var ax = ai % bw.width, ay = (ai / bw.width) | 0;
-  var mine = bw.spillway[ai];
-  var agree = false;
-  if (ax > 0 && bw.basin[ai - 1] === mine) agree = true;
-  if (ax < bw.width - 1 && bw.basin[ai + 1] === mine) agree = true;
-  if (ay > 0 && bw.basin[ai - bw.width] === mine) agree = true;
-  if (ay < bw.height - 1 && bw.basin[ai + bw.width] === mine) agree = true;
-  if (!agree) ownOk = false;
+// Walked on both a one-basin world and a crowded one: with several tarns a rim
+// cell can be shared by two fills, and the second label then overwrites the
+// first — which only shows up as a mismatch when more than one basin is near.
+function outletsNameTheirShore(world) {
+  for (var ai = 0; ai < world.spillway.length; ai++) {
+    if (!world.spillway[ai]) continue;
+    var ax = ai % world.width, ay = (ai / world.width) | 0;
+    var mine = world.spillway[ai];
+    var agree = false;
+    if (ax > 0 && world.basin[ai - 1] === mine) agree = true;
+    if (ax < world.width - 1 && world.basin[ai + 1] === mine) agree = true;
+    if (ay > 0 && world.basin[ai - world.width] === mine) agree = true;
+    if (ay < world.height - 1 && world.basin[ai + world.width] === mine) agree = true;
+    if (!agree) return false;
+  }
+  return true;
 }
-assert(ownOk,
+assert(outletsNameTheirShore(bw) && outletsNameTheirShore(manyBasin),
   'each outlet names a basin its own shore belongs to');
 
 // The bearing and the mark are two arrays describing one fact: which way the
@@ -1861,10 +1871,6 @@ function bearingsAgree(world) {
   }
   return ok && seen === world.stats.lakeBasins;
 }
-// One terraced plateau world (a single wide tarn) and one with a crowd of small
-// ones: the centroid of a big fill and of a two-cell both have to land in the
-// same compass bucket the core picked.
-var manyBasin = core.generate({seed: 'red ridge', shape: 'fjord', width: 200, height: 120});
 assert(bearingsAgree(bw) && bearingsAgree(manyBasin) && bw.stats.lakeBasins === 1 &&
   manyBasin.stats.lakeBasins > 4,
   'each bearing points from its lake to the marked outlet (' + bw.stats.lakeBasins +
