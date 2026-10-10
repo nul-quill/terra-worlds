@@ -1305,6 +1305,18 @@ assert(medianRowSrc.indexOf('hundred(') >= 0 && medianRowSrc.indexOf('.median') 
   'the median row and the record are one measurement (' +
   Math.round(jsonLine.median * 100) + ' vs ' + Math.round(jsonWorld.stats.median * 100) + ')');
 
+// The same number is printed twice on the page: once in the stats list and
+// once beside the mark under the bars. Both are a rounding of one field, so
+// both must scale it through the shared helper — a label that multiplied by a
+// hundred on its own would put two different medians in one sidebar, which is
+// the one thing a mark sitting under a row should never do.
+var medMarkSrc = (/var medLabel = '([\s\S]{0,80}?)\n/.exec(medSrc) ||
+  ['', ''])[1];
+assert(medMarkSrc.indexOf("median '") === 0 &&
+  medMarkSrc.indexOf('hundred(result.stats.median)') > 0 &&
+  medMarkSrc.indexOf('* 100') < 0,
+  'the chart marks the median the row prints (' + medMarkSrc.trim() + ')');
+
 // The order of that column is the legend's order — biggest share first — so
 // the first pair is the class the sentence calls dominant, and no later pair
 // may be bigger than the one before it. A record read in a terminal has to
