@@ -309,6 +309,11 @@ Conventions:
   compares the two name lists: a variable declared once and never restated keeps
   its light value under a dark background, which is the one way this scheme can
   go wrong. A new colour has to appear on both sides.
+  The legend's hover tint is the one colour written as a hue plus its own alpha,
+  so it lives in `--accent-soft` and the hover rule reads that lookup rather than
+  a literal rgba — that is what lets the dark block raise both halves at once.
+  The suite asks for the lookup in the rule and for exactly two declarations,
+  one per scheme.
   The print block is checked by the names it hides: the controls, the chart and
   the key note are chrome, the legend, the stats list, the summary sentence and
   the canvas are the content. A printed page that lost the stats list would keep

@@ -5,6 +5,11 @@
   --muted: #5c6b75;
   --line: #dfe5e9;
   --accent: #2f7d6a;
+  /* The legend row tint is the accent at a low alpha. Written as its own
+     variable rather than a literal rgba, so the dark block can raise both the
+     colour and the alpha in one place — a fixed light tint disappears against
+     a dark panel. */
+  --accent-soft: rgba(47, 125, 106, 0.10);
 }
 
 * { box-sizing: border-box; }
@@ -215,7 +220,7 @@ button:last-child {
 /* Hovering a row isolates that class on the map, so the row has to look like
    something happens when it is touched. */
 .legend li:hover,
-.legend li:focus { background: rgba(47, 125, 106, 0.10); outline: none; }
+.legend li:focus { background: var(--accent-soft); outline: none; }
 
 /* A clicked row stays marked so the pinned class is visible after the pointer
   has moved back onto the map. */
@@ -294,6 +299,7 @@ button:last-child {
     --muted: #93a3ac;
     --line: #2c353a;
     --accent: #4fb39a;
+    --accent-soft: rgba(79, 179, 154, 0.18);
   }
 
   .field input[type="text"],

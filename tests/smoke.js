@@ -2373,6 +2373,17 @@ assert(rootVars.length >= 4 && darkVars.length >= 4 && halfSet.length === 0,
   'the dark scheme restates every colour variable (' + darkVars.length +
   ' of ' + rootVars.length + ', unset ' + halfSet.join(',') + ')');
 
+// The legend tint is the one place a colour is written twice over — a hue and
+// its own alpha — so it is a variable rather than a literal in the rule. That
+// is what lets the dark block raise both halves together, and it is why the
+// hover rule is checked for the lookup instead of for a plausible rgba.
+var tintRule = /\.legend li:hover,\s*\.legend li:focus\s*\{\s*background:\s*var\(--accent-soft\)/
+  .test(cssSrc);
+var tintDeclared = (cssSrc.match(/--accent-soft\s*:/g) || []).length;
+assert(tintRule && tintDeclared === 2,
+  'the legend tint reads a variable both schemes restate (' + tintRule +
+  ', ' + tintDeclared + ' declarations)');
+
 // The print block is the other half of the stylesheet's last two rules: it is
 // meant to drop the chrome and keep the reading. So the two it exists to hide
 // have to be in it, and the three that carry the numbers must not be — a
