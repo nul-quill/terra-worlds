@@ -1857,6 +1857,20 @@ extraPairs.forEach(function (name) {
 assert(oneWay.length === 0,
   'the non-control hash pairs round-trip (' + oneWay.join(', ') + ')');
 
+// The form controls are carried by the loop rather than one line each, so the
+// two things that could still break a link are the pair of encodings the loop
+// agrees with itself about: a checkbox goes out as 1/0 and comes back as a
+// comparison against '1', and a dropdown only takes a value its own list
+// offers. Each half is one call in one function, so a rename on one side is
+// caught here rather than as a link that reopens with the wrong look.
+var writeCheck = (writeBody.match(/el\.checked \? 1 : 0/g) || []).length;
+var readCheck = (applyBody.match(/value === '1'/g) || []).length;
+assert(writeCheck === 1 && readCheck === 1,
+  'a checkbox round-trips as 1 and 0 (' + writeCheck + '/' + readCheck + ')');
+var staleGuard = (applyBody.match(/hasOption\(el, value\)/g) || []).length;
+assert(staleGuard === 1,
+  'a dropdown only takes a key its list offers (' + staleGuard + ')');
+
 // The note under the chart is the only place the keyboard is documented, so
 // every single-letter shortcut the shell handles must be named there. Pulled
 // out of the handler with the same comparison it uses, then matched against

@@ -342,6 +342,10 @@ Conventions:
     `hasOption()` before assigning, so a link saved against a key that has since
     been dropped keeps the current default instead of leaving the select blank.
     Keep the check in `applyHash()` — the lists are filled before it runs.
+    The two checkboxes are the only pair whose two halves differ: the writer
+    stores `checked ? 1 : 0` and the reader compares against `'1'`, since a bare
+    `false` in a URL would read as a value rather than as a tick. The suite
+    counts one of each, so the encoding cannot be changed on one side only.
   Every INPUT or SELECT id in `index.html` is a key of `HASH_KEYS`, and every
   key there names a real control: the smoke suite compares the two lists, so a
   new dropdown cannot arrive without also surviving a shared link.
