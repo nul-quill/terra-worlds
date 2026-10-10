@@ -2199,6 +2199,38 @@ core.phrases.forEach(function (fp) {
 assert(fillSeen > 0 && fillAbove === 0,
   'a basin fills to its own outlet and no higher (' + fillSeen + ' filled cells, ' +
   fillAbove + ' above their rim)');
+// Within one basin the depth steps have to follow the ground: walk every pair of
+// neighbouring lake cells and require that the lower of the two carries at least
+// as deep a step. That is what makes the `N% deep` figure in the readout read as
+// a bowl rather than as noise — a shore cell one unit higher than its neighbour
+// must not claim more water over its head. Compared per pair rather than against
+// the basin's own extremes, since a shallow rim and a deep centre are both fine
+// as long as the two move in opposite directions.
+var stepInv = 0, stepPairs = 0;
+core.phrases.forEach(function (qp) {
+  var qw = core.generate({seed: qp, width: 200, height: 120});
+  var qn = qw.width, qm = qw.height;
+  for (var qy = 0; qy < qm; qy++) {
+    for (var qx = 0; qx < qn; qx++) {
+      var qi = qy * qn + qx;
+      if (!qw.basin[qi]) continue;
+      var qnb = [[qx - 1, qy], [qx + 1, qy], [qx, qy - 1], [qx, qy + 1]];
+      for (var qk = 0; qk < 4; qk++) {
+        var qax = qnb[qk][0], qay = qnb[qk][1];
+        if (qax < 0 || qay < 0 || qax >= qn || qay >= qm) continue;
+        var qj = qay * qn + qax;
+        if (qw.basin[qj] !== qw.basin[qi]) continue;
+        if (qw.heightField[qi] === qw.heightField[qj]) continue;
+        stepPairs++;
+        if (qw.heightField[qi] < qw.heightField[qj] &&
+          qw.lakeMask[qi] < qw.lakeMask[qj]) stepInv++;
+      }
+    }
+  }
+});
+assert(stepPairs > 0 && stepInv === 0,
+  'a lake gets deeper toward its own bottom (' + stepPairs + ' neighbour pairs, ' +
+  stepInv + ' inverted)');
 // Both halves of that pair are printed by the shell, from one array: the
 // filled cells get `basin 2/4 — drains E`, the rim cell gets the same bearing
 // beside its own number. Read the outlet branch out of the shell and ask that

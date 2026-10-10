@@ -276,6 +276,11 @@ Conventions:
   hover readout. Keep it a lookup rather than repeating `60`: a shallow tarn
   tops out below the cap, so the suite asks that every filled cell sit inside
   1..the constant and that the published scale be that same number.
+  Those steps also follow the ground rather than the fill order: for any two
+  neighbouring cells of one basin, the lower one carries at least as deep a
+  step. The suite walks those pairs on every phrase, which is what keeps the
+  `N% deep` reading a bowl instead of noise — a rim cell one unit above its
+  neighbour must not claim more water over its head.
   `slope` is the one field built inside `fieldFor` rather than by `generate`:
   it is a difference of the height field, so it still cannot move a biome
   boundary, and it is cached on `result.slopeField` for the same reason the
