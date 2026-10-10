@@ -618,6 +618,10 @@ Conventions:
   compares the lookup against a hand-written insertion sort (stable by
   construction) over three tied fixtures plus every phrase, since a generated
   grid rarely hands two classes the same count on its own.
+  The `classes` column of the CLI record is that same ranking, tie-break
+  included, so a terminal and the sidebar cannot put one pair in two orders.
+  The suite compares the column against the insertion pass the legend
+  assertion uses.
   `stats.counts` is the partition behind those rows: every cell lands in exactly
   one class, so the counts sum to `stats.pixels` and no listed class is empty.
   The smoke suite checks that on every hand-picked phrase, along with the

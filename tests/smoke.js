@@ -1615,6 +1615,49 @@ assert(jsonSorted && jsonPairs[0][1] > 0 &&
   'cli classes rank like the legend (' + jsonPairs[0][0] + ' first at ' +
   jsonPairs[0][1] + '%)');
 
+// Ranking by count alone is only half the rule: two classes can cover the same
+// number of cells, and then the pair's order is decided by the tie-break the
+// legend uses — the palette's own key order. A record that stopped at the count
+// would still print a plausible column while listing that pair in whatever
+// order its counts object happened to be filled, so the same two rows could
+// swap between a terminal and the page over one world. Compared against the
+// same insertion pass the legend assertion uses.
+function cliOrderOf(world) {
+  var cn = Object.keys(world.palette.colors);
+  var cc = world.stats.counts;
+  var co = [];
+  cn.forEach(function (nk) {
+    if (!cc[nk]) return;
+    var cat = co.length;
+    while (cat > 0 && cc[co[cat - 1]] < cc[nk]) {
+      co[cat] = co[cat - 1];
+      cat--;
+    }
+    co[cat] = nk;
+  });
+  return co;
+}
+var cliOrderBad = [];
+core.phrases.forEach(function (ck3) {
+  var cw3 = core.generate({seed: ck3, width: 120, height: 80});
+  var cwp = Object.keys(cw3.stats.counts)
+    .sort(function (sa, sb) {
+      return cw3.stats.counts[sb] - cw3.stats.counts[sa] ||
+        Object.keys(cw3.palette.colors).indexOf(sa) -
+        Object.keys(cw3.palette.colors).indexOf(sb);
+    })
+    .join(',');
+  if (cwp !== cliOrderOf(cw3).join(',')) cliOrderBad.push(ck3);
+});
+var cliTieSrc = (/var classes = declared\b/.exec(
+  require('fs').readFileSync(__dirname + '/../cli.js', 'utf8')
+) || ['', ''])[0];
+assert(cliOrderBad.length === 0 && cliTieSrc.length > 0 &&
+  jsonPairs.map(function (pp) { return pp[0]; }).join(',') ===
+  cliOrderOf(jsonWorld).join(','),
+  'the record ranks classes the way the legend does (' + jsonPairs.length +
+  ' pairs, ' + cliOrderBad.length + ' off)');
+
 // The drainage share in the sentence has to be reproducible from the record's
 // own numbers, since that is the only trace a saved file keeps: `rivers` over
 // `width` x `height` through the shared formatter must be the string printed

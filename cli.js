@@ -418,8 +418,18 @@ function summarise(seed, result, name, asJson) {
   // dominant class, which is not enough to tell two worlds apart when most of
   // the grid is water. Kept as "key=NN%" pairs so the table form stays a
   // single line and the JSON form needs no extra nesting.
-  var classes = Object.keys(s.counts)
-    .sort(function (a, b) { return s.counts[b] - s.counts[a]; })
+  // The order is the legend's order, tie-break included: two classes covering
+  // the same number of cells are listed in the order the palette declares its
+  // keys, so a record read in a terminal ranks a pair the same way the rows on
+  // screen do rather than in whatever order the counts object happened to be
+  // filled.
+  var declared = Object.keys(result.palette.colors);
+  var classes = declared
+    .filter(function (k) { return s.counts[k]; })
+    .sort(function (a, b) {
+      return s.counts[b] - s.counts[a] ||
+        declared.indexOf(a) - declared.indexOf(b);
+    })
     .map(function (k) {
       return k + '=' + core.percentText(s.counts[k] / s.pixels);
     })
