@@ -89,6 +89,10 @@ Conventions:
   The chosen cell is the lowest DRY neighbour on the whole rim, which is what
   lets a filled basin keep draining; the smoke suite re-derives that minimum
   from the height field, so a mark on a higher step or inside the fill fails.
+  That same cell is the cap of the fill: every labelled cell sits at or below
+  its own outlet, which the suite re-checks per phrase by reading the outlet's
+  height back out of the marks. A fill allowed to climb past its spillway would
+  print a depth for water its own note says has already left.
   The suite also asks that no mark lands on a filled cell: a mark inside its own
   fill would print a depth and an outlet at once, and the carried catchment
   would stop at the water's edge.

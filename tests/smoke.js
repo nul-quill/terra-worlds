@@ -2175,6 +2175,30 @@ assert(markCount === manyBasin.stats.lakeBasins &&
   markNames === markCount && markInRange && manyBasin.stats.lakeBasins > 4,
   'every basin marks exactly one outlet cell (' + markCount + ' marks, ' +
   markNames + ' labels, ' + manyBasin.stats.lakeBasins + ' basins)');
+// That mark is also the cap of the fill it belongs to: a basin holds water up to
+// the height of its own outlet and no higher, so every labelled cell has to sit
+// at or below the rim cell it drains through. Re-derive the outlet height per
+// basin from the marks and compare each filled cell against it — a fill that
+// climbed past its own spillway would be a lake that overflows on paper while
+// the readout still promised `drains E`. Walked over every hand-picked phrase,
+// since a wide plain and a crowded one cap their rims differently.
+var fillAbove = 0, fillSeen = 0;
+core.phrases.forEach(function (fp) {
+  var fw = core.generate({seed: fp, width: 200, height: 120});
+  var rim = {};
+  for (var fi = 0; fi < fw.spillway.length; fi++) {
+    if (fw.spillway[fi]) rim[fw.spillway[fi]] = fw.heightField[fi];
+  }
+  for (var fj = 0; fj < fw.basin.length; fj++) {
+    var fb = fw.basin[fj];
+    if (!fb) continue;
+    fillSeen++;
+    if (fw.heightField[fj] > rim[fb] + 1e-9) fillAbove++;
+  }
+});
+assert(fillSeen > 0 && fillAbove === 0,
+  'a basin fills to its own outlet and no higher (' + fillSeen + ' filled cells, ' +
+  fillAbove + ' above their rim)');
 // Both halves of that pair are printed by the shell, from one array: the
 // filled cells get `basin 2/4 — drains E`, the rim cell gets the same bearing
 // beside its own number. Read the outlet branch out of the shell and ask that
