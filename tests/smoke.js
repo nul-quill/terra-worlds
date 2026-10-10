@@ -2217,13 +2217,15 @@ assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 4 && !bandStray &&
 
 // A bin selected on the chart is a filter over the whole grid, so its reading
 // A bin selected on the chart is a filter over the whole grid, so its reading
-// A bin selected on the chart is a filter over the whole grid, so its reading
 // also goes into the line under the map — that line is the only place the count
 // is big enough to read. Every path that moves a filter has to refresh it: a
 // pointer over the chart, a tap, a `Shift`+arrow walk, either pointer leaving,
-// and each of the three ways a legend pin is set or released. Seven sites, one
-// definition, and the placeholder is restored by that same function rather than
-// by a second write of the literal.
+// each of the three ways a legend pin is set or released, the legend's own
+// hover and clear paths, and the rebuild that follows a resize or a slider
+// step — a new grid changes every share in the legend, so the line beside it
+// has to be rewritten too. Eleven sites, one definition, and the placeholder
+// is restored by that same function rather than by a second write of the
+// literal.
 // The note also has to follow the same precedence the blit does: a pinned
 // legend class beats a height band, so the line cannot describe a band while
 // the map is fading everything that is not the pinned class. Both sides of that
@@ -2235,7 +2237,7 @@ var noteBody = (/function bandNote\(\)([\s\S]*?)\n  \}/.exec(appSrc) ||
   ['', ''])[1];
 var notePrecedence = /var want = solo \|\| pinned;/.test(noteBody);
 var blitPrecedence = /var want = solo \|\| pinned;/.test(appSrc);
-assert(noteDefs === 1 && noteCalls === 7 && notePlaceholder === 1 &&
+assert(noteDefs === 1 && noteCalls === 11 && notePlaceholder === 1 &&
   notePrecedence && blitPrecedence,
   'a selected band is readable under the map (' + noteDefs + ' def, ' +
   noteCalls + ' sites, ' + notePlaceholder + ' placeholder, note precedence ' +

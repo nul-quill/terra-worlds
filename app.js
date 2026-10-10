@@ -333,6 +333,12 @@
     renderStats(result);
     drawHistogram(result);
     renderSummary(result);
+    // The line under the map quotes counts from this world, so a rebuild has
+    // to rewrite it: a new grid — or a slider step — changes every share in the
+    // legend, and a stale figure beside a fresh one reads as two worlds. Done
+    // before the hovered cell is restored so a cell reading still wins over
+    // the note, which is what a pointer resting on the map expects to see.
+    if (hover.x < 0) bandNote();
     // A link that named one cell gets it back after the rebuild, as long as the
     // pointer has not taken over in the meantime. The indices are clamped by
     // hoverCell, so a link written on a wide window still lands sensibly in a
@@ -487,6 +493,7 @@
   function drawHighlighted(key) {
     solo = key;
     drawMap();
+    bandNote();
   }
 
   function hexToRgb(hex) {
@@ -570,7 +577,7 @@
         // from the hash or a previous hover — keeps its mark when the pointer
         // leaves the list. drawMap() alone would repaint the grid and lose it.
         li.addEventListener('mouseenter', function () { drawHighlighted(key); });
-        li.addEventListener('mouseleave', function () { solo = null; drawHover(); });
+        li.addEventListener('mouseleave', function () { solo = null; drawHover(); bandNote(); });
         // Clicking keeps the choice after the pointer moves away, which is how
         // to compare a class against the relief chart without holding the
         // cursor on its row. Clicking the same row again releases it.
@@ -611,7 +618,7 @@
         // order deliberately.
         li.tabIndex = 0;
         li.addEventListener('focus', function () { drawHighlighted(key); });
-        li.addEventListener('blur', function () { solo = null; drawHover(); });
+        li.addEventListener('blur', function () { solo = null; drawHover(); bandNote(); });
         legendList.appendChild(li);
       });
   }

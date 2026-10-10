@@ -407,6 +407,16 @@ Conventions:
   `writeHash()`. Otherwise the line keeps describing a height band over a map
   that is now filtered by class, and the next pointer move is what fixes it: a
   link copied in between would show the wrong pair of numbers.
+  A hovered or focused row is the same kind of change — `solo` is the first half
+  of the note's precedence — so `drawHighlighted()` and both clear handlers call
+  the writer too. That is why the count of call sites is eleven rather than the
+  four the chart paths alone would give: a row that faded the map without
+  renaming itself in the line would leave the two halves of one filter saying
+  different things until something else repainted.
+  A rebuild is a filter change as well, so `render()` calls the writer before it
+  replays a hovered cell: a new grid moves every share in the legend, and a line
+  that kept the old counts would describe the world that was just thrown away.
+  It goes before the hover restore so a cell reading still wins the line.
   That line also has to agree with the blit about which filter is in charge. A
   pinned legend class wins over a picked band — `solo || pinned` in both places —
   so the note reads `Deep water pinned — 65%` while a bar is also hovered, which
