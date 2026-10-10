@@ -1885,6 +1885,29 @@ assert(wetMark === 0 && outlets > 0,
 // different ways a rim can be shared.
 var manyBasin = core.generate({seed: 'red ridge', shape: 'fjord', width: 200, height: 120});
 
+// The outlet is also where a basin's water goes on being a river: the fill's
+// whole catchment is added to that cell's accumulation, so the mark has to
+// stand at or above the count of cells that drained into it. A spillway that
+// only recorded a bearing would leave the network reading as a chain of
+// puddles — every shore cell counted, nothing below the lake. Walked on both a
+// single tarn and a crowded one, since a shared rim cell is where a carried
+// total could be written to the wrong cell.
+function carriesCatchment(world) {
+  var filled = {};
+  for (var ci = 0; ci < world.basin.length; ci++) {
+    if (world.basin[ci]) filled[world.basin[ci]] = (filled[world.basin[ci]] || 0) + 1;
+  }
+  for (var oi2 = 0; oi2 < world.spillway.length; oi2++) {
+    var ob = world.spillway[oi2];
+    if (!ob) continue;
+    if (!(world.accumulation[oi2] >= filled[ob])) return false;
+  }
+  return true;
+}
+assert(carriesCatchment(bw) && carriesCatchment(manyBasin),
+  'a basin drains into its outlet rather than stopping there (' +
+  bw.stats.lakeBasins + ' + ' + manyBasin.stats.lakeBasins + ' basins)');
+
 // The mark also carries the number of the basin it drains, since the readout
 // prints both together. That number has to be one the neighbouring lake cells
 // actually wear — an outlet naming the wrong tarn is worse than a bare one.
