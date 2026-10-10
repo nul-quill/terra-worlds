@@ -1582,6 +1582,48 @@ assert(pngHeadOk && pngBuf.toString('ascii', 12, 16) === 'IHDR' &&
 assert(pngRec.scale === 2 && jsonLine.scale === 1,
   'cli record carries the export multiplier (' + pngRec.scale + ')');
 
+// Both encoders read the same buffer, so the two files of one world must hold
+// the same pixels: inflate the PNG's data stream and compare its rows against
+// the PPM body, byte for byte. Checking the header alone would let a wrong
+// filter byte or a truncated stream through — the picture would still be the
+// right size and look wrong.
+require('child_process').execSync(
+  'node cli.js "salt mirror" --width 24 --height 12 --scale 2 --out round.ppm',
+  {cwd: __dirname + '/..'});
+// The PPM header is three whitespace-separated tokens (`P6`, the size, the
+// maximum), so the body starts after the third one rather than after a fixed
+// count of newlines.
+var ppmBuf = require('fs').readFileSync(__dirname + '/../round.ppm');
+var at2 = 0;
+for (var tk = 0; tk < 3; tk++) {
+  while (at2 < ppmBuf.length && ppmBuf[at2] === 0x0a) at2++;
+  while (at2 < ppmBuf.length && ppmBuf[at2] !== 0x0a) at2++;
+}
+var ppmBody = ppmBuf.slice(at2 + 1);
+// Walk the PNG chunks to the data stream, then undo the deflation and the
+// per-scanline filter byte the writer emits.
+var at = 8, idat = [];
+while (at < pngBuf.length) {
+  var clen = pngBuf.readUInt32BE(at);
+  var ctype = pngBuf.toString('ascii', at + 4, at + 8);
+  if (ctype === 'IDAT') idat.push(pngBuf.slice(at + 8, at + 8 + clen));
+  at += 12 + clen;
+}
+var raw = require('zlib').inflateRawSync(Buffer.concat(idat));
+var pngRows = Buffer.alloc(pngRec.width * pngRec.scale *
+  pngRec.height * pngRec.scale * 3);
+var pk = 0, rk = 0;
+for (var ry = 0; ry < pngRec.height * pngRec.scale; ry++) {
+  var filterByte = raw[rk++];
+  for (var rx = 0; rx < pngRec.width * pngRec.scale * 3; rx++) {
+    pngRows[pk++] = raw[rk++];
+  }
+  if (filterByte !== 0) pngRows = null;
+}
+assert(pngRows !== null && pngRows.length === ppmBody.length &&
+  pngRows.equals(ppmBody),
+  'both encoders write the same pixels (' + ppmBody.length + ' bytes of rgb)');
+
 // The name the browser gives a saved PNG is built from six of these fields:
 // seed, shape, palette, the grid, the multiplier and the checksum. A record
 // that could not refill all six would leave a person holding a file they

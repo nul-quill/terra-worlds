@@ -635,6 +635,12 @@ Conventions:
   The same list is checked from a terminal too: each multiplier must report
   itself in the JSON record while the checksum and the river count stay put,
   which is what lets the `export` row change size without changing a number.
+  Both writers are held to one picture as well: the suite inflates the PNG's
+  data stream and compares its rows against the PPM body of the same seed, so
+  a stray filter byte or a truncated stream is caught rather than showing up
+  as a right-sized, wrong-looking file. Keep the two encoders reading the same
+  buffer — that comparison skips the PPM header's three tokens by counting
+  them, not by counting newlines.
   Because it moves no count, the multiplier is shown in its own `export` row
   right under `grid`: the factor plus the pixel size it saves at. Both the row
   and `savePng()` read it through `exportFactor()`, so the number on screen is
