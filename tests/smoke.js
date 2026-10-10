@@ -638,6 +638,25 @@ assert(slideOk && slideLast > 0,
   'the rivers slider only ever widens the network (' +
   (slidePrev * 100).toFixed(1) + '% at the top of the range)');
 
+// The `rivers` row prints BOTH halves of that network — `19 tri / 4 trunk` —
+// and the two come from one field at two quantiles, so a slider step has to
+// widen them together. A trunk share that could fall while the total rose would
+// mean the second cut had its own scale, and the row would read as a
+// contradiction: more water drawn, less of it a main channel. Checked as a
+// monotone pair plus the subset relation the row already implies.
+var triPrev = -1, trunkPrev = -1, pairOk = true, pairSteps = 0;
+[0, 40, 90, 150, 240, 400].forEach(function (rv) {
+  var pw2 = core.generate({seed: 'red ridge', width: 120, height: 80, rivers: rv});
+  var px = pw2.stats.pixels;
+  var tri = (pw2.stats.rivers - pw2.stats.trunks) / px;
+  var trunk = pw2.stats.trunks / px;
+  if (tri < triPrev || trunk < trunkPrev || trunk > tri) pairOk = false;
+  triPrev = tri; trunkPrev = trunk; pairSteps++;
+});
+assert(pairOk && pairSteps === 6,
+  'both halves of the rivers row widen together (' +
+  Math.round(triPrev * 100) + ' tri / ' + Math.round(trunkPrev * 100) + ' trunk)');
+
 // The summary sentence is shared by the page and the CLI, so it must name the
 // shape, the dominant class and stay identical for the same seed.
 var said = core.describe(a);

@@ -121,6 +121,12 @@ Conventions:
   walks the slider's own range and asks for a share that only rises (and stays
   under a fifth of the grid), which is what lets the `N% drained` figure in the
   sentence be read as the slider's effect without opening the page.
+  Both halves of that row are walked over the same range, since `majorCut` is a
+  second quantile of the SAME field: a trunk share that could fall while the
+  total rose would mean the two cuts had drifted apart into independent
+  thresholds, and the row would read as more water drawn with less of it a
+  main channel. The suite asks for a monotone pair plus the subset relation the
+  row already implies (trunks never exceed the whole network).
   `stats.median` is the middle of the sorted height field, published for the
   same reason: min/max alone cannot tell a plateau from a peaked plain. It is
   grid-size dependent like the band counts, so any assertion comparing it with
