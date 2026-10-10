@@ -2589,6 +2589,30 @@ assert(ringCovers && ringSeen.null === 1 && ringNow === null &&
   ' rows, ' + ringSlots + ' slots, covers ' + ringCovers + ', back to empty ' +
   (ringNow === null) + ')');
 
+// A pinned class is a filter over the grid, and a rebuild can drop that class:
+// the legend is rebuilt from the classes that occur, so a pin left over from
+// the previous grid would dim the whole map with no row left to release it.
+// That is only a real hazard while some class really does disappear between two
+// grids of one seed, so check the pair: find such a pair of grids, and ask that
+// the rebuild consults the new counts for the held pin — exactly once, so a
+// second opinion about when to forget cannot hide in another branch.
+var stalePairs = 0;
+var staleMissing = '';
+core.phrases.forEach(function (sk2) {
+  var small = core.generate({seed: sk2, width: 120, height: 70});
+  var big = core.generate({seed: sk2, width: 240, height: 130});
+  Object.keys(small.stats.counts).forEach(function (ck2) {
+    if (!small.stats.counts[ck2]) return;
+    if (!big.stats.counts[ck2]) { stalePairs++; staleMissing = ck2; }
+  });
+});
+var staleGuard = (appSrc.match(
+  /if \(pinned && !result\.stats\.counts\[pinned\]\) pinned = null;/g) || []
+).length;
+assert(stalePairs > 0 && staleGuard === 1,
+  'a rebuild forgets a pin the new world cannot show (' + stalePairs +
+  ' dropped classes, ' + staleGuard + ' guard, e.g. ' + staleMissing + ')');
+
 // The same partition shows up in three places: the `biomes` row in the stats
 // list, the rows of the legend, and the `classes` column of the record. All
 // three count the classes that actually occur, so the numbers have to be equal

@@ -315,6 +315,13 @@
     current = result;
     current.cellW = cw;
     current.cellH = chh;
+    // A pinned class is a filter over the grid, so it only means something
+    // while this world has cells of that class. A new grid — a wider column
+    // count, a different shape — can drop a class entirely, and the legend is
+    // rebuilt from the classes that remain: the dimming would stay while the
+    // row that would release it is gone. Drop the pin in that case rather
+    // than leaving a washed-out map with nothing left to click.
+    if (pinned && !result.stats.counts[pinned]) pinned = null;
 
     // A scalar overlay replaces the colour buffer only: every field stays as
     // generated, so the readout, legend and chart still describe this world.

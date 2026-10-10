@@ -468,6 +468,13 @@ Conventions:
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend
   path, or hover and click will disagree about the result.
+  "Survives a reroll" means a reroll of the same kind: a wider column count can
+  drop a class entirely, and the legend is rebuilt from the classes that remain,
+  so a pin left over from the previous grid would dim the whole map with no row
+  left to release it. `render()` therefore forgets a pin the new `stats.counts`
+  does not list. The suite re-derives that pair — a class present at one pinned
+  width and absent at another, plus exactly one such guard in the shell — so the
+  cleanup cannot be dropped while the counts still look reasonable.
   A hovered relief-chart bar (`band`, a bin index) is the third filter in that
   same loop: it selects by height instead of by class, and a legend selection
   wins over it. Like `solo` it is a preview and never goes into the hash; both
