@@ -463,6 +463,11 @@ Conventions:
   The touch call passes a second argument so tapping the bar that is already
   selected clears it: a finger has no hover-out, and without that second tap a
   phone would never get the full map back. The mouse path keeps the plain rule.
+  Both canvases carry that pair — one `mousemove` and one pointer path — and
+  each pointer handler starts by handing the event back when the pointer reports
+  itself as a mouse, so one cursor move never paints the same frame twice. The
+  suite counts the three lists together, so a third pointer listener has to
+  state its own guard rather than relying on the other two.
   Shift+arrows walk the same bin through `stepBand()`, which is the keyboard
   path for the height filter; plain arrows still walk cells. Both are previews —
   neither goes into the hash.

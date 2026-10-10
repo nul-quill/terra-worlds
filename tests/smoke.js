@@ -2033,6 +2033,19 @@ var shoreLook = shoreSrc.indexOf('basinSpill[') >= 0 &&
 assert(spillLook === 2 && shoreLook,
   'an outlet and its shore read one bearing (' + spillLook + ' lookups, shore ' +
   shoreLook + ')');
+// A finger reports itself through pointer events rather than mousemove, so
+// both canvases need a pointer path or a phone would show a map nobody can
+// hover and a chart nobody can select. Each of those paths has to hand the
+// event back to the mouse when the pointer says it IS a mouse, or one cursor
+// move would paint the same frame twice. Count the guards with the handlers,
+// so a third pointer listener cannot arrive without saying which half it is.
+var pointerSites = (outSrc.match(/addEventListener\('pointer(?:move|down)'/g) || []).length;
+var mouseGuards = (outSrc.match(/ev\.pointerType === 'mouse'/g) || []).length;
+var mouseSites = (outSrc.match(/addEventListener\('mousemove'/g) || []).length;
+assert(pointerSites === 2 && mouseGuards === pointerSites &&
+  mouseSites === pointerSites,
+  'both canvases answer a finger (' + pointerSites + ' pointer paths, ' +
+  mouseGuards + ' guards, ' + mouseSites + ' mouse paths)');
 
 // The hash is only useful if it carries every control on screen, so the two
 // lists are checked against each other: each INPUT or SELECT id in the page
