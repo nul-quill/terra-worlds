@@ -2006,6 +2006,19 @@ assert(markCount === manyBasin.stats.lakeBasins &&
   markNames === markCount && markInRange && manyBasin.stats.lakeBasins > 4,
   'every basin marks exactly one outlet cell (' + markCount + ' marks, ' +
   markNames + ' labels, ' + manyBasin.stats.lakeBasins + ' basins)');
+// Both halves of that pair are printed by the shell, from one array: the
+// filled cells get `basin 2/4 — drains E`, the rim cell gets the same bearing
+// beside its own number. Read the outlet branch out of the shell and ask that
+// it names both, since a note that dropped the direction would leave the one
+// cell that knows where the water goes saying less than its own shore.
+var outSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var outletSrc = (/if \(current\.spillway && current\.spillway\[i\]\)([\s\S]{0,300}?)\n    \}/
+  .exec(outSrc) || ['', ''])[1];
+assert(outletSrc.indexOf('basinSpill') >= 0 &&
+  outletSrc.indexOf("drains ") >= 0 &&
+  outletSrc.indexOf('current.spillway[i]') >= 0,
+  'the outlet note names its basin and its bearing (' +
+  outletSrc.replace(/\s+/g, ' ').trim().slice(0, 46) + ')');
 
 // The hash is only useful if it carries every control on screen, so the two
 // lists are checked against each other: each INPUT or SELECT id in the page

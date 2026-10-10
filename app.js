@@ -998,9 +998,14 @@
     // The mark carries the basin's own number, which is how an outlet in a
     // world of a dozen tarns says which one it belongs to. The outlet sits
     // outside the fill, so this is the only place its lake gets named.
+    // The bearing rides along here too: this one cell IS the way out, so the
+    // direction is worth more on the outlet than on the shore it sits beside.
+    // Same lookup as the filled cells, indexed by the mark's own number.
     if (current.spillway && current.spillway[i]) {
+      var outB = current.basinSpill &&
+        current.basinSpill[current.spillway[i] - 1];
       parts.push('outlet of basin ' + current.spillway[i] +
-        '/' + current.stats.lakeBasins);
+        '/' + current.stats.lakeBasins + (outB ? ' drains ' + outB : ''));
     }
     if (current.riverMask && current.riverMask[i]) {
       // The catchment behind the channel explains why this cell is a trunk and

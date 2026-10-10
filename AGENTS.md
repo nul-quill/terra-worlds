@@ -62,6 +62,10 @@ Conventions:
   The mark holds the basin's own number rather than a plain flag, so hovering
   the rim cell says `outlet of basin 2/4` — the outlet sits outside the fill and
   would otherwise be anonymous. Keep the array wide enough for that number.
+  That cell IS the way out, so it prints the bearing too — `drains W` beside
+  its number, from the same `basinSpill` lookup the filled cells use. Both
+  halves of that readout come from one cell, so the suite reads the outlet
+  branch out of the shell and asks that it names both.
   That number has to match one worn by a neighbouring filled cell, and the suite
   walks that pair on both a one-basin world and a crowded one: a lone tarn
   cannot show a shared rim cell overwriting its own label.
@@ -76,9 +80,9 @@ Conventions:
   The chosen cell is the lowest DRY neighbour on the whole rim, which is what
   lets a filled basin keep draining; the smoke suite re-derives that minimum
   from the height field, so a mark on a higher step or inside the fill fails.
-  Both halves of that readout are one cell, so the suite also asks that no mark
-  lands on a filled cell: a mark inside its own fill would print a depth and an
-  outlet at once, and the carried catchment would stop at the water's edge.
+  The suite also asks that no mark lands on a filled cell: a mark inside its own
+  fill would print a depth and an outlet at once, and the carried catchment
+  would stop at the water's edge.
   The flood fill marks cells in `queued` with the fill number at enqueue time,
   not at dequeue: without that a cell offered by two neighbours is pushed twice
   and overflows the one-slot-per-cell queue.
