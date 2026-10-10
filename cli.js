@@ -277,15 +277,21 @@ if (opts.help) {
     }
     // With --describe each seed also gets its one-line summary, which is how
     // to pick a world out of a chain without opening the page.
+    // Every form below needs the world behind one seed of the chain, built the
+    // same way the per-seed loop builds it: a copy of the parsed flags with
+    // this seed on top. Listing the keys by hand in each branch instead would
+    // let one branch forget a flag the other passes.
+    var chainWorld = function (s) {
+      var runOpts = {};
+      Object.keys(opts).forEach(function (k) { runOpts[k] = opts[k]; });
+      runOpts.seed = s;
+      return core.generate(runOpts);
+    };
     if (opts.describe) {
       console.log(chain.map(function (s) {
-        var r = core.generate({
-          seed: s, width: opts.width, height: opts.height, palette: opts.palette,
-          shape: opts.shape, seaLevel: opts.seaLevel, detail: opts.detail,
-          polar: opts.polar, terraces: opts.terraces, rivers: opts.rivers,
-          hillshade: opts.hillshade, lightDir: opts.lightDir
-        });
-        return s + '  ' + core.describe(r);
+        var r = chainWorld(s);
+        return s + '  ' + core.describe(r) +
+          (opts.hist ? '\n' + profile(r).join('\n') : '');
       }).join('\n'));
     } else if (opts.json) {
       // One record per seed in the chain, in the order the Reroll button
@@ -293,16 +299,17 @@ if (opts.help) {
       // the plain listing gives the phrases, this gives the numbers behind
       // each of them, and the `seed` field ties a record back to its line.
       console.log(chain.map(function (s) {
-        var r = core.generate({
-          seed: s, width: opts.width, height: opts.height, palette: opts.palette,
-          shape: opts.shape, seaLevel: opts.seaLevel, detail: opts.detail,
-          polar: opts.polar, terraces: opts.terraces, rivers: opts.rivers,
-          hillshade: opts.hillshade, lightDir: opts.lightDir
-        });
+        var r = chainWorld(s);
         return summarise(s, r, opts.out, true);
       }).join('\n'));
     } else {
-      console.log(chain.join('\n'));
+      // The bare listing is the phrase per seed; with --hist each phrase also
+      // carries the silhouette behind it, so a run of clicks can be skimmed
+      // from a terminal without opening the page.
+      console.log(chain.map(function (s) {
+        if (!opts.hist) return s;
+        return s + '\n' + profile(chainWorld(s)).join('\n');
+      }).join('\n'));
     }
     return;
   }

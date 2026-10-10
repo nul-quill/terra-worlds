@@ -889,6 +889,25 @@ assert(nextSeedOk && Object.keys(nextSums).length === nextJson.length,
   'cli --next --json records the whole chain (' + nextJson.length +
   ' records, ' + Object.keys(nextSums).length + ' distinct)');
 
+// The same chain asked for as text profiles has to keep the pairing too: one
+// block per seed, each caption ending in the checksum of that seed's record.
+// That is the only way a pasted block of bars can be traced back to a line of
+// JSON, and it holds only because every branch builds its world the same way.
+var nextHist = require('child_process')
+  .execSync('node cli.js "salt mirror" --next 3 --hist --width 40 --height 24',
+    {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var nextHistOk = true;
+nextPairs.forEach(function (np, ni) {
+  var from = nextHist.indexOf(np);
+  var to = ni + 1 < nextPairs.length ? nextHist.indexOf(nextPairs[ni + 1])
+    : nextHist.length;
+  if (from === -1 || to <= from) { nextHistOk = false; return; }
+  var block = nextHist.slice(from, to).join('\n');
+  if (block.indexOf('- ' + nextJson[ni].checksum) === -1) nextHistOk = false;
+});
+assert(nextHistOk,
+  'cli --next --hist keeps one caption per seed (' + nextHist.length + ' lines)');
+
 // The palette keys the CLI lists must be the ones the generator knows, so a
 // name copied from the terminal is guaranteed to be accepted by --palette.
 var listed = require('child_process')

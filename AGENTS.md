@@ -288,6 +288,14 @@ Conventions:
   Each record keeps its own `seed`, which is what ties a line of JSON back to
   the phrase the plain listing prints; the suite checks that pairing and asks
   for distinct checksums across the chain.
+  Every branch of that chain builds its world through one `chainWorld(seed)`
+  helper that copies the parsed options and swaps in the seed, so a flag added
+  to the parser reaches the listing, the `--describe` sentences and the records
+  at once rather than only the form someone happened to edit. `--hist` is
+  honoured in those branches too: one profile block per seed, each caption
+  ending in that seed's checksum, which is what lets a pasted block of bars be
+  matched to its own line of JSON. The suite reads both forms and compares the
+  two checksums per seed.
 - `parseArgs()` in `cli.js` treats a bare word as a seed and a dashed word as a
   flag. A dashed word that matches nothing is named on stderr, and the word
   after it is skipped, so a mistyped `--widht 30` costs one warning instead of
