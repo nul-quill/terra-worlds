@@ -474,6 +474,9 @@ Conventions:
   the band there would describe a set of cells the blit no longer shows. The
   suite pulls the note's own body out of the shell and asks both halves for that
   one expression, so the precedence cannot be dropped on one side only.
+  Exactly three places read that pair — the blit, the bars and the note — and
+  the suite counts all three, so a fourth opinion about which filter wins has
+  to be added there as well as in the shell.
   The word beside the class is gated on the same pair: only a clicked row is
   called `pinned`, a hovered one just prints its name and share, since a preview
   is gone on the next mouse-move. The suite reads that gate out of the note's

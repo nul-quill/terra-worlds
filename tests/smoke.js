@@ -2399,11 +2399,17 @@ var noteBody = (/function bandNote\(\)([\s\S]*?)\n  \}/.exec(appSrc) ||
   ['', ''])[1];
 var notePrecedence = /var want = solo \|\| pinned;/.test(noteBody);
 var blitPrecedence = /var want = solo \|\| pinned;/.test(appSrc);
+// Three things read that pair, and only those three: the map blit, the chart's
+// bars, and the line under the map. A fourth would be a fourth opinion about
+// which filter is in charge, which is what the shared expression exists to
+// avoid. Counted rather than sampled, so a new reader has to be named here.
+var readers = (appSrc.match(/var want = solo \|\| pinned;/g) || []).length;
 assert(noteDefs === 1 && noteCalls === 11 && notePlaceholder === 1 &&
-  notePrecedence && blitPrecedence,
+  notePrecedence && blitPrecedence && readers === 3,
   'a selected band is readable under the map (' + noteDefs + ' def, ' +
-  noteCalls + ' sites, ' + notePlaceholder + ' placeholder, note precedence ' +
-  notePrecedence + ', blit ' + blitPrecedence + ')');
+  noteCalls + ' sites, ' + notePlaceholder + ' placeholder, ' + readers +
+  ' readers, note precedence ' + notePrecedence + ', blit ' +
+  blitPrecedence + ')');
 
 // The word beside a selected class also has to match what the map does with
 // it. A clicked row keeps its class after the pointer moves — that one is
