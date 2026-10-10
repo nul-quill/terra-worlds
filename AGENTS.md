@@ -401,7 +401,12 @@ Conventions:
   that moves the selection calls it (chart hover, tap, `Shift`+arrow walk, and
   either pointer leaving), and with no selection the same function restores the
   `hover the map` placeholder, which is why that literal appears once. The suite
-  counts the four sites and the one placeholder.
+  counts every one of those sites and the one placeholder.
+  A legend pin is a filter change too, so all three of its sites — the click,
+  the row's own `Enter`/`Space`, and the `k` cycle — call the same writer after
+  `writeHash()`. Otherwise the line keeps describing a height band over a map
+  that is now filtered by class, and the next pointer move is what fixes it: a
+  link copied in between would show the wrong pair of numbers.
   That line also has to agree with the blit about which filter is in charge. A
   pinned legend class wins over a picked band — `solo || pinned` in both places —
   so the note reads `Deep water pinned — 65%` while a bar is also hovered, which

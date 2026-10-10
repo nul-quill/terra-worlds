@@ -579,6 +579,10 @@
           renderLegend(current);
           drawMap();
           writeHash();
+          // The line under the map follows whichever filter is in charge, so a
+          // pin has to refresh it too: otherwise the old band reading stays up
+          // over a map that is now filtered by class.
+          bandNote();
         });
         // A row is in the tab order, so it has to answer to the keyboard too:
         // Enter or Space toggles the same pin a click would. Without this the
@@ -593,6 +597,7 @@
           renderLegend(current);
           drawMap();
           writeHash();
+          bandNote();
           // Rebuilding the list drops the caret, so put it back on the row that
           // was just activated: a second Enter should release the pin without
           // tabbing through the list again.
@@ -1471,6 +1476,7 @@
         renderLegend(current);
         drawMap();
         writeHash();
+        bandNote();
       }
       return;
     }
