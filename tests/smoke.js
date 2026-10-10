@@ -1287,9 +1287,11 @@ assert(rulerBad.length === 0,
 var capEnds = /^(\d+) \.\. (\d+) relief/.exec(histCaption);
 var capBins = /(\d+) bins/.exec(histCaption);
 var capSea = /sea (\d+)/.exec(histCaption);
+var capMed = /median (\d+)/.exec(histCaption);
 assert(capEnds && Number(capEnds[1]) === Math.round(histWorld.stats.min * 100) &&
   Number(capEnds[2]) === Math.round(histWorld.stats.max * 100) &&
   capBins && Number(capBins[1]) === histBins &&
+  capMed && Number(capMed[1]) === Math.round(histWorld.stats.median * 100) &&
   capSea && Number(capSea[1]) === Math.round(histWorld.seaLevel * 100),
   'the caption repeats the record it came from (' + histCaption + ')');
 // The sea line is the one figure the ruler marks, so it has to be a field of

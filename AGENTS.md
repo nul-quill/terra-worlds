@@ -137,7 +137,11 @@ Conventions:
   saved PNG keeps nothing but its name, and the checksum is in that name.
   Every other figure in that caption is a field of the JSON record as well:
   the two ends of the range are `low` and `high`, the column count is `bins`.
-  The suite re-reads the caption with those three and compares, so a block of
+  The two marks on the ruler are named there too — `sea` and `median` — so a
+  reader with a block of bars and one line of JSON can place both without the
+  page. Keep every caption figure a record field: a number that exists only in
+  the text is one a terminal cannot verify.
+  The suite re-reads every one of those figures and compares, so a block of
   bars and a line of JSON cannot describe two different worlds.
   `sea` joins them: the ruler's `|` is the one mark a reader has to place by
   hand from a record, so the level itself is a field rather than something to
