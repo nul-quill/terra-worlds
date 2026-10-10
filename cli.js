@@ -469,6 +469,13 @@ function summarise(seed, result, name, asJson) {
     // `low`..`high`, which the four fields above already pin down.
     bins: hist.bins,
     peak: hist.peak,
+    // Which columns the two ruler marks fall in. The caption rounds every
+    // figure out of a hundred, and a rounded end of the range can move a mark
+    // by a column, so the two positions are published rather than left for a
+    // reader to re-derive from `low` and `high`. Both come from the same
+    // `binOf` the text ruler is drawn with.
+    seaCol: core.binOf(result.seaLevel, hist.lo, hist.span, hist.bins),
+    medCol: core.binOf(result.stats.median, hist.lo, hist.span, hist.bins),
     // The bars themselves. `bins` and `peak` say how tall the silhouette is
     // but not where its weight sits, which is the difference between a plateau
     // and a peak squeezed between its own two ends. The array is the same pass

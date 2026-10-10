@@ -1357,6 +1357,27 @@ assert(Math.round(seaRec.sea * 100) === Number(capSea[1]) &&
   'the record keeps the sea the ruler marks (' + seaRec.sea + ' -> ' +
   capSea[1] + ')');
 
+// Both marks are published as columns as well, since the caption rounds every
+// figure and a rounded end of the range can slide a mark by one column. Read
+// the ruler and the record for one world and compare the pair: where they
+// differ the ruler shows `+`, which is still one column for both.
+var markRec = JSON.parse(require('child_process')
+  .execSync('node cli.js "aurora basin" --width 120 --height 80 --json ' +
+    '--out mark-rec.ppm', {cwd: __dirname + '/..'}).toString().trim());
+var markOut = require('child_process')
+  .execSync('node cli.js "aurora basin" --width 120 --height 80 --hist ' +
+    '--out mark-hist.ppm', {cwd: __dirname + '/..'})
+  .toString().replace(/\r/g, '').split('\n')
+  .filter(function (l) { return l.length; });
+var markRuler = markOut[markOut.length - 2];
+var markOne = markRec.seaCol === markRec.medCol;
+var markGlyph = markRuler.charAt(markRec.seaCol);
+var markOnly = markRuler.replace(/-/g, '').length;
+assert(markOnly === (markOne ? 1 : 2) && markGlyph === (markOne ? '+' : '|') &&
+  (!markOne && markRuler.charAt(markRec.medCol) === ':'),
+  'the record names the columns the ruler marks (' + markRec.seaCol + '/' +
+  markRec.medCol + ' -> ' + markGlyph + ')');
+
 // The readout calls a water cell `off-shelf` at one fixed depth below the sea
 // line, and the core calls the same cell `deep` at that same depth. Two numbers
 // written in two files, so both are read out of their own source and compared,

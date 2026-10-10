@@ -177,6 +177,12 @@ Conventions:
   the two columns coincide — a near-flat world whose middle sits on its own
   shoreline — the ruler prints one `+` rather than dropping a mark, and the
   suite walks every phrase asking for exactly one glyph per marked column.
+  Both columns are record fields too — `seaCol` and `medCol`, from the same
+  `binOf` the ruler is drawn with — because the caption rounds every figure out
+  of a hundred and a rounded end of the range can slide a mark by one column.
+  The suite reads a ruler and a record for one world and asks that the glyph
+  counts match: one `+` when the two columns coincide, otherwise a `|` and a
+  `:` at the two numbers the record names.
   Above the ruler sit six rows of blocks, one threshold each, so the counts can
   only grow going down — an inverted level still prints a correct caption while
   showing the silhouette upside down. The suite checks that ramp, and that the
