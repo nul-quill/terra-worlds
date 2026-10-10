@@ -123,6 +123,10 @@ Conventions:
   The caption under the ruler also carries the world's checksum, which is the
   only link a pasted block of bars has back to the picture it describes — a
   saved PNG keeps nothing but its name, and the checksum is in that name.
+  The ruler carries two marks: `|` on the sea column and `:` on the column the
+  median falls in, since a spread cannot tell a plateau from a peak squeezed
+  between its own two ends. Both are the core's `binOf` over the same range, so
+  the suite re-derives each and asks that the caption name both figures.
   That check also reads the row's own source for the `hundred(` call, so the
   scaling cannot be dropped at the call site while the record keeps its three
   decimals: the two halves of the pair are compared, not just printed.

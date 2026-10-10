@@ -1181,9 +1181,18 @@ assert(histRuler.length === histBins && histSeaCol === histWantCol &&
 // The caption under the ruler names the picture the block belongs to, so the
 // last line has to carry the same eight hex digits the record prints. Without
 // it a pasted block of bars could not be tied back to a saved PNG at all.
+// The same ruler carries the median, so the pair of marks has to sit where the
+// core's own lookup puts them: `|` for the sea line, `:` for the middle of the
+// height field. Both are compared against the field rather than a copy of the
+// arithmetic, which is what lets a caption stand in for the chart itself.
+var histMedCol = histRuler.indexOf(':');
+var histMedWant = core.binOf(histWorld.stats.median, histWorld.stats.min,
+  Math.max(0.001, histWorld.stats.max - histWorld.stats.min), histBins);
 var histCaption = histLines[histLines.length - 1];
 assert(histCaption.indexOf(histWorld.stats.checksum) > 0,
   'the text profile names its own world (' + histCaption + ')');
+assert(histMedCol === histMedWant && histCaption.indexOf('median') > 0,
+  'the ruler marks the middle as well as the sea (' + histMedCol + ')');
 
 // The readout calls a water cell `off-shelf` at one fixed depth below the sea
 // line, and the core calls the same cell `deep` at that same depth. Two numbers

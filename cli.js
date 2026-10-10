@@ -372,14 +372,20 @@ function profile(result) {
     lines.push(line.replace(/\s+$/, ''));
   }
   // Under the bars: where the sea sits among the columns, then the two ends of
-  // the range the bins were cut over — the same three figures the chart prints.
+  // the range the bins were cut over — the same figures the chart prints. The
+  // median gets a second mark, since the spread alone cannot say whether a
+  // world is a plateau or a peak squeezed between two ends.
   var seaCol = core.binOf(result.seaLevel, h.lo, h.span, h.bins);
+  var medCol = core.binOf(result.stats.median, h.lo, h.span, h.bins);
   var ruler = '';
-  for (var c = 0; c < h.bins; c++) ruler += c === seaCol ? '|' : '-';
+  for (var c = 0; c < h.bins; c++) {
+    ruler += c === seaCol ? '|' : (c === medCol ? ':' : '-');
+  }
   lines.push(ruler);
   lines.push(Math.round(h.lo * 100) + ' .. ' +
     Math.round((h.lo + h.span) * 100) + ' relief, sea ' +
-    Math.round(result.seaLevel * 100) + ', ' + h.bins + ' bins · ' +
+    Math.round(result.seaLevel * 100) + ', median ' +
+    Math.round(result.stats.median * 100) + ', ' + h.bins + ' bins - ' +
     // The same eight hex digits the stats list and the record print, so a
     // pasted block of text names the picture it came from — the one field a
     // reader can match against a saved PNG's name without any other file.
