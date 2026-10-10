@@ -1279,6 +1279,24 @@ core.phrases.forEach(function (rp) {
 assert(rulerBad.length === 0,
   'the ruler keeps both marks wherever they fall (' +
   rulerBad.join('; ') + ')');
+// The column count comes from the sidebar's width rather than the world's
+// grid, so two grids of different sizes print the same number of columns and
+// their blocks can be laid over each other. A count that tracked the grid
+// would make every profile a different width, and the only comparison left
+// would be by eye against a second caption.
+var wideRuler = '';
+['40x24', '200x120'].forEach(function (gsize) {
+  var gp = gsize.split('x');
+  var gout = require('child_process')
+    .execSync('node cli.js "salt mirror" --hist --width ' + gp[0] +
+      ' --height ' + gp[1], {cwd: __dirname + '/..'})
+    .toString().replace(/\r/g, '').split('\n')
+    .filter(function (l) { return l.length; });
+  wideRuler = gout[gout.length - 2];
+});
+assert(wideRuler.length === histBins,
+  'profiles of different grids share a column count (' +
+  wideRuler.length + ')');
 // Every figure in that caption is also a field of the JSON record, so a pasted
 // block of bars and a line of JSON have to say the same numbers: the two ends
 // of the range are the record's `low` and `high`, the column count is its

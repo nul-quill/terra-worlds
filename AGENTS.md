@@ -132,6 +132,10 @@ Conventions:
   about 200) rather than the column's: the fallback is what a terminal assumes,
   and a figure the page never measures would print a different bar count than
   the one on screen.
+  Because the count comes from that width rather than the world, two grids of
+  different sizes print the same number of columns, so their profiles can be
+  laid over each other. The suite checks that pair directly — a count that
+  tracked the grid would make every block a different width.
   The caption under the ruler also carries the world's checksum, which is the
   only link a pasted block of bars has back to the picture it describes — a
   saved PNG keeps nothing but its name, and the checksum is in that name.
