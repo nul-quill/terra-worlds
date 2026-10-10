@@ -603,6 +603,14 @@ Conventions:
   contract, not decoration — the suite asks that a narrow strip reaches the
   floor and a wide one the ceiling, so a band that never engages is caught
   rather than mistaken for a formula. Keep the count out of the shell too.
+  The one handler that fires without being asked is `resize`: dragging a window
+  edge fires one event per pixel, and each would rebuild the grid. The listener
+  schedules a single `render()` through `requestAnimationFrame` behind a
+  `pendingResize` flag, cleared inside the callback so a burst collapses to one
+  rebuild — the last size in the burst is the only one that matters, since the
+  world depends on the seed and not on the window. Keep the flag reset inside
+  the callback; resetting it before scheduling would let every event in the
+  burst queue its own render again.
 
 Verify with:
 

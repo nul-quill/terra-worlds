@@ -1328,7 +1328,21 @@
     paintHistogram(-1);
   });
 
-  window.addEventListener('resize', render);
+  // Dragging a window edge fires a resize for every pixel of the drag, and
+  // each one would otherwise rebuild the whole grid. One scheduled render per
+  // frame is enough: the last size in the burst is the one that matters, and
+  // the world itself only depends on the seed, so no intermediate size is
+  // ever seen. The flag is cleared inside the callback rather than before it,
+  // which is what keeps a burst to a single rebuild.
+  var pendingResize = false;
+  window.addEventListener('resize', function () {
+    if (pendingResize) return;
+    pendingResize = true;
+    requestAnimationFrame(function () {
+      pendingResize = false;
+      render();
+    });
+  });
 
   // Space rerolls from anywhere, unless the caret is in the seed box.
   document.addEventListener('keydown', function (ev) {

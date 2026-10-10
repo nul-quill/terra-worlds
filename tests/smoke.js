@@ -1317,6 +1317,21 @@ assert(medMarkSrc.indexOf("median '") === 0 &&
   medMarkSrc.indexOf('* 100') < 0,
   'the chart marks the median the row prints (' + medMarkSrc.trim() + ')');
 
+// Dragging a window edge fires a resize for every pixel of the drag, and each
+// one rebuilds the grid from the seed. That is the only handler on this page
+// that runs without a person asking for it, so it has to coalesce: one
+// scheduled render per frame, with the guard cleared inside the callback so a
+// burst collapses to a single rebuild. Read the listener out of the shell and
+// ask for that shape rather than for a bare `render` in the listener list.
+var resizeSrc = (/window\.addEventListener\('resize',([\s\S]*?)\n  \}\);/
+  .exec(medSrc) || ['', ''])[1];
+assert(/pendingResize/.test(resizeSrc) &&
+  /requestAnimationFrame\(/.test(resizeSrc) &&
+  /pendingResize = false;\s*\n\s*render\(\);/.test(resizeSrc) &&
+  /addEventListener\('resize', render\)/.test(medSrc) === false,
+  'a resize burst rebuilds once per frame (' + resizeSrc.trim().slice(0, 40) +
+  '...)');
+
 // The order of that column is the legend's order — biggest share first — so
 // the first pair is the class the sentence calls dominant, and no later pair
 // may be bigger than the one before it. A record read in a terminal has to
