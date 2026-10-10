@@ -120,6 +120,9 @@ Conventions:
   re-derives the sea column with `core.binOf` and compares all three. Keep the
   block out of the `--json` path: one line per world is what makes that form
   pipeable, and the four fields already cover it.
+  The suite checks that with both flags at once, asking that every line of the
+  combined form still be a whole JSON object rather than a bar block wedged
+  between two records.
   The width behind that column count is one number as well —
   `TerraCore.histWidth` — read by the shell as the fallback before its canvas
   has a layout, and by the CLI which has no window at all. Two literals would

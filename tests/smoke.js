@@ -908,6 +908,22 @@ nextPairs.forEach(function (np, ni) {
 assert(nextHistOk,
   'cli --next --hist keeps one caption per seed (' + nextHist.length + ' lines)');
 
+// `--json` is the pipeable form, so the profile block has to stay out of it
+// even when both flags are given: one line per world, each a whole record.
+// That is what lets a chain be read by `Select-String` or `jq` without first
+// stripping a block of bars out of the middle.
+var jsonHist = require('child_process')
+  .execSync('node cli.js "salt mirror" "aurora basin" --json --hist ' +
+    '--width 40 --height 24 --out json-hist.ppm',
+    {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var jsonHistOk = jsonHist.length === 2;
+jsonHist.forEach(function (line) {
+  if (!/^\{.*\}$/.test(line)) jsonHistOk = false;
+});
+assert(jsonHistOk,
+  'cli --json keeps the profile block out of the record (' +
+  jsonHist.length + ' lines)');
+
 // The palette keys the CLI lists must be the ones the generator knows, so a
 // name copied from the terminal is guaranteed to be accepted by --palette.
 var listed = require('child_process')
