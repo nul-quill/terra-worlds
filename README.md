@@ -10,7 +10,6 @@ node cli.js "aurora basin" --width 320 --height 200 --out world.ppm
 Several seeds can be rendered in one call — each writes its own file
 (`world-1.ppm`, `world-2.ppm`, …) — and `--json` swaps the stats table for one
 JSON record per world, which is what a script would consume.
-A dashed word that matches no flag is reported rather than swallowed: without
 A dashed word that matches no flag is named on stderr rather than swallowed as a
 seed, and the word after it is skipped — otherwise a mistyped `--widht 30`
 would quietly render a second world from the number `30`.
@@ -22,6 +21,11 @@ seeds.
 With several seeds at once each line is prefixed with its own seed, so a block
 of sentences can still be traced back to the phrase that produced it; a single
 seed keeps the bare sentence, which is what the sidebar prints.
+`--hist` adds the relief silhouette as text: six rows of blocks over the same
+bins the sidebar chart draws, a ruler under them with the sea and the median
+marked, and a caption naming the range, the column count and the checksum. With
+`--json` the block stays out of the way — one line per world is what makes that
+form pipeable, and the record's `bins`, `peak` and `hist` already describe it.
 `--palettes` lists the palette keys the `--palette` flag takes, with the label
 each one shows in the dropdown and the sky colour the chart is washed with.
 `--shapes` does the same for the shape keys. Both lists come from the generator
@@ -97,16 +101,12 @@ that.
 `--grids` is the sixth list: those same column counts, with the note each one
 shows. The `w` key walks that list, so a pinned count in a link means the same
 thing from a terminal.
-it in the record, the `width` and `height` above are enough to work out the
-which the `e` key walks. Unlike the other lists it changes only the saved file —
-the grid, and therefore every count, is the same at 2x or 6x.
-Keyboard: `space` or `r` rerolls, and `1`-`6` pick a palette by position.
-idea for the filename: seed, shape, palette, grid size, the export multiplier
-and the pixel checksum, so a folder of exports stays readable and any file can
-be traced back to the link that produced it. The multiplier is in there because
-every other part of the name is identical between a 2x and a 6x save of the
-same world — the checksum moves only with the pixels, not with their size.
-the same list walks backwards, so backing out of a choice never needs a full lap.
+`--scales` is the seventh: the export multipliers the `e` key walks. Unlike the
+other lists it changes only the saved file — the grid, and therefore every
+count, is the same at 2x or 6x.
+Keyboard: `space` or `r` rerolls, and the digits pick a palette by position.
+With any of the list keys, `Shift` walks the same list backwards, so backing out
+of a choice never needs a full lap.
 `p` steps through the seed phrases listed by `--phrases`, which is a quicker way
 to browse good worlds than rerolling at random — and unlike reroll it returns to
 the first phrase after the last.
@@ -171,20 +171,19 @@ lake basins the world has (`4 lakes`) and `polar` when they apply. The bracketed
 range is the same number the CLI record publishes as `relief`, so a sentence and
 a record of one world cannot disagree about how tall it is; the word in front of
 it is only a bucket of that number. Hovering a lake cell names its own basin —
-`basin 2/4` — so two bodies of water of the same
-depth are easy to tell apart while walking the map. The same readout adds the
-bearing of that basin's spillway — `drains E` — the direction its surplus
-leaves over the lowest point of the rim, which is also where the outflow
-channel starts. Hovering that rim cell itself prints `outlet`, so the seam
-channel starts. Hovering that rim cell itself prints `outlet of basin 2/4`, so
-the seam between a lake and the river network is findable by eye and still names
-the water it belongs to. Save PNG uses the same
-idea for the filename: seed, shape, palette, grid size, the export multiplier and
-the pixel checksum, so a folder of exports stays readable and any file can be
-traced back to the link that produced it. The multiplier is in there because
-every other part of the name is identical between a 2x and a 6x save of the same
-world: the checksum moves with the pixels, not with their size. The checksum is
-the same eight digits as the `checksum` row in the stats list.
+`basin 2/4` — so two bodies of water of the same depth are easy to tell apart
+while walking the map. The same readout adds the bearing of that basin's
+spillway — `drains E` — the direction its surplus leaves over the lowest point
+of the rim, which is also where the outflow channel starts. Hovering that rim
+cell itself prints `outlet of basin 2/4`, so the seam between a lake and the
+river network is findable by eye and still names the water it belongs to.
+Save PNG uses the same idea for the filename: seed, shape, palette, grid size,
+the export multiplier and the pixel checksum, so a folder of exports stays
+readable and any file can be traced back to the link that produced it. The
+multiplier is in there because every other part of the name is identical
+between a 2x and a 6x save of the same world: the checksum moves with the
+pixels, not with their size. The checksum is the same eight digits as the
+`checksum` row in the stats list.
 The sidebar ends with a small relief histogram: how much of the grid sits at each
 elevation, bars below the shoreline drawn fainter, with a rule at the current sea
 level. Bins span the world's own height range rather than 0..1, so a flat craton

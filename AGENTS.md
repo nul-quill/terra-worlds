@@ -529,7 +529,6 @@ Conventions:
   still wins over it. Both are cleared when the pointer leaves, and neither
   goes into the hash — the link carries the cell, and the bin follows from it.
   That label is a measurement rather than a position in a list, so both ends of
-  That label is a measurement rather than a position in a list, so both ends of
   the bin's height range go beside it — `band 45/72 (53-54)` — built from the
   range the chart was binned over. That arithmetic lives in one lookup,
   `bandSummary(bin)`, which the chart's hovered-bin caption, the hovered-cell
@@ -755,6 +754,11 @@ Conventions:
   world depends on the seed and not on the window. Keep the flag reset inside
   the callback; resetting it before scheduling would let every event in the
   burst queue its own render again.
+- Both prose files are read in a terminal, where a sentence that appears twice
+  is one the reader has to diff by eye. The suite asks each of them for no line
+  identical to the line above it, which is the shape a half-applied edit leaves
+  behind. Keep notes in one place: a convention belongs in AGENTS.md, the
+  reader-facing description in README.md, and neither repeats itself.
 
 Verify with:
 

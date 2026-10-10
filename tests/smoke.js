@@ -190,7 +190,6 @@ assert(coldBiomes(cold) > coldBiomes(warm),
   'climate slider cools the world (' + coldBiomes(warm) + ' -> ' + coldBiomes(cold) + ')');
 
 // The temperature axis is published next to moisture, since the biome lookup
-// The temperature axis is published next to moisture, since the biome lookup
 // is a table of both. Two properties make it worth printing in the readout:
 // every cell has a value in 0..1, and the climate slider makes latitude
 // dominate — the gap between an edge row and the middle row has to widen as
@@ -2732,7 +2731,6 @@ assert(bandLabels === 1 && bandTally && !bandFixed,
   bandTally + ', fixed ' + bandFixed + ')');
 
 // The band label is a measurement rather than a position in a list, so both of
-// The band label is a measurement rather than a position in a list, so both of
 // its ends come from the range the chart was binned over. That arithmetic lives
 // in one lookup — `bandSummary()` — which the chart caption, the hovered-cell
 // note and the selected-band line all go through: two ends in the lookup, and a
@@ -2740,14 +2738,12 @@ assert(bandLabels === 1 && bandTally && !bandFixed,
 // a bin against a different scale than the one that lit it, so the count of both
 // is checked rather than either alone.
 var bandDefs = (appSrc.match(/function bandSummary\(/g) || []).length;
-var bandDefs = (appSrc.match(/function bandSummary\(/g) || []).length;
 var bandEnds = (appSrc.match(/\/ st\.bins \* st\.span/g) || []).length;
 var bandCalls = (appSrc.match(/= bandSummary\(/g) || []).length;
 var bandStray = (appSrc.match(/histState\.bins \* histState\.span/g) ||
   []).length;
 var bandBracket = /'band ' \+ \(cellBand \+ 1\)[\s\S]{0,160}\+ '-' \+ hundred\(sum\.to\)/
   .test(appSrc);
-// Four callers: the chart's own caption, the hovered-cell reading, the note
 // Four callers: the chart's own caption, the hovered-cell reading, the note
 // under the map, and the pair that tells a hovered cell whether the selected
 // bar covers it. The last one reads the SELECTED bin rather than the cell's
@@ -2763,7 +2759,6 @@ assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 4 && !bandStray &&
   ', bracket ' + bandBracket + ', note ' + bandInside + ', gate ' +
   bandGate + ')');
 
-// A bin selected on the chart is a filter over the whole grid, so its reading
 // A bin selected on the chart is a filter over the whole grid, so its reading
 // also goes into the line under the map — that line is the only place the count
 // is big enough to read. Every path that moves a filter has to refresh it: a
@@ -2971,6 +2966,24 @@ core.phrases.forEach(function (ck) {
 assert(cutBad.length === 0,
   'one accumulation cut splits trunks from tributaries (' +
   cutBad.join('; ') + ')');
+
+// Both prose files are read in a terminal, where a sentence printed twice is a
+// sentence the reader has to diff by eye. Each is checked for a line that is
+// identical to the one above it — the shape a half-applied edit leaves behind —
+// over every file that carries notes rather than code.
+['README.md', 'AGENTS.md'].forEach(function (doc) {
+  var dlines = require('fs').readFileSync(__dirname + '/../' + doc, 'utf8')
+    .replace(/\r/g, '').split('\n');
+  var dups = [];
+  for (var di2 = 1; di2 < dlines.length; di2++) {
+    var dcur = dlines[di2].trim();
+    if (dcur.length > 20 && dcur === dlines[di2 - 1].trim()) {
+      dups.push(di2 + 1);
+    }
+  }
+  assert(dups.length === 0, doc + ' states each sentence once (' +
+    dups.join(',') + ')');
+});
 
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
