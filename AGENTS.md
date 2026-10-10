@@ -404,11 +404,13 @@ Conventions:
   counts the four sites and the one placeholder.
     Because a picked bar dims every cell outside its range, the hovered-cell
     reading also says which side of the selection the cell falls on — `not in
-    22/72 (30-31)` beside a washed-out cell, `in 22/72 (30-31)` beside a bright
-    one. That pair is the fourth caller of `bandSummary()`: it reads the
-    SELECTED bin rather than the cell's own, so it cannot reuse the range the
-    cell already printed. The suite counts the four callers and the one
-    comparison behind the note.
+    22/72 (30-31)` beside a washed-out cell. Only the mismatch costs a word:
+    when the cell's own bin and the picked one agree, the label the cell already
+    printed is the answer, so the note is gated on that comparison rather than
+    printing the same pair twice and pushing moisture off the end of the line.
+    The note is the fourth caller of `bandSummary()`: it reads the SELECTED bin
+    rather than the cell's own, so it cannot reuse the range already there. The
+    suite counts the four callers and the gate behind the note.
   The magnifier in `drawInset()` is the one overlay that covers map rather than
   tinting it, so `m` drops it: `insetOn` gates the call in `drawHover()` and
   nothing else. Like `solo` and `band` it is a view setting and stays out of

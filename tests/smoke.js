@@ -2200,15 +2200,20 @@ var bandStray = (appSrc.match(/histState\.bins \* histState\.span/g) ||
 var bandBracket = /'band ' \+ \(cellBand \+ 1\)[\s\S]{0,160}\+ '-' \+ hundred\(sum\.to\)/
   .test(appSrc);
 // Four callers: the chart's own caption, the hovered-cell reading, the note
-// under the map, and the in/out pair that tells a hovered cell whether the
-// selected bar covers it. The last one reads the SELECTED bin rather than the
-// cell's own, so it cannot reuse the other result and has to be counted.
-var bandInside = /cellBand === band \? 'in ' : 'not in '/.test(appSrc);
+// Four callers: the chart's own caption, the hovered-cell reading, the note
+// under the map, and the pair that tells a hovered cell whether the selected
+// bar covers it. The last one reads the SELECTED bin rather than the cell's
+// own, so it cannot reuse the other result and has to be counted. The note is
+// gated on a mismatch: when the two bins agree, the cell's own label already
+// is the answer, so the note must not print a second copy of the same pair.
+var bandInside = /'not in ' \+ \(band \+ 1\)/.test(appSrc);
+var bandGate = /band >= 0 && histState && cellBand !== band/.test(appSrc);
 assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 4 && !bandStray &&
-  bandBracket && bandInside,
+  bandBracket && bandInside && bandGate,
   'a lit bar says what height range it covers (' + bandDefs + ' lookup, ' +
   bandEnds + ' ends, ' + bandCalls + ' callers, stray ' + bandStray +
-  ', bracket ' + bandBracket + ', inside ' + bandInside + ')');
+  ', bracket ' + bandBracket + ', note ' + bandInside + ', gate ' +
+  bandGate + ')');
 
 // A bin selected on the chart is a filter over the whole grid, so its reading
 // A bin selected on the chart is a filter over the whole grid, so its reading

@@ -1030,9 +1030,12 @@
     // of the selection the cell falls on is the shortest link between the two
     // views, and it is read from the same lookup that draws the bar — so the
     // note and the lit bar are always the same slice of the height range.
-    if (band >= 0 && histState) {
+    // Only the mismatch costs a word: when the two agree, the cell's own band
+    // label already is the answer, and repeating it would push the moisture and
+    // temperature figures off the end of the line.
+    if (band >= 0 && histState && cellBand !== band) {
       var sel = bandSummary(band);
-      parts.push((cellBand === band ? 'in ' : 'not in ') + (band + 1) + '/' +
+      parts.push('not in ' + (band + 1) + '/' +
         histState.bins + ' (' + hundred(sel.from) + '-' + hundred(sel.to) + ')');
     }
     readout.textContent = parts.join(' — ');
