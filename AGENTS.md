@@ -140,13 +140,16 @@ Conventions:
   hand from a record, so the level itself is a field rather than something to
   infer from the `water` share. Like the other numbers it keeps three decimals
   and the caption rounds it out of a hundred.
-  The ruler carries two marks: `|` on the sea column and `:` on the column the
-  median falls in, since a spread cannot tell a plateau from a peak squeezed
-  between its own two ends. Both are the core's `binOf` over the same range, so
-  the suite re-derives each and asks that the caption name both figures.
   That check also reads the row's own source for the `hundred(` call, so the
   scaling cannot be dropped at the call site while the record keeps its three
   decimals: the two halves of the pair are compared, not just printed.
+  The ruler carries two marks: `|` on the sea column and `:` on the column the
+  median falls in, since a spread cannot tell a plateau from a peak squeezed
+  between its own two ends. Both are the core's `binOf` over the same range, so
+  the suite re-derives each and asks that the caption name both figures. Where
+  the two columns coincide — a near-flat world whose middle sits on its own
+  shoreline — the ruler prints one `+` rather than dropping a mark, and the
+  suite walks every phrase asking for exactly one glyph per marked column.
   The `relief` row carries the spread and its two ends — `70 units (10-80)` —
   where the pair in brackets is what the chart prints at its corners. The record
   keeps those ends as `low` and `high`, already out of a hundred, so a terminal

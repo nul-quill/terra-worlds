@@ -379,7 +379,12 @@ function profile(result) {
   var medCol = core.binOf(result.stats.median, h.lo, h.span, h.bins);
   var ruler = '';
   for (var c = 0; c < h.bins; c++) {
-    ruler += c === seaCol ? '|' : (c === medCol ? ':' : '-');
+    // A world whose middle sits exactly on its shoreline gets one column for
+    // both marks, and dropping either would lose a figure the caption still
+    // names. `+` says both at once, so the count of marks never depends on how
+    // the two happen to fall.
+    ruler += c === seaCol ? (c === medCol ? '+' : '|')
+      : (c === medCol ? ':' : '-');
   }
   lines.push(ruler);
   lines.push(Math.round(h.lo * 100) + ' .. ' +

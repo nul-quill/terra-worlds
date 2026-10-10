@@ -1193,6 +1193,32 @@ assert(histCaption.indexOf(histWorld.stats.checksum) > 0,
   'the text profile names its own world (' + histCaption + ')');
 assert(histMedCol === histMedWant && histCaption.indexOf('median') > 0,
   'the ruler marks the middle as well as the sea (' + histMedCol + ')');
+// Where the two marks fall in the SAME column, neither may be dropped: the
+// ruler has to show one combined glyph there, and exactly one mark per column
+// otherwise. Counted over every phrase, since a collision only shows up on a
+// near-flat world and a dropped mark would otherwise slip through.
+var rulerBad = [];
+core.phrases.forEach(function (rp) {
+  var rw = core.generate({seed: rp, width: 100, height: 64});
+  var rb = core.binCount(core.histWidth);
+  var rspan = Math.max(0.001, rw.stats.max - rw.stats.min);
+  var rs = core.binOf(rw.seaLevel, rw.stats.min, rspan, rb);
+  var rm = core.binOf(rw.stats.median, rw.stats.min, rspan, rb);
+  var rout = require('child_process')
+    .execSync('node cli.js "' + rp + '" --width 100 --height 64 --hist',
+      {cwd: __dirname + '/..'}).toString().replace(/\r/g, '').split('\n');
+  var rlines = rout.filter(function (l) { return l.length; });
+  var rr = rlines[rlines.length - 2];
+  var marks = rr.replace(/-/g, '').length;
+  var wantGlyph = rs === rm ? '+' : '|';
+  if (rr.length !== rb || marks !== (rs === rm ? 1 : 2) ||
+    rr.charAt(rs) !== wantGlyph || (rs !== rm && rr.charAt(rm) !== ':')) {
+    rulerBad.push(rp + ' ' + rs + '/' + rm + ' -> ' + marks);
+  }
+});
+assert(rulerBad.length === 0,
+  'the ruler keeps both marks wherever they fall (' +
+  rulerBad.join('; ') + ')');
 // Every figure in that caption is also a field of the JSON record, so a pasted
 // block of bars and a line of JSON have to say the same numbers: the two ends
 // of the range are the record's `low` and `high`, the column count is its
