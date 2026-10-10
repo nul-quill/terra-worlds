@@ -1247,6 +1247,20 @@
   // different ranges for one bar. With no selection the line goes back to its
   // placeholder, which is also what a pointer leaving the chart leaves behind.
   function bandNote() {
+    // Same precedence the map and the chart use: a legend selection beats a
+    // height band, so while a class is pinned the note describes that instead
+    // of a band the map is not filtering by. One rule, three readers — the
+    // blit, the bars and this line — so no view can show a filter another one
+    // has already overridden.
+    var want = solo || pinned;
+    if (want) {
+      // The share comes from the same counts the legend rows are built from, so
+      // the figure beside a hovered row and the one in this line are one
+      // measurement rather than two roundings of it.
+      readout.textContent = (TerraCore.biomeNames[want] || want) + ' pinned — ' +
+        shareText(current.stats.counts[want] || 0, current.stats.pixels);
+      return;
+    }
     if (band < 0 || !histState) {
       readout.textContent = 'hover the map';
       return;

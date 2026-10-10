@@ -402,6 +402,13 @@ Conventions:
   either pointer leaving), and with no selection the same function restores the
   `hover the map` placeholder, which is why that literal appears once. The suite
   counts the four sites and the one placeholder.
+  That line also has to agree with the blit about which filter is in charge. A
+  pinned legend class wins over a picked band — `solo || pinned` in both places —
+  so the note reads `Deep water pinned — 65%` while a bar is also hovered, which
+  is what the map looks like: every class faded except the pinned one. Reading
+  the band there would describe a set of cells the blit no longer shows. The
+  suite pulls the note's own body out of the shell and asks both halves for that
+  one expression, so the precedence cannot be dropped on one side only.
     Because a picked bar dims every cell outside its range, the hovered-cell
     reading also says which side of the selection the cell falls on — `not in
     22/72 (30-31)` beside a washed-out cell. Only the mismatch costs a word:

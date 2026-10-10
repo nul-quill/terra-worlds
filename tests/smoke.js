@@ -2222,12 +2222,22 @@ assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 4 && !bandStray &&
 // a pointer over the chart, a tap, a Shift+arrow walk, and either pointer
 // leaving. Four sites, one definition, and the placeholder is restored by that
 // same function rather than by a second write of the literal.
+// The note also has to follow the same precedence the blit does: a pinned
+// legend class beats a height band, so the line cannot describe a band while
+// the map is fading everything that is not the pinned class. Both sides of that
+// rule are read out of the source — the blit's own test and the note's.
 var noteDefs = (appSrc.match(/function bandNote\(/g) || []).length;
 var noteCalls = (appSrc.match(/bandNote\(\);/g) || []).length;
 var notePlaceholder = (appSrc.match(/= 'hover the map'/g) || []).length;
-assert(noteDefs === 1 && noteCalls === 4 && notePlaceholder === 1,
+var noteBody = (/function bandNote\(\)([\s\S]*?)\n  \}/.exec(appSrc) ||
+  ['', ''])[1];
+var notePrecedence = /var want = solo \|\| pinned;/.test(noteBody);
+var blitPrecedence = /var want = solo \|\| pinned;/.test(appSrc);
+assert(noteDefs === 1 && noteCalls === 4 && notePlaceholder === 1 &&
+  notePrecedence && blitPrecedence,
   'a selected band is readable under the map (' + noteDefs + ' def, ' +
-  noteCalls + ' sites, ' + notePlaceholder + ' placeholder)');
+  noteCalls + ' sites, ' + notePlaceholder + ' placeholder, note precedence ' +
+  notePrecedence + ', blit ' + blitPrecedence + ')');
 
 // The magnifier covers the map rather than tinting it, so the cell a hover
 // picked has to be findable inside the panel: the mark is one patch cell,
