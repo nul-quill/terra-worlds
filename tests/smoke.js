@@ -2245,10 +2245,26 @@ assert(partBad.length === 0 && partDefs === 1 && partUses >= 1 &&
 // every site going through it rather than repeating the arithmetic.
 var binDefs = (appSrc.match(/function binIndex\(/g) || []).length;
 var binCalls = (appSrc.match(/binIndex\(/g) || []).length - binDefs;
-var binClamps = (appSrc.match(/Math\.min\(bins - 1/g) || []).length;
+// The clamp itself now sits in the core, beside the bin count and the tick
+// step, so the shell only delegates. Read the core here rather than waiting
+// for the variable further down this file.
+var binCoreSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var binClamps = (binCoreSrc.match(/Math\.min\(bins - 1/g) || []).length;
+var binHistDefs = (binCoreSrc.match(/function histogram\(/g) || []).length;
+var binHistUses = (appSrc.match(/TerraCore\.histogram\(/g) || []).length;
 assert(binDefs === 1 && binCalls >= 3 && binClamps === 1,
   'one height-to-bin mapping feeds the chart and the readout (' + binDefs +
   ' def, ' + binCalls + ' uses, ' + binClamps + ' clamp)');
+// The whole binning pass is the core's too, so the bars a terminal counts from
+// the record are the bars on screen: one definition, one call from the shell,
+// and the counts have to add up to the grid the record lists.
+var histSummed = core.histogram(jsonWorld, core.binCount(240));
+var histTotal = histSummed.hist.reduce(function (n, v) { return n + v; }, 0);
+assert(binHistDefs === 1 && binHistUses === 1 &&
+  histTotal === jsonWorld.stats.pixels &&
+  histSummed.bins === jsonLine.bins && histSummed.peak === jsonLine.peak,
+  'the relief bins are counted once, in the core (' + histSummed.bins +
+  ' bars, peak ' + histSummed.peak + ', ' + histTotal + ' cells)');
 
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the

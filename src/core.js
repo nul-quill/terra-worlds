@@ -1111,6 +1111,35 @@
     return Math.max(20, Math.min(72, Math.round(cssWidth / 5)));
   }
 
+  // Bin the height field into `bins` bars over this world's own range. The
+  // range is the actual min/max rather than 0..1, so a low-relief craton still
+  // fills the chart instead of crowding the middle. Every reader of the relief
+  // chart — the bars, the hovered-bin tally, the readout's band note — goes
+  // through this one pass, so a bar's count and the cells it lights up are the
+  // same measurement. `bin` is the same clamp the shell uses to pick a bar.
+  function histogram(result, bins) {
+    var hf = result.heightField;
+    var lo = result.stats.min;
+    var span = Math.max(0.001, result.stats.max - lo);
+    var hist = new Array(bins);
+    var peak = 0;
+    var i;
+    for (i = 0; i < bins; i++) hist[i] = 0;
+    for (i = 0; i < hf.length; i++) {
+      var b = binOf(hf[i], lo, span, bins);
+      hist[b]++;
+      if (hist[b] > peak) peak = hist[b];
+    }
+    return {bins: bins, hist: hist, peak: peak, lo: lo, span: span};
+  }
+
+  // Height to bar index, clamped to the last bar: a cell sitting exactly on the
+  // top of the range would otherwise fall one past the end.
+  function binOf(h, lo, span, bins) {
+    var b = Math.floor((h - lo) / span * bins);
+    return Math.max(0, Math.min(bins - 1, b));
+  }
+
   // One line that puts a world into words: the shape it was cut from, how much
   // relief it carries, how much of it is dry, and which class covers most of
   // it. Both the sidebar and the CLI print this, so a saved PNG and a terminal
@@ -1161,6 +1190,8 @@
     hashString: hashString,
     randomSeed: randomSeed,
     nextSeed: nextSeed,
+    histogram: histogram,
+    binOf: binOf,
     palettes: PALETTES,
     shapes: SHAPES,
     channels: CHANNEL_LIST,

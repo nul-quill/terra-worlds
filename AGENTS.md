@@ -398,6 +398,15 @@ Conventions:
   the only place the clamp to the last bar lives: the binning pass, the
   legend-members pass, the hovered-bin tally and `histBinFor()` all go through
   it, so the bar lit under a cursor is always the bar that counted the cell.
+  The clamp itself sits one level down, in `TerraCore.binOf`, which the shell's
+  lookup only forwards to — the same reason `tickStep` and `binCount` live in
+  the core. Beside it is `TerraCore.histogram(result, bins)`, the whole binning
+  pass: it returns `{bins, hist, peak, lo, span}` over the world's own min/max,
+  and `drawHistogram()` keeps only the pixel geometry on top of that. The CLI
+  record reads its `bins` and `peak` from the same call at the sidebar's 240px
+  width, so a terminal can redraw the silhouette from JSON alone; the suite
+  counts one definition, one call from the shell, and asks that the bars sum to
+  `stats.pixels` and match the record on one world.
   The hovered cell's own bin is held in `cellBand` — a reading, not a filter.
   `updateReadout()` writes it once from `histBinFor()`, prints it as
   `band 38/72` in the readout, and hands it to the chart; `drawMap()` lights

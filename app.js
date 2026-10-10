@@ -720,20 +720,12 @@
     // One bin per ~5 CSS pixels, clamped: a narrow sidebar with 48 bars reads
     // as mush, a wide one with 24 wastes the space it is given.
     var BINS = TerraCore.binCount(cssW);
-    var hist = new Array(BINS);
-    var hf = result.heightField;
-    // Bins span the actual range of this world rather than 0..1, so a low
-    // relief craton still fills the chart instead of crowding the middle.
-    var lo = result.stats.min, hi = result.stats.max;
-    var span = Math.max(0.001, hi - lo);
-    for (var i = 0; i < hf.length; i++) {
-      var b = binIndex(hf[i], lo, span, BINS);
-      hist[b] = (hist[b] || 0) + 1;
-    }
-    var peak = 0;
-    for (i = 0; i < BINS; i++) if (hist[i] > peak) peak = hist[i];
+    // The bins themselves come from the core, so a terminal counting the same
+    // field over the same range gets the same bars — the record's `bins` and
+    // `peak` are this very call at the chart's own width.
+    var st = TerraCore.histogram(result, BINS);
     histState = {
-      bins: BINS, hist: hist, peak: peak, lo: lo, span: span,
+      bins: st.bins, hist: st.hist, peak: st.peak, lo: st.lo, span: st.span,
       w: cssW, h: cssH, dpr: dpr, result: result
     };
     paintHistogram(-1);
@@ -1058,8 +1050,7 @@
   // Both the binning pass and the hover read go through this one function, so
   // the cell under a cursor always lights the bar that counted it.
   function binIndex(h, lo, span, bins) {
-    var b = Math.floor((h - lo) / span * bins);
-    return Math.max(0, Math.min(bins - 1, b));
+    return TerraCore.binOf(h, lo, span, bins);
   }
 
   function histBinFor(h) {

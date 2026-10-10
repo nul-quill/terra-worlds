@@ -349,6 +349,11 @@ if (opts.help) {
 // table is what a person reads after a reroll.
 function summarise(seed, result, name, asJson) {
   var s = result.stats;
+  // The relief chart's two numbers, computed once for the record below. The
+  // width is the sidebar's own default rather than this world's grid, since
+  // the chart bins by the strip it is drawn into — 240 CSS pixels is what the
+  // core maps to 48 bars, which is also what the suite compares against.
+  var hist = core.histogram(result, core.binCount(240));
   // Per-class shares, biggest first. The one-line summary only names the
   // dominant class, which is not enough to tell two worlds apart when most of
   // the grid is water. Kept as "key=NN%" pairs so the table form stays a
@@ -392,6 +397,13 @@ function summarise(seed, result, name, asJson) {
     low: Math.round(s.min * 100),
     high: Math.round(s.max * 100),
     contourBands: s.contourBands, basinBands: s.basinBands,
+    // The relief chart's own two numbers: how many bars the sidebar would draw
+    // for this world and the tallest of them. Both come from the same core
+    // pass the chart uses, so a terminal can redraw the silhouette from the
+    // record alone — the bars themselves are the height field binned over
+    // `low`..`high`, which the four fields above already pin down.
+    bins: hist.bins,
+    peak: hist.peak,
     biomes: Object.keys(s.counts).length,
     classes: classes,
     summary: core.describe(result),
