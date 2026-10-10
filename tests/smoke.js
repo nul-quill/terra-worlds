@@ -1235,9 +1235,25 @@ rowCounts.forEach(function (n, ri) {
 var peakFilled = histRows.every(function (row) {
   return row.charAt(peakCol) === '#';
 });
+// Counting blocks only says the totals grow; it would still pass if a lower
+// row dropped one column and gained two elsewhere. The real shape of a
+// threshold stack is that every filled column stays filled in the rows below
+// it, so compare column by column as well.
+var nestBad = [];
+histRows.forEach(function (row, ri) {
+  if (!ri) return;
+  var above = histRows[ri - 1];
+  for (var ci = 0; ci < histBins; ci++) {
+    if (above.charAt(ci) === '#' && row.charAt(ci) !== '#') {
+      nestBad.push(ri + ':' + ci);
+      break;
+    }
+  }
+});
 assert(stackBad.length === 0 && peakFilled && rowCounts[0] >= 1,
   'the text profile stacks its rows by height (' + rowCounts.join('/') +
-  ', peak column ' + peakCol + ' filled ' + peakFilled + ')');
+  ', peak column ' + peakCol + ' filled ' + peakFilled +
+  ', gaps ' + nestBad.join(',') + ')');
 // The caption under the ruler names the picture the block belongs to, so the
 // last line has to carry the same eight hex digits the record prints. Without
 // it a pasted block of bars could not be tied back to a saved PNG at all.
