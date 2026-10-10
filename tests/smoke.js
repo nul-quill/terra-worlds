@@ -1858,6 +1858,26 @@ assert(Object.keys(handled).length > 8 && undocumented.length === 0,
   'the note names every shortcut key (' + Object.keys(handled).length +
   ' keys, missing ' + undocumented.join(',') + ')');
 
+// Each of those letters has to answer in BOTH cases. With Caps Lock on the
+// browser reports the uppercase form, so a shortcut written as a single
+// comparison against the lowercase letter looks broken for reasons that have
+// nothing to do with the map. Three shapes are acceptable: both comparisons, a
+// `(x|X)` regex, or a `toLowerCase()` lookup. Walk the letters the note names
+// and ask that each one is covered by one of them.
+var keyBody = (/document\.addEventListener\('keydown', function \(ev\)([\s\S]*)$/
+  .exec(appSrc) || ['', ''])[1];
+var oneCase = [];
+Object.keys(handled).forEach(function (lk) {
+  var lower = lk.toLowerCase();
+  var upper = lk.toUpperCase();
+  var both = new RegExp("'" + lower + "'").test(keyBody) &&
+    new RegExp("'" + upper + "'").test(keyBody);
+  var pair = new RegExp('\\(' + lower + '\\|' + upper + '\\)').test(keyBody);
+  if (!(both || pair || /toLowerCase\(\)/.test(keyBody))) oneCase.push(lower);
+});
+assert(oneCase.length === 0,
+  'every shortcut letter answers in both cases (' + oneCase.join(',') + ')');
+
 // The keys are only half of how the view is driven: a legend row and a chart
 // bar are both reachable with a pointer, and neither has a letter of its own.
 // The note is the only prose on the page, so each of those two has to be

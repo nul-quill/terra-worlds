@@ -1527,7 +1527,11 @@
       savePng();
       return;
     }
-    if ((ev.key === ' ' || ev.key === 'r') && document.activeElement !== inputs.seed) {
+    // Both cases, like every other letter key: with Caps Lock on, `ev.key` is
+    // the uppercase form, and a shortcut that only answered to one of the two
+    // would look broken for reasons that have nothing to do with the map.
+    if ((ev.key === ' ' || /^(r|R)$/.test(ev.key)) &&
+      document.activeElement !== inputs.seed) {
       ev.preventDefault();
       document.getElementById('reroll').click();
     }

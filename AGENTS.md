@@ -295,7 +295,13 @@ Conventions:
   `d`, `TerraCore.grids` for `w`, `TerraCore.scales` for `e` — so a key and the
   select can never disagree about the order. Every cycle key also answers to
   `Shift`: one branch, a `±1` step, so a mis-press backs out instead of looping
-  the whole list. `styles.css` ends with two
+  the whole list. Each letter answers in BOTH cases — `'c' || 'C'`, a
+  `/^(d|D)$/` test, or the `toLowerCase()` lookup the two checkboxes share —
+  because Caps Lock makes the browser report the uppercase form, and a shortcut
+  that only answered to one of the two looks broken for reasons that have
+  nothing to do with the map. The suite walks the letters the note names and
+  asks each for one of those three shapes, so a new key cannot arrive with a
+  single-case comparison. `styles.css` ends with two
   `@media` blocks: `print` (hides the chrome, one column) and
   `prefers-color-scheme: dark` (only the CSS variables change). Both are checked
   with `page.emulateMedia()` followed by a reload.
