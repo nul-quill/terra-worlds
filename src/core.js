@@ -1115,7 +1115,11 @@
   // known: the shell uses it when the canvas has not been laid out yet, the
   // CLI when it has no window at all. One number so a terminal's text profile
   // and the page's bars land on the same column count.
-  var HIST_WIDTH = 240;
+  // It is the strip's own measured width rather than the sidebar column's —
+  // the column is 250px and the canvas inside it loses its padding, so 200 is
+  // what a default window actually measures and therefore what a terminal has
+  // to assume to get the same number of columns.
+  var HIST_WIDTH = 200;
 
   // Bin the height field into `bins` bars over this world's own range. The
   // range is the actual min/max rather than 0..1, so a low-relief craton still

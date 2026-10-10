@@ -125,6 +125,10 @@ Conventions:
   has a layout, and by the CLI which has no window at all. Two literals would
   let a text profile and the bars on screen disagree about how many columns a
   sidebar buys; the suite counts the lookup on both sides.
+  Keep it the strip's measured width (the canvas inside a 250px column, so
+  about 200) rather than the column's: the fallback is what a terminal assumes,
+  and a figure the page never measures would print a different bar count than
+  the one on screen.
   The caption under the ruler also carries the world's checksum, which is the
   only link a pasted block of bars has back to the picture it describes — a
   saved PNG keeps nothing but its name, and the checksum is in that name.
