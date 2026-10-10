@@ -1152,6 +1152,33 @@ var saidCore = core.describe(core.generate({
 assert(saidCli === saidCore,
   'the cli sentence is the page sentence (' + saidCli + ')');
 
+// The text profile has to be the same picture the chart draws: one column per
+// bar in the record, six rows of blocks, and the sea marker sitting on the
+// column the core's own bin lookup picks for this sea level. The record is read
+// here rather than from the one further down this file, since the profile is a
+// rendering of that record's own four numbers.
+// The record's own four numbers, read straight from the core: the bins the
+// profile must match, and the range its sea marker is placed over.
+var histWorld = core.generate({seed: 'salt mirror', width: 120, height: 80});
+var histBins = core.binCount(240);
+var histOut = require('child_process')
+  .execSync('node cli.js "salt mirror" --width 120 --height 80 --describe --hist',
+    {cwd: __dirname + '/..'}).toString().replace(/\r/g, '').split('\n');
+// The ruler is the one row that is never trimmed, so it is what counts the
+// columns.
+// Drop the blank tail the trailing newline leaves, then read the block by its
+// own shape: sentence, six rows of blocks, ruler, caption.
+var histLines = histOut.filter(function (l) { return l.length; });
+var histRuler = histLines[histLines.length - 2];
+var histSeaCol = histRuler.indexOf('|');
+var histWantCol = core.binOf(histWorld.seaLevel, histWorld.stats.min,
+  Math.max(0.001, histWorld.stats.max - histWorld.stats.min), histBins);
+var histRows = histLines.slice(1, histLines.length - 2);
+assert(histRuler.length === histBins && histSeaCol === histWantCol &&
+  histRows.length === 6 && /#/.test(histRows[histRows.length - 1]),
+  'the text profile matches the chart bins (' + histRuler.length + ' columns, ' +
+  histRows.length + ' rows, sea at ' + histSeaCol + ')');
+
 // The readout calls a water cell `off-shelf` at one fixed depth below the sea
 // line, and the core calls the same cell `deep` at that same depth. Two numbers
 // written in two files, so both are read out of their own source and compared,

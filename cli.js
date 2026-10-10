@@ -52,6 +52,7 @@ function parseArgs(argv) {
     else if (a === '--scale') opts.scale = nextNum(argv[++i], true);
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--describe') opts.describe = true;
+    else if (a === '--hist') opts.hist = true;
     else if (a === '--next') opts.next = parseInt(argv[++i], 10) || 5;
     else if (a === '--help' || a === '-h') opts.help = true;
     else if (a === '--palettes') opts.palettes = true;
@@ -182,6 +183,8 @@ if (opts.help) {
   console.log('       [--describe] to print only the one-line summary and skip');
   console.log('       the .ppm file entirely; with several seeds each line');
   console.log('       also carries its own seed');
+  console.log('       [--hist] to add the relief profile as text bars under the');
+  console.log('       summary, binned the way the sidebar chart bins it');
   console.log('       [--next n] with one seed to print that seed plus the n-1 seeds');
   console.log('       the Reroll button derives from it, one per line; with');
   console.log('       [--json] each line of that chain is a full record');
@@ -322,6 +325,7 @@ if (opts.help) {
       // shape `--next --describe` prints.
       var saidLine = core.describe(result);
       console.log(opts.seeds.length > 1 ? seed + '  ' + saidLine : saidLine);
+      if (opts.hist) console.log(profile(result).join('\n'));
       return;
     }
     // The extension picks the encoder: .png gets the PNG writer, anything
@@ -342,7 +346,41 @@ if (opts.help) {
     if (ext === 'png') fs.writeFileSync(name, toPng(img));
     else fs.writeFileSync(name, toPpm(img), 'latin1');
     console.log(summarise(seed, result, name, opts.json));
+    // The record already carries `bins` and `peak`; this is the shape those two
+    // numbers describe, for a terminal with no chart to draw into. With
+    // `--json` the record is the whole output — one line per world is what
+    // makes it pipeable — and those two fields are enough to redraw this.
+    if (opts.hist && !opts.json) console.log(profile(result).join('\n'));
   });
+}
+
+// The relief profile as text: six rows of blocks over the same bins the
+// sidebar chart draws, so a saved PNG plus one line of JSON can still be
+// redrawn by eye. The bins come from `core.histogram` at the sidebar's own
+// width, which is what ties these columns to the bars on screen.
+function profile(result) {
+  var h = core.histogram(result, core.binCount(240));
+  var rows = 6;
+  var lines = [];
+  for (var r = 0; r < rows; r++) {
+    var level = (rows - r) / rows;
+    var line = '';
+    for (var i = 0; i < h.bins; i++) {
+      var frac = h.peak ? h.hist[i] / h.peak : 0;
+      line += frac >= level ? '#' : ' ';
+    }
+    lines.push(line.replace(/\s+$/, ''));
+  }
+  // Under the bars: where the sea sits among the columns, then the two ends of
+  // the range the bins were cut over — the same three figures the chart prints.
+  var seaCol = core.binOf(result.seaLevel, h.lo, h.span, h.bins);
+  var ruler = '';
+  for (var c = 0; c < h.bins; c++) ruler += c === seaCol ? '|' : '-';
+  lines.push(ruler);
+  lines.push(Math.round(h.lo * 100) + ' .. ' +
+    Math.round((h.lo + h.span) * 100) + ' relief, sea ' +
+    Math.round(result.seaLevel * 100) + ', ' + h.bins + ' bins');
+  return lines;
 }
 
 // One world, one line of text. The JSON form is what scripts consume; the

@@ -113,6 +113,13 @@ Conventions:
   suite rounds each the same way and asks for one number across every phrase —
   a record a terminal cannot turn into the figure on screen is no substitute for
   a screenshot.
+  `--hist` is that substitute: six rows of blocks over the record's own bins,
+  with a ruler under them whose `|` sits on the sea column. The block is built
+  from `core.histogram` at the sidebar's 240px width, so its column count is
+  the record's `bins` and its tallest bar is the record's `peak` — the suite
+  re-derives the sea column with `core.binOf` and compares all three. Keep the
+  block out of the `--json` path: one line per world is what makes that form
+  pipeable, and the four fields already cover it.
   That check also reads the row's own source for the `hundred(` call, so the
   scaling cannot be dropped at the call site while the record keeps its three
   decimals: the two halves of the pair are compared, not just printed.
