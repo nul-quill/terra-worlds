@@ -66,6 +66,9 @@ Conventions:
   its number, from the same `basinSpill` lookup the filled cells use. Both
   halves of that readout come from one cell, so the suite reads the outlet
   branch out of the shell and asks that it names both.
+  Both branches index that array the same way — the basin's own number minus
+  one — and the suite counts those lookups, so a third offset has to be written
+  down here rather than quietly printed on one side only.
   That number has to match one worn by a neighbouring filled cell, and the suite
   walks that pair on both a one-basin world and a crowded one: a lone tarn
   cannot show a shared rim cell overwriting its own label.

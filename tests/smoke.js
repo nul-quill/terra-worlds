@@ -2019,6 +2019,20 @@ assert(outletSrc.indexOf('basinSpill') >= 0 &&
   outletSrc.indexOf('current.spillway[i]') >= 0,
   'the outlet note names its basin and its bearing (' +
   outletSrc.replace(/\s+/g, ' ').trim().slice(0, 46) + ')');
+// The bearing beside an outlet has to BE the bearing beside the water it
+// drains from, and both halves of that pair are only guaranteed while each
+// branch indexes `basinSpill` by its own basin number minus one. Two lookups
+// with two different offsets would print one lake draining two ways, which no
+// amount of re-reading the caption fixes. Count the sites as well, so a third
+// opinion about the offset has to be written down here too.
+var spillLook = (outSrc.match(/basinSpill\[[^\n]*?- 1\]/g) || []).length;
+var shoreAt = outSrc.indexOf("if (current.basin && current.basin[i])");
+var shoreSrc = shoreAt < 0 ? '' : outSrc.slice(shoreAt, shoreAt + 400);
+var shoreLook = shoreSrc.indexOf('basinSpill[') >= 0 &&
+  shoreSrc.indexOf('- 1]') >= 0;
+assert(spillLook === 2 && shoreLook,
+  'an outlet and its shore read one bearing (' + spillLook + ' lookups, shore ' +
+  shoreLook + ')');
 
 // The hash is only useful if it carries every control on screen, so the two
 // lists are checked against each other: each INPUT or SELECT id in the page
