@@ -379,7 +379,11 @@ function profile(result) {
   lines.push(ruler);
   lines.push(Math.round(h.lo * 100) + ' .. ' +
     Math.round((h.lo + h.span) * 100) + ' relief, sea ' +
-    Math.round(result.seaLevel * 100) + ', ' + h.bins + ' bins');
+    Math.round(result.seaLevel * 100) + ', ' + h.bins + ' bins · ' +
+    // The same eight hex digits the stats list and the record print, so a
+    // pasted block of text names the picture it came from — the one field a
+    // reader can match against a saved PNG's name without any other file.
+    result.stats.checksum);
   return lines;
 }
 

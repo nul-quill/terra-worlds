@@ -1178,6 +1178,12 @@ assert(histRuler.length === histBins && histSeaCol === histWantCol &&
   histRows.length === 6 && /#/.test(histRows[histRows.length - 1]),
   'the text profile matches the chart bins (' + histRuler.length + ' columns, ' +
   histRows.length + ' rows, sea at ' + histSeaCol + ')');
+// The caption under the ruler names the picture the block belongs to, so the
+// last line has to carry the same eight hex digits the record prints. Without
+// it a pasted block of bars could not be tied back to a saved PNG at all.
+var histCaption = histLines[histLines.length - 1];
+assert(histCaption.indexOf(histWorld.stats.checksum) > 0,
+  'the text profile names its own world (' + histCaption + ')');
 
 // The readout calls a water cell `off-shelf` at one fixed depth below the sea
 // line, and the core calls the same cell `deep` at that same depth. Two numbers
