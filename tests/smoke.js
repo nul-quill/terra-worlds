@@ -907,6 +907,31 @@ nextPairs.forEach(function (np, ni) {
 });
 assert(nextHistOk,
   'cli --next --hist keeps one caption per seed (' + nextHist.length + ' lines)');
+// The two chain forms have to describe the same bars. Each block is drawn over
+// the column count its own record publishes, and that record's counts have to
+// fill its own grid exactly. Checked per seed rather than once, since a chain
+// that copied one world's histogram into every record would still pass a
+// single comparison — and the copied record would then describe a different
+// silhouette than the one printed above it.
+var chainBarBad = [];
+nextPairs.forEach(function (np, ni) {
+  var cfrom = nextHist.indexOf(np);
+  var cto = ni + 1 < nextPairs.length ? nextHist.indexOf(nextPairs[ni + 1])
+    : nextHist.length;
+  var cblock = nextHist.slice(cfrom, cto)
+    .map(function (l) { return l.replace(/\r$/, ''); })
+    .filter(function (l) { return l.length; });
+  var cruler = cblock[cblock.length - 2] || '';
+  var crec = nextJson[ni];
+  var csum = crec.hist.reduce(function (a, b) { return a + b; }, 0);
+  if (cruler.length !== crec.bins || crec.hist.length !== crec.bins ||
+    csum !== crec.width * crec.height) {
+    chainBarBad.push(np + ' ' + cruler.length + '/' + crec.bins + ' sum ' + csum);
+  }
+});
+assert(chainBarBad.length === 0,
+  'each chain block is drawn over its own record (' +
+  chainBarBad.join('; ') + ')');
 
 // `--json` is the pipeable form, so the profile block has to stay out of it
 // even when both flags are given: one line per world, each a whole record.

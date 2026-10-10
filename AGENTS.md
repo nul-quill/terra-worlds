@@ -346,6 +346,12 @@ Conventions:
   ending in that seed's checksum, which is what lets a pasted block of bars be
   matched to its own line of JSON. The suite reads both forms and compares the
   two checksums per seed.
+  Those two forms also have to agree about the bars themselves, per seed: the
+  ruler above a block is as wide as that seed's own `bins`, and the record's
+  `hist` array has that many entries summing to `width * height`. Checked
+  seed by seed rather than once, since a chain that copied one world's counts
+  into every record still passes a single comparison while printing bars that
+  belong to the wrong picture.
 - `parseArgs()` in `cli.js` treats a bare word as a seed and a dashed word as a
   flag. A dashed word that matches nothing is named on stderr, and the word
   after it is skipped, so a mistyped `--widht 30` costs one warning instead of
