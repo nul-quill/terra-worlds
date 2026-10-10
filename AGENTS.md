@@ -130,6 +130,12 @@ Conventions:
   re-derives the sea column with `core.binOf` and compares all three. Keep the
   block out of the `--json` path: one line per world is what makes that form
   pipeable, and the four fields already cover it.
+  Those three only fix the frame of the silhouette, not its weight, so the
+  record keeps the whole bar array too — `hist`, the same `core.histogram` pass
+  at the same width. That is what lets a pasted block of bars be checked
+  against one line of JSON: the suite sums the array against `stats.pixels`,
+  asks for one entry per `bins`, and compares it with a fresh pass. A record
+  with only the count and the tallest bar could describe a plateau or a peak.
   The suite checks that with both flags at once, asking that every line of the
   combined form still be a whole JSON object rather than a bar block wedged
   between two records.

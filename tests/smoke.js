@@ -1726,6 +1726,22 @@ assert(endsOk && endsPrinted,
   'the relief row carries both ends of the range (' + reliefRec.low + '-' +
   reliefRec.high + ')');
 
+// The record also carries the bars themselves, which is what lets a pasted
+// block of text profile be checked against a line of JSON. The array has to be
+// the very pass the chart draws: one count per bin, every cell counted once,
+// and the same numbers a fresh core pass produces at the sidebar's width.
+var histRecWorld = core.generate({seed: 'red ridge', shape: 'fjord',
+  width: 100, height: 60});
+var histRecPass = core.histogram(histRecWorld, core.binCount(core.histWidth));
+var histSum = reliefRec.hist.reduce(function (a, b) { return a + b; }, 0);
+var histSame = reliefRec.hist.length === reliefRec.bins &&
+  histSum === histRecWorld.stats.pixels &&
+  reliefRec.hist.join(',') === histRecPass.hist.join(',') &&
+  Math.max.apply(null, reliefRec.hist) === reliefRec.peak;
+assert(histSame,
+  'the record\'s bars are the chart\'s bars (' + reliefRec.hist.length +
+  ' bins, ' + histSum + ' cells)');
+
 // The median must sit inside the world's own range and really split the grid
 // in half, which is the whole point of publishing it: the relief range on its
 // own cannot tell a plateau from a plain with one peak. Same world as the

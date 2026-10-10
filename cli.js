@@ -469,6 +469,12 @@ function summarise(seed, result, name, asJson) {
     // `low`..`high`, which the four fields above already pin down.
     bins: hist.bins,
     peak: hist.peak,
+    // The bars themselves. `bins` and `peak` say how tall the silhouette is
+    // but not where its weight sits, which is the difference between a plateau
+    // and a peak squeezed between its own two ends. The array is the same pass
+    // the chart draws from, so a pasted block of bars and the one line of JSON
+    // around it describe one world rather than two that look alike.
+    hist: Array.prototype.slice.call(hist.hist),
     biomes: Object.keys(s.counts).length,
     classes: classes,
     summary: core.describe(result),
