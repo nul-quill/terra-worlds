@@ -2046,6 +2046,55 @@ assert(pointerSites === 2 && mouseGuards === pointerSites &&
   mouseSites === pointerSites,
   'both canvases answer a finger (' + pointerSites + ' pointer paths, ' +
   mouseGuards + ' guards, ' + mouseSites + ' mouse paths)');
+// Moisture is not a standalone field: the orographic pass folds the relief
+// into it by walking each row west to east, so a cell keeps more of what the
+// air carried when it came in than after the next climb. That direction is the
+// whole mechanism, and it shows up as an asymmetry — moisture follows the
+// height of the cell upwind of it more closely than the one downwind. A
+// symmetric smoothing would put both on the same footing, and a reversed sweep
+// would swap the pair, so the comparison is worth keeping in both directions.
+function corrOf(xs, ys) {
+  var n = xs.length, i, mx = 0, my = 0, s = 0, sx = 0, sy = 0;
+  for (i = 0; i < n; i++) { mx += xs[i]; my += ys[i]; }
+  mx /= n; my /= n;
+  for (i = 0; i < n; i++) {
+    s += (xs[i] - mx) * (ys[i] - my);
+    sx += (xs[i] - mx) * (xs[i] - mx);
+    sy += (ys[i] - my) * (ys[i] - my);
+  }
+  return s / Math.sqrt(sx * sy);
+}
+var orroBad = [];
+core.phrases.forEach(function (op) {
+  var ow = core.generate({seed: op, shape: 'craton', width: 160, height: 100});
+  var ow2 = ow.width, oh2 = ow.height;
+  var m = [], up = [], dn = [];
+  for (var oy = 0; oy < oh2; oy++) {
+    for (var ox = 1; ox < ow2 - 1; ox++) {
+      var oi = oy * ow2 + ox;
+      m.push(ow.moisture[oi]);
+      up.push(ow.heightField[oi - 1]);
+      dn.push(ow.heightField[oi + 1]);
+    }
+  }
+  var cu = corrOf(m, up), cd = corrOf(m, dn);
+  if (!(cu > cd) || m.length < 1000) orroBad.push(op + ' ' + cu + '/' + cd);
+});
+assert(orroBad.length === 0,
+  'moisture follows the side the air came from (' + orroBad.join('; ') + ')');
+// The two axes of the biome lookup are only consulted on land: a water cell is
+// named by its height alone, so `moist` and `temp` beside one would be two
+// figures that never decided anything — and they sit ahead of the notes that do
+// decide a shore cell. Read the dry branch out of the shell and require both
+// numbers inside it, then count each push so neither can also live outside.
+var axesAt = outSrc.indexOf('if (above) {');
+var axesSrc = axesAt < 0 ? '' : outSrc.slice(axesAt, axesAt + 420);
+var moistPush = (outSrc.match(/parts\.push\('moist '/g) || []).length;
+var tempPush = (outSrc.match(/parts\.push\('temp '/g) || []).length;
+assert(axesAt >= 0 && axesSrc.indexOf("moist ") >= 0 &&
+  axesSrc.indexOf("temp ") >= 0 && moistPush === 1 && tempPush === 1,
+  'the biome axes print where they are used (' + moistPush + ', ' + tempPush +
+  ', window ' + axesSrc.length + ')');
 
 // The hash is only useful if it carries every control on screen, so the two
 // lists are checked against each other: each INPUT or SELECT id in the page

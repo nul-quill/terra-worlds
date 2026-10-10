@@ -194,6 +194,11 @@ Conventions:
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
+  The direction of that sweep is the mechanism, and it is visible as an
+  asymmetry: moisture tracks the height of the cell upwind of it better than
+  the one downwind. The smoke suite compares the two correlations on every
+  hand-picked phrase, so a symmetric smoothing — or a reversed sweep — shows up
+  as a flipped pair rather than as a plausible-looking field.
   The biome lookup is a two-axis table, so `temperature` is published beside
   `moisture` and the readout prints both — `moist 48 — temp 84` says which axis
   moved a cell, which a single colour cannot. The climate slider is the mix
@@ -217,6 +222,11 @@ Conventions:
   only skips the repeat of the biome name. The suite checks that per cell, since
   a field that left a wet cell at a non-zero distance would quietly lose its
   reading from the hover.
+  The two axes of the biome lookup — `moist` and `temp` — are gated on that same
+  dry/wet test, for the same reason: a water cell is named by its height alone,
+  so beside one the pair is two figures that decided nothing, printed ahead of
+  the notes that do. The suite reads the dry branch out of the shell and asks
+  that both pushes sit inside it, one each, so neither can also live outside.
 - `channelize(result, name)` is a separate pass over the already-computed fields
   (`heightField`, `moisture`, `accumulation`, `coastDistance`). It never feeds back
   into `generate`: an overlay must not change the biome map. Stretch each field by

@@ -976,15 +976,20 @@
       parts.push('off-shelf');
     }
     // Moisture is the other axis of the biome lookup, so printing it explains
-    // why two cells at the same height land in different classes.
-    if (current.moisture) {
-      parts.push('moist ' + hundred(current.moisture[i]));
-    }
-    // The lookup is a two-axis table, so the second axis goes in too: a cell
-    // that reads `tundra` next to one that reads `boreal` differ here, not in
-    // height, and only the pair of numbers says which of the two moved.
-    if (current.temperature) {
-      parts.push('temp ' + hundred(current.temperature[i]));
+    // why two cells at the same height land in different classes. The lookup is
+    // a two-axis table, so the second axis goes in too: a cell that reads
+    // `tundra` next to one that reads `boreal` differ here, not in height, and
+    // only the pair of numbers says which of the two moved. Both belong to the
+    // land branch of that lookup — a water cell is named by its height alone —
+    // so on open ocean the pair would be two figures that never decided
+    // anything, ahead of the notes that do.
+    if (above) {
+      if (current.moisture) {
+        parts.push('moist ' + hundred(current.moisture[i]));
+      }
+      if (current.temperature) {
+        parts.push('temp ' + hundred(current.temperature[i]));
+      }
     }
     // Distance to the nearest shoreline, so a green patch in the middle of a
     // continent reads differently from the same colour on a coast.
