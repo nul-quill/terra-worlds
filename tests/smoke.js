@@ -2115,6 +2115,40 @@ assert(orderBad.length === 0 && orderDiffers > 0 && legendDefs === 1 &&
   'legend rows sort by share and one lookup feeds both paths (' + orderDiffers +
   ' reordered, ' + legendDefs + ' def, ' + legendUses + ' uses)');
 
+// The `k` cycle is a ring of the rows PLUS an empty slot, which is what the
+// comment over the handler promises: a lap has to come back through "nothing
+// pinned". Rebuilt here with the same arithmetic, one lap must show every class
+// exactly once and land back on the empty state, so the cleared state is a stop
+// on the ring rather than something only reachable before the first press. The
+// step is the handler's own `+1`, and Shift is the same ring backwards.
+var ringWorld = core.generate({seed: core.phrases[0], width: 170, height: 100});
+var ringRows = Object.keys(ringWorld.palette.colors)
+  .filter(function (rk) { return ringWorld.stats.counts[rk]; })
+  .sort(function (ra, rb) {
+    return ringWorld.stats.counts[rb] - ringWorld.stats.counts[ra];
+  });
+var ringSlots = ringRows.length + 1;
+function ringStep(held, dir) {
+  var ki = ringRows.indexOf(held || '');
+  if (ki < 0) ki = ringSlots - 1;
+  return ringRows[(ki + dir + ringSlots) % ringSlots] || null;
+}
+var ringSeen = {};
+var ringNow = null;
+for (var rn = 0; rn < ringSlots; rn++) {
+  ringNow = ringStep(ringNow, 1);
+  ringSeen[String(ringNow)] = (ringSeen[String(ringNow)] || 0) + 1;
+}
+var ringCovers = ringRows.every(function (ck) { return ringSeen[ck] === 1; });
+assert(ringCovers && ringSeen.null === 1 && ringNow === null &&
+  ringStep(null, -1) === ringRows[ringRows.length - 1] &&
+  ringStep(ringStep(ringRows[0], 1), -1) === ringRows[0] &&
+  ringStep(ringRows[0], -1) === null &&
+  /var slots = rows\.length \+ 1;/.test(appSrc),
+  'the k cycle is a ring of rows plus an empty slot (' + ringRows.length +
+  ' rows, ' + ringSlots + ' slots, covers ' + ringCovers + ', back to empty ' +
+  (ringNow === null) + ')');
+
 // The same partition shows up in three places: the `biomes` row in the stats
 // list, the rows of the legend, and the `classes` column of the record. All
 // three count the classes that actually occur, so the numbers have to be equal

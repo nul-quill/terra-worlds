@@ -467,9 +467,16 @@ Conventions:
   renames one key in its own table is caught even when the default scheme is
   fine — the legend of that scheme alone would read differently.
   `Shift+k` walks the same array backwards, which is why the cycle is a
-  `(ki + step + rows.length) % rows.length` step rather than a plain increment:
-  a mis-press should not need a whole lap to undo. Keep the one branch handling
-  both directions.
+  `(ki + step + slots) % slots` step rather than a plain increment: a mis-press
+  should not need a whole lap to undo. Keep the one branch handling both
+  directions. The ring has one slot MORE than there are rows — `slots` is
+  `rows.length + 1`, and an index past the last row reads as `null` — because
+  the comment over the handler promises a lap comes back through "nothing
+  pinned", which is only true if the empty state is itself a stop on the ring.
+  With `rows.length` slots a lap landed on the first class again and the cleared
+  state was reachable just once, before anything had been pinned. The smoke
+  suite walks one whole lap and asks that every class appear exactly once, that
+  the empty state appear once, and that the lap end where it started.
 - `cli.js --palettes` lists the palette keys from `core.palettes`, so a name
   copied from the terminal is always valid for `--palette`. The smoke suite
   compares that listing against `Object.keys(core.palettes)` — keep both in step.

@@ -1477,9 +1477,16 @@
         // Shift steps backwards through the same list, so a mis-press does not
         // need a full lap of the legend to undo.
         var step = ev.shiftKey ? -1 : 1;
+        // The empty state is a slot of its own: with only the rows to choose
+        // from, a lap came back to the first class and the cleared state was
+        // reachable just once, before anything had been pinned. One more slot
+        // than there are rows makes "nothing pinned" a stop on the ring, which
+        // is what lets a keyboard user release a pin without hunting for the
+        // row that set it.
+        var slots = rows.length + 1;
         var ki = rows.indexOf(pinned || '');
-        if (ki < 0) ki = step > 0 ? -1 : 0;
-        pinned = rows[(ki + step + rows.length) % rows.length] || null;
+        if (ki < 0) ki = slots - 1;
+        pinned = rows[(ki + step + slots) % slots] || null;
         renderLegend(current);
         drawMap();
         writeHash();
