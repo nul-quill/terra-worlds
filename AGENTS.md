@@ -598,6 +598,14 @@ Conventions:
   The suite re-derives that order from `stats.counts` and asks that it differs
   from the palette's own declaration for at least one world, so the sort cannot
   be dropped without the list losing its biggest-class-first reading.
+  Two classes can cover the same number of cells, so the comparison ends with a
+  tie-break on the palette's own key order (`declared.indexOf(a) -
+  declared.indexOf(b)`). Without it the pair's order is whatever this engine's
+  sort happens to produce, and the same seed lists its rows differently on two
+  machines — which also flips the `k` cycle that walks the same array. The suite
+  compares the lookup against a hand-written insertion sort (stable by
+  construction) over three tied fixtures plus every phrase, since a generated
+  grid rarely hands two classes the same count on its own.
   `stats.counts` is the partition behind those rows: every cell lands in exactly
   one class, so the counts sum to `stats.pixels` and no listed class is empty.
   The smoke suite checks that on every hand-picked phrase, along with the

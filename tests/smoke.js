@@ -2602,6 +2602,78 @@ assert(orderBad.length === 0 && orderDiffers > 0 && legendDefs === 1 &&
   'legend rows sort by share and one lookup feeds both paths (' + orderDiffers +
   ' reordered, ' + legendDefs + ' def, ' + legendUses + ' uses)');
 
+// Two classes can cover exactly the same number of cells, and then the only
+// thing separating their rows is the tie-break. A sort that stops at the count
+// difference leaves the pair in whatever order this engine's sort happens to
+// produce, so the same seed can list its rows in two orders on two machines —
+// and the `k` cycle, which walks the same array, walks them the other way. The
+// shell breaks ties on the palette's own key order; rebuilt here with a plain
+// insertion sort (stable by construction) over the declared keys, the result
+// has to be the same list, and every tie has to be settled that way rather
+// than left to chance.
+function declaredOrder(world) {
+  var names = Object.keys(world.palette.colors);
+  var counts = world.stats.counts;
+  var out = [];
+  names.forEach(function (nk) {
+    if (!counts[nk]) return;
+    var at = out.length;
+    while (at > 0 && counts[out[at - 1]] < counts[nk]) {
+      out[at] = out[at - 1];
+      at--;
+    }
+    out[at] = nk;
+  });
+  return out;
+}
+function legendOrderOf(world) {
+  var names = Object.keys(world.palette.colors);
+  var counts = world.stats.counts;
+  return names.filter(function (k) { return counts[k]; }).sort(function (a, b) {
+    return counts[b] - counts[a] || names.indexOf(a) - names.indexOf(b);
+  });
+}
+// A real grid rarely hands two classes the same cell count, so the tied case is
+// fed by hand: each fixture is one palette's keys with a deliberate tie in the
+// middle. The insertion pass is stable by construction, so it shows what a
+// count-only sort SHOULD produce on an engine that preserves input order, and
+// the shell's lookup has to agree with it — plus with the same pair on a real
+// world, where nothing ties and the count alone decides.
+var tieFixtures = [
+  {grass: 40, forest: 40, desert: 30, ice: 10},
+  {lake: 12, grass: 12, forest: 12, rock: 5},
+  {tundra: 9, shrub: 9, taiga: 9, rain: 9}
+];
+var tieRows = 0;
+var tieBad = [];
+tieFixtures.forEach(function (fc, fi) {
+  var fw = {palette: core.palettes.terra, stats: {counts: fc}};
+  var tcounts = fc;
+  var tnames = Object.keys(fw.palette.colors).filter(function (fk) {
+    return tcounts[fk];
+  });
+  for (var ti = 0; ti < tnames.length; ti++) {
+    for (var tj = ti + 1; tj < tnames.length; tj++) {
+      if (tcounts[tnames[ti]] === tcounts[tnames[tj]]) tieRows++;
+    }
+  }
+  if (declaredOrder(fw).join(',') !== legendOrderOf(fw).join(',')) {
+    tieBad.push('fixture ' + fi);
+  }
+});
+core.phrases.forEach(function (tk) {
+  var tw = core.generate({seed: tk, width: 150, height: 90});
+  if (declaredOrder(tw).join(',') !== legendOrderOf(tw).join(',')) {
+    tieBad.push(tk);
+  }
+});
+var tieBreakSites = (appSrc.match(
+  /counts\[b\] - counts\[a\] \|\| declared\.indexOf\(a\) - declared\.indexOf\(b\)/g) || []
+).length;
+assert(tieRows > 0 && tieBad.length === 0 && tieBreakSites === 1,
+  'equal legend rows keep the palette order (' + tieRows + ' ties, ' +
+  tieBad.join(',') + ', ' + tieBreakSites + ' tie-break)');
+
 // The `k` cycle is a ring of the rows PLUS an empty slot, which is what the
 // comment over the handler promises: a lap has to come back through "nothing
 // pinned". Rebuilt here with the same arithmetic, one lap must show every class
