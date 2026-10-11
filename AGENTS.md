@@ -913,6 +913,11 @@ Conventions:
   empty-key entry first so "no overlay" is always the default selection. The
   channel dropdown, the `c` cycle and the smoke overlay loop all read that one
   array — add a ramp there, never in `app.js`.
+  On the page side all six selects are filled by one `fillOptions(select, items)`
+  loop, since each list is `{key, label}` pairs from the core: the key becomes
+  the option's value — what a link stores — and the label its text. Six copies
+  of that loop could be edited apart while each still looked right, so the suite
+  counts the one definition, a call per select and a single option builder.
   `core.phrases` is the fourth: the hand-picked seed phrases. `PRESETS` in
   `app.js` is that array, the `p` key walks it, `cli.js --phrases` prints it and
   the smoke suite renders every entry, so a phrase is only worth adding if it

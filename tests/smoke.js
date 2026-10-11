@@ -1248,6 +1248,19 @@ var listsOk = uniqueKeys(core.shapes) && uniqueKeys(core.channels) &&
   uniqueKeys(core.lights) && uniqueKeys(core.grids) && uniqueKeys(core.scales);
 assert(listsOk, 'every dropdown list has distinct keys');
 
+// Each of those lists reaches the page through one fill loop, so a new
+// dropdown cannot arrive with its own copy of the option-building code — the
+// five copies would only have to be edited once each to make a key and its
+// label disagree. Counted as text: one helper holding the loop, a use per
+// select, and no leftover option builder beside it.
+var fillSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var fillDefs = (fillSrc.match(/function fillOptions\(/g) || []).length;
+var fillUses = (fillSrc.match(/fillOptions\(/g) || []).length - fillDefs;
+var fillBuilt = (fillSrc.match(/createElement\('option'\)/g) || []).length;
+assert(fillDefs === 1 && fillUses >= 6 && fillBuilt === 1,
+  'one loop fills every dropdown (' + fillDefs + ' def, ' + fillUses +
+  ' selects, ' + fillBuilt + ' option builder)');
+
 // The help text is the shortest listing, so it must agree with the lists the
 // dropdowns read: a shape key missing from --help would look unavailable even
 // though --shape accepts it.

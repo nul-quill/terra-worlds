@@ -177,81 +177,58 @@
 
   /* ---- defaults ---- */
 
-  function fillPalettes() {
-    var names = TerraCore.palettes;
+  // Every dropdown on this page is a list of `{key, label}` pairs from the
+  // core, so one fill loop covers them all: the option's value is the key a
+  // link stores, its text is what the row shows. A list is added in
+  // `src/core.js`, and the cycle key named for that select walks the same
+  // array, so the two can never disagree about the order.
+  function fillOptions(select, items) {
     var frag = document.createDocumentFragment();
-    Object.keys(names).forEach(function (key) {
+    items.forEach(function (item) {
       var opt = document.createElement('option');
-      opt.value = key;
-      opt.textContent = names[key].label;
+      opt.value = item.key;
+      opt.textContent = item.label;
       frag.appendChild(opt);
     });
-    inputs.palette.appendChild(frag);
+    select.appendChild(frag);
+  }
+
+  function fillPalettes() {
+    var names = TerraCore.palettes;
+    var items = Object.keys(names).map(function (key) {
+      return {key: key, label: names[key].label};
+    });
+    fillOptions(inputs.palette, items);
   }
 
   // Shapes come from the generator's own list, so the dropdown, `cli --shapes`
   // and shapeHeight() cannot disagree about which keys exist.
   function fillShapes() {
-    var frag = document.createDocumentFragment();
-    TerraCore.shapes.forEach(function (shape) {
-      var opt = document.createElement('option');
-      opt.value = shape.key;
-      opt.textContent = shape.label;
-      frag.appendChild(opt);
-    });
-    inputs.shape.appendChild(frag);
+    fillOptions(inputs.shape, TerraCore.shapes);
   }
 
   // Same for the overlays: the dropdown, the `c` cycle and the ramp in
   // channelize() all walk this one list.
   function fillChannels() {
-    var frag = document.createDocumentFragment();
-    TerraCore.channels.forEach(function (ch) {
-      var opt = document.createElement('option');
-      opt.value = ch.key;
-      opt.textContent = ch.label;
-      frag.appendChild(opt);
-    });
-    inputs.channel.appendChild(frag);
+    fillOptions(inputs.channel, TerraCore.channels);
   }
 
   // The four compass bearings come from the same list the shade pass reads, so
   // the dropdown, the `d` key and `cli --lights` all offer the same four.
   function fillLights() {
-    var frag = document.createDocumentFragment();
-    TerraCore.lights.forEach(function (lt) {
-      var opt = document.createElement('option');
-      opt.value = lt.key;
-      opt.textContent = lt.label;
-      frag.appendChild(opt);
-    });
-    inputs.lightDir.appendChild(frag);
+    fillOptions(inputs.lightDir, TerraCore.lights);
   }
 
   // Column counts come from the core too, so a pinned grid in a link means the
   // same thing after the list is edited.
   function fillGrids() {
-    var frag = document.createDocumentFragment();
-    TerraCore.grids.forEach(function (gr) {
-      var opt = document.createElement('option');
-      opt.value = gr.key;
-      opt.textContent = gr.label;
-      frag.appendChild(opt);
-    });
-    inputs.gridSize.appendChild(frag);
+    fillOptions(inputs.gridSize, TerraCore.grids);
   }
 
   // The export multipliers come from the core as well, so the sizes a link can
   // name are the sizes `cli --scales` prints.
   function fillScales() {
-    var frag = document.createDocumentFragment();
-    TerraCore.scales.forEach(function (sc) {
-      var opt = document.createElement('option');
-      opt.value = sc.key;
-      opt.textContent = sc.label;
-      frag.appendChild(opt);
-    });
-    inputs.scale.appendChild(frag);
+    fillOptions(inputs.scale, TerraCore.scales);
   }
 
   function readOptions() {
