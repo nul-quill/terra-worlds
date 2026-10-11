@@ -393,7 +393,10 @@ if (opts.help) {
 // width, which is what ties these columns to the bars on screen.
 function profile(result) {
   var h = core.histogram(result, core.binCount(core.histWidth));
-  var rows = 6;
+  // The row count is the profile's own constant rather than a number written
+  // here, so a reader who has the block and the record can ask the core how
+  // many rows the block should have instead of counting them off.
+  var rows = core.histRows;
   var lines = [];
   for (var r = 0; r < rows; r++) {
     var level = (rows - r) / rows;

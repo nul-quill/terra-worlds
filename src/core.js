@@ -1121,6 +1121,14 @@
   // to assume to get the same number of columns.
   var HIST_WIDTH = 200;
 
+  // How many rows of blocks the text profile stacks above its ruler: one
+  // threshold each, so a terminal's silhouette has the same vertical resolution
+  // whatever world it describes. Beside `HIST_WIDTH` for the same reason — the
+  // number belongs to the profile, not to the call site drawing it, so a
+  // reader comparing a pasted block with a record can ask the core how many
+  // rows to expect instead of counting them.
+  var HIST_ROWS = 6;
+
   // Bin the height field into `bins` bars over this world's own range. The
   // range is the actual min/max rather than 0..1, so a low-relief craton still
   // fills the chart instead of crowding the middle. Every reader of the relief
@@ -1208,6 +1216,7 @@
     tickStep: tickStep,
     binCount: binCount,
     histWidth: HIST_WIDTH,
+    histRows: HIST_ROWS,
     lakeSteps: LAKE_STEPS,
     deepDrop: DEEP_DROP,
     phrases: PHRASES,

@@ -1374,8 +1374,12 @@ var histSeaCol = histRuler.indexOf('|');
 var histWantCol = core.binOf(histWorld.seaLevel, histWorld.stats.min,
   Math.max(0.001, histWorld.stats.max - histWorld.stats.min), histBins);
 var histRows = histLines.slice(1, histLines.length - 2);
+// The row count is the core's own number rather than one this file guesses, so
+// a block read back from a terminal is checked against the same figure the
+// writer used. Both halves are read here: the constant, and the fact that the
+// profile reads it rather than restating it.
 assert(histRuler.length === histBins && histSeaCol === histWantCol &&
-  histRows.length === 6 && /#/.test(histRows[histRows.length - 1]),
+  histRows.length === core.histRows && /#/.test(histRows[histRows.length - 1]),
   'the text profile matches the chart bins (' + histRuler.length + ' columns, ' +
   histRows.length + ' rows, sea at ' + histSeaCol + ')');
 // Each row is one threshold over the same bins, so the blocks can only pile up
@@ -3287,6 +3291,20 @@ assert(/clientWidth \|\| TerraCore\.histWidth/.test(appSrc) &&
   (histCliSrc.match(/core\.binCount\(core\.histWidth\)/g) || []).length === 2,
   'one sidebar width feeds the chart and the text profile (' +
   core.histWidth + ' -> ' + histSummed.bins + ' bars)');
+// The height of that same block is one number too. The profile stacks a fixed
+// number of threshold rows, and a reader who has only a pasted block and one
+// line of JSON has to be able to ask whether the block is complete — so the
+// count lives beside the width, and the writer reads it rather than restating
+// it. Counted on both sides: the core publishes one constant, the profile
+// reads it once, and no second copy of the number is left in the writer.
+var rowDefs = (binCoreSrc.match(/var HIST_ROWS = \d+;/g) || []).length;
+var rowUses = (histCliSrc.match(/core\.histRows/g) || []).length;
+var rowLiterals = (histCliSrc.match(/var rows = \d+;/g) || []).length;
+assert(rowDefs === 1 && rowUses === 1 && rowLiterals === 0 &&
+  core.histRows >= 2,
+  'one row count feeds the profile and its reader (' + rowDefs + ' def, ' +
+  rowUses + ' uses, ' + rowLiterals + ' literals, ' + core.histRows +
+  ' rows)');
 
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the

@@ -210,13 +210,19 @@ Conventions:
   world's columns would still sit under a caption naming that seed's own two
   figures, so the mismatch is only visible when each block is compared with its
   own record.
-  Above the ruler sit six rows of blocks, one threshold each, so the counts can
-  only grow going down — an inverted level still prints a correct caption while
-  showing the silhouette upside down. The suite checks that ramp, and that the
+  Above the ruler sit `TerraCore.histRows` rows of blocks — one constant beside
+  `histWidth`, read by the writer rather than restated in it — one threshold
+  each, so the counts can only grow going down — an inverted level still prints
+  a correct caption while showing the silhouette upside down. The suite checks
+  that ramp, and that the
   column the record's `peak` describes is filled in every row. Growing totals
   alone are not enough — a lower row could drop one column and gain two
   elsewhere — so the suite also asks that every filled column stay filled in
   the rows beneath it, which is what a stack of thresholds actually looks like.
+  That row count is a published number for the same reason the width is: a
+  reader holding a pasted block and one line of JSON has to be able to ask
+  whether the block is complete, so the suite compares the block's row count
+  with the constant and asks that the writer hold no second copy of it.
   Shape alone would still pass for the wrong world, so the suite re-derives
   each row from the record's own counts and compares the whole string: a column
   is filled when its count reaches that row's share of `peak`. That is what
