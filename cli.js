@@ -582,10 +582,18 @@ function summarise(seed, result, name, asJson) {
   };
   if (asJson) return JSON.stringify(rec);
   var lines = [];
-  Object.keys(rec).forEach(function (k) {
+  var keys = Object.keys(rec);
+  // The value column starts one space past the longest label, and that width
+  // is measured from the record rather than written here. A fixed number is
+  // only right while the widest key happens to be the one it was counted off,
+  // so a longer field added later would print its value flush against the name
+  // and the column would read as two columns.
+  var padTo = 0;
+  keys.forEach(function (k) { if (k.length > padTo) padTo = k.length; });
+  padTo += 1;
+  keys.forEach(function (k) {
     var label = k;
-    // Longest key is 'contourBands', so the value column starts after it.
-    while (label.length < 13) label += ' ';
+    while (label.length < padTo) label += ' ';
     lines.push(label + rec[k]);
   });
   return lines.join('\n');

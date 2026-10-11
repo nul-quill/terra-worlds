@@ -1958,6 +1958,26 @@ Object.keys(jsonLine).forEach(function (jk) {
 assert(tableBad.length === 0 && Object.keys(tableMap).length >= 20,
   'the plain table repeats the JSON record (' + Object.keys(jsonLine).length +
   ' fields, off at ' + tableBad.join('; ') + ')');
+// The column behind those labels is measured from the record rather than
+// written down beside the loop: the widest label keeps exactly one space, and
+// every other value starts at that same column. A stale constant would still
+// align the rows we happen to have today and drift the moment a longer field
+// is added, so the width is compared with the longest key in the record the
+// table was built from.
+var widestKey = 0;
+Object.keys(jsonLine).forEach(function (jk) {
+  if (jk.length > widestKey) widestKey = jk.length;
+});
+var colBad = [];
+tableOut.forEach(function (line) {
+  var name = /^(\S+)/.exec(line)[1];
+  var gap = /^(\S+)( *)/.exec(line)[2].length;
+  if (gap !== widestKey + 1 - name.length) colBad.push(name);
+});
+assert(colBad.length === 0,
+  'the plain table pads to its own widest label (' + (widestKey + 1) +
+  ' columns, off at ' + colBad.join(',') + ')');
+
 // A lone size flag should not decide the other side by accident. `--width 100`
 // on its own used to mean 100x300 — a letterbox strip — because the untouched
 // side fell back to the plain default height. Both one-sided forms are checked

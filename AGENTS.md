@@ -416,6 +416,13 @@ Conventions:
   that the padding is a whitespace RUN, and the longest key leaves exactly one
   space: split on `\s+` rather than on two spaces, or the tallest row of the
   table drops out of the comparison.
+  That one space is the whole rule behind the column, and the width it is
+  measured against comes from the record's own longest key rather than a number
+  written beside the loop — a constant is only right while the widest field
+  happens to be the one it was counted off, and a longer field added later
+  would otherwise print its value flush against the name. The suite re-measures
+  the widest key of the JSON line and asks every row of the table for that
+  row's own gap, so the pad cannot drift from the labels it is set by.
 - `nextSeed(value)` derives the next seed from the current one (FNV-1a over the
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not
