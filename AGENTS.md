@@ -827,6 +827,13 @@ Conventions:
   note and the selected-band line all call: three callers, two ends, and the
   suite counts both so a bin cannot round against one scale in one view and
   another in the second.
+  Those three views print the same short pair beside their own word — the
+  bar's number over the bin count, then the two ends out of a hundred — so that
+  pair is one builder too, `bandTally(bin, sum)`, read by the hovered cell's
+  label, its mismatch note and the line under the map. Three copies of the
+  division could round one bin three ways while each still looked right beside
+  its own caption, so the suite counts the builder, its three reads and the
+  denominator inside it.
   A bin picked on the chart is a filter over the whole grid, so `bandNote()`
   writes the same reading into the line under the map — `band 40/72 (48-49) —
   485 cells — Deep water` — where the count is big enough to read. Every path

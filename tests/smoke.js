@@ -3907,12 +3907,13 @@ assert(cellReadDefs === 1 && cellReadWrites === 1 && cellReadClears === 1 &&
 // that same reading: a one-based number off `cellBand`, over the bin count the
 // chart was binned with. A second denominator — a fixed bar count, or the raw
 // zero-based index — would print a row the lit bar cannot match.
-var bandLabels = (appSrc.match(/'band ' \+ \(cellBand \+ 1\)/g) || []).length;
-var bandTally = /\+ '\/' \+ histState\.bins/.test(appSrc);
+var tallyDefs = (appSrc.match(/function bandTally\(/g) || []).length;
+var tallyCalls = (appSrc.match(/bandTally\((cellBand|band), /g) || []).length;
+var tallyDenom = /\+ '\/' \+ histState\.bins/.test(appSrc);
 var bandFixed = /'band ' \+ \d+\/\d+/.test(appSrc);
-assert(bandLabels === 1 && bandTally && !bandFixed,
-  'the readout numbers the bar it lights (' + bandLabels + ' label, tally ' +
-  bandTally + ', fixed ' + bandFixed + ')');
+assert(tallyDefs === 1 && tallyCalls === 3 && tallyDenom && !bandFixed,
+  'the readout numbers the bar it lights (' + tallyDefs + ' label builder, ' +
+  tallyCalls + ' reads, tally ' + tallyDenom + ', fixed ' + bandFixed + ')');
 
 // The band label is a measurement rather than a position in a list, so both of
 // its ends come from the range the chart was binned over. That arithmetic lives
@@ -3926,7 +3927,7 @@ var bandEnds = (appSrc.match(/\/ st\.bins \* st\.span/g) || []).length;
 var bandCalls = (appSrc.match(/= bandSummary\(/g) || []).length;
 var bandStray = (appSrc.match(/histState\.bins \* histState\.span/g) ||
   []).length;
-var bandBracket = /'band ' \+ \(cellBand \+ 1\)[\s\S]{0,160}\+ '-' \+ hundred\(sum\.to\)/
+var bandBracket = /function bandTally\(bin, sum\) \{[\s\S]{0,200}\+ '-' \+ hundred\(sum\.to\)/
   .test(appSrc);
 // Four callers: the chart's own caption, the hovered-cell reading, the note
 // under the map, and the pair that tells a hovered cell whether the selected
@@ -3934,7 +3935,7 @@ var bandBracket = /'band ' \+ \(cellBand \+ 1\)[\s\S]{0,160}\+ '-' \+ hundred\(s
 // own, so it cannot reuse the other result and has to be counted. The note is
 // gated on a mismatch: when the two bins agree, the cell's own label already
 // is the answer, so the note must not print a second copy of the same pair.
-var bandInside = /'not in ' \+ \(band \+ 1\)/.test(appSrc);
+var bandInside = /'not in ' \+ bandTally\(band, sel\)/.test(appSrc);
 var bandGate = /band >= 0 && histState && cellBand !== band/.test(appSrc);
 assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 4 && !bandStray &&
   bandBracket && bandInside && bandGate,

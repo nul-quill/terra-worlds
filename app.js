@@ -1143,8 +1143,7 @@
       // list. Both ends come from the range the chart was binned over, which is
       // the same arithmetic the lit bar is chosen with.
       var sum = bandSummary(cellBand);
-      parts.push('band ' + (cellBand + 1) + '/' + histState.bins +
-        ' (' + hundred(sum.from) + '-' + hundred(sum.to) + ')');
+      parts.push('band ' + bandTally(cellBand, sum));
     }
     // A selected bar dims every cell outside its height range, which is why a
     // hovered cell can look washed out next to a bright one. Saying which side
@@ -1156,8 +1155,7 @@
     // temperature figures off the end of the line.
     if (band >= 0 && histState && cellBand !== band) {
       var sel = bandSummary(band);
-      parts.push('not in ' + (band + 1) + '/' +
-        histState.bins + ' (' + hundred(sel.from) + '-' + hundred(sel.to) + ')');
+      parts.push('not in ' + bandTally(band, sel));
     }
     readout.textContent = parts.join(' — ');
     paintHistogram(cellBand);
@@ -1201,6 +1199,18 @@
       if (tally[k] > topN) { topN = tally[k]; top = k; }
     });
     return { from: from, to: to, cells: st.hist[bin] || 0, top: top, n: topN };
+  }
+
+  // The short form of that reading: the bar's one-based number over the bin
+  // count, then the two ends of its range out of a hundred. Three views print
+  // this pair — the hovered cell's own label, the note saying a cell falls
+  // outside the selected bar, and the line under the map — and each prefixes it
+  // with its own word. Built once so the number, the denominator and the two
+  // ends cannot be rounded three different ways while each still looked right
+  // beside its own caption.
+  function bandTally(bin, sum) {
+    return (bin + 1) + '/' + histState.bins +
+      ' (' + hundred(sum.from) + '-' + hundred(sum.to) + ')';
   }
 
   function savePng() {
@@ -1401,9 +1411,7 @@
     }
     var sum = bandSummary(band);
     if (!sum) return;
-    var parts = ['band ' + (band + 1) + '/' + histState.bins +
-      ' (' + hundred(sum.from) + '-' + hundred(sum.to) + ')',
-      sum.cells + ' cells'];
+    var parts = ['band ' + bandTally(band, sum), sum.cells + ' cells'];
     if (sum.top) parts.push(biomeLabel(sum.top));
     readout.textContent = parts.join(' — ');
   }
