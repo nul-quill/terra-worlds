@@ -1448,6 +1448,29 @@ assert(manyOut.length === 2 && manyOut[0].indexOf('pale shelf') === 0 &&
   manyOut[1].indexOf('salt mirror') === 0,
   'each summary line names its seed (' + manyOut.length + ')');
 
+// The same worlds are nameable as a key, which is the form a script that
+// passes every setting as a flag wants. The two forms have to agree word for
+// word — a `--seed` that only filled half the slots a bare word fills would
+// otherwise read as a shorter chain of worlds — and the flag keeps the shared
+// optional-value guard, so `--seed --json` falls back to the default phrase
+// while the record still prints.
+var keySeed = require('child_process')
+  .execSync('node cli.js --seed "salt mirror" --describe --width 60 ' +
+    '--height 40', {cwd: __dirname + '/..'}).toString().trim();
+var bareSeed = require('child_process')
+  .execSync('node cli.js "salt mirror" --describe --width 60 ' +
+    '--height 40', {cwd: __dirname + '/..'}).toString().trim();
+var manyKeySeed = require('child_process')
+  .execSync('node cli.js --seed "pale shelf" --seed "salt mirror" --describe ' +
+    '--width 60 --height 40', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var seedNext = JSON.parse(require('child_process')
+  .execSync('node cli.js --seed --json --width 60 --height 40',
+    {cwd: __dirname + '/..'}).toString().trim());
+assert(keySeed === bareSeed && manyKeySeed.length === 2 &&
+  seedNext.seed === 'terra' && !!seedNext.checksum,
+  'a seed is nameable as a flag or as a bare word (' + keySeed.length +
+  ' chars, ' + manyKeySeed.length + ' worlds, ' + seedNext.seed + ')');
+
 // Both views of one world go through `describe()`: the sidebar takes it from
 // the generated record, the terminal prints it from the same call. Compared
 // here as strings on one seed and one grid, so a phrase edited on one side —

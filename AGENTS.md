@@ -457,6 +457,13 @@ Conventions:
   after it is skipped, so a mistyped `--widht 30` costs one warning instead of
   quietly rendering a second world from the number `30`. Keep that skip in the
   parser rather than filtering the seed list afterwards.
+  `--seed phrase` is the key form of that bare word: it pushes onto the same
+  list, so one flag per world is the same as several bare words and both forms
+  print the same sentences. Keep the list shared rather than holding a second
+  `opts.seed`, since a record built from only one of the two would describe a
+  shorter chain than the one on screen. It reads through `hasVal()` like every
+  other value-taking flag, so `--seed --json` keeps the generator's phrase and
+  still prints a record. The suite compares the two forms string for string.
   Numeric flags read their value through `nextNum()`, which returns
   `undefined` for anything that does not parse. A raw `parseFloat` would hand
   the generator a `NaN`, where every comparison is false and the whole grid

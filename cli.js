@@ -81,6 +81,15 @@ function parseArgs(argv) {
       // file name is not a number or a key from a list.
       if (hasVal(argv, i)) opts.out = argv[++i];
     }
+    else if (a === '--seed') {
+      // The bare word is still the shortest way to name a world; this form is
+      // for the case where the phrase could be mistaken for a flag list, and
+      // for scripts that pass every setting as a key. Same guard as the rest,
+      // so `--seed --json` leaves the default phrase and still prints a
+      // record. Each value is one seed, so several of these behave exactly
+      // like several bare words.
+      if (hasVal(argv, i)) opts.seeds.push(argv[++i]);
+    }
     else if (a === '--describe') opts.describe = true;
     else if (a === '--hist') opts.hist = true;
     else if (a === '--next') opts.next = nextNum(hasVal(argv, i) ? argv[++i] : null, true) || 5;
@@ -241,6 +250,10 @@ if (opts.help) {
   console.log('       the Reroll button derives from it, one per line; with');
   console.log('       [--json] each line of that chain is a full record');
   console.log('       [--no-grain] to skip the Bayer dither on the shading');
+  console.log('       [--seed phrase] names a world the way a bare word does,');
+  console.log('       for a call that already passes every other setting as a');
+  console.log('       key; repeat it for several worlds, exactly as several');
+  console.log('       bare words would');
   console.log('       [--palettes] to list the palette keys and their labels');
   console.log('       [--shapes] to list the shape keys and what each one cuts');
   console.log('       [--channels] to list the overlay keys and the field each');
