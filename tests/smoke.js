@@ -967,6 +967,20 @@ nextAspect.forEach(function (rec) {
 assert(nextAspectBad.length === 0 && nextAspect.length === nextPairs.length,
   'a chain shares the grid its flags asked for (' + nextAspect.length +
   ' records, off at ' + nextAspectBad.join('; ') + ')');
+// Every printed world — the plain listing and each branch of the chain — is
+// built through one option copy, so a flag added to the parser reaches all of
+// them at once. Two copies of that loop could be edited apart while each still
+// looked reasonable beside its own form, and the split would show up as one
+// printing a world without the overlay someone asked for. Counted as text: one
+// definition, one read per printed form, and no second copy left inline.
+var cliSrcWorld = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+var worldDefs = (cliSrcWorld.match(/function runWorld\(/g) || []).length;
+var worldCalls = (cliSrcWorld.match(/runWorld\((?:s|seed)\)/g) || []).length -
+  worldDefs;
+var worldCopies = (cliSrcWorld.match(/Object\.keys\(opts\)/g) || []).length;
+assert(worldDefs === 1 && worldCalls === 4 && worldCopies === 1,
+  'every cli form builds its world one way (' + worldDefs + ' def, ' +
+  worldCalls + ' reads, ' + worldCopies + ' copy)');
 // The two chain forms have to describe the same bars. Each block is drawn over
 // the column count its own record publishes, and that record's counts have to
 // fill its own grid exactly. Checked per seed rather than once, since a chain

@@ -491,19 +491,20 @@ Conventions:
   Each record keeps its own `seed`, which is what ties a line of JSON back to
   the phrase the plain listing prints; the suite checks that pairing and asks
   for distinct checksums across the chain.
-  Every branch of that chain builds its world through one `chainWorld(seed)`
-  helper that copies the parsed options and swaps in the seed, so a flag added
-  to the parser reaches the listing, the `--describe` sentences and the records
-  at once rather than only the form someone happened to edit. `--hist` is
+  Every printed world — the plain listing and each branch of that chain — is
+  built through one `runWorld(seed)` helper that copies the parsed options and
+  swaps in the seed, so a flag added to the parser reaches the listing, the
+  `--describe` sentences and the records at once rather than only the form
+  someone happened to edit. `--hist` is
   honoured in those branches too: one profile block per seed, each caption
   ending in that seed's checksum, which is what lets a pasted block of bars be
   matched to its own line of JSON. The suite reads both forms and compares the
   two checksums per seed.
   The rest of each chain caption is compared the same way — the two ends of the
   range, the sea level and the median — against that seed's own record rather
-  than against the first one. The chain builds its worlds through a helper the
-  plain listing never uses, so a caption that read its figures from the wrong
-  world would still print a plausible silhouette above it.
+  than against the first one. Each form reads its figures from the world it just
+  built, so a caption that read them from another seed would still print a
+  plausible silhouette above it.
   Those two forms also have to agree about the bars themselves, per seed: the
   ruler above a block is as wide as that seed's own `bins`, and the record's
   `hist` array has that many entries summing to `width * height`. Checked

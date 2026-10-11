@@ -214,6 +214,18 @@ function toPng(img) {
 var opts = parseArgs(process.argv.slice(2));
 finishGrid(opts);
 
+// Every printed world is built from the parsed flags with one seed on top, so
+// the copy is one function: a flag added to the parser then reaches the plain
+// listing, the `--next` chain and every form of both at once, rather than only
+// the branch someone happened to edit. Listing the keys by hand in each place
+// is how one form ends up rendering without a flag the others honour.
+function runWorld(seed) {
+  var runOpts = {};
+  Object.keys(opts).forEach(function (k) { runOpts[k] = opts[k]; });
+  runOpts.seed = seed;
+  return core.generate(runOpts);
+}
+
 if (opts.help) {
   console.log('usage: node cli.js "<seed>" [--width n] [--height n] [--palette name]');
   // The two sizes are the only flags where one value changes the other, so the
@@ -356,19 +368,9 @@ if (opts.help) {
     }
     // With --describe each seed also gets its one-line summary, which is how
     // to pick a world out of a chain without opening the page.
-    // Every form below needs the world behind one seed of the chain, built the
-    // same way the per-seed loop builds it: a copy of the parsed flags with
-    // this seed on top. Listing the keys by hand in each branch instead would
-    // let one branch forget a flag the other passes.
-    var chainWorld = function (s) {
-      var runOpts = {};
-      Object.keys(opts).forEach(function (k) { runOpts[k] = opts[k]; });
-      runOpts.seed = s;
-      return core.generate(runOpts);
-    };
     if (opts.describe) {
       console.log(chain.map(function (s) {
-        var r = chainWorld(s);
+        var r = runWorld(s);
         return s + '  ' + core.describe(r) +
           (opts.hist ? '\n' + profile(r).join('\n') : '');
       }).join('\n'));
@@ -378,7 +380,7 @@ if (opts.help) {
       // the plain listing gives the phrases, this gives the numbers behind
       // each of them, and the `seed` field ties a record back to its line.
       console.log(chain.map(function (s) {
-        var r = chainWorld(s);
+        var r = runWorld(s);
         return summarise(s, r, opts.out, true);
       }).join('\n'));
     } else {
@@ -387,16 +389,13 @@ if (opts.help) {
       // from a terminal without opening the page.
       console.log(chain.map(function (s) {
         if (!opts.hist) return s;
-        return s + '\n' + profile(chainWorld(s)).join('\n');
+        return s + '\n' + profile(runWorld(s)).join('\n');
       }).join('\n'));
     }
     return;
   }
   opts.seeds.forEach(function (seed, si) {
-    var runOpts = {};
-    Object.keys(opts).forEach(function (k) { runOpts[k] = opts[k]; });
-    runOpts.seed = seed;
-    var result = core.generate(runOpts);
+    var result = runWorld(seed);
     if (opts.channel) {
       var chan = core.channelize(result, opts.channel);
       result.data = chan.data;
