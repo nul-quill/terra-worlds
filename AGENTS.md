@@ -419,6 +419,10 @@ Conventions:
   place the grid is decided. The suite checks both one-sided forms against that
   ratio, since a fixed fallback for the missing side would still look plausible
   in either direction on its own.
+  Because the fill runs once on the parsed options rather than inside a print
+  branch, the `--next` chain — which builds its worlds through its own option
+  copies — reports the same derived pair as the plain listing. The suite checks
+  that pairing over a three-seed chain asked for by `--width` alone.
   Key-valued flags (`--palette`, `--shape`, `--channel`, `--dir`) read theirs
   through `nextKey()`, which matches against the same array its dropdown is
   filled from and pushes a miss onto the one `unknown` list. Both kinds of typo

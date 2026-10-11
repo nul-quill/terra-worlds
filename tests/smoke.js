@@ -925,6 +925,25 @@ nextPairs.forEach(function (np, ni) {
 });
 assert(nextHistOk,
   'cli --next --hist keeps one caption per seed (' + nextHist.length + ' lines)');
+// A one-sided grid has to reach every branch, not only the per-seed loop: the
+// chain builds its worlds through its own option copies, so a derivation done
+// inside one form would leave the other forms with the plain default height.
+// Each record of a chain asked for by `--width` alone must therefore carry the
+// same derived pair as the first, over three different worlds.
+var nextAspect = require('child_process')
+  .execSync('node cli.js "salt mirror" --next 3 --json --width 100 ' +
+    '--out next-aspect.ppm', {cwd: __dirname + '/..'}).toString().trim().split('\n')
+  .map(function (line) { return JSON.parse(line); });
+var nextAspectBad = [];
+var chainAspect = 480 / 300;
+nextAspect.forEach(function (rec) {
+  if (rec.width !== 100 || Math.abs(rec.width / rec.height - chainAspect) > 0.06) {
+    nextAspectBad.push(rec.seed + ' ' + rec.width + 'x' + rec.height);
+  }
+});
+assert(nextAspectBad.length === 0 && nextAspect.length === nextPairs.length,
+  'a chain shares the grid its flags asked for (' + nextAspect.length +
+  ' records, off at ' + nextAspectBad.join('; ') + ')');
 // The two chain forms have to describe the same bars. Each block is drawn over
 // the column count its own record publishes, and that record's counts have to
 // fill its own grid exactly. Checked per seed rather than once, since a chain
