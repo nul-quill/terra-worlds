@@ -1222,6 +1222,24 @@
     return Math.round(value * 100);
   }
 
+  // Which classes to list, in the order to list them: every class present on
+  // this world, biggest first. Equal shares fall back to the order the palette
+  // declares its keys in, so the list does not depend on whether this engine's
+  // sort happens to be stable — two classes covering the same number of cells
+  // keep their relative order on every machine. The legend rows, the `k` cycle,
+  // the hover notes and the CLI's `classes` column all walk this one array, so
+  // a row's position and the share printed beside it cannot be ranked twice.
+  function legendOrder(result) {
+    var counts = result.stats.counts;
+    var declared = Object.keys(result.palette.colors);
+    return declared
+      .filter(function (k) { return counts[k]; })
+      .sort(function (a, b) {
+        return counts[b] - counts[a] ||
+          declared.indexOf(a) - declared.indexOf(b);
+      });
+  }
+
   // Turn a flag or a slider into a number, or into nothing at all. `Number`
   // rather than the two `parse*` functions: those stop at the first character
   // they cannot read, so `800x` would reach the generator as its leading digits
@@ -1246,6 +1264,7 @@
     channelValue: channelValue,
     percentText: percentText,
     hundred: hundred,
+    legendOrder: legendOrder,
     readNumber: readNumber,
     hashString: hashString,
     randomSeed: randomSeed,

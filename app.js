@@ -652,17 +652,9 @@
   // function, so the key walks the rows in the order they appear rather than
   // in the order the palette happens to declare them.
   function legendKeys(result) {
-    var counts = result.stats.counts;
-    var declared = Object.keys(result.palette.colors);
-    return declared
-      .filter(function (k) { return counts[k]; })
-      .sort(function (a, b) {
-        // Equal shares fall back to the order the palette declares its keys
-        // in, so the list does not depend on whether this engine's sort
-        // happens to be stable. Two classes covering the same number of cells
-        // then keep their relative order on every machine.
-        return counts[b] - counts[a] || declared.indexOf(a) - declared.indexOf(b);
-      });
+    // The ranking is the core's, so a terminal reading the record's `classes`
+    // column ranks a tied pair exactly as the rows on this page do.
+    return TerraCore.legendOrder(result);
   }
 
     // One line that describes the world in words rather than numbers: the shape

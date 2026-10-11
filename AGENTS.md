@@ -811,10 +811,15 @@ Conventions:
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.
-  The row order comes from `legendKeys(result)` — classes present on this world,
-  biggest first. The `k` cycle walks that same array, so the key follows the
+  The row order comes from `legendKeys(result)`, which forwards to
+  `TerraCore.legendOrder(result)` — classes present on this world, biggest
+  first. The `k` cycle walks that same array, so the key follows the
   order on screen instead of the order the palette declares. Like the click it
   pins, so it writes the hash; unlike `solo` and `band` it is not a preview.
+  The CLI's `classes` column reads the same lookup, so the ranking is written
+  once: the sort lives in the core, and each reader is a call rather than a
+  second copy that could be edited apart from the rows on screen. The suite
+  counts both forwards beside the one tie-break.
   The suite re-derives that order from `stats.counts` and asks that it differs
   from the palette's own declaration for at least one world, so the sort cannot
   be dropped without the list losing its biggest-class-first reading.

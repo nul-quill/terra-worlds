@@ -2183,7 +2183,7 @@ core.phrases.forEach(function (ck3) {
     .join(',');
   if (cwp !== cliOrderOf(cw3).join(',')) cliOrderBad.push(ck3);
 });
-var cliTieSrc = (/var classes = declared\b/.exec(
+var cliTieSrc = (/core\.legendOrder\(result\)/.exec(
   require('fs').readFileSync(__dirname + '/../cli.js', 'utf8')
 ) || ['', ''])[0];
 assert(cliOrderBad.length === 0 && cliTieSrc.length > 0 &&
@@ -3403,12 +3403,22 @@ core.phrases.forEach(function (tk) {
     tieBad.push(tk);
   }
 });
-var tieBreakSites = (appSrc.match(
-  /counts\[b\] - counts\[a\] \|\| declared\.indexOf\(a\) - declared\.indexOf\(b\)/g) || []
+// The ranking itself is the core's — one `legendOrder` that the legend rows,
+// the `k` cycle and the CLI's `classes` column all read — so the tie-break is
+// counted there rather than beside each caller. Asked for exactly one such
+// comparison, plus the shell's forward to the lookup.
+var coreOrderSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var tieBreakSites = (coreOrderSrc.match(
+  /counts\[b\] - counts\[a\] \|\|\s*\n?\s*declared\.indexOf\(a\) - declared\.indexOf\(b\)/g) || []
 ).length;
-assert(tieRows > 0 && tieBad.length === 0 && tieBreakSites === 1,
+var orderForwards = (appSrc.match(/TerraCore\.legendOrder\(/g) || []).length +
+  (require('fs').readFileSync(__dirname + '/../cli.js', 'utf8')
+    .match(/core\.legendOrder\(/g) || []).length;
+assert(tieRows > 0 && tieBad.length === 0 && tieBreakSites === 1 &&
+  orderForwards >= 2 && /legendOrder: legendOrder/.test(coreOrderSrc),
   'equal legend rows keep the palette order (' + tieRows + ' ties, ' +
-  tieBad.join(',') + ', ' + tieBreakSites + ' tie-break)');
+  tieBad.join(',') + ', ' + tieBreakSites + ' tie-break, ' + orderForwards +
+  ' readers)');
 
 // A pinned row has to say so in text as well as in ink: the ring is a colour
 // difference, which a screen reader reads as nothing. So each row also carries

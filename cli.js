@@ -497,13 +497,7 @@ function summarise(seed, result, name, asJson) {
   // keys, so a record read in a terminal ranks a pair the same way the rows on
   // screen do rather than in whatever order the counts object happened to be
   // filled.
-  var declared = Object.keys(result.palette.colors);
-  var classes = declared
-    .filter(function (k) { return s.counts[k]; })
-    .sort(function (a, b) {
-      return s.counts[b] - s.counts[a] ||
-        declared.indexOf(a) - declared.indexOf(b);
-    })
+  var classes = core.legendOrder(result)
     .map(function (k) {
       return k + '=' + core.percentText(s.counts[k] / s.pixels);
     })
