@@ -328,6 +328,12 @@ Conventions:
   re-derives every pair in that column from the counts with the same helper, so a
   second rounding on either side shows up as a mismatch rather than as two
   plausible-looking numbers.
+  That switch at ten is checked rather than assumed: the suite walks every share
+  the page prints — each class, the drainage figure, the three cover rows — over
+  every hand-picked world and asks that a string carry a decimal exactly when its
+  own value sits under ten. Whole numbers alone would print a 2% class and a 0.2%
+  class as the same figure, which is the one thing a biggest-class-first list
+  cannot survive.
   The readout's `off-shelf` note and the core's `deep` class are the same depth
   below the sea line, so it is one constant — `TerraCore.deepDrop` — that the
   classification and the hover note both read. The suite asks for the definition,

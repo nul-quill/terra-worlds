@@ -1560,6 +1560,36 @@ jsonPairs.forEach(function (p) {
 });
 assert(fmtOk,
   'cli shares use the sidebar formatter (' + jsonPairs[0][0] + '=' + jsonPairs[0][1] + '%)');
+// That formatter switches at ten percent: whole numbers above, one decimal
+// below. That boundary is what keeps a `2%` class and a `0.2%` class in the
+// order their counts give them, which is how the legend reads biggest-first —
+// whole numbers alone would print both as `2%`. Walk every share the page
+// actually prints (each class, the drainage figure, the three cover rows) over
+// each hand-picked world, and require that a string carries a decimal exactly
+// when its own value sits under ten. A second rounding at one call site shows
+// up here as a row whose figure no longer matches the count beside it.
+var fmtBad = [];
+var fmtSeen = 0;
+function shareRule(label, fraction) {
+  var text = core.percentText(fraction);
+  var hasDecimal = /\.\d/.test(text);
+  fmtSeen++;
+  if (hasDecimal !== (parseFloat(text) < 10)) fmtBad.push(label + '=' + text);
+}
+core.phrases.forEach(function (fp2) {
+  var fw2 = core.generate({seed: fp2, width: 200, height: 120});
+  var fs = fw2.stats;
+  Object.keys(fs.counts).forEach(function (ck3) {
+    shareRule(ck3, fs.counts[ck3] / fs.pixels);
+  });
+  shareRule('rivers', fs.rivers / fs.pixels);
+  shareRule('land', fs.land);
+  shareRule('water', fs.water);
+  shareRule('ice', fs.ice);
+});
+assert(fmtBad.length === 0 && fmtSeen > 40,
+  'a share keeps its decimal only under ten percent (' + fmtSeen +
+  ' shares, ' + fmtBad.length + ' off rule)');
 
 // The `median` row prints a height out of a hundred while the record keeps the
 // same height as a 0..1 number, so the two only agree if the record scales the
