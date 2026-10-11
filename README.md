@@ -16,6 +16,8 @@ landscape rather than an 800x300 strip. Name both sides to override that.
 A dashed word that matches no flag is named on stderr rather than swallowed as a
 seed, and the word after it is skipped — otherwise a mistyped `--widht 30`
 would quietly render a second world from the number `30`.
+A numeric flag takes its value whole, exponent included (`--width 1e2` is 100),
+and a value with junk on the end is treated as unset so the default grid stands.
 `--scale n` grows the saved pixels by nearest-neighbour without changing the
 grid the stats are computed from, so a small grid can still fill a screen.
 `--describe` prints only the one-line summary — the same sentence the sidebar

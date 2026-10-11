@@ -17,9 +17,20 @@ function parseArgs(argv) {
   // particular turns a whole world into dry land that way. Reading the number
   // through this helper leaves the option unset instead, so the generator's
   // own default applies and a mistyped value costs nothing but the typo.
+  // One reader for both kinds: `Number` understands the exponent form a shell
+  // may hand over (`1e3`), which `parseInt` would stop on the first non-digit
+  // and read as `1`. It is also stricter about trailing junk — `800x` becomes
+  // undefined rather than a quiet 800 — which is the behaviour this helper is
+  // for: an unreadable value leaves the option unset so the generator's own
+  // default stands. Integer flags round what they are given.
   function nextNum(value, isInt) {
-    var n = isInt ? parseInt(value, 10) : parseFloat(value);
-    return isNaN(n) ? undefined : n;
+    // An empty value is a missing value rather than a zero: `Number('')` is 0,
+    // which would silently replace the generator's default grid with the
+    // smallest one it can draw.
+    if (value == null || value === '') return undefined;
+    var n = Number(value);
+    if (!isFinite(n)) return undefined;
+    return isInt ? Math.round(n) : n;
   }
   // A key that no dropdown offers is a typo rather than a style: `--palette
   // terraa` would otherwise render the default scheme and look like the flag

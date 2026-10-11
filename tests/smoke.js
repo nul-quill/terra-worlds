@@ -1338,6 +1338,23 @@ var typoOut = require('child_process')
 assert(typoOut.length === 1 && typoOut[0].indexOf('(') > 0,
   'a mistyped flag does not add a second world (' + typoOut.length + ')');
 
+// Numeric flags are read by one helper, and its two jobs are visible from a
+// terminal: an exponent has to reach the generator whole — `parseInt` would
+// stop at the `e` and hand over a 1 — and a value with trailing junk has to
+// leave the option unset rather than be read as its leading digits. The unset
+// case is the generator's own default grid, so both halves are checked against
+// that pair of numbers rather than against each other.
+var numRec = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --width 1e2 --height 6e1 --json ' +
+    '--out num-exp.ppm', {cwd: __dirname + '/..'}).toString().trim());
+var numFallback = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --width 800x --json ' +
+    '--out num-junk.ppm', {cwd: __dirname + '/..'}).toString().trim());
+assert(numRec.width === 100 && numRec.height === 60 &&
+  numFallback.width === 480 && numFallback.height === 300,
+  'a numeric flag reads its whole value or none (' + numRec.width + 'x' +
+  numRec.height + ', ' + numFallback.width + 'x' + numFallback.height + ')');
+
 // Several seeds at once: every summary line has to name its own seed, or a
 // block of sentences cannot be traced back to the phrase that made it. One
 // seed keeps the bare sentence, which is what the page prints.

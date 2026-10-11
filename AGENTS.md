@@ -456,6 +456,12 @@ Conventions:
   `undefined` for anything that does not parse. A raw `parseFloat` would hand
   the generator a `NaN`, where every comparison is false and the whole grid
   comes back as dry land; `undefined` lets the generator's own default stand.
+  The reader is `Number` rather than `parseInt`: an exponent reaches the
+  generator whole (`--width 1e2` is 100, not the `1` that `parseInt` stops on),
+  and trailing junk is rejected outright instead of being read as its leading
+  digits. An empty value counts as unset rather than as zero, since `Number('')`
+  is 0 and that would replace the default grid with the smallest drawable one.
+  The suite checks both halves against the generator's own default pair.
   Keep the `argv[++i]` advance at the call site — moving it inside the helper
   reads each value twice and shifts every later flag by one.
   The parser holds no copy of the default grid: `width`/`height` start absent so
