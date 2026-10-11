@@ -678,6 +678,15 @@ Conventions:
     one conversion, so the crosshair and the text cannot name two different
     cells for one click. The suite counts the definition, the two reads and the
     single ratio behind it.
+    The bound each of those cells ends with is one lookup too —
+    `clampIndex(n, count)` — read by the keyboard walk, the reader that builds
+    the `at=` pair and the readout's own pair, twice each since a cell has two
+    axes. A link saved against a wider grid is the case that matters: the
+    restored index has to come back inside the same way a pointer does, and a
+    bound written beside each caller could be edited on one side only. The
+    inset's patch clamp is a different shape — it holds a whole block inside
+    the grid — so it stays outside this pair, and the suite asks for no second
+    copy of the single-cell form left in the shell.
     The arrow handler wraps its own pair before calling `hoverCell()`, so a walk
     in one direction keeps sweeping instead of sticking on the last column; the
     clamp in `hoverCell()` still handles a hash-restored index outside a smaller

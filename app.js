@@ -423,6 +423,16 @@
     return { w: current.cellW, h: current.cellH };
   }
 
+  // Keep a cell index inside one axis of the grid. Three paths name a cell —
+  // the keyboard walk, the hash writer's reader, and the readout itself — and
+  // all three must land on the same cell for one click, so the clamp is one
+  // lookup rather than a pair of bounds written beside each call. A narrower
+  // grid than the one a link was saved against is the case that matters: the
+  // restored index has to come back inside the same way a pointer does.
+  function clampIndex(n, count) {
+    return Math.max(0, Math.min(count - 1, n));
+  }
+
   // Where a pointer sits, in backing-store pixels. The crosshair is drawn in
   // that space, so both pointer paths convert through here: the ratio of the
   // canvas's own width to its layout width is what maps a click onto the
@@ -952,8 +962,8 @@
   // mouse uses, so both paths agree on what a cell says.
   function hoverCell(px, py) {
     if (!current) return;
-    px = Math.max(0, Math.min(current.width - 1, px));
-    py = Math.max(0, Math.min(current.height - 1, py));
+    px = clampIndex(px, current.width);
+    py = clampIndex(py, current.height);
     var cs = cellSize();
     hover.x = (px + 0.5) * cs.w;
     hover.y = (py + 0.5) * cs.h;
@@ -975,8 +985,8 @@
     // Same clamp the readout applies, so the pair in the hash is the pair a
     // person sees on screen. A pointer resting above the canvas would
     // otherwise write a negative row that `applyHash()` then throws away.
-    px = Math.max(0, Math.min(current.width - 1, px));
-    py = Math.max(0, Math.min(current.height - 1, py));
+    px = clampIndex(px, current.width);
+    py = clampIndex(py, current.height);
     return [px, py];
   }
 
@@ -992,8 +1002,8 @@
       px = Math.floor(p.x / cs.w);
       py = Math.floor(p.y / cs.h);
     }
-    px = Math.max(0, Math.min(current.width - 1, px));
-    py = Math.max(0, Math.min(current.height - 1, py));
+    px = clampIndex(px, current.width);
+    py = clampIndex(py, current.height);
     var i = py * current.width + px;
     var key = current.biome[i];
     var h = current.heightField[i];

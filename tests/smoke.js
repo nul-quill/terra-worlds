@@ -3808,6 +3808,20 @@ assert(posDefs === 1 && posCalls === 2 && posRatio === 1,
   'both pointer paths map through one helper (' + posDefs + ' def, ' +
   posCalls + ' reads, ' + posRatio + ' ratio)');
 
+// Three paths name a hovered cell: the keyboard walk, the reader behind the
+// `at=` pair, and the readout itself. Each ends by keeping its pair inside the
+// grid, and that bound is one lookup rather than a pair of comparisons written
+// beside each call — three copies could be edited apart while each still read
+// fine beside its own caller, and one click would then name two cells. The
+// inset's own clamp is wider than a cell, so it is not part of this pair.
+var idxDefs = (appSrc.match(/function clampIndex\(/g) || []).length;
+var idxCalls = (appSrc.match(/clampIndex\(p[xy], current\./g) || []).length;
+var idxInline = (appSrc.match(
+  /Math\.max\(0, Math\.min\(current\.\w+ - 1,/g) || []).length;
+assert(idxDefs === 1 && idxCalls === 6 && idxInline === 0,
+  'every cell clamp reads one bound (' + idxDefs + ' def, ' + idxCalls +
+  ' reads, ' + idxInline + ' inline)');
+
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the
 // map drops it again. Held in one variable with one write from the bin lookup,
