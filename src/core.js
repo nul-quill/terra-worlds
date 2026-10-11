@@ -251,8 +251,8 @@
     var opts = options || {};
     var started = Date.now();
 
-    var width = Math.max(16, Math.round(opts.width || 480));
-    var height = Math.max(16, Math.round(opts.height || 300));
+    var width = Math.max(16, Math.round(opts.width || DEFAULT_GRID.width));
+    var height = Math.max(16, Math.round(opts.height || DEFAULT_GRID.height));
     var seed = typeof opts.seed === 'number' ? opts.seed | 0 : hashString(opts.seed == null ? 'terra' : opts.seed);
 
     var seaLevel = opts.seaLevel == null ? 0.48 : clamp01(opts.seaLevel);
@@ -911,6 +911,12 @@
   // describe a class the legend never lists — so both read this one number.
   var DEEP_DROP = 0.14;
 
+  // The grid a world falls back to when a caller names no size. The pair is
+  // also the aspect a lone `--width` is completed from, so the two numbers are
+  // one reading: a fill that kept its own copy of the height would derive a
+  // different shape from the one this generator would have picked itself.
+  var DEFAULT_GRID = {width: 480, height: 300};
+
   // Look up a bearing, falling back to the first entry so an empty or unknown
   // --dir still renders rather than dropping the shading entirely.
   function lightVector(key) {
@@ -1238,6 +1244,7 @@
     histRows: HIST_ROWS,
     lakeSteps: LAKE_STEPS,
     deepDrop: DEEP_DROP,
+    defaultGrid: DEFAULT_GRID,
     phrases: PHRASES,
     lights: LIGHTS,
     grids: GRIDS,

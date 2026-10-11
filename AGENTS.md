@@ -504,13 +504,18 @@ Conventions:
   exponent form working everywhere at once.
   The parser holds no copy of the default grid: `width`/`height` start absent so
   the generator's own defaults stand, and `finishGrid()` only fills the side a
-  caller did not name, from the ratio of those two defaults (300/480). That is
+  caller did not name, from the ratio of the generator's own default pair —
+  `TerraCore.defaultGrid`, one lookup read by the fill and by the suite. That is
   what makes `--width 800` a wide landscape instead of an 800x300 letterbox, and
   `--height 200` a wide strip rather than a tall column. When both sides are
   given the pair passes through untouched, so the derivation is never a second
   place the grid is decided. The suite checks both one-sided forms against that
   ratio, since a fixed fallback for the missing side would still look plausible
   in either direction on its own.
+  The pair is a lookup rather than two numbers written beside the fill because a
+  second copy only has to be edited once to make a terminal and the page disagree
+  about the shape of a world: the suite therefore asks the fill for that lookup by
+  name and asks for no leftover ratio literal.
   Because the fill runs once on the parsed options rather than inside a print
   branch, the `--next` chain — which builds its worlds through its own option
   copies — reports the same derived pair as the plain listing. The suite checks

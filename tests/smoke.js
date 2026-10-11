@@ -2010,7 +2010,7 @@ var oneWide = JSON.parse(require('child_process')
 var oneTall = JSON.parse(require('child_process')
   .execSync('node cli.js "salt mirror" --height 60 --json --out aspect-h.ppm',
     {cwd: __dirname + '/..'}).toString().trim());
-var aspect = 480 / 300;
+var aspect = core.defaultGrid.width / core.defaultGrid.height;
 function ratioNear(rec) {
   return Math.abs(rec.width / rec.height - aspect) < 0.06;
 }
@@ -2018,6 +2018,18 @@ assert(oneWide.width === 100 && ratioNear(oneWide) && oneWide.height < 300 &&
   oneTall.height === 60 && ratioNear(oneTall) && oneTall.width < 480,
   'a lone size flag keeps the default aspect (' + oneWide.width + 'x' +
   oneWide.height + ', ' + oneTall.width + 'x' + oneTall.height + ')');
+// That ratio is the generator's own default pair, published once as
+// `TerraCore.defaultGrid` and read by the fill rather than restated beside it.
+// Two copies of the pair drift the moment one is edited, and the drift is only
+// visible as a shape difference between a page and a terminal. So the pair
+// here comes from the lookup, and the fill is asked for that lookup by name.
+var cliSrcGrid = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+var gridLookup = (cliSrcGrid.match(/core\.defaultGrid/g) || []).length;
+var gridLiterals = (cliSrcGrid.match(/300 \/ 480|480 \/ 300/g) || []).length;
+assert(core.defaultGrid.width === 480 && core.defaultGrid.height === 300 &&
+  gridLookup >= 1 && gridLiterals === 0,
+  'the aspect fill reads the core\'s default pair (' + gridLookup +
+  ' lookup, ' + gridLiterals + ' literal)');
 // That formatter switches at ten percent: whole numbers above, one decimal
 // below. That boundary is what keeps a `2%` class and a `0.2%` class in the
 // order their counts give them, which is how the legend reads biggest-first —

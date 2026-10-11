@@ -131,10 +131,13 @@ function parseArgs(argv) {
 function finishGrid(opts) {
   var w = typeof opts.width === 'number' && isFinite(opts.width);
   var h = typeof opts.height === 'number' && isFinite(opts.height);
+  // The ratio comes from the generator's own default pair, so the shape a lone
+  // size flag derives is the shape the generator would have chosen for itself.
+  var def = core.defaultGrid;
   if (w && !h) {
-    opts.height = Math.round(opts.width * 300 / 480);
+    opts.height = Math.round(opts.width * def.height / def.width);
   } else if (h && !w) {
-    opts.width = Math.round(opts.height * 480 / 300);
+    opts.width = Math.round(opts.height * def.width / def.height);
   }
   return opts;
 }
