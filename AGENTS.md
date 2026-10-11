@@ -179,6 +179,12 @@ Conventions:
   the text is one a terminal cannot verify.
   The suite re-reads every one of those figures and compares, so a block of
   bars and a line of JSON cannot describe two different worlds.
+  That comparison is a pair of renders per phrase rather than one, since the
+  two forms round differently: the record keeps `sea` and `median` to three
+  decimals and the caption prints both out of a hundred, so the only fair test
+  is the caption's own rounding applied to the record's field. One world would
+  also hide the case where the two ruler marks land in the same column — that
+  `+` only appears on a near-flat seed, and a phrase list is where to find one.
   `sea` joins them: the ruler's `|` is the one mark a reader has to place by
   hand from a record, so the level itself is a field rather than something to
   infer from the `water` share. Like the other numbers it keeps three decimals

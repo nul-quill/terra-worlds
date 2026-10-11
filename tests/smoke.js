@@ -1420,6 +1420,46 @@ assert(markOnly === (markOne ? 1 : 2) && markGlyph === (markOne ? '+' : '|') &&
   (!markOne && markRuler.charAt(markRec.medCol) === ':'),
   'the record names the columns the ruler marks (' + markRec.seaCol + '/' +
   markRec.medCol + ' -> ' + markGlyph + ')');
+// Those two comparisons each read a single world. The caption is built from the
+// same fields for every phrase, so walk the whole list: render a record and a
+// profile for each seed and ask that every figure in the caption be that
+// record's own field — the two ends of the range already rounded in the JSON,
+// the two levels rounded here out of a hundred — and that the ruler's marked
+// columns be the two the record names. A phrase whose middle sits on its own
+// shoreline is the one that collapses both marks into a `+`, and that is only
+// visible if more than one world is opened.
+var capBad = [];
+core.phrases.forEach(function (cp) {
+  var cRec = JSON.parse(require('child_process')
+    .execSync('node cli.js "' + cp + '" --width 140 --height 90 --json',
+      {cwd: __dirname + '/..'}).toString().trim());
+  var cOut = require('child_process')
+    .execSync('node cli.js "' + cp + '" --width 140 --height 90 --hist',
+      {cwd: __dirname + '/..'}).toString().replace(/\r/g, '').split('\n')
+    .filter(function (l) { return l.length; });
+  var cCap = cOut[cOut.length - 1];
+  var cRuler = cOut[cOut.length - 2];
+  var cEnds = /^(\d+) \.\. (\d+) relief/.exec(cCap);
+  var cSea = /sea (\d+)/.exec(cCap);
+  var cMed = /median (\d+)/.exec(cCap);
+  var cBins = /(\d+) bins/.exec(cCap);
+  var cOne = cRec.seaCol === cRec.medCol;
+  var cMarks = cRuler.replace(/-/g, '').length;
+  if (!cEnds || !cSea || !cMed || !cBins ||
+    Number(cEnds[1]) !== cRec.low || Number(cEnds[2]) !== cRec.high ||
+    Number(cBins[1]) !== cRec.bins ||
+    Number(cSea[1]) !== Math.round(cRec.sea * 100) ||
+    Number(cMed[1]) !== Math.round(cRec.median * 100) ||
+    cCap.indexOf(cRec.checksum) < 0 ||
+    cMarks !== (cOne ? 1 : 2) ||
+    cRuler.charAt(cRec.seaCol) !== (cOne ? '+' : '|') ||
+    (!cOne && cRuler.charAt(cRec.medCol) !== ':')) {
+    capBad.push(cp + ' ' + cRec.seaCol + '/' + cRec.medCol + ' -> ' + cMarks);
+  }
+});
+assert(capBad.length === 0 && core.phrases.length >= 4,
+  'every caption figure is a field of its own record (' +
+  core.phrases.length + ' worlds, off at ' + capBad.join('; ') + ')');
 
 // The readout calls a water cell `off-shelf` at one fixed depth below the sea
 // line, and the core calls the same cell `deep` at that same depth. Two numbers
