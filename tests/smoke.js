@@ -3814,6 +3814,18 @@ var snapInline = (appSrc.match(
 assert(snapDefs === 1 && snapCalls === 2 && snapInline === 0,
   'both grid axes snap through one rule (' + snapDefs + ' def, ' + snapCalls +
   ' axes, ' + snapInline + ' inline snaps)');
+// Without a pinned column count the grid is one cell per three CSS pixels,
+// with a floor per axis. That divisor is the same rule on both axes, so it is
+// one helper read twice rather than two divisions that could be edited to
+// disagree — a wide axis on three pixels and a tall one on four would give
+// rectangular cells in an unpinned window. Counted as text: one definition,
+// two reads, and no second division by that divisor left beside them.
+var autoDefs = (appSrc.match(/function autoCount\(/g) || []).length;
+var autoCalls = (appSrc.match(/= autoCount\(/g) || []).length;
+var autoInline = (appSrc.match(/Math\.round\(rect\.[a-z]+ \/ 3\)/g) || []).length;
+assert(autoDefs === 1 && autoCalls === 2 && autoInline === 0,
+  'the auto grid counts both axes by one rule (' + autoDefs + ' def, ' +
+  autoCalls + ' reads, ' + autoInline + ' inline divisions)');
 // A one-pixel stroke needs its coordinate pushed to the middle of a device
 // pixel, and four marks on these two canvases are that thin: the crosshair,
 // the sea rule, the decade ticks and the median mark. Written out at each site

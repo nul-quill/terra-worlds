@@ -287,6 +287,14 @@
     return { size: size, n: Math.min(count, Math.floor(boxes / size)) };
   }
 
+  // Without a pinned column count the grid is one cell per three CSS pixels,
+  // with a floor so a small window still shows some relief rather than a
+  // handful of very large blocks. Both axes read that through here, so the
+  // two of them cannot end up with different notions of a chunky cell.
+  function autoCount(px, floor) {
+    return Math.max(floor, Math.round(px / 3));
+  }
+
   function render() {
     var opts = readOptions();
     writeHash();
@@ -294,8 +302,8 @@
     var dpr = pixelScale();
 
     // Native grid: keep cells chunky so the pixel look survives upscaling.
-    var cols = Math.max(120, Math.round(rect.width / 3));
-    var rows = Math.max(80, Math.round(rect.height / 3));
+    var cols = autoCount(rect.width, 120);
+    var rows = autoCount(rect.height, 80);
     // A chosen grid size pins the column count, so the same seed gives the same
     // cell count in a narrow window and on a wide one. Rows keep the aspect of
     // the canvas, which is what makes the cells square rather than stretched.

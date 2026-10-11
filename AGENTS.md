@@ -1175,6 +1175,15 @@ Conventions:
   columns while its rows stayed fractional — that pair reads as cells of two
   different shapes in one picture. The suite counts the definition, the two
   calls and asks for no second copy of the snap left in the renderer.
+  Before that snap, the two axes also count themselves by one rule when no
+  column count is pinned: one cell per three CSS pixels, with a floor per axis
+  so a small window still shows relief rather than a few huge blocks. That
+  divisor is one `autoCount(px, floor)` read twice — once per axis — rather
+  than two divisions beside the grid comment. Written at each site the pair
+  could be edited apart, a wide axis on three pixels and a tall one on four,
+  which reads as rectangular cells in an unpinned window while every pinned
+  count still looks right. The suite counts the definition, the two reads and
+  asks for no bare division by that divisor left beside them.
   The one handler that fires without being asked is `resize`: dragging a window
   edge fires one event per pixel, and each would rebuild the grid. The listener
   schedules a single `render()` through `requestAnimationFrame` behind a
