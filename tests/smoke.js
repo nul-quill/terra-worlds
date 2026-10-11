@@ -4212,6 +4212,17 @@ assert(insetDefs === 1 && insetMark === 1 && insetRows === 1 && insetGate === 1,
   'the magnifier marks the cell it magnifies (' + insetDefs + ' def, ' +
   insetMark + '/' + insetRows + ' mark, ' + insetGate + ' gate)');
 
+// The mat behind that panel is one box drawn twice — a filled backing and a
+// hairline on its edge — so its width is one number read by both halves. Two
+// copies could be edited apart while each still looked fine beside the patch,
+// leaving a border that floats off the background it frames.
+var matDefs = (appSrc.match(/var MAT = \d+;/g) || []).length;
+var matUses = (appSrc.match(/MAT/g) || []).length - matDefs;
+var matLiterals = (appSrc.match(/dx - 2\.5|size \+ 5\b/g) || []).length;
+assert(matDefs === 1 && matUses === 8 && matLiterals === 0,
+  'one reserve sizes the magnifier mat (' + matDefs + ' def, ' + matUses +
+  ' reads, ' + matLiterals + ' literals)');
+
 // The dark scheme is meant to change nothing but the colour variables, which
 // only works if it replaces every one of them: a variable declared once in
 // `:root` and left alone by the dark block would keep its light value under a

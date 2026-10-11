@@ -974,6 +974,13 @@ Conventions:
   itself: the offset is the difference of the two clamped indices times the
   patch's own cell size, which is why a mark at a fixed offset would sit on the
   wrong cell everywhere but one. The suite counts both halves of that pair.
+  Inside that panel the mat behind the patch is one reserve too — `MAT`, two
+  CSS pixels — because two halves read it: the filled backing is that much wider
+  than the patch on every side, and the hairline sits half a pixel further out so
+  it lands on the fill's own edge. Written at each site, the border could grow
+  past its background on one branch only, which reads as a line floating off the
+  panel it frames, so the suite counts the one number, its eight reads and asks
+  for no bare offset left beside them.
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.

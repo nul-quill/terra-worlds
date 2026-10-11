@@ -568,18 +568,25 @@
     var dx = px * 2 > current.width ? pad : view.width - size - pad;
     var dy = py * 2 > current.height ? pad : view.height - size - pad;
     ctx.save();
+    // The mat around the patch is one box drawn twice: a filled backing and a
+    // hairline on its edge. Both are this much wider than the patch, and the
+    // stroke sits half a pixel further out so it lands on the fill's own edge.
+    // Written per site, the border could grow past its background on one of
+    // them only, which reads as a line floating off the panel it frames.
+    var MAT = 2;
     // The panel backing is the palette's own sky, at the same alpha the crosshair
     // uses, so a dark scheme keeps a dark mat under the magnified patch instead
     // of a bright slab. Both colours come from the lookup above, which is also
     // what the isolation blend reads — one source for every overlay colour.
     var sky = skyRgb();
     ctx.fillStyle = rgba(sky, 0.85);
-    ctx.fillRect(dx - 2, dy - 2, size + 4, size + 4);
+    ctx.fillRect(dx - MAT, dy - MAT, size + MAT * 2, size + MAT * 2);
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(off, x0, y0, span, span, dx, dy, size, size);
     ctx.strokeStyle = rgba(mix(current.palette.colors.deep, sky, 0.35), 0.55);
     ctx.lineWidth = 1;
-    ctx.strokeRect(dx - 2.5, dy - 2.5, size + 5, size + 5);
+    ctx.strokeRect(dx - MAT - 0.5, dy - MAT - 0.5,
+      size + MAT * 2 + 1, size + MAT * 2 + 1);
     // The patch is a dozen cells wide, so the one under the cursor still has
     // to be identifiable inside it. Same ink as the crosshair, one cell of the
     // patch's own scale — the offset is the difference of two clamped indices,
