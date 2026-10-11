@@ -1631,6 +1631,35 @@ jsonPairs.forEach(function (p) {
 });
 assert(fmtOk,
   'cli shares use the sidebar formatter (' + jsonPairs[0][0] + '=' + jsonPairs[0][1] + '%)');
+// The same record has a plain form for reading in a terminal: one padded label
+// per line, then the value. Both forms come out of one object in `summarise()`,
+// so the two must agree field by field — every key of the JSON line has to be a
+// label of the table, and each label has to carry the JSON value next to it. A
+// table that dropped a field would still look complete while hiding the number
+// a reader came for, and a table that padded its own rounding would be a second
+// formatter to keep in step.
+var tableOut = require('child_process')
+  .execSync('node cli.js "salt mirror" --width 120 --height 80 ' +
+    '--out ch.ppm', {cwd: __dirname + '/..'}).toString()
+  .replace(/\r/g, '').split('\n').filter(function (l) { return l.length; });
+var tableMap = {};
+tableOut.forEach(function (line) {
+  var pair = /^(\S+)\s+([\s\S]*)$/.exec(line) || [/^(\S+)\s*$/, line, ''];
+  tableMap[pair[1]] = pair[2].replace(/\s+$/, '');
+});
+var tableBad = [];
+Object.keys(jsonLine).forEach(function (jk) {
+  if (!(jk in tableMap)) { tableBad.push(jk + ' missing'); return; }
+  // The one field allowed to wander between two runs of the same world is the
+  // clock, so only its presence is asked for there.
+  if (jk === 'ms') { if (!tableMap.ms) tableBad.push('ms empty'); return; }
+  var want = Array.isArray(jsonLine[jk])
+    ? jsonLine[jk].join(',') : String(jsonLine[jk]);
+  if (tableMap[jk] !== want) tableBad.push(jk + ': ' + tableMap[jk]);
+});
+assert(tableBad.length === 0 && Object.keys(tableMap).length >= 20,
+  'the plain table repeats the JSON record (' + Object.keys(jsonLine).length +
+  ' fields, off at ' + tableBad.join('; ') + ')');
 // That formatter switches at ten percent: whole numbers above, one decimal
 // below. That boundary is what keeps a `2%` class and a `0.2%` class in the
 // order their counts give them, which is how the legend reads biggest-first —

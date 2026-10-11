@@ -359,6 +359,15 @@ Conventions:
   one record and asks that none come back empty, with the shape compared
   against the first word of `summary`. A name is the only trace a downloaded
   PNG keeps, and every token in it has to be recoverable from a line of JSON.
+  Both forms of that record are checked against each other: without `--json`
+  the same object prints as a padded label column, and the suite parses that
+  column and asks that every key of the JSON line be a label carrying the same
+  value. The two are built from one object, so a field that reaches only one of
+  them is a field a reader of the other form silently loses. `ms` is the one
+  exception — it is the clock, so only its presence is asked for there. Note
+  that the padding is a whitespace RUN, and the longest key leaves exactly one
+  space: split on `\s+` rather than on two spaces, or the tallest row of the
+  table drops out of the comparison.
 - `nextSeed(value)` derives the next seed from the current one (FNV-1a over the
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not
