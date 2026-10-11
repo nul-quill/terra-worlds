@@ -627,6 +627,27 @@
     return Math.max(0.001, span);
   }
 
+  // Which way a basin's surplus leaves. The bearing array is indexed by the
+  // basin's own number minus one, and two branches of the readout need that
+  // pair — a filled cell names its lake and its outflow, the one rim cell that
+  // IS the outflow names the same two things. Two copies of the offset could
+  // disagree by one slot, which would print one lake draining two ways while
+  // each caption still looked plausible beside its own cell.
+  function spillBearing(no) {
+    return current.basinSpill && current.basinSpill[no - 1];
+  }
+
+  // Which of the world's lakes a cell belongs to: the basin's own number over
+  // how many there are. Two branches print that pair — a filled cell says
+  // `basin 2/4`, the one rim cell that is its outflow says `outlet of basin
+  // 2/4` — and the denominator is the count the `basins` row prints, so both
+  // halves come from one read of the stats. Written twice, the numerator could
+  // keep its own count on one side and the two figures would name different
+  // worlds while each still looked like a tally.
+  function basinTally(no) {
+    return no + '/' + current.stats.lakeBasins;
+  }
+
   // How many classes actually occur on this map. The legend only lists those,
   // so the count has to be taken from the occupancy map rather than the
   // fixed list of fourteen names.
@@ -1082,11 +1103,10 @@
       // Which of the world's lakes this is. Two basins of the same depth read
       // alike otherwise, and the number matches the `basins` row in the stats.
       if (current.basin && current.basin[i]) {
-        parts.push('basin ' + current.basin[i] + '/' + current.stats.lakeBasins);
+        parts.push('basin ' + basinTally(current.basin[i]));
         // Which side the surplus leaves on. A closed lake still has one low
         // spot in its rim, and that is where the outflow channel starts.
-        var bearing = current.basinSpill &&
-          current.basinSpill[current.basin[i] - 1];
+        var bearing = spillBearing(current.basin[i]);
         if (bearing) parts.push('drains ' + bearing);
       }
     } else if (!above && h < current.seaLevel - TerraCore.deepDrop) {
@@ -1124,10 +1144,9 @@
     // direction is worth more on the outlet than on the shore it sits beside.
     // Same lookup as the filled cells, indexed by the mark's own number.
     if (current.spillway && current.spillway[i]) {
-      var outB = current.basinSpill &&
-        current.basinSpill[current.spillway[i] - 1];
-      parts.push('outlet of basin ' + current.spillway[i] +
-        '/' + current.stats.lakeBasins + (outB ? ' drains ' + outB : ''));
+      var outB = spillBearing(current.spillway[i]);
+      parts.push('outlet of basin ' + basinTally(current.spillway[i]) +
+        (outB ? ' drains ' + outB : ''));
     }
     if (current.riverMask && current.riverMask[i]) {
       // The catchment behind the channel explains why this cell is a trunk and

@@ -2886,25 +2886,39 @@ assert(stepPairs > 0 && stepInv === 0,
 var outSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
 var outletSrc = (/if \(current\.spillway && current\.spillway\[i\]\)([\s\S]{0,300}?)\n    \}/
   .exec(outSrc) || ['', ''])[1];
-assert(outletSrc.indexOf('basinSpill') >= 0 &&
+assert(outletSrc.indexOf('spillBearing(') >= 0 &&
   outletSrc.indexOf("drains ") >= 0 &&
   outletSrc.indexOf('current.spillway[i]') >= 0,
   'the outlet note names its basin and its bearing (' +
   outletSrc.replace(/\s+/g, ' ').trim().slice(0, 46) + ')');
 // The bearing beside an outlet has to BE the bearing beside the water it
 // drains from, and both halves of that pair are only guaranteed while each
-// branch indexes `basinSpill` by its own basin number minus one. Two lookups
-// with two different offsets would print one lake draining two ways, which no
-// amount of re-reading the caption fixes. Count the sites as well, so a third
-// opinion about the offset has to be written down here too.
-var spillLook = (outSrc.match(/basinSpill\[[^\n]*?- 1\]/g) || []).length;
+// branch resolves it through the same lookup — the basin's own number minus
+// one. Two offsets could disagree by a slot and print one lake draining two
+// ways, which no amount of re-reading the caption fixes. So the offset is
+// written once, inside the helper, and both branches are counted as reads of
+// that helper rather than as two copies of the arithmetic.
+var spillDefs = (outSrc.match(/function spillBearing\(/g) || []).length;
+var spillLook = (outSrc.match(/= spillBearing\(current\.\w+\[i\]\)/g) || []).length;
+var spillOffset = (outSrc.match(/basinSpill\[no - 1\]/g) || []).length;
 var shoreAt = outSrc.indexOf("if (current.basin && current.basin[i])");
 var shoreSrc = shoreAt < 0 ? '' : outSrc.slice(shoreAt, shoreAt + 400);
-var shoreLook = shoreSrc.indexOf('basinSpill[') >= 0 &&
-  shoreSrc.indexOf('- 1]') >= 0;
-assert(spillLook === 2 && shoreLook,
-  'an outlet and its shore read one bearing (' + spillLook + ' lookups, shore ' +
-  shoreLook + ')');
+var shoreLook = shoreSrc.indexOf('spillBearing(current.basin[i])') >= 0;
+assert(spillDefs === 1 && spillLook === 2 && spillOffset === 1 && shoreLook,
+  'an outlet and its shore read one bearing (' + spillDefs + ' def, ' +
+  spillLook + ' reads, ' + spillOffset + ' offset, shore ' + shoreLook + ')');
+// The pair beside that bearing — which lake this is, out of how many — is the
+// same reading in both branches: a filled cell says `basin 2/4`, its outlet
+// says `outlet of basin 2/4`. The denominator is the count the `basins` row
+// prints, so it is one read of the stats rather than two that could disagree
+// about how many tarns a world has. Counted as text: one builder, two reads,
+// and the count itself appears in that builder alone.
+var tallyDefs = (outSrc.match(/function basinTally\(/g) || []).length;
+var tallyReads = (outSrc.match(/\+ basinTally\(current\.\w+\[i\]\)/g) || []).length;
+var tallyDenom = (outSrc.match(/stats\.lakeBasins/g) || []).length;
+assert(tallyDefs === 1 && tallyReads === 2 && tallyDenom === 1,
+  'a lake is numbered the same on its water and its outlet (' + tallyDefs +
+  ' def, ' + tallyReads + ' reads, ' + tallyDenom + ' denominator)');
 // A finger reports itself through pointer events rather than mousemove, so
 // both canvases need a pointer path or a phone would show a map nobody can
 // hover and a chart nobody can select. Each of those paths has to hand the

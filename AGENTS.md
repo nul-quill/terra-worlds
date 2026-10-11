@@ -53,6 +53,16 @@ Conventions:
   exactly `stats.lakeBasins` and every entry one of the eight points — a short
   array prints `drains undefined` on the last lake, a long one shifts every
   bearing. The suite checks both halves on a one-basin and a crowded world.
+  Both reads of that array go through one `spillBearing(no)`, which applies the
+  minus-one index for its two callers — a filled cell and its outlet. Written at
+  each site the offset could be dropped on one branch only, which would print a
+  neighbouring lake's bearing beside this lake's number, so the suite counts the
+  definition, the two reads and the single `- 1` inside it.
+  The pair `basin 2/4` is one builder too — `basinTally(no)` — since the
+  denominator is always `stats.lakeBasins` and only the numerator differs
+  between a filled cell and its outlet. Two copies could pad that pair
+  differently while each still looked right beside its own caption, so the suite
+  counts the definition, the two reads and the one denominator.
   The bucket stays 45 degrees with the north offset: coarsen it and a whole set
   of points goes unused, so the suite walks every hand-picked world and asks
   that all eight points appear somewhere in that array.
