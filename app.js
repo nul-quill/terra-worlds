@@ -453,6 +453,18 @@
   function cycleIndex(i, step, count) {
     return ((i + step) % count + count) % count;
   }
+  // Where a pointer sits inside a canvas, as a fraction of its layout box. Both
+  // canvases need that pair — the map turns it into backing-store pixels for
+  // the crosshair, the chart turns it into a bin index — and both have to
+  // survive a box that measures nothing, which is what the guard is for. Two
+  // copies of the division could be edited apart, and one canvas would then
+  // divide by zero while the other still placed its mark.
+  function pointerFraction(ev, rect) {
+    return {
+      x: (ev.clientX - rect.left) / Math.max(1, rect.width),
+      y: (ev.clientY - rect.top) / Math.max(1, rect.height)
+    };
+  }
   // Where a pointer sits, in backing-store pixels. The crosshair is drawn in
   // that space, so both pointer paths convert through here: the ratio of the
   // canvas's own width to its layout width is what maps a click onto the
@@ -461,10 +473,8 @@
   // the readout named the neighbour to its left.
   function pointerPos(ev) {
     var rect = view.getBoundingClientRect();
-    return {
-      x: (ev.clientX - rect.left) * (view.width / Math.max(1, rect.width)),
-      y: (ev.clientY - rect.top) * (view.height / Math.max(1, rect.height))
-    };
+    var f = pointerFraction(ev, rect);
+    return { x: f.x * view.width, y: f.y * view.height };
   }
 
   function drawHover() {
@@ -1366,8 +1376,8 @@
   function hoverHistogram(ev, toggleSame) {
     if (!histState) return;
     var rect = histCanvas.getBoundingClientRect();
-    var x = ev.clientX - rect.left;
-    var bin = Math.floor(x / Math.max(1, rect.width) * histState.bins);
+    var f = pointerFraction(ev, rect);
+    var bin = Math.floor(f.x * histState.bins);
     // A touch has no hover-out, so nothing would ever clear the band again:
     // tapping the bar that is already selected drops it instead. The mouse
     // path keeps the plain rule, since leaving the chart clears it there.

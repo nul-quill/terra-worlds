@@ -679,12 +679,15 @@ Conventions:
     way, so a pointer resting above or right of the canvas cannot write
     `at=48,-159` while the readout prints `(48, 0)`. Both the clamp and the
     wrap live in those two functions, never in `applyHash()`.
-    A pointer is mapped onto the buffer by one `pointerPos(ev)`: the canvas's
-    own width over its layout width, guarded so an empty layout still divides.
-    Both pointer paths — the hover mark and the readout's own cell — read that
-    one conversion, so the crosshair and the text cannot name two different
-    cells for one click. The suite counts the definition, the two reads and the
-    single ratio behind it.
+    A pointer is mapped onto the buffer by one `pointerPos(ev)`, which reads its
+    pair of fractions from `pointerFraction(ev, rect)`: the offset inside the
+    layout box over that box, guarded so an empty layout still divides. Both
+    pointer paths on the map — the hover mark and the readout's own cell — read
+    that one conversion, so the crosshair and the text cannot name two different
+    cells for one click, and the chart's bin index reads the same fraction
+    rather than writing a second division of its own. The suite counts the
+    definition, the two reads, both guards inside the helper and asks that the
+    chart hold no bare division left beside it.
     Those two paths then run one shared sequence — `hoverFromPointer(ev)` —
     which moves the mark, prints the readout, repaints and writes the hash, in
     that order. A fifth step added to the mouse branch only would keep a

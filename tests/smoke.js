@@ -3845,18 +3845,23 @@ assert(spanDefs === 1 && spanUses === 2 && spanInline === 1,
   spanUses + ' reads, ' + spanInline + ' in the helper)');
 
 // A pointer is mapped onto the canvas by one ratio: the buffer's width over
-// the layout width. The hover mark and the readout both need that pair, so
-// both go through one conversion — written twice, the crosshair could sit on
-// one cell while the text named its neighbour, and each copy still looked
-// right on its own. Counted as text: one helper, one call per pointer path,
-// and no second copy of the ratio left in the shell.
-var posDefs = (appSrc.match(/function pointerPos\(/g) || []).length;
-var posCalls = (appSrc.match(/= pointerPos\(ev\)/g) || []).length;
-var posRatio = (appSrc.match(
-  /view\.width \/ Math\.max\(1, rect\.width\)/g) || []).length;
-assert(posDefs === 1 && posCalls === 2 && posRatio === 1,
-  'both pointer paths map through one helper (' + posDefs + ' def, ' +
-  posCalls + ' reads, ' + posRatio + ' ratio)');
+// the layout width. Both canvases need that pair — the map turns it into
+// backing-store pixels for the crosshair, the chart turns it into a bin index —
+// and both have to survive a box that measures nothing. Written twice, one
+// canvas could divide by a zero-width layout while the other stayed guarded,
+// and each copy still looked right on its own. Counted as text: one fraction
+// helper, one guard inside it, a read from each canvas, and no second guarded
+// division left beside them.
+var posDefs = (appSrc.match(/function pointerFraction\(/g) || []).length;
+var posCalls = (appSrc.match(/= pointerFraction\(ev, rect\)/g) || []).length;
+var posBody = (/function pointerFraction\(ev, rect\)([\s\S]*?)\n  \}/
+  .exec(appSrc) || ['', ''])[1];
+var posGuard = (posBody.match(/Math\.max\(1, rect\.[a-z]+\)/g) || []).length;
+var posInline = (appSrc.match(
+  /x \/ Math\.max\(1, rect\.width\) \* histState\.bins/g) || []).length;
+assert(posDefs === 1 && posCalls === 2 && posGuard === 2 && !posInline,
+  'both canvases map a pointer through one fraction (' + posDefs + ' def, ' +
+  posCalls + ' reads, ' + posGuard + ' guards, stray ' + posInline + ')');
 
 // Three paths name a hovered cell: the keyboard walk, the reader behind the
 // `at=` pair, and the readout itself. Each ends by keeping its pair inside the
