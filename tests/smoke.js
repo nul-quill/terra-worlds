@@ -1847,6 +1847,37 @@ assert(fmtBad.length === 0 && fmtSeen > 40,
   'a share keeps its decimal only under ten percent (' + fmtSeen +
   ' shares, ' + fmtBad.length + ' off rule)');
 
+// The smallest band buys itself one more decimal: at a twentieth of a percent
+// a single decimal already rounds two thin classes onto the same figure, and
+// that tail of the legend is where the biggest-first order still has to read.
+// Ask for the pair directly — two unequal shares under one percent must print
+// two unequal strings — and for the second decimal to appear exactly in that
+// band, so a formatter that widened every number would be caught too.
+var thinBad = [];
+// Each fixture: a pair of unequal shares plus the decimals that band promises.
+var thinPairs = [
+  [0.0092, 0.0086, 2],   // under one percent: two decimals
+  [0.0004, 0.0003, 2],
+  [0.0031, 0.0029, 2],
+  [0.031, 0.029, 1],     // one to ten percent: one decimal
+  [0.11, 0.12, 0]        // ten percent or more: whole number
+];
+thinPairs.forEach(function (tp) {
+  var a = core.percentText(tp[0]);
+  var b = core.percentText(tp[1]);
+  var want = tp[2];
+  function dots(text) {
+    var m = /\.(\d+)/.exec(text);
+    return m ? m[1].length : 0;
+  }
+  if (a === b) thinBad.push(tp[0] + '/' + tp[1] + '=' + a);
+  if (dots(a) !== want || dots(b) !== want) {
+    thinBad.push('width ' + a + '/' + b + ' want ' + want);
+  }
+});
+assert(thinBad.length === 0,
+  'a thin share keeps a second decimal (' + thinBad.join(',') + ')');
+
 // The `median` row prints a height out of a hundred while the record keeps the
 // same height as a 0..1 number, so the two only agree if the record scales the
 // way the row does. Compare the pair on one world: a record that rounded on its

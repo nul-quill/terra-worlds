@@ -349,8 +349,9 @@ Conventions:
   than writing `Math.round(x * 100)` at a call site; the suite counts the
   definition, the uses and any leftover inline rounding.
   Shares of the grid go through `TerraCore.percentText(fraction)` — whole percent
-  at or above ten, one decimal below, so a 2% class and a 0.2% class keep their
-  order in the legend. The `land`, `water` and `ice` rows, the legend's right
+  at or above ten, one decimal below that, two under one percent, so a 2% class,
+  a 0.2% class and a 0.04% class each keep their own figure in the legend. The
+  `land`, `water` and `ice` rows, the legend's right
   column and the CLI's `classes` pairs all use it, which is what lets a terminal
   read `seasonal=6.2%` and find `Seasonal forest 6.2%` on the page. The suite
   re-derives every pair in that column from the counts with the same helper, so a
@@ -362,6 +363,11 @@ Conventions:
   own value sits under ten. Whole numbers alone would print a 2% class and a 0.2%
   class as the same figure, which is the one thing a biggest-class-first list
   cannot survive.
+  The tail of that list is why the smallest band is a band at all: two classes
+  under one percent both read `0.0%` on one decimal, and the order of those two
+  rows is the last place the list still says something. The suite compares the
+  decimal count each band promises — two under one percent, one up to ten, none
+  above — so widening the extra digit everywhere is caught as well as dropping it.
   The readout's `off-shelf` note and the core's `deep` class are the same depth
   below the sea line, so it is one constant — `TerraCore.deepDrop` — that the
   classification and the hover note both read. The suite asks for the definition,

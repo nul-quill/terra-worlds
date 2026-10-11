@@ -1195,7 +1195,13 @@
   // reproduce the figures on screen instead of a rounded echo of them.
   function percentText(fraction) {
     var pct = fraction * 100;
-    return (pct >= 10 ? Math.round(pct) : pct.toFixed(1)) + '%';
+    if (pct >= 10) return Math.round(pct) + '%';
+    // Under one percent even one decimal collapses a pair of thin classes onto
+    // the same figure — both read `0.0%` — and that tail is exactly where the
+    // legend's biggest-first order still has to be readable, so the smallest
+    // band buys itself a second decimal. A zero share keeps the plain form.
+    if (pct > 0 && pct < 1) return pct.toFixed(2) + '%';
+    return pct.toFixed(1) + '%';
   }
 
   global.TerraCore = {
