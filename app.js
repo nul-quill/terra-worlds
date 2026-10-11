@@ -500,6 +500,13 @@
   // row and a faded bar of the same class read as the same distance back.
   var WHITE = [255, 255, 255];
 
+  // The chart's own ink, on purpose: the relief strip sits on the page rather
+  // than on the map, so it keeps one hue while the map follows its palette.
+  // Seven marks are drawn with it — the sea rule, the decade ticks, the median
+  // mark and the four labels — each at its own alpha, so the hue is named once
+  // and only the strength varies per mark.
+  var INK = [30, 38, 44];
+
   // Blend two rgb triples, and turn one into a css rgba() string. The overlay,
   // the magnifier's mat and the dimmed bars all go through these two rather
   // than each writing its own weighted sum.
@@ -785,7 +792,7 @@
       hc.fillStyle = rgba(mix(c, WHITE, 1 - keep), 1);
       hc.fillRect(Math.round(i * binW), Math.round(h - bh), Math.ceil(binW), Math.round(bh));
     }
-    hc.strokeStyle = 'rgba(30,38,44,0.7)';
+    hc.strokeStyle = rgba(INK, 0.7);
     hc.lineWidth = 1;
     hc.beginPath();
     hc.moveTo(Math.round(seaX) + 0.5, 0);
@@ -801,7 +808,7 @@
     // The formula lives in the core, so the suite can check the same spacing a
     // chart is drawn with rather than repeating the candidate list here.
     var stepUnits = TerraCore.tickStep(span * 100);
-    hc.strokeStyle = 'rgba(30,38,44,0.35)';
+    hc.strokeStyle = rgba(INK, 0.35);
     for (var u = Math.ceil(lo * 100 / stepUnits) * stepUnits;
       u <= (lo + span) * 100; u += stepUnits) {
       var tickX = ((u / 100 - lo) / span) * w;
@@ -817,13 +824,13 @@
     hc.font = '9px system-ui, sans-serif';
     var seaLabel = 'sea ' + hundred(result.seaLevel);
     var seaTw = hc.measureText(seaLabel).width;
-    hc.fillStyle = 'rgba(30,38,44,0.75)';
+    hc.fillStyle = rgba(INK, 0.75);
     hc.fillText(seaLabel,
       seaTw + 6 + seaX < w ? seaX + 4 : seaX - seaTw - 4, 9);
     // Corner labels give the chart a scale: without them the shape of the
     // spread is readable but the numbers are not. Drawn before the hovered-bin
     // label so a hover can cover them when space is tight.
-    hc.fillStyle = 'rgba(30,38,44,0.55)';
+    hc.fillStyle = rgba(INK, 0.55);
     var loLabel = String(hundred(lo));
     var hiLabel = String(hundred(lo + span));
     hc.fillText(loLabel, pad, h - 1);
@@ -833,7 +840,7 @@
     // seeing against the bars without reading the stats list.
     var medX = ((result.stats.median - lo) / span) * w;
     if (medX >= 0 && medX <= w) {
-      hc.strokeStyle = 'rgba(30,38,44,0.7)';
+      hc.strokeStyle = rgba(INK, 0.7);
       hc.beginPath();
       hc.moveTo(Math.round(medX) + 0.5, h - 12);
       hc.lineTo(Math.round(medX) + 0.5, h - 5);
@@ -851,7 +858,7 @@
         medTextX = w - pad - hiTw - 4 - medTw;
       }
       if (medTw < w - pad * 2 - loTw - hiTw - 16) {
-        hc.fillStyle = 'rgba(30,38,44,0.7)';
+        hc.fillStyle = rgba(INK, 0.7);
         hc.fillText(medLabel, medTextX, h - 1);
       }
     }
@@ -874,9 +881,9 @@
         label = parts.filter(Boolean).join('  ');
       }
       var tw = hc.measureText(label).width;
-      hc.fillStyle = 'rgba(255,255,255,0.88)';
+      hc.fillStyle = rgba(WHITE, 0.88);
       hc.fillRect(pad - 1, 1, tw + 4, 13);
-      hc.fillStyle = 'rgba(30,38,44,0.9)';
+      hc.fillStyle = rgba(INK, 0.9);
       hc.fillText(label, pad + 1, 11);
     }
   }

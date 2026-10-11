@@ -725,6 +725,13 @@ Conventions:
   overlay on the map reads the same two helpers with its own palette target.
   The suite counts the wash target, the one blend call in the chart and that no
   inline sum is left beside it.
+  The chart's own ink is one list too — `INK`, the hue behind the sea rule, the
+  decade ticks, the median mark and all four labels — and each mark reads it
+  through `rgba(INK, a)` at its own strength. The pill behind a hovered bin's
+  label is `WHITE` at its own alpha, so the strip holds no `rgba(...)` string at
+  all: seven uses of two named lists, which the suite counts beside the count of
+  leftover literals. A hue written out seven times could be edited seven ways,
+  and a chart with two inks still looks plausible at a glance.
   `hoverHistogram()` is shared by `mousemove` and a touch `pointerdown`, so a tap
   on the chart selects a bin the same way a cursor does. Keep the one function.
   The touch call passes a second argument so tapping the bar that is already

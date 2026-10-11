@@ -3195,6 +3195,18 @@ assert(washTargets === 1 && washMix === 1 && washSums === 0,
   'a dimmed bar blends through the shared pair (' + washTargets +
   ' wash, ' + washMix + ' blend, ' + washSums + ' inline sums)');
 
+// The chart's seven marks — sea rule, decade ticks, median mark and the four
+// labels — are one hue at seven strengths. Written out in full, a change of
+// that hue means seven edits and a chart can end up with two inks that only
+// agree at a glance. Counted as text: one definition, every mark reading it
+// through the printer, and no bare rgba() string left beside them.
+var inkDefs = (appSrc.match(/var INK = \[/g) || []).length;
+var inkUses = (appSrc.match(/rgba\(INK, /g) || []).length;
+var inkStrings = (appSrc.match(/= 'rgba\(/g) || []).length;
+assert(inkDefs === 1 && inkUses === 7 && inkStrings === 0,
+  'the chart draws with one named ink (' + inkDefs + ' def, ' + inkUses +
+  ' uses, ' + inkStrings + ' literal strings)');
+
 // The Copy button shows a short confirmation and then puts its own name back.
 // Pressing it twice inside that window has to be one pending restore, not two:
 // the second press clears the first timer before scheduling its own, otherwise
