@@ -1001,6 +1001,25 @@ assert(chainCapBad.length === 0 && nextPairs.length >= 3,
   'each chain caption repeats its own record (' + nextPairs.length +
   ' seeds, off at ' + chainCapBad.join('; ') + ')');
 
+// The tallest-bar figure has to be the tallest bar of its own array, per seed.
+// `bins` and the sum only fix how many columns there are and how much ink they
+// hold between them, so a record that kept one `peak` for the whole chain would
+// still pass those while printing every silhouette at the wrong height: the
+// profile divides each count by that number. Re-derived from each record's own
+// array rather than from a fresh render, since the pair under test is the two
+// halves of one record.
+var chainPeakBad = [];
+nextJson.forEach(function (pr, pi) {
+  var top = 0;
+  for (var pk = 0; pk < pr.hist.length; pk++) {
+    if (pr.hist[pk] > top) top = pr.hist[pk];
+  }
+  if (pr.peak !== top) chainPeakBad.push(pr.seed + ' ' + pr.peak + '/' + top);
+});
+assert(chainPeakBad.length === 0 && nextJson.length >= 3,
+  'each chain record peaks at its own tallest bar (' +
+  chainPeakBad.join('; ') + ')');
+
 // `--json` is the pipeable form, so the profile block has to stay out of it
 // even when both flags are given: one line per world, each a whole record.
 // That is what lets a chain be read by `Select-String` or `jq` without first

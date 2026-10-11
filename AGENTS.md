@@ -399,6 +399,11 @@ Conventions:
   seed by seed rather than once, since a chain that copied one world's counts
   into every record still passes a single comparison while printing bars that
   belong to the wrong picture.
+  That pair fixes the frame again rather than the weight, so each record's
+  `peak` is re-derived from its own `hist` array too — the tallest entry, not
+  a figure carried over from the first seed. The profile divides every count
+  by that number, so one shared `peak` would print every silhouette of the
+  chain at the wrong height while each block still looked plausible.
 - `parseArgs()` in `cli.js` treats a bare word as a seed and a dashed word as a
   flag. A dashed word that matches nothing is named on stderr, and the word
   after it is skipped, so a mistyped `--widht 30` costs one warning instead of
