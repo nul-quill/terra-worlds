@@ -3192,16 +3192,25 @@ assert(!!span && paletteCount <= hi && paletteCount >= parseInt(span[1], 10),
 
 // Dropping a legend hover has to repaint through the same path that draws the
 // crosshair, or the cell picked out of the hash loses its mark the moment the
-// pointer crosses the list. Each clear site is a `solo = null;` followed by a
-// repaint, so the pairs are counted and compared: one repaint per clear, and
-// none of them the plain grid pass that would drop the mark.
-var pairs = appSrc.match(/solo = null;\s*\w+\(\);/g) || [];
-var plainRepaint = pairs.filter(function (pair) {
-  return !/drawHover\(\)/.test(pair);
-}).length;
-assert(pairs.length >= 2 && plainRepaint === 0,
-  'leaving a legend row keeps the picked cell marked (' + pairs.length +
-  ' clear sites, ' + plainRepaint + ' without the hover repaint)');
+// pointer crosses the list. Both clears — the pointer leaving the list and the
+// caret moving off a row — go through one `clearSolo()`, so the pair of steps
+// is written once and each site is only a read of it. Counted as text: one
+// definition holding the clear and the hover repaint, two reads of it, and no
+// second clear left beside them that could repaint with the plain grid pass.
+var clearDefs = (appSrc.match(/function clearSolo\(/g) || []).length;
+var clearCalls = (appSrc.match(/, clearSolo\);/g) || []).length;
+var clearBody = (/function clearSolo\(\) \{([\s\S]*?)\n  \}/.exec(appSrc) ||
+  ['', ''])[1];
+var clearSteps = (clearBody.match(/solo = null;/g) || []).length;
+var clearRepaint = (clearBody.match(/drawHover\(\);/g) || []).length;
+// The declaration of `solo` is a `var` line rather than a clear, so the count
+// of clears only looks at a statement that begins the line.
+var bareClears = (appSrc.match(/^\s*solo = null;/gm) || []).length;
+assert(clearDefs === 1 && clearCalls === 2 && clearSteps === 1 &&
+  clearRepaint === 1 && bareClears === 1,
+  'leaving a legend row keeps the picked cell marked (' + clearDefs +
+  ' def, ' + clearCalls + ' reads, ' + clearRepaint + ' repaint, ' +
+  bareClears + ' clear)');
 
 // The map canvas is drawn in twelve different looks, so every colour the shell
 // paints on it has to come from the palette in use: a fixed ink would read as a
@@ -4060,7 +4069,8 @@ assert(joinDefs === 1 && joinCalls === 3 && joinInline === 1,
 // each of the three ways a legend pin is set or released, the legend's own
 // hover and clear paths, and the rebuild that follows a resize or a slider
 // step — a new grid changes every share in the legend, so the line beside it
-// has to be rewritten too. Eleven sites, one definition, and the placeholder
+// has to be rewritten too. Eight literal writes, one definition, and the
+// placeholder
 // is restored by that same function rather than by a second write of the
 // literal.
 // The note also has to follow the same precedence the blit does: a pinned
@@ -4083,19 +4093,20 @@ var blitPrecedence = /var want = solo \|\| pinned;/.test(appSrc);
 // a new reader has to be named here.
 var readers = (appSrc.match(/var want = solo \|\| pinned;/g) || []).length;
 var cellWants = (appSrc.match(/if \(want && key !== want\) \{/g) || []).length;
-// Both pin toggles reach the note through `togglePin()`, so the note is
-// written ten times rather than eleven: one of those ten sits inside that
-// helper and both halves of one pin interaction read it. A helper only one
-// branch called would show up here as a single read, which is the case this
-// count is for.
+// Both pin toggles reach the note through `togglePin()`, and both legend
+// clears through `clearSolo()`, so the eight writes are reached by ten paths:
+// six sit beside their own handler, one lives in the pin helper that a click
+// and the `k` cycle both call, and one lives in the clear helper both the
+// pointer and the caret hand off to. A helper only one branch called would
+// show up here as a single read, which is the case these counts are for.
 // The tail is shared one level further: both pin paths call `applyPin()`, so
-// the note is written at nine literal sites and reached by ten paths — the
+// the note is written at eight literal sites and reached by ten paths — the
 // helper's own write counts twice, once for a click and once for the `k`
 // cycle. A helper only one of those called would show up as a single read.
 var pinToggle = (appSrc.match(/togglePin\(key\);/g) || []).length;
 var applyDefs = (appSrc.match(/function applyPin\(/g) || []).length;
 var applyCalls = (appSrc.match(/applyPin\(\);/g) || []).length;
-assert(noteDefs === 1 && noteCalls === 9 && pinToggle === 2 && applyDefs === 1 &&
+assert(noteDefs === 1 && noteCalls === 8 && pinToggle === 2 && applyDefs === 1 &&
   applyCalls === 2 && notePlaceholder === 1 && notePrecedence &&
   blitPrecedence && readers === 4 && cellWants === 1,
   'a selected band is readable under the map (' + noteDefs + ' def, ' +

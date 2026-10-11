@@ -771,7 +771,7 @@
         // from the hash or a previous hover — keeps its mark when the pointer
         // leaves the list. drawMap() alone would repaint the grid and lose it.
         li.addEventListener('mouseenter', function () { drawHighlighted(key); });
-        li.addEventListener('mouseleave', function () { solo = null; drawHover(); bandNote(); });
+        li.addEventListener('mouseleave', clearSolo);
         // Clicking keeps the choice after the pointer moves away, which is how
         // to compare a class against the relief chart without holding the
         // cursor on its row. Clicking the same row again releases it.
@@ -807,9 +807,22 @@
         // order deliberately.
         li.tabIndex = 0;
         li.addEventListener('focus', function () { drawHighlighted(key); });
-        li.addEventListener('blur', function () { solo = null; drawHover(); bandNote(); });
+        li.addEventListener('blur', clearSolo);
         legendList.appendChild(li);
       });
+  }
+
+  // Dropping a legend hover — the pointer leaving the list, or the caret moving
+  // off a row — is one sequence: give the preview back, repaint so the kept
+  // selection (or no selection) shows, and rename the line under the map to
+  // match. Both halves repaint through drawHover() rather than a bare drawMap(),
+  // so a cell picked earlier — from the hash or a previous hover — keeps its
+  // mark when the list is left. Written at each site, a step dropped on one of
+  // them would leave a pointer-only or keyboard-only clear.
+  function clearSolo() {
+    solo = null;
+    drawHover();
+    bandNote();
   }
 
   // The legend rows in the order they are shown: every class present on this

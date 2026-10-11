@@ -788,10 +788,16 @@ Conventions:
   same loop: it selects by height instead of by class, and a legend selection
   wins over it. Like `solo` it is a preview and never goes into the hash; both
   are cleared when the pointer leaves the map.
-  Every site that clears `solo` repaints through `drawHover()`, never a bare
+  Every site that clears `solo` goes through one `clearSolo()`, which holds
+  `solo = null; drawHover(); bandNote();` — the pointer leaving the list and the
+  caret moving off a row are the same three steps, and writing them beside each
+  handler could drop one on a single branch, which reads as a clear that only
+  works with a mouse. The repaint stays `drawHover()` rather than a bare
   `drawMap()`: the grid pass alone drops the crosshair on the cell picked out of
   the hash, so a hover over the legend list would erase a mark the link promised.
-  The smoke suite counts the clear sites and asks each one for that repaint.
+  The smoke suite counts the one definition, the two reads, the single clear and
+  the single repaint inside the helper, plus the one bare assignment left beside
+  it — the `var solo = null;` declaration, which is a first value and not a clear.
   The chart reads the same three filters in `paintHistogram()`: a hovered bin
   dims the other bars, a legend selection dims the bins with none of that class.
   `drawMap()` calls `paintHistogram()` so one repaint keeps both views in step —
@@ -889,9 +895,10 @@ Conventions:
   the `k` cycle (which sets its own index first). Written at each site, a sixth
   step added to one branch only would keep a mouse pin and a keyboard pin
   describing different worlds in the same link, which is what the suite counts:
-  one helper holding the note's write, two reads of that helper, and the eight
-  remaining direct writes beside them — nine literals in all, which is still
-  ten paths into the note.
+  the two helpers that each hold one write (`applyPin()` for the pins,
+  `clearSolo()` for the two legend clears), the four reads of those helpers, and
+  the six remaining direct writes beside them — eight literals in all, which is
+  still ten paths into the note.
   A hovered or focused row is the same kind of change — `solo` is the first half
   of the note's precedence — so `drawHighlighted()` and both clear handlers call
   the writer too. That is why the count is ten writes plus a helper both halves
