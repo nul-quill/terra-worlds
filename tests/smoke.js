@@ -2928,6 +2928,33 @@ assert(binHistDefs === 1 && binHistUses === 1 &&
   histSummed.bins === jsonLine.bins && histSummed.peak === jsonLine.peak,
   'the relief bins are counted once, in the core (' + histSummed.bins +
   ' bars, peak ' + histSummed.peak + ', ' + histTotal + ' cells)');
+// Summing to the grid is only the frame of that claim: a pass could move cells
+// between columns and still add up. So re-tally each column with the same
+// `binOf` the hover uses and compare the whole array, plus the two ends of the
+// range the bins were cut over. That is what guarantees the bar lit under a
+// cursor is the bar that counted the cell — a second rounding inside the pass
+// would shift a cell one column while leaving the total untouched.
+var histTallyBad = [];
+core.phrases.forEach(function (hp) {
+  var hw = core.generate({seed: hp, width: 200, height: 120});
+  var hb = core.binCount(core.histWidth);
+  var hh = core.histogram(hw, hb);
+  var tally = [];
+  for (var tn = 0; tn < hb; tn++) tally.push(0);
+  for (var ti = 0; ti < hw.heightField.length; ti++) {
+    tally[core.binOf(hw.heightField[ti], hh.lo, hh.span, hb)]++;
+  }
+  var hLo = Math.min.apply(null, hw.heightField);
+  var hHi = Math.max.apply(null, hw.heightField);
+  if (tally.join(',') !== hh.hist.join(',') ||
+    hh.bins !== hb || hh.peak !== Math.max.apply(null, hh.hist) ||
+    Math.abs(hh.lo - hLo) > 1e-6 || Math.abs(hh.span - (hHi - hLo)) > 1e-6) {
+    histTallyBad.push(hp);
+  }
+});
+assert(histTallyBad.length === 0,
+  'every bar counts what its own lookup puts in it (' + histSummed.bins +
+  ' columns, mismatched: ' + histTallyBad.join(',') + ')');
 // The width those bins are counted over is one number too: the shell reads it
 // as the fallback when its canvas has no layout yet, the CLI when it has no
 // window at all. Both go through the core's lookup, so a text profile and the

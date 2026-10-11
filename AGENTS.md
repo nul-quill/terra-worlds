@@ -542,6 +542,11 @@ Conventions:
   width, so a terminal can redraw the silhouette from JSON alone; the suite
   counts one definition, one call from the shell, and asks that the bars sum to
   `stats.pixels` and match the record on one world.
+  Summing to the grid only fixes the frame, so the suite also re-tallies each
+  column with `binOf` over the pass's own `lo` and `span` and compares the whole
+  array, plus `peak` and the two ends of the range. That is what keeps the bar
+  lit under a cursor the bar that counted the cell: a second rounding inside the
+  pass shifts a cell one column while leaving the total untouched.
   The hovered cell's own bin is held in `cellBand` — a reading, not a filter.
   `updateReadout()` writes it once from `histBinFor()`, prints it as
   `band 38/72` in the readout, and hands it to the chart; `drawMap()` lights
