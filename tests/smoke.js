@@ -961,7 +961,11 @@ nextPairs.forEach(function (np, ni) {
   var cruler = cblock[cblock.length - 2] || '';
   var crec = nextJson[ni];
   var csum = crec.hist.reduce(function (a, b) { return a + b; }, 0);
+  // Each chain block opens with its own seed and closes with the ruler and the
+  // caption, so the rows are what sits between those two pairs.
+  var crows = cblock.slice(1, cblock.length - 2).length;
   if (cruler.length !== crec.bins || crec.hist.length !== crec.bins ||
+    crows !== crec.rows ||
     csum !== crec.width * crec.height) {
     chainBarBad.push(np + ' ' + cruler.length + '/' + crec.bins + ' sum ' + csum);
   }
@@ -1618,7 +1622,11 @@ core.phrases.forEach(function (bp) {
   // The CLI prints its summary sentence above the block, and the ruler plus the
   // caption sit under it: the rows are what is left between those.
   var bRows = bOut.slice(1, bOut.length - 2);
-  if (bRows.length !== 6 || bRec.hist.length !== bRec.bins) {
+  // The row count comes from the record rather than from a number written
+  // here, which is the pair a reader has: a block that lost its last row in
+  // transit is short against the record beside it, not against a guess.
+  if (bRows.length !== bRec.rows || bRec.rows !== core.histRows ||
+    bRec.hist.length !== bRec.bins) {
     blockBad.push(bp + ' ' + bRows.length + ' rows');
     return;
   }
@@ -3362,8 +3370,13 @@ assert(/clientWidth \|\| TerraCore\.histWidth/.test(appSrc) &&
 var rowDefs = (binCoreSrc.match(/var HIST_ROWS = \d+;/g) || []).length;
 var rowUses = (histCliSrc.match(/core\.histRows/g) || []).length;
 var rowLiterals = (histCliSrc.match(/var rows = \d+;/g) || []).length;
-assert(rowDefs === 1 && rowUses === 1 && rowLiterals === 0 &&
-  core.histRows >= 2,
+// The writer reads the constant once and the record publishes it once, so the
+// block and the line of JSON beside it are counted from one number. Both halves
+// are asked for: a record that restated the count as a literal would let the
+// two disagree while each still looked plausible on its own.
+var rowRecord = (histCliSrc.match(/rows: core\.histRows/g) || []).length;
+assert(rowDefs === 1 && rowUses === 2 && rowRecord === 1 &&
+  rowLiterals === 0 && core.histRows >= 2,
   'one row count feeds the profile and its reader (' + rowDefs + ' def, ' +
   rowUses + ' uses, ' + rowLiterals + ' literals, ' + core.histRows +
   ' rows)');

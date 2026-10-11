@@ -509,6 +509,11 @@ function summarise(seed, result, name, asJson) {
     // `low`..`high`, which the four fields above already pin down.
     bins: hist.bins,
     peak: hist.peak,
+    // How many rows the block is supposed to have. `bins` and `peak` fix the
+    // width and the height of a silhouette but not its length, so a reader
+    // holding a pasted block could not tell a complete profile from one whose
+    // last rows were cut off in transit. The number is the core's own.
+    rows: core.histRows,
     // Which columns the two ruler marks fall in. The caption rounds every
     // figure out of a hundred, and a rounded end of the range can move a mark
     // by a column, so the two positions are published rather than left for a

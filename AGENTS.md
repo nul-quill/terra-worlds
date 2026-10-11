@@ -228,6 +228,10 @@ Conventions:
   reader holding a pasted block and one line of JSON has to be able to ask
   whether the block is complete, so the suite compares the block's row count
   with the constant and asks that the writer hold no second copy of it.
+  The count reaches that reader through the record's own `rows` field, which is
+  the same lookup rather than a restated number: the block's rows are counted
+  against it, so a profile that lost its last row in transit shows up as a
+  short count beside the one line that names the height.
   Shape alone would still pass for the wrong world, so the suite re-derives
   each row from the record's own counts and compares the whole string: a column
   is filled when its count reaches that row's share of `peak`. That is what

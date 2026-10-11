@@ -29,7 +29,8 @@ bins the sidebar chart draws, a ruler under them with the sea and the median
 marked, and a caption naming the range, the column count, the tallest bar and
 the checksum. With
 `--json` the block stays out of the way — one line per world is what makes that
-form pipeable, and the record's `bins`, `peak` and `hist` already describe it.
+form pipeable, and the record's `bins`, `peak`, `rows` and `hist` already
+describe it: those four are enough to redraw the silhouette from JSON alone.
 `--palettes` lists the palette keys the `--palette` flag takes, with the label
 each one shows in the dropdown and the sky colour the chart is washed with.
 `--shapes` does the same for the shape keys. Both lists come from the generator
