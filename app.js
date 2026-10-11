@@ -451,6 +451,15 @@
     return Math.max(0, Math.min(count - 1, n));
   }
 
+  // Which cell a backing-store pixel falls in. Three paths ask that question —
+  // the crosshair, the reader behind the `at=` pair and the readout — and each
+  // divides by the very cell size the blit was drawn with, so the division is
+  // one lookup rather than three that could be edited to round differently.
+  function cellOf(x, y) {
+    var cs = cellSize();
+    return [Math.floor(x / cs.w), Math.floor(y / cs.h)];
+  }
+
   // The next stop on a list cycle, one step in either direction. Every cycle
   // key answers to `Shift` too, so the step can be negative and the modulo has
   // to come back positive — hence the second wrap. Six lists walk through
@@ -502,8 +511,9 @@
     ctx.strokeStyle = edge;
     ctx.lineWidth = Math.max(1, Math.round(cellX * 0.25));
     if (hover.x >= 0) {
-      var px = Math.floor(hover.x / cellX);
-      var py = Math.floor(hover.y / cellY);
+      var cell = cellOf(hover.x, hover.y);
+      var px = cell[0];
+      var py = cell[1];
       // Hairline crosshair through the cell makes the readout easy to trust
       // on a dense grid, where the box alone is hard to place.
       ctx.save();
@@ -1064,15 +1074,11 @@
       return [Math.floor(current ? current.width / 2 : 0),
         Math.floor(current ? current.height / 2 : 0)];
     }
-    var cs = cellSize();
-    var px = Math.floor(hover.x / cs.w);
-    var py = Math.floor(hover.y / cs.h);
+    var xy = cellOf(hover.x, hover.y);
     // Same clamp the readout applies, so the pair in the hash is the pair a
     // person sees on screen. A pointer resting above the canvas would
     // otherwise write a negative row that `applyHash()` then throws away.
-    px = clampIndex(px, current.width);
-    py = clampIndex(py, current.height);
-    return [px, py];
+    return [clampIndex(xy[0], current.width), clampIndex(xy[1], current.height)];
   }
 
   function updateReadout(ev) {
@@ -1082,10 +1088,10 @@
     else {
       // Backing-store pixels first, then the integer cell size — the same pair
       // of numbers the crosshair is drawn with.
-      var cs = cellSize();
       var p = pointerPos(ev);
-      px = Math.floor(p.x / cs.w);
-      py = Math.floor(p.y / cs.h);
+      var xy = cellOf(p.x, p.y);
+      px = xy[0];
+      py = xy[1];
     }
     px = clampIndex(px, current.width);
     py = clampIndex(py, current.height);

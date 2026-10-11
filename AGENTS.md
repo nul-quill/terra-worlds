@@ -715,6 +715,14 @@ Conventions:
     inset's patch clamp is a different shape — it holds a whole block inside
     the grid — so it stays outside this pair, and the suite asks for no second
     copy of the single-cell form left in the shell.
+    Before that bound, the same three paths turn a backing-store pixel into a
+    cell index through one `cellOf(x, y)`, which divides by the very cell size
+    the blit was drawn with. Written at each site, one of them could divide by
+    a rounded or re-derived size and still land inside the grid, so the
+    crosshair would sit on a neighbouring cell from the one the readout names —
+    a difference of one column that reads as an odd cursor rather than as a
+    bug. The suite counts the definition, the three reads and asks for no bare
+    division by a cell size left beside them.
     The arrow handler wraps its own pair through `cycleIndex()` before calling
     `hoverCell()`, so a walk in one direction keeps sweeping instead of sticking
     on the last column; the clamp in `hoverCell()` still handles a hash-restored

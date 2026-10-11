@@ -3925,12 +3925,26 @@ assert(posDefs === 1 && posCalls === 2 && posGuard === 2 && !posInline,
 // fine beside its own caller, and one click would then name two cells. The
 // inset's own clamp is wider than a cell, so it is not part of this pair.
 var idxDefs = (appSrc.match(/function clampIndex\(/g) || []).length;
-var idxCalls = (appSrc.match(/clampIndex\(p[xy], current\./g) || []).length;
+var idxCalls = (appSrc.match(/clampIndex\(/g) || []).length - idxDefs;
 var idxInline = (appSrc.match(
   /Math\.max\(0, Math\.min\(current\.\w+ - 1,/g) || []).length;
 assert(idxDefs === 1 && idxCalls === 6 && idxInline === 0,
   'every cell clamp reads one bound (' + idxDefs + ' def, ' + idxCalls +
   ' reads, ' + idxInline + ' inline)');
+// Turning a backing-store pixel into a cell index is the same division on
+// three paths: the crosshair, the reader behind the `at=` pair and the readout
+// itself. Written at each site, one of them could round against a different
+// cell size than the one the blit used, and the mark would then sit on a
+// neighbouring cell from the one the text names. Counted as text: one
+// definition, three reads, and no bare division by a cell size left beside
+// them.
+var cellDefs = (appSrc.match(/function cellOf\(/g) || []).length;
+var cellCalls = (appSrc.match(/= cellOf\(/g) || []).length;
+var cellInline = (appSrc.match(
+  /Math\.floor\((?:hover|p)\.[xy] \/ cs\.[wh]\)/g) || []).length;
+assert(cellDefs === 1 && cellCalls === 3 && cellInline === 0,
+  'every cell index comes from one division (' + cellDefs + ' def, ' +
+  cellCalls + ' reads, ' + cellInline + ' inline)');
 
 // Every cycle key answers to `Shift`, so its step can be negative and the
 // wrap has to come back positive. That double modulo is one lookup, read by
