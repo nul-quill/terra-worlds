@@ -695,6 +695,17 @@
     return Math.max(0.001, span);
   }
 
+  // A count of cells, printed whole. The readout carries two of them — how far
+  // a dry cell sits from the shoreline, and how many cells drain behind a
+  // channel — and both are whole numbers over a grid, so both are rounded by
+  // this one lookup rather than by a division written beside each note. Two
+  // copies could be edited apart while each still read fine beside its own
+  // caption, and one hovered cell would then report its two counts on two
+  // different scales.
+  function cellCount(value) {
+    return Math.round(value);
+  }
+
   // Which way a basin's surplus leaves. The bearing array is indexed by the
   // basin's own number minus one, and two branches of the readout need that
   // pair — a filled cell names its lake and its outflow, the one rim cell that
@@ -1218,7 +1229,7 @@
     // continent reads differently from the same colour on a coast.
     // Only worth printing inland: a water cell is by definition at the shore,
     // and a beach cell one step in, so those would repeat the biome name.
-    var inland = current.coastDistance ? Math.round(current.coastDistance[i]) : 0;
+    var inland = current.coastDistance ? cellCount(current.coastDistance[i]) : 0;
     if (above && inland > 1) parts.push(inland + ' from water');
     // The one rim cell a basin spills over. It is the seam between a lake and
     // the river network, so it is worth naming on its own: hovering it shows
@@ -1239,7 +1250,7 @@
       // its neighbour is a tributary: it is the same accumulation number the
       // quantile cut is taken from.
       var catchment = current.accumulation
-        ? Math.round(current.accumulation[i]) : 0;
+        ? cellCount(current.accumulation[i]) : 0;
       parts.push((current.riverMask[i] === 2 ? 'trunk river' : 'river') +
         (catchment > 1 ? ' (' + catchment + ' cells)' : ''));
     }

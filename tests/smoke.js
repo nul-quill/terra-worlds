@@ -3954,6 +3954,19 @@ assert(spanDefs === 1 && spanUses === 2 && spanInline === 1,
   'both halves of the elevation share one span guard (' + spanDefs + ' def, ' +
   spanUses + ' reads, ' + spanInline + ' in the helper)');
 
+// The readout prints two counts of cells: how far a dry cell sits from the
+// shoreline, and how many cells drain behind a channel. Both are whole numbers
+// over the same grid, so both round through one lookup rather than a division
+// written beside each note — two copies could be edited apart while each still
+// read fine beside its own caption, and one hovered cell would then report its
+// two counts on two scales.
+var countDefs = (appSrc.match(/function cellCount\(/g) || []).length;
+var countCalls = (appSrc.match(/cellCount\(current\./g) || []).length;
+var countInline = (appSrc.match(/Math\.round\(current\./g) || []).length;
+assert(countDefs === 1 && countCalls === 2 && countInline === 0,
+  'both cell counts in the readout round one way (' + countDefs + ' def, ' +
+  countCalls + ' reads, ' + countInline + ' inline)');
+
 // A pointer is mapped onto the canvas by one ratio: the buffer's width over
 // the layout width. Both canvases need that pair — the map turns it into
 // backing-store pixels for the crosshair, the chart turns it into a bin index —
