@@ -1144,6 +1144,14 @@ Conventions:
   soft line beside three crisp ones — a difference small enough that nobody
   opens the console over it, so the suite counts the definition, the eight
   reads and asks for no bare `Math.round(...) + 0.5` left beside them.
+  Those same three chart marks are also placed by one lookup —
+  `chartX(value, lo, span, w)` — since each is a height over the range the bars
+  were binned over, times the chart's width. Written at each site, one mark
+  could drop its subtraction of the low end and still land inside the box, so a
+  sea rule sitting a few pixels from its own column of bars reads as a slightly
+  odd chart rather than as a bug. The suite counts the definition, the three
+  reads and asks that the only division of that shape left in the shell be the
+  one inside the helper.
   Inside that same pass the box ink is set once — a stroke style plus the
   border width, a quarter of a cell and never less than one pixel — and the
   hairlines are drawn between a `save()` and a `restore()`, which puts that

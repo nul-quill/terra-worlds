@@ -598,6 +598,16 @@
       Math.round(c[2]) + ',' + alpha + ')';
   }
 
+  // Where a height lands along the chart's own width. Three marks are placed
+  // that way — the sea rule, the decade ticks and the median — and each of
+  // them sits on the range the bars were binned over, so the pair of ends is
+  // passed in rather than looked up again. Written at each site, one mark
+  // could drop its subtraction of the low end and still land inside the box,
+  // drifting away from the bars it is meant to describe.
+  function chartX(value, lo, span, w) {
+    return ((value - lo) / span) * w;
+  }
+
   // Same rule for a fraction that is already normalised: whole numbers above
   // ten percent, one decimal below, so a two-percent class and a
   // zero-two-percent class never print the same string.
@@ -859,7 +869,7 @@
     var binW = w / BINS;
     // Left/right inset for the text drawn into the chart.
     var pad = 3;
-    var seaX = ((result.seaLevel - lo) / span) * w;
+    var seaX = chartX(result.seaLevel, lo, span, w);
     if (seaX < 0) seaX = 0;
     if (seaX > w) seaX = w;
     hc.fillStyle = result.palette.sky;
@@ -923,7 +933,7 @@
     hc.strokeStyle = rgba(INK, 0.35);
     for (var u = Math.ceil(lo * 100 / stepUnits) * stepUnits;
       u <= (lo + span) * 100; u += stepUnits) {
-      var tickX = ((u / 100 - lo) / span) * w;
+      var tickX = chartX(u / 100, lo, span, w);
       if (tickX < pad - 1 || tickX > w - pad + 1) continue;
       hc.beginPath();
       hc.moveTo(hairline(tickX), h - STRIP + 1);
@@ -950,7 +960,7 @@
     // The median gets a taller mark than the decade ticks: it is the one
     // number that says where most of the grid actually sits, so it is worth
     // seeing against the bars without reading the stats list.
-    var medX = ((result.stats.median - lo) / span) * w;
+    var medX = chartX(result.stats.median, lo, span, w);
     if (medX >= 0 && medX <= w) {
       hc.strokeStyle = rgba(INK, 0.7);
       hc.beginPath();

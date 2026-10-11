@@ -3827,6 +3827,20 @@ var hairInline = (appSrc.match(/Math\.round\([^)]*\) \+ 0\.5/g) || []).length;
 assert(hairDefs === 1 && hairCalls === 8 && hairInline === 1,
   'every thin mark shares one pixel offset (' + hairDefs + ' def, ' +
   hairCalls + ' reads, ' + hairInline + ' in the helper)');
+// Three marks on the relief chart are placed along its width from a height:
+// the sea rule, the decade ticks and the median. Each of those is the same
+// subtraction of the chart's own low end over its span, times the width.
+// Written at each site, one mark could drop its subtraction of the low end and
+// still land inside the box — a sea rule a few pixels from where its own
+// column of bars sits reads as a slightly odd chart rather than as a bug, so
+// it is counted here: one definition, three reads, no bare division beside
+// them.
+var xDefs = (appSrc.match(/function chartX\(/g) || []).length;
+var xCalls = (appSrc.match(/= chartX\(/g) || []).length;
+var xInline = (appSrc.match(/\/ span\) \* w/g) || []).length;
+assert(xDefs === 1 && xCalls === 3 && xInline === 1,
+  'every chart mark is placed by one lookup (' + xDefs + ' def, ' + xCalls +
+  ' reads, ' + xInline + ' in the helper)');
 // The crosshair sets its box ink, draws the hairlines inside a save/restore,
 // then strokes the box. The restore puts the box ink back on its own, so a
 // second copy of that pair after it is one more place the border could be
