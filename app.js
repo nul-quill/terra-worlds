@@ -433,6 +433,16 @@
     return Math.max(0, Math.min(count - 1, n));
   }
 
+  // The next stop on a list cycle, one step in either direction. Every cycle
+  // key answers to `Shift` too, so the step can be negative and the modulo has
+  // to come back positive — hence the second wrap. Six lists walk through
+  // here: overlay, shape, light, grid, export and the seed phrases. Written at
+  // each call site, one of them could drop the second wrap, and that key alone
+  // would stick on its first entry under `Shift` while the other five backed
+  // out properly.
+  function cycleIndex(i, step, count) {
+    return ((i + step) % count + count) % count;
+  }
   // Where a pointer sits, in backing-store pixels. The crosshair is drawn in
   // that space, so both pointer paths convert through here: the ratio of the
   // canvas's own width to its layout width is what maps a click onto the
@@ -1498,7 +1508,7 @@
       // pins: backing out of an overlay should not need a full lap.
       var at = order.indexOf(inputs.channel.value);
       var dir = ev.shiftKey ? -1 : 1;
-      inputs.channel.value = order[((at + dir) % order.length + order.length) % order.length];
+      inputs.channel.value = order[cycleIndex(at, dir, order.length)];
       render();
       return;
     }
@@ -1510,7 +1520,7 @@
       var shapeKeys = TerraCore.shapes.map(function (s) { return s.key; });
       var si = shapeKeys.indexOf(inputs.shape.value);
       var sdir = ev.shiftKey ? -1 : 1;
-      inputs.shape.value = shapeKeys[((si + sdir) % shapeKeys.length + shapeKeys.length) % shapeKeys.length];
+      inputs.shape.value = shapeKeys[cycleIndex(si, sdir, shapeKeys.length)];
       render();
       return;
     }
@@ -1521,7 +1531,7 @@
       var bearings = TerraCore.lights.map(function (lt) { return lt.key; });
       var di = bearings.indexOf(inputs.lightDir.value);
       var bdir = ev.shiftKey ? -1 : 1;
-      inputs.lightDir.value = bearings[((di + bdir) % bearings.length + bearings.length) % bearings.length];
+      inputs.lightDir.value = bearings[cycleIndex(di, bdir, bearings.length)];
       render();
       return;
     }
@@ -1534,7 +1544,7 @@
       var widths = TerraCore.grids.map(function (gr) { return gr.key; });
       var wi = widths.indexOf(inputs.gridSize.value);
       var wdir = ev.shiftKey ? -1 : 1;
-      inputs.gridSize.value = widths[((wi + wdir) % widths.length + widths.length) % widths.length];
+      inputs.gridSize.value = widths[cycleIndex(wi, wdir, widths.length)];
       render();
       return;
     }
@@ -1546,7 +1556,7 @@
       var sizes = TerraCore.scales.map(function (sc) { return sc.key; });
       var ei = sizes.indexOf(inputs.scale.value);
       var edir = ev.shiftKey ? -1 : 1;
-      inputs.scale.value = sizes[((ei + edir) % sizes.length + sizes.length) % sizes.length];
+      inputs.scale.value = sizes[cycleIndex(ei, edir, sizes.length)];
       render();
       return;
     }
@@ -1606,7 +1616,7 @@
         var slots = rows.length + 1;
         var ki = rows.indexOf(pinned || '');
         if (ki < 0) ki = slots - 1;
-        pinned = rows[(ki + step + slots) % slots] || null;
+        pinned = rows[cycleIndex(ki, step, slots)] || null;
         renderLegend(current);
         drawMap();
         writeHash();
@@ -1623,7 +1633,7 @@
       var phrases = TerraCore.phrases;
       var pi = phrases.indexOf(inputs.seed.value);
       var pdir = ev.shiftKey ? -1 : 1;
-      inputs.seed.value = phrases[((pi + pdir) % phrases.length + phrases.length) % phrases.length];
+      inputs.seed.value = phrases[cycleIndex(pi, pdir, phrases.length)];
       render();
       return;
     }

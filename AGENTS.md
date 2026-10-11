@@ -627,6 +627,13 @@ Conventions:
   `@media` blocks: `print` (hides the chrome, one column) and
   `prefers-color-scheme: dark` (only the CSS variables change). Both are checked
   with `page.emulateMedia()` followed by a reload.
+  Every one of those cycles wraps through one `cycleIndex(i, step, count)`,
+  read by all six list cycles and the legend ring — seven sites, since the
+  ring's empty slot is itself a stop. The double modulo is the point: a
+  negative step under `Shift` has to come back positive, and a wrap written
+  once would stick on the first entry for one key while the others backed out
+  properly. The suite counts the definition, the seven reads and asks for no
+  bare wrap left beside them.
   The dark block only works by replacing every variable in `:root`, so the suite
   compares the two name lists: a variable declared once and never restated keeps
   its light value under a dark background, which is the one way this scheme can

@@ -3822,6 +3822,20 @@ assert(idxDefs === 1 && idxCalls === 6 && idxInline === 0,
   'every cell clamp reads one bound (' + idxDefs + ' def, ' + idxCalls +
   ' reads, ' + idxInline + ' inline)');
 
+// Every cycle key answers to `Shift`, so its step can be negative and the
+// wrap has to come back positive. That double modulo is one lookup, read by
+// each of the six list cycles plus the legend ring — seven sites in all. Left
+// at the call sites, one of them could drop its second wrap, and that key
+// alone would stick on its first entry under `Shift` while the others backed
+// out properly. Counted as text: one helper, seven reads, no bare wrap left.
+var cycDefs = (appSrc.match(/function cycleIndex\(/g) || []).length;
+var cycCalls = (appSrc.match(/cycleIndex\(/g) || []).length - cycDefs;
+var cycInline = (appSrc.match(
+  /\+ \w+\.length\) % \w+\.length\)/g) || []).length;
+assert(cycDefs === 1 && cycCalls === 7 && cycInline === 0,
+  'every cycle key wraps through one step (' + cycDefs + ' def, ' + cycCalls +
+  ' reads, ' + cycInline + ' inline wraps)');
+
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the
 // map drops it again. Held in one variable with one write from the bin lookup,
