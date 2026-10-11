@@ -3278,6 +3278,19 @@ assert(inkDefs === 1 && inkUses === 7 && inkStrings === 0,
   'the chart draws with one named ink (' + inkDefs + ' def, ' + inkUses +
   ' uses, ' + inkStrings + ' literal strings)');
 
+// The relief strip sets its type in two places — the small ruler labels and
+// the bigger hovered-bin caption — and both are the same family with a
+// different number in front. Written out twice, the stack could be edited on
+// one branch only, which reads as a caption set in another face from the
+// labels under it while each still looked fine beside its own row. Counted as
+// text: one list, both sizes reading it, no second stack left beside them.
+var fontDefs = (appSrc.match(/var FONT = '/g) || []).length;
+var fontUses = (appSrc.match(/px ' \+ FONT/g) || []).length;
+var fontInline = (appSrc.match(/px system-ui/g) || []).length;
+assert(fontDefs === 1 && fontUses === 2 && fontInline === 0,
+  'the chart types both rows from one font list (' + fontDefs + ' def, ' +
+  fontUses + ' reads, ' + fontInline + ' inline stacks)');
+
 // Every overlay on the map washes toward the palette's own sky: the isolation
 // blend twice (a pinned class, a hovered band), the crosshair's ink and the mat
 // under the magnifier. Each of those is a hex string that has to be parsed, and

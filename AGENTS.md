@@ -835,6 +835,13 @@ Conventions:
   all: seven uses of two named lists, which the suite counts beside the count of
   leftover literals. A hue written out seven times could be edited seven ways,
   and a chart with two inks still looks plausible at a glance.
+  The strip's type is one list as well — `FONT`, read by both sizes that set it:
+  the small ruler labels and the bigger hovered-bin caption. Only the number in
+  front of the family differs, so each site writes `'9px ' + FONT` rather than a
+  second stack. Two copies could be edited apart while each still looked fine
+  beside its own row, which reads as a caption set in another face from the
+  labels under it; the suite counts the one list, the two reads and asks for no
+  leftover stack beside them.
   `hoverHistogram()` is shared by `mousemove` and a touch `pointerdown`, so a tap
   on the chart selects a bin the same way a cursor does. Keep the one function.
   The touch call passes a second argument so tapping the bar that is already
