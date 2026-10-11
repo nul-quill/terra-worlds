@@ -1198,6 +1198,15 @@
     return parts.join(' · ');
   }
 
+  // Share of the grid under standing water. The count is absent rather than
+  // zero on a world with no tarns, so the empty case is folded in here: the
+  // `lake` row on the page and the `lake` field of a record then divide the
+  // same numerator by the same grid, and one prints it out of a hundred while
+  // the other keeps three decimals of it.
+  function lakeShare(stats) {
+    return (stats.counts.lake || 0) / stats.pixels;
+  }
+
   // Share of the grid, as printed text. Whole numbers above ten percent; below
   // that one decimal, so a two-percent class and a nought-point-two-percent
   // class never collapse onto the same string. Both the sidebar rows and the
@@ -1278,6 +1287,7 @@
     channelValue: channelValue,
     percentText: percentText,
     hundred: hundred,
+    lakeShare: lakeShare,
     legendOrder: legendOrder,
     biomeCount: biomeCount,
     readNumber: readNumber,

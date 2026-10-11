@@ -659,7 +659,7 @@
         result.height * factor],
       ['land', percentText(s.land)],
       ['water', percentText(s.water)],
-      ['lake', shareText(s.counts.lake || 0, s.pixels)],
+      ['lake', percentText(TerraCore.lakeShare(s))],
       // How many separate basins that lake cover is split into.
       ['basins', String(s.lakeBasins)],
       ['ice', percentText(s.ice)],

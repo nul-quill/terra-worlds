@@ -2497,6 +2497,24 @@ assert(basinCells > 0 && basinWorld.stats.lakeBasins >= 1 &&
   'basin count tracks the lake cover (' + basinWorld.stats.lakeBasins + ' basins in ' +
   basinCells + ' lake cells)');
 
+// The share that cover takes is one fraction: the `lake` row prints it out of a
+// hundred and the record keeps three decimals of it, so both halves have to
+// divide the same count by the same grid. The count is absent rather than zero
+// when a world has no tarns, which is the one case a second copy of the
+// fallback could get wrong while each figure still looked plausible. Counted as
+// text — one definition in the core, and a lookup on each side.
+var lakeSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var lakeDefs = (lakeSrc.match(/function lakeShare\(stats\) \{/g) || []).length;
+var lakeRow = (require('fs').readFileSync(__dirname + '/../app.js', 'utf8')
+  .match(/TerraCore\.lakeShare\(/g) || []).length;
+var lakeRec = (threeSrc.match(/core\.lakeShare\(/g) || []).length;
+assert(lakeDefs === 1 && lakeRow === 1 && lakeRec === 1 &&
+  /lakeShare: lakeShare/.test(lakeSrc) &&
+  jsonLine.lake === Math.round(core.lakeShare(jsonWorld.stats) * 1000) / 1000 &&
+  basinWorld.stats.counts.lake > 0 && core.lakeShare(dryWorld.stats) === 0,
+  'one fraction feeds the lake row and the record (' + lakeDefs + ' def, ' +
+  lakeRow + '/' + lakeRec + ' readers)');
+
 // Every labelled basin also needs a bearing, since the readout pairs the two:
 // one entry per basin, each a real compass point, and none for a world with no
 // standing water.

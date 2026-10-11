@@ -534,7 +534,7 @@ function summarise(seed, result, name, asJson) {
     // where its own rule sits, and the `water` share alone cannot be turned
     // back into the level that produced it.
     sea: three(result.seaLevel),
-    lake: three((s.counts.lake || 0) / s.pixels),
+    lake: three(core.lakeShare(result.stats)),
     ice: three(s.ice),
     rivers: s.rivers,
     // The same split the sidebar prints on its `rivers` row: without the

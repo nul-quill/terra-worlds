@@ -314,6 +314,12 @@ Conventions:
   hover readout. Keep it a lookup rather than repeating `60`: a shallow tarn
   tops out below the cap, so the suite asks that every filled cell sit inside
   1..the constant and that the published scale be that same number.
+  The share of the grid those steps cover is one fraction too —
+  `TerraCore.lakeShare(stats)` — read by the `lake` row and by the record's
+  `lake` field. The count is absent rather than zero on a world with no tarns,
+  so the empty case lives in that lookup: two copies of the fallback could
+  disagree about a dry world while each figure still looked plausible on its
+  own, one printing `0%` and the other a bare `0`.
   Those steps also follow the ground rather than the fill order: for any two
   neighbouring cells of one basin, the lower one carries at least as deep a
   step. The suite walks those pairs on every phrase, which is what keeps the
