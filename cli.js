@@ -65,7 +65,16 @@ function parseArgs(argv) {
     else if (a === '--contour') opts.contour = true;
     else if (a === '--channel') opts.channel = nextKey(argv[++i], CHANNEL_KEYS);
     else if (a === '--scale') opts.scale = nextNum(argv[++i], true);
-    else if (a === '--out') opts.out = argv[++i];
+    else if (a === '--out') {
+      // The only flag whose value is taken raw, so it is also the only one
+      // where a following flag can be swallowed as a file name. `--out
+      // --json` means "no name given", and the word after it belongs to the
+      // next flag: eating it would drop --json from the call entirely. The
+      // other readers already handle that themselves — `Number('--json')` is
+      // not finite and `nextKey` names the miss — so this stays here.
+      var outVal = argv[i + 1];
+      if (outVal != null && outVal.charAt(0) !== '-') opts.out = argv[++i];
+    }
     else if (a === '--describe') opts.describe = true;
     else if (a === '--hist') opts.hist = true;
     else if (a === '--next') opts.next = nextNum(argv[++i], true) || 5;
@@ -239,7 +248,9 @@ if (opts.help) {
   console.log('       the flags without opening the source; -h does the same');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
-  console.log('       JSON per world instead of the table');
+  console.log('       JSON per world instead of the table; [--out] on its own');
+  console.log('       keeps the default world.ppm rather than reading the');
+  console.log('       next flag as the name');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
   console.log('channels: ' + core.channels.map(function (c) {
     return c.key || 'biome';

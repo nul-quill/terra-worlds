@@ -1369,6 +1369,19 @@ assert(chainWide.length === 10 && chainDefault.length === 5,
   'the chain count reads its whole value or none (' + chainWide.length +
   ', ' + chainDefault.length + ')');
 
+// `--out` is the one flag whose value is taken as written, so it is also the
+// only place where the NEXT word can be a flag rather than a value. A name is
+// optional there: `--out --json` should keep the default file name and still
+// print the JSON form, rather than losing the record to a file called
+// `--json`. Both halves come back in that one line — the form proves the flag
+// survived, the `file` field proves the name did not get eaten.
+var outNext = require('child_process')
+  .execSync('node cli.js "salt mirror" --out --json --width 60 --height 40',
+    {cwd: __dirname + '/..'}).toString().trim();
+var outRec = JSON.parse(outNext);
+assert(outNext.charAt(0) === '{' && outRec.file === 'world.ppm',
+  'a flag after --out is not eaten as its value (' + outRec.file + ')');
+
 // Several seeds at once: every summary line has to name its own seed, or a
 // block of sentences cannot be traced back to the phrase that made it. One
 // seed keeps the bare sentence, which is what the page prints.
