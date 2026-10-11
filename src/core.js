@@ -1208,6 +1208,14 @@
     return pct.toFixed(1) + '%';
   }
 
+  // Every height is stored 0..1 and printed out of a hundred, in the sidebar's
+  // stats rows and chart labels and in the CLI's caption and record. One
+  // scaling for both, so a figure read off a printed page is the figure a
+  // terminal printed: two roundings that happen to agree are still two.
+  function hundred(value) {
+    return Math.round(value * 100);
+  }
+
   global.TerraCore = {
     generate: generate,
     upscale: upscale,
@@ -1215,6 +1223,7 @@
     describe: describe,
     channelValue: channelValue,
     percentText: percentText,
+    hundred: hundred,
     hashString: hashString,
     randomSeed: randomSeed,
     nextSeed: nextSeed,

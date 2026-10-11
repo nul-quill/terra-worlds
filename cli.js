@@ -470,10 +470,10 @@ function profile(result) {
       : (c === medCol ? ':' : '-');
   }
   lines.push(ruler);
-  lines.push(Math.round(h.lo * 100) + ' .. ' +
-    Math.round((h.lo + h.span) * 100) + ' relief, sea ' +
-    Math.round(result.seaLevel * 100) + ', median ' +
-    Math.round(result.stats.median * 100) + ', ' + h.bins + ' bins, peak ' +
+  lines.push(core.hundred(h.lo) + ' .. ' +
+    core.hundred(h.lo + h.span) + ' relief, sea ' +
+    core.hundred(result.seaLevel) + ', median ' +
+    core.hundred(result.stats.median) + ', ' + h.bins + ' bins, peak ' +
     h.peak + ' cells - ' +
     // The same eight hex digits the stats list and the record print, so a
     // pasted block of text names the picture it came from — the one field a
@@ -542,12 +542,12 @@ function summarise(seed, result, name, asJson) {
     // much of that drainage is a trunk.
     trunks: s.trunks,
     lakeBasins: s.lakeBasins,
-    relief: Math.round((s.max - s.min) * 100),
+    relief: core.hundred(s.max - s.min),
     // The two ends behind that difference, out of a hundred: the spread alone
     // cannot say whether a world climbs from a deep shelf or from a damp
     // plain, and those are the numbers printed at the corners of the chart.
-    low: Math.round(s.min * 100),
-    high: Math.round(s.max * 100),
+    low: core.hundred(s.min),
+    high: core.hundred(s.max),
     contourBands: s.contourBands, basinBands: s.basinBands,
     // The relief chart's own two numbers: how many bars the sidebar would draw
     // for this world and the tallest of them. Both come from the same core

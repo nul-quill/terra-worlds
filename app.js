@@ -556,8 +556,11 @@
   // corner labels, the sea rule and the hover readout all go through it. That is
   // what makes `median 49` in the stats list and `median 49` under the bars the
   // same measurement rather than two roundings that happen to agree.
+  // The lookup is the core's own, so the CLI's caption and record round a height
+  // the same way this page does — a figure read off a printed page and one read
+  // off a terminal line are then the same measurement.
   function hundred(value) {
-    return Math.round(value * 100);
+    return TerraCore.hundred(value);
   }
 
   // How many classes actually occur on this map. The legend only lists those,

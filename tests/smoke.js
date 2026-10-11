@@ -515,6 +515,25 @@ assert(hundredDefs === 1 && hundredCalls >= 5 && hundredInline === 0,
   'one helper scales every printed height (' + hundredDefs + ' def, ' +
   hundredCalls + ' uses, ' + hundredInline + ' inline)');
 
+// That helper is the core's rather than the shell's, since the same figures are
+// printed by the CLI's caption and record. Two roundings that happen to agree
+// are still two measurements, so the shell forwards to the core and the CLI
+// reads the same lookup: a height named on a printed page and one named on a
+// terminal line are then one number. Counted on all three sides.
+var coreSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var cliSrcForH = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+var coreHundredDefs = (coreSrc.match(/function hundred\(/g) || []).length;
+var coreHundredExported = /hundred:\s*hundred/.test(coreSrc);
+var shellForwards = /function hundred\(value\) \{\s*return TerraCore\.hundred\(value\);/
+  .test(hundredSrc);
+var cliReads = (cliSrcForH.match(/core\.hundred\(/g) || []).length;
+var cliInline = (cliSrcForH.match(/Math\.round\([^)]*\* 100\)/g) || []).length;
+assert(coreHundredDefs === 1 && coreHundredExported && shellForwards &&
+  cliReads >= 4 && cliInline === 0,
+  'the core scales every printed height once for both readers (' +
+  coreHundredDefs + ' def, ' + shellForwards + ' forward, ' + cliReads +
+  ' cli uses, ' + cliInline + ' inline)');
+
 // The readout prints the overlay's own ramp position, so it has to agree with
 // the pixels: the colour under the cursor must be the palette pair lerped by
 // exactly that number. Checked on the log-scaled field, whose raw values are

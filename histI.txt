@@ -1,0 +1,40 @@
+seed         salt mirror
+width        60
+height       40
+palette      terra
+channel      
+scale        1
+land         0.436
+water        0.564
+median       0.459
+sea          0.48
+lake         0
+ice          0
+rivers       5
+trunks       1
+lakeBasins   0
+relief       67
+low          11
+high         77
+contourBands 8
+basinBands   8
+bins         40
+peak         131
+rows         6
+seaCol       22
+medCol       21
+hist         2,1,2,6,10,15,20,16,32,41,58,59,85,92,86,89,114,94,114,128,126,120,116,121,127,108,125,131,71,78,67,52,22,26,20,6,8,4,6,2
+biomes       10
+classes      shallow=38% deep=18% beach=18% grass=14% seasonal=4.5% savanna=3.0% taiga=3.0% shrub=1.6% forest=0.29% desert=0.13%
+summary      continents ?? rolling (67) ?? 44% land ?? mostly Shallows ?? 0.21% drained
+checksum     a73dccfa
+ms           8
+file         world.ppm
+                           #
+                # ####### ##
+             # #############
+            ###################
+          ######################
+        ##########################
+---------------------:|-----------------
+11 .. 77 relief, sea 48, median 46, 40 bins, peak 131 cells - a73dccfa

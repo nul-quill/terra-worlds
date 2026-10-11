@@ -368,6 +368,12 @@ Conventions:
   rather than two roundings that happen to agree. Keep the scaling there rather
   than writing `Math.round(x * 100)` at a call site; the suite counts the
   definition, the uses and any leftover inline rounding.
+  That helper is the core's (`TerraCore.hundred`) rather than the shell's, since
+  the CLI's caption and record print the same figures: the shell forwards to it
+  and the CLI reads the same lookup, so `median 46` under the bars and
+  `"median":0.459` rounded by a terminal are one measurement. The suite counts
+  the core definition, the shell's forward and the CLI's uses, and asks for no
+  leftover inline round in either reader.
   Shares of the grid go through `TerraCore.percentText(fraction)` — whole percent
   at or above ten, one decimal below that, two under one percent, so a 2% class,
   a 0.2% class and a 0.04% class each keep their own figure in the legend. The
