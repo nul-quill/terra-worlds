@@ -2453,6 +2453,22 @@ core.phrases.forEach(function (ms) {
 assert(medDrift.length === 0,
   'the printed median is readable from the record (' + medDrift.join(', ') + ')');
 
+// Every share in that record is kept to three decimals, and the rounding has
+// to be one expression: six fields written out in full can be edited apart,
+// and a `land` rounded finer than an `ice` would leave a terminal adding two
+// figures that never summed to the grid. Counted as text — one definition, and
+// no leftover inline triple-rounding beside the fields that read it.
+var threeSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+var threeDefs = (threeSrc.match(/function three\(value\) \{/g) || []).length;
+var threeCalls = (threeSrc.match(/\bthree\(/g) || []).length - threeDefs;
+var threeInline = (threeSrc.match(
+  /:\s*Math\.round\([^)]*\* 1000\) \/ 1000/g) || []).length;
+assert(threeDefs === 1 && threeCalls >= 5 && threeInline === 0 &&
+  jsonLine.land === Math.round(jsonWorld.stats.land * 1000) / 1000 &&
+  jsonLine.ice === Math.round(jsonWorld.stats.ice * 1000) / 1000,
+  'the record rounds every share the same way (' + threeDefs + ' def, ' +
+  threeCalls + ' fields, ' + threeInline + ' inline)');
+
 // The basin count must agree with the lake cover it summarises: at least one
 // basin when there is standing water, never more basins than lake cells, and
 // none at all when the whole grid is open water.

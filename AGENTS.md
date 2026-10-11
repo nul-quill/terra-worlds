@@ -139,6 +139,12 @@ Conventions:
   suite rounds each the same way and asks for one number across every phrase —
   a record a terminal cannot turn into the figure on screen is no substitute for
   a screenshot.
+  That finer rounding is one helper in the parser — `three(value)` — read by
+  every share the record stores (`land`, `water`, `median`, `sea`, `lake`,
+  `ice`), since six inline expressions could be edited apart while each still
+  looked reasonable on its own. A `land` kept finer than an `ice` would leave a
+  terminal adding two figures that never summed to the grid. The suite counts
+  the one definition, the fields that read it and any leftover inline triple.
   `--hist` is that substitute: six rows of blocks over the record's own bins,
   with a ruler under them whose `|` sits on the sea column. The block is built
   from `core.histogram` at the sidebar's 240px width, so its column count is

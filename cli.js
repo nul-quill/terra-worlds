@@ -136,6 +136,15 @@ function finishGrid(opts) {
   return opts;
 }
 
+// A share or a level, kept to three decimals. The record stores its figures
+// this way — finer than the out-of-a-hundred numbers the caption prints — so a
+// terminal can rebuild a bar's column count from a saved line without losing a
+// whole step to rounding. One helper for every field, since a share rounded two
+// ways would describe a drier world in the JSON than on the page.
+function three(value) {
+  return Math.round(value * 1000) / 1000;
+}
+
 function toPpm(img) {
   var out = 'P6\n' + img.width + ' ' + img.height + '\n255\n';
   var chars = new Array(img.width * img.height * 3);
@@ -517,16 +526,16 @@ function summarise(seed, result, name, asJson) {
     // dimensions without touching a single count above, so without it a record
     // cannot say why its PNG is bigger than the grid it lists.
     scale: opts.scale > 1 ? opts.scale : 1,
-    land: Math.round(s.land * 1000) / 1000,
-    water: Math.round(s.water * 1000) / 1000,
-    median: Math.round(s.median * 1000) / 1000,
+    land: three(s.land),
+    water: three(s.water),
+    median: three(s.median),
     // The sea line is the one figure the text ruler marks, and it is also what
     // splits the bars into wet and dry. Without it a record could not say
     // where its own rule sits, and the `water` share alone cannot be turned
     // back into the level that produced it.
-    sea: Math.round(result.seaLevel * 1000) / 1000,
-    lake: Math.round((s.counts.lake || 0) / s.pixels * 1000) / 1000,
-    ice: Math.round(s.ice * 1000) / 1000,
+    sea: three(result.seaLevel),
+    lake: three((s.counts.lake || 0) / s.pixels),
+    ice: three(s.ice),
     rivers: s.rivers,
     // The same split the sidebar prints on its `rivers` row: without the
     // trunk half a record can say how much of a world is drained but not how
