@@ -906,6 +906,12 @@ Conventions:
   reading `min`/`max`/`step` off the input itself so the key and the slider
   cannot disagree about the size of a step. Keep the clamp there rather than
   hard-coding the range in the handler.
+  Those three attributes are read by the same rule as `num()` — `Number` behind
+  an `isFinite` test, no `parse*` — since the pair the nudge writes goes into
+  the hash, and a reader that kept the leading digits of a value would move the
+  shoreline to a level the option reader had already thrown away. Each bound is
+  applied only when it reads, so the markup stays the single source of the
+  range; the suite scrapes that branch for the three traits.
   The number the slider starts on is written three times — the generator's
   `seaLevel == null` fallback, the value the shell assigns on first load, and the
   `min`/`max` span in the markup — so the suite reads all three and asks that the

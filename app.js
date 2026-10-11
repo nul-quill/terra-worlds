@@ -1507,12 +1507,22 @@
     // come from the input so the two paths cannot disagree.
     if (!typingLetter && (ev.key === '[' || ev.key === ']')) {
       ev.preventDefault();
-      var stepSea = parseFloat(inputs.seaLevel.step) || 0.01;
-      var loSea = parseFloat(inputs.seaLevel.min);
-      var hiSea = parseFloat(inputs.seaLevel.max);
-      var nextSea = parseFloat(inputs.seaLevel.value) +
-        (ev.key === ']' ? stepSea : -stepSea);
-      nextSea = Math.max(loSea, Math.min(hiSea, Math.round(nextSea * 100) / 100));
+      // Read by the rule `num()` follows rather than by a second one: a pair
+      // written into the hash is read there, and a `parseFloat` here would
+      // keep the leading digits of something that reader had already thrown
+      // away — so the nudge would move a sea level the world never used.
+      // Each bound is only applied when it reads, which is what lets the
+      // slider's own attributes stay the single source of the range.
+      var stepSea = Number(inputs.seaLevel.step);
+      if (!isFinite(stepSea) || stepSea <= 0) stepSea = 0.01;
+      var loSea = Number(inputs.seaLevel.min);
+      var hiSea = Number(inputs.seaLevel.max);
+      var nowSea = Number(inputs.seaLevel.value);
+      if (!isFinite(nowSea)) return;
+      var nextSea = nowSea + (ev.key === ']' ? stepSea : -stepSea);
+      nextSea = Math.round(nextSea * 100) / 100;
+      if (isFinite(loSea)) nextSea = Math.max(loSea, nextSea);
+      if (isFinite(hiSea)) nextSea = Math.min(hiSea, nextSea);
       inputs.seaLevel.value = String(nextSea);
       render();
       return;

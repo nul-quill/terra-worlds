@@ -1392,6 +1392,23 @@ assert(numShapeBad.length === 0,
   'the page and the parser read a number the same way (' +
   numShapeBad.join('; ') + ')');
 
+// The two helpers are not the only place the shell turns a slider attribute
+// into a number: `[` and `]` read the sea slider's own step and bounds. That
+// pair goes into the hash, so a nudge reading a different number than the
+// option reader would move the shoreline to a level the world never used.
+// Ask for the same three traits on that branch: a `Number` read of the
+// slider's own attributes, an `isFinite` test behind it, and no `parse*` call
+// that would keep the leading digits of a value the helpers reject.
+var seaNudgeSrc = (/if \(!typingLetter && \(ev\.key === '\[' \|\| ev\.key === '\]'\)\) \{([\s\S]*?)\n    \}/
+  .exec(require('fs').readFileSync(__dirname + '/../app.js', 'utf8')) ||
+  ['', ''])[1];
+assert(seaNudgeSrc &&
+  /Number\(inputs\.seaLevel\./.test(seaNudgeSrc) &&
+  /isFinite\(/.test(seaNudgeSrc) &&
+  !/parse(?:Int|Float)\(/.test(seaNudgeSrc),
+  'the sea nudge reads its bounds by the same rule (' +
+  (seaNudgeSrc ? 'read' : 'unreadable') + ')');
+
 // The chain count is a numeric flag too, so it should be read the same way:
 // an exponent walks the whole ten-seed chain, and a value with junk on the
 // end falls back to the chain's own default length rather than to whatever
