@@ -175,6 +175,12 @@ finishGrid(opts);
 
 if (opts.help) {
   console.log('usage: node cli.js "<seed>" [--width n] [--height n] [--palette name]');
+  // The two sizes are the only flags where one value changes the other, so the
+  // rule is stated where a terminal reads it rather than left for the source.
+  console.log('       a lone --width or --height keeps the default aspect: the');
+  console.log('       side you leave out is filled from the ratio of the two');
+  console.log('       defaults, so --width 800 is a wide landscape not a strip;');
+  console.log('       name both sizes to override that.');
   // The shape keys are read from the generator's list rather than repeated
   // here, so adding a curve in core.js shows up in this listing too.
   console.log('       [--shape ' + core.shapes.map(function (s) {

@@ -1245,6 +1245,15 @@ assert(hiddenFlags.length === 0 && Object.keys(parserFlags).length > 15,
   'the parser takes no flag that --help hides (' +
   Object.keys(parserFlags).length + ' flags, missing ' +
   hiddenFlags.join(', ') + ')');
+// The two size flags are the only pair where one value decides the other, so
+// the rule has to be readable from the usage line: a terminal that only sees
+// `--width 800` should learn the missing side is derived, not left at a fixed
+// default. Look for one line naming a size flag and the derivation together.
+var aspectNote = helpOut.replace(/\r/g, '').split('\n').filter(function (hl2) {
+  return /--(width|height)/.test(hl2) && /aspect|ratio/i.test(hl2);
+});
+assert(aspectNote.length >= 1,
+  '--help explains what a lone size flag does (' + aspectNote.length + ' notes)');
 
 // A dashed word that matches no flag is a typo, not a seed: the CLI says so
 // and still renders one world, rather than treating the stray word (and its

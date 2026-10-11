@@ -423,6 +423,12 @@ Conventions:
   branch, the `--next` chain — which builds its worlds through its own option
   copies — reports the same derived pair as the plain listing. The suite checks
   that pairing over a three-seed chain asked for by `--width` alone.
+  The rule is also in the `--help` text, since that is where a terminal looks
+  first: the two sizes are the only flags where one value decides the other, so
+  a reader who names only `--width` should learn the missing side is derived
+  rather than fixed. The suite asks for one line naming a size flag and the
+  derivation together, which is what separates that note from the surrounding
+  list of key-valued flags.
   Key-valued flags (`--palette`, `--shape`, `--channel`, `--dir`) read theirs
   through `nextKey()`, which matches against the same array its dropdown is
   filled from and pushes a miss onto the one `unknown` list. Both kinds of typo
