@@ -575,6 +575,16 @@ Conventions:
   a literal rgba — that is what lets the dark block raise both halves at once.
   The suite asks for the lookup in the rule and for exactly two declarations,
   one per scheme.
+  The two surfaces that are not quite the panel — the boxes you type into and
+  the strip the hover readout sits on — are `--field` and `--hud` for the same
+  reason: each is a wash over the panel, so both schemes set them inside
+  `:root` and neither rule needs a literal. That is what keeps the dark block's
+  promise (variables only) true; a literal in either rule would need a matching
+  colour rule in that block, which is one more place a colour can be edited
+  while the other scheme is not looking. The suite asks each rule for its
+  lookup and each variable for exactly two declarations. The one leftover in
+  the block is the readout's ink, since that strip sits on the map rather than
+  on the panel, so the variable swap does not decide its text colour.
   The tint alone is too faint to follow as a tab stop on a ten-row list, so
   `:focus-visible` also draws the inset ring a pinned row wears — both halves
   from `--accent`, so neither scheme needs a third colour for the caret.

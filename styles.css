@@ -10,6 +10,12 @@
      colour and the alpha in one place — a fixed light tint disappears against
      a dark panel. */
   --accent-soft: rgba(47, 125, 106, 0.10);
+  /* The two surfaces that are not quite the panel: the boxes you type into,
+     and the strip the hover readout sits on. Both are a wash over the panel,
+     so each is a variable of its own rather than a literal the dark block has
+     to repeat as a second rule. */
+  --field: #fbfcfd;
+  --hud: rgba(255, 255, 255, 0.88);
 }
 
 * { box-sizing: border-box; }
@@ -91,7 +97,7 @@ body {
   padding: 6px 8px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fbfcfd;
+  background: var(--field);
   color: var(--ink);
   font: inherit;
 }
@@ -164,7 +170,7 @@ button:last-child {
   bottom: 10px;
   padding: 4px 9px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--hud);
   font-size: 12px;
   color: var(--muted);
   pointer-events: none;
@@ -306,12 +312,13 @@ button:last-child {
     --line: #2c353a;
     --accent: #4fb39a;
     --accent-soft: rgba(79, 179, 154, 0.18);
+    --field: #171d21;
+    --hud: rgba(20, 24, 27, 0.88);
   }
 
-  .field input[type="text"],
-  .field select { background: #171d21; }
-
-  .hud { background: rgba(20, 24, 27, 0.88); color: var(--ink); }
+  /* The readout sits on the map rather than on the panel, so its ink is the
+     one thing the variable swap does not decide for it. */
+  .hud { color: var(--ink); }
 
   button:last-child { background: transparent; }
 }

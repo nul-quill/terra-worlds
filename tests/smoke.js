@@ -3696,6 +3696,24 @@ assert(tintRule && tintDeclared === 2,
   'the legend tint reads a variable both schemes restate (' + tintRule +
   ', ' + tintDeclared + ' declarations)');
 
+// The two surfaces that are not quite the panel — the boxes you type into and
+// the strip the hover readout sits on — are a wash over the panel rather than a
+// second colour, so each is a lookup in its own rule. That is what lets the
+// dark block set them inside `:root` alongside the rest, which is the only way
+// its promise (variables only) can hold. A literal in either rule would need a
+// matching rule in the dark block, and a rule there is one more place a colour
+// can be edited without the other scheme noticing.
+var fieldRule = /\.field input\[type="text"\],\s*\.field select\s*\{[^}]*background:\s*var\(--field\)/
+  .test(cssSrc);
+var hudRule = /\.hud\s*\{\s*position:\s*absolute;[^}]*background:\s*var\(--hud\)/
+  .test(cssSrc);
+var fieldDeclared = (cssSrc.match(/--field\s*:/g) || []).length;
+var hudDeclared = (cssSrc.match(/--hud\s*:/g) || []).length;
+assert(fieldRule && hudRule && fieldDeclared === 2 && hudDeclared === 2,
+  'the two off-panel surfaces read a variable both schemes restate (' +
+  fieldRule + '/' + hudRule + ', ' + fieldDeclared + '/' + hudDeclared +
+  ' declarations)');
+
 // The tint is only a wash of colour, which is hard to follow as a tab stop on
 // a ten-row list, so focus also gets the inset ring a pinned row wears. Both
 // are lookups rather than literals, which is what keeps the ring readable in
