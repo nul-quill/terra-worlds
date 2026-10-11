@@ -54,6 +54,26 @@
     return false;
   }
 
+  // Same rule the CLI parser follows: a value that does not read as a
+  // number is dropped rather than passed on as NaN. In the generator every
+  // comparison against NaN is false, so a single unparsed field turns a
+  // whole world into flat dry land. Leaving the key undefined lets the
+  // generator's own default stand.
+  // `Number` rather than the two `parse*` functions: those stop at the first
+  // character they cannot read, so a value with junk on the end (`800x`)
+  // still reaches the generator as its leading digits. Here as in the CLI an
+  // unreadable value means unset, and an empty box is a missing value rather
+  // than a zero — `Number('')` is 0, which would shrink the grid to the
+  // smallest one the generator can draw. Every control on the page reads its
+  // own number through this one helper, so a slider and a flag cannot pick
+  // two different grids for one phrase.
+  function num(value, isInt) {
+    if (value == null || value === '') return undefined;
+    var n = Number(value);
+    if (!isFinite(n)) return undefined;
+    return isInt ? Math.round(n) : n;
+  }
+
   function readHash() {
     var out = {};
     var raw = String(location.hash || '').replace(/^#/, '');
@@ -238,23 +258,6 @@
   }
 
   function readOptions() {
-    // Same rule the CLI parser follows: a value that does not read as a
-    // number is dropped rather than passed on as NaN. In the generator every
-    // comparison against NaN is false, so a single unparsed field turns a
-    // whole world into flat dry land. Leaving the key undefined lets the
-    // generator's own default stand.
-    // `Number` rather than the two `parse*` functions: those stop at the first
-    // character they cannot read, so a value with junk on the end (`800x`)
-    // still reaches the generator as its leading digits. Here as in the CLI an
-    // unreadable value means unset, and an empty box is a missing value rather
-    // than a zero — `Number('')` is 0, which would shrink the grid to the
-    // smallest one the generator can draw.
-    function num(value, isInt) {
-      if (value == null || value === '') return undefined;
-      var n = Number(value);
-      if (!isFinite(n)) return undefined;
-      return isInt ? Math.round(n) : n;
-    }
     return {
       seed: inputs.seed.value || 'terra',
       palette: inputs.palette.value,
@@ -674,7 +677,7 @@
   // dropdown. One lookup so the stats row and the saved file cannot disagree
   // about which factor was in use.
   function exportFactor() {
-    return parseInt(inputs.scale.value, 10) || 3;
+    return num(inputs.scale.value, true) || 3;
   }
 
   function renderStats(result) {

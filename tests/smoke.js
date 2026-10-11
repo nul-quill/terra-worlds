@@ -1372,7 +1372,7 @@ assert(numRec.width === 100 && numRec.height === 60 &&
 // keep a `parse*` call, since those stop at the first character they cannot
 // read and would let `800x` through as 800 in one place and reject it in the
 // other — two grids for one phrase, depending on where it was typed.
-var shellNum = (/function num\(value, isInt\) \{([\s\S]*?)\n    \}/
+var shellNum = (/function num\(value, isInt\) \{([\s\S]*?)\n  \}/
   .exec(require('fs').readFileSync(__dirname + '/../app.js', 'utf8')) ||
   ['', ''])[1];
 var cliNum = (/function nextNum\(value, isInt\) \{([\s\S]*?)\n  \}/
@@ -3245,10 +3245,14 @@ assert(binBad.length === 0 && core.binCount(90) === 20 && core.binCount(900) ===
 // call at each of the three sites, and the dropdown parsed in one place only.
 var factorDefs = (appSrc.match(/function exportFactor\(\)/g) || []).length;
 var factorUses = (appSrc.match(/exportFactor\(\)/g) || []).length - factorDefs;
-var factorParses = (appSrc.match(/parseInt\(inputs\.scale\.value/g) || []).length;
-assert(factorDefs === 1 && factorUses === 3 && factorParses === 1,
+var factorParses = (appSrc.match(/parse(?:Int|Float)\(inputs\.scale\.value/g) ||
+  []).length;
+var factorReader = (appSrc.match(/num\(inputs\.scale\.value/g) || []).length;
+assert(factorDefs === 1 && factorUses === 3 && factorParses === 0 &&
+  factorReader === 1,
   'the export row and the file name share one factor lookup (' + factorDefs +
-  ' def, ' + factorUses + ' uses, ' + factorParses + ' parse)');
+  ' def, ' + factorUses + ' uses, ' + factorReader + ' shared reads, ' +
+  factorParses + ' bare parses)');
 
 // The legend is ordered biggest-class-first, and that order is what both the
 // list and the `k` cycle walk. Rebuilt here from the same counts, the order has

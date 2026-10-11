@@ -479,6 +479,10 @@ Conventions:
   readers that disagree about `800x` would give one phrase two grids depending
   on whether it was typed in a terminal or in the seed box, so the suite scrapes
   both bodies and asks each for the same three traits.
+  It sits at the top of the shell rather than inside `readOptions()`, because
+  `exportFactor()` reads the export dropdown through it too: the factor behind
+  the `export` row, the saved file's name and the multiplier in the CLI record
+  are then one reading of one control.
   Keep the `argv[++i]` advance at the call site — moving it inside the helper
   reads each value twice and shifts every later flag by one.
   The chain count is read by that same helper, so `--next 1e1` walks ten seeds
