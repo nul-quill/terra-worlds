@@ -4003,6 +4003,19 @@ assert(cycDefs === 1 && cycCalls === 10 && cycInline === 0,
   'every cycle key wraps through one step (' + cycDefs + ' def, ' + cycCalls +
   ' reads, ' + cycInline + ' inline wraps)');
 
+// The direction that wrap is stepped with is one lookup too. Seven keys walk a
+// list and each of them answers to `Shift` by stepping backwards, so the pair
+// of signs is read rather than restated: written beside each handler, one of
+// them could invert while the others still backed out, and that reads as a
+// single key cycling the wrong way for reasons nothing on screen explains.
+var stepDefs = (appSrc.match(/function shiftStep\(/g) || []).length;
+var stepCalls = (appSrc.match(/shiftStep\(ev\)/g) || []).length - stepDefs;
+var stepInline = (appSrc.match(
+  /ev\.shiftKey \? -1 : 1/g) || []).length;
+assert(stepDefs === 1 && stepCalls === 7 && stepInline === 1,
+  'every cycle key reads its step from one lookup (' + stepDefs + ' def, ' +
+  stepCalls + ' reads, ' + stepInline + ' in the helper)');
+
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the
 // map drops it again. Held in one variable with one write from the bin lookup,

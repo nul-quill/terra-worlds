@@ -470,6 +470,15 @@
   function cycleIndex(i, step, count) {
     return ((i + step) % count + count) % count;
   }
+
+  // Which way `Shift` moves a cycle. Every list key answers to `Shift` with a
+  // step backwards, so the pair of signs is one lookup rather than seven
+  // written beside their own handler: one of them could invert while the rest
+  // still backed out, which reads as a single key walking the wrong way round
+  // its list for reasons nothing in the dropdown explains.
+  function shiftStep(ev) {
+    return ev.shiftKey ? -1 : 1;
+  }
   // Where a pointer sits inside a canvas, as a fraction of its layout box. Both
   // canvases need that pair — the map turns it into backing-store pixels for
   // the crosshair, the chart turns it into a bin index — and both have to
@@ -1661,7 +1670,7 @@
       // Shift walks the list backwards, the same way it does for the legend
       // pins: backing out of an overlay should not need a full lap.
       var at = order.indexOf(inputs.channel.value);
-      var dir = ev.shiftKey ? -1 : 1;
+      var dir = shiftStep(ev);
       inputs.channel.value = order[cycleIndex(at, dir, order.length)];
       render();
       return;
@@ -1673,7 +1682,7 @@
       ev.preventDefault();
       var shapeKeys = TerraCore.shapes.map(function (s) { return s.key; });
       var si = shapeKeys.indexOf(inputs.shape.value);
-      var sdir = ev.shiftKey ? -1 : 1;
+      var sdir = shiftStep(ev);
       inputs.shape.value = shapeKeys[cycleIndex(si, sdir, shapeKeys.length)];
       render();
       return;
@@ -1684,7 +1693,7 @@
       ev.preventDefault();
       var bearings = TerraCore.lights.map(function (lt) { return lt.key; });
       var di = bearings.indexOf(inputs.lightDir.value);
-      var bdir = ev.shiftKey ? -1 : 1;
+      var bdir = shiftStep(ev);
       inputs.lightDir.value = bearings[cycleIndex(di, bdir, bearings.length)];
       render();
       return;
@@ -1697,7 +1706,7 @@
       ev.preventDefault();
       var widths = TerraCore.grids.map(function (gr) { return gr.key; });
       var wi = widths.indexOf(inputs.gridSize.value);
-      var wdir = ev.shiftKey ? -1 : 1;
+      var wdir = shiftStep(ev);
       inputs.gridSize.value = widths[cycleIndex(wi, wdir, widths.length)];
       render();
       return;
@@ -1709,7 +1718,7 @@
       ev.preventDefault();
       var sizes = TerraCore.scales.map(function (sc) { return sc.key; });
       var ei = sizes.indexOf(inputs.scale.value);
-      var edir = ev.shiftKey ? -1 : 1;
+      var edir = shiftStep(ev);
       inputs.scale.value = sizes[cycleIndex(ei, edir, sizes.length)];
       render();
       return;
@@ -1760,7 +1769,7 @@
         var rows = legendKeys(current);
         // Shift steps backwards through the same list, so a mis-press does not
         // need a full lap of the legend to undo.
-        var step = ev.shiftKey ? -1 : 1;
+        var step = shiftStep(ev);
         // The empty state is a slot of its own: with only the rows to choose
         // from, a lap came back to the first class and the cleared state was
         // reachable just once, before anything had been pinned. One more slot
@@ -1783,7 +1792,7 @@
       ev.preventDefault();
       var phrases = TerraCore.phrases;
       var pi = phrases.indexOf(inputs.seed.value);
-      var pdir = ev.shiftKey ? -1 : 1;
+      var pdir = shiftStep(ev);
       inputs.seed.value = phrases[cycleIndex(pi, pdir, phrases.length)];
       render();
       return;

@@ -650,6 +650,13 @@ Conventions:
   once would stick on the first entry for one key while the others backed out
   properly. The suite counts the definition, the eight reads and asks for no
   bare wrap left beside them.
+  The sign that step is paired with is one lookup too — `shiftStep(ev)` — read
+  by the seven keys that walk a list, so a `Shift` mis-press backs one step up
+  on every cycle rather than on the six whose branch happens to match. Written
+  beside each handler the pair could invert on one key only, which reads as a
+  single letter cycling the wrong way for reasons nothing in the dropdown
+  explains; the suite therefore counts the definition, the seven reads and the
+  one ternary inside it.
   The dark block only works by replacing every variable in `:root`, so the suite
   compares the two name lists: a variable declared once and never restated keeps
   its light value under a dark background, which is the one way this scheme can
