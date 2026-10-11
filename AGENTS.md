@@ -718,6 +718,13 @@ Conventions:
   dims the other bars, a legend selection dims the bins with none of that class.
   `drawMap()` calls `paintHistogram()` so one repaint keeps both views in step —
   do not repaint the chart from the individual handlers.
+  The dim itself is a weighted sum of a palette triple and a wash target, and it
+  is written once: `mix(a, b, t)` blends, `rgba(c, alpha)` prints, and the bars
+  fade toward one `WHITE` through that pair rather than spelling out three
+  `Math.round(c[n] * keep + 255 * (1 - keep))` expressions of their own. The
+  overlay on the map reads the same two helpers with its own palette target.
+  The suite counts the wash target, the one blend call in the chart and that no
+  inline sum is left beside it.
   `hoverHistogram()` is shared by `mousemove` and a touch `pointerdown`, so a tap
   on the chart selects a bin the same way a cursor does. Keep the one function.
   The touch call passes a second argument so tapping the bar that is already

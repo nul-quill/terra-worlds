@@ -495,8 +495,14 @@
     return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
   }
 
-  // Blend two rgb triples, and turn one into a css rgba() string. Both are
-  // only used for the hover overlay, so the map itself is untouched.
+  // The wash every dimmed thing is blended toward: the hovered cells on the
+  // map and the unlit bars of the relief chart both fade to this, so a faded
+  // row and a faded bar of the same class read as the same distance back.
+  var WHITE = [255, 255, 255];
+
+  // Blend two rgb triples, and turn one into a css rgba() string. The overlay,
+  // the magnifier's mat and the dimmed bars all go through these two rather
+  // than each writing its own weighted sum.
   function mix(a, b, t) {
     return [
       a[0] + (b[0] - a[0]) * t,
@@ -773,10 +779,10 @@
       var c = lo + (i + 0.5) / BINS * span < result.seaLevel ? wet : dry;
       var on = only < 0 ? (!member || member[i]) : i === only;
       var keep = on ? 1 : 0.45;
-      hc.fillStyle = 'rgb(' +
-        Math.round(c[0] * keep + 255 * (1 - keep)) + ',' +
-        Math.round(c[1] * keep + 255 * (1 - keep)) + ',' +
-        Math.round(c[2] * keep + 255 * (1 - keep)) + ')';
+      // A dimmed bar is the palette's own triple washed toward the page's
+      // white, which is the same blend the hover overlay does — so it goes
+      // through the same two helpers rather than a fourth rounding of its own.
+      hc.fillStyle = rgba(mix(c, WHITE, 1 - keep), 1);
       hc.fillRect(Math.round(i * binW), Math.round(h - bh), Math.ceil(binW), Math.round(bh));
     }
     hc.strokeStyle = 'rgba(30,38,44,0.7)';

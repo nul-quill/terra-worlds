@@ -3182,6 +3182,19 @@ appSrc.replace(/\bctx\.(?:fill|stroke)Style = ([^\n]*)/g, function (m, rhs) {
 assert(literalInk.length === 0,
   'map overlay colours come from the palette (' + literalInk.join(' | ') + ')');
 
+// The relief chart dims a bar by washing its palette triple toward white, and
+// that wash is the same one the hover overlay performs. Two weighted sums could
+// disagree about how far back a faded thing sits, which would make a dimmed bar
+// and a dimmed cell of the same class look like two different distances. Counted
+// as text: one wash target, both helpers read, and no second sum written out.
+var washTargets = (appSrc.match(/var WHITE = \[/g) || []).length;
+var washMix = (appSrc.match(/mix\(c, WHITE, 1 - keep\)/g) || []).length;
+var washSums = (appSrc.match(
+  /Math\.round\(c\[\d\] \* keep \+ 255 \* \(1 - keep\)\)/g) || []).length;
+assert(washTargets === 1 && washMix === 1 && washSums === 0,
+  'a dimmed bar blends through the shared pair (' + washTargets +
+  ' wash, ' + washMix + ' blend, ' + washSums + ' inline sums)');
+
 // The Copy button shows a short confirmation and then puts its own name back.
 // Pressing it twice inside that window has to be one pending restore, not two:
 // the second press clears the first timer before scheduling its own, otherwise
