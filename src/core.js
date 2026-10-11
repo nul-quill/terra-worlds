@@ -1240,6 +1240,20 @@
       });
   }
 
+  // How many classes actually occur on this world. The classification pass only
+  // writes a key when it gives that key a cell, so an occupied class is one the
+  // counts object names — which is what the legend's row count, the `biomes`
+  // row and the CLI record all report. Taken from the occupancy map rather than
+  // the fixed list of names in the palette, so a world that never freezes does
+  // not claim an ice row it cannot draw.
+  function biomeCount(counts) {
+    var n = 0;
+    Object.keys(counts).forEach(function (key) {
+      if (counts[key] > 0) n++;
+    });
+    return n;
+  }
+
   // Turn a flag or a slider into a number, or into nothing at all. `Number`
   // rather than the two `parse*` functions: those stop at the first character
   // they cannot read, so `800x` would reach the generator as its leading digits
@@ -1265,6 +1279,7 @@
     percentText: percentText,
     hundred: hundred,
     legendOrder: legendOrder,
+    biomeCount: biomeCount,
     readNumber: readNumber,
     hashString: hashString,
     randomSeed: randomSeed,

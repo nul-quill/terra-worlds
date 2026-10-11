@@ -565,7 +565,9 @@ function summarise(seed, result, name, asJson) {
     // the chart draws from, so a pasted block of bars and the one line of JSON
     // around it describe one world rather than two that look alike.
     hist: Array.prototype.slice.call(hist.hist),
-    biomes: Object.keys(s.counts).length,
+    // Same lookup the `biomes` row on the page reads, so a terminal and the
+    // sidebar report one count of the classes this world actually wears.
+    biomes: core.biomeCount(s.counts),
     classes: classes,
     summary: core.describe(result),
     checksum: s.checksum,

@@ -564,11 +564,7 @@
   // so the count has to be taken from the occupancy map rather than the
   // fixed list of fourteen names.
   function biomeCount(counts) {
-    var n = 0;
-    Object.keys(counts).forEach(function (key) {
-      if (counts[key] > 0) n++;
-    });
-    return n;
+    return TerraCore.biomeCount(counts);
   }
 
   function renderLegend(result) {

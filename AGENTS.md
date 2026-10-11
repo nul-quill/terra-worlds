@@ -844,6 +844,13 @@ Conventions:
   and asks for the same number: a class counted but not drawn would drop a row
   off the legend while the stats still said it was there, and the swatch keeps a
   palette-derived fallback for exactly that case.
+  The count of occupied classes is one lookup — `TerraCore.biomeCount(counts)` —
+  that the `biomes` row and the record's `biomes` field both read, since the
+  classification pass only writes a key when it hands that key a cell. Two
+  bodies could disagree about whether a zero entry counts, and the row beside
+  the chart would then name a different number of classes than a terminal
+  prints. The suite asks for the core's definition, the shell's forward and the
+  CLI's lookup, so a third copy has to be written down rather than implied.
   A row's label comes from `biomeNames` with the raw key as its fallback, so the
   two key sets have to be identical in every scheme: a colour key with no name
   would print as `taiga`, a name with no colour could never be drawn. The suite

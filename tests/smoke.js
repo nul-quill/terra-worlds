@@ -3518,10 +3518,23 @@ core.phrases.forEach(function (pk) {
 });
 var partDefs = (appSrc.match(/function biomeCount\(/g) || []).length;
 var partUses = (appSrc.match(/biomeCount\(/g) || []).length - partDefs;
+// The count itself is the core's, so the row on the page and the `biomes`
+// field of a record are one pass over the same occupancy map. Asked for: one
+// definition in the core, the shell's forward, and the CLI's lookup.
+var partCoreSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var partCoreDefs = (partCoreSrc.match(/function biomeCount\(/g) || []).length;
+var partShellFwd = (appSrc.match(
+  /function biomeCount\(counts\) \{\s*return TerraCore\.biomeCount\(counts\);/g) || []
+).length;
+var partCliUses = (require('fs')
+  .readFileSync(__dirname + '/../cli.js', 'utf8')
+  .match(/core\.biomeCount\(/g) || []).length;
 assert(partBad.length === 0 && partDefs === 1 && partUses >= 1 &&
+  partCoreDefs === 1 && partShellFwd === 1 && partCliUses >= 1 &&
   jsonPairs.length === jsonLine.biomes,
   'one partition feeds the row, the legend and the record (' +
-  jsonLine.biomes + ' classes, ' + partDefs + ' def, ' + partUses + ' uses)');
+  jsonLine.biomes + ' classes, ' + partDefs + ' def, ' + partUses + ' uses, ' +
+  partCoreDefs + ' core, ' + partShellFwd + ' fwd, ' + partCliUses + ' cli)');
 
 // Turning a height into a chart bin happens in four places: the binning pass,
 // the legend-members pass, the hovered-bin tally and the hover readout. Each
