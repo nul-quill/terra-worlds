@@ -339,6 +339,12 @@ Conventions:
   `width` x `height` — since a saved PNG keeps nothing but that JSON line, and
   a record that rounded on its own would describe a drier world than the one
   on screen.
+  The `N% land` figure in that same sentence is a share too, so it reads
+  through `percentText()` rather than a bare `Math.round`: a mostly-ocean world
+  prints `2.5% land` in the sentence and `land 2.5%` in its own row, and one
+  plain rounding would make those two figures disagree by a whole step. The
+  suite compares the whole string against the formatter's output for every
+  phrase, which is what catches a second rounding at the call site.
   The stats list itself opens with the `seed` row, before `grid`: a print or a
   screenshot keeps no URL, so the phrase has to be readable off the page. The
   smoke suite reads the row labels out of `renderStats()` and checks that first

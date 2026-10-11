@@ -1173,7 +1173,11 @@
     var parts = [
       result.shape,
       word + ' (' + relief + ')',
-      Math.round(s.land * 100) + '% land',
+      // Through the same formatter the `land` row and the legend use, so a
+      // world that is mostly ocean prints one figure in both places: a plain
+      // rounding here would say `0% land` beside a row reading `land 0.0%`,
+      // and the two would look like two measurements of the same grid.
+      percentText(s.land) + ' land',
       'mostly ' + (BIOME_NAMES[top] || top)
     ];
     // How much of the grid carries a channel. A share rather than a cell

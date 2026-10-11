@@ -670,11 +670,15 @@ assert(said === core.describe(core.generate({ seed: 'aurora basin', width: 200, 
 // count are pulled out of the string and compared with the record.
 var saidRec = core.generate({seed: 'salt mirror', width: 160, height: 100});
 var saidText = core.describe(saidRec);
-var saidLand = parseInt(/(\d+)% land/.exec(saidText)[1], 10);
+// Compared as a whole string rather than as a parsed number: the land share
+// goes through the same three-band formatter as the `land` row, so a thin
+// world has to keep its decimal here too. A parsed integer would call `0.9%`
+// and `1%` the same figure, which is the one thing the band is for.
+var saidLand = /(\S+ land)/.exec(saidText)[1];
 var saidLakes = parseInt(/(\d+) lakes?/.exec(saidText)[1], 10);
-assert(saidLand === Math.round(saidRec.stats.land * 100) &&
+assert(saidLand === core.percentText(saidRec.stats.land) + ' land' &&
   saidLakes === saidRec.stats.lakeBasins,
-  'summary numbers match the stats (' + saidLand + '%, ' + saidLakes + ' lakes)');
+  'summary numbers match the stats (' + saidLand + ', ' + saidLakes + ' lakes)');
 
 // The drainage figure in the same sentence is a share of the grid rather than
 // a cell count, so it has to come from the same pair the `rivers` row uses.
@@ -750,10 +754,10 @@ core.phrases.forEach(function (ph) {
     var pw = core.generate({seed: ph, shape: phShape.key, width: 160, height: 100});
     var ps = core.describe(pw);
     var pParts = ps.split(' · ');
-    var pLand = /^(\d+)% land$/.exec(pParts[2]);
+    var pLand = /^(.+ land)$/.exec(pParts[2]);
     var pTop = /^mostly (.+)$/.exec(pParts[3]);
     if (pParts.length < 4 || !pLand || !pTop ||
-      Number(pLand[1]) !== Math.round(pw.stats.land * 100) ||
+      pLand[1] !== core.percentText(pw.stats.land) + ' land' ||
       Object.keys(core.biomeNames).map(function (bk) {
         return core.biomeNames[bk];
       }).indexOf(pTop[1]) < 0 ||
