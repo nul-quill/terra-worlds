@@ -1366,6 +1366,31 @@ assert(numRec.width === 100 && numRec.height === 60 &&
   numFallback.width === 480 && numFallback.height === 300,
   'a numeric flag reads its whole value or none (' + numRec.width + 'x' +
   numRec.height + ', ' + numFallback.width + 'x' + numFallback.height + ')');
+// The page reads its sliders through a helper of its own, and it promises the
+// same rule the parser just followed. Both bodies are scraped and compared:
+// each must go through `Number` behind an `isFinite` test, and neither may
+// keep a `parse*` call, since those stop at the first character they cannot
+// read and would let `800x` through as 800 in one place and reject it in the
+// other — two grids for one phrase, depending on where it was typed.
+var shellNum = (/function num\(value, isInt\) \{([\s\S]*?)\n    \}/
+  .exec(require('fs').readFileSync(__dirname + '/../app.js', 'utf8')) ||
+  ['', ''])[1];
+var cliNum = (/function nextNum\(value, isInt\) \{([\s\S]*?)\n  \}/
+  .exec(require('fs').readFileSync(__dirname + '/../cli.js', 'utf8')) ||
+  ['', ''])[1];
+var numShapeBad = [];
+[['shell', shellNum], ['cli', cliNum]].forEach(function (np) {
+  var body = np[1];
+  if (!body) { numShapeBad.push(np[0] + ' unreadable'); return; }
+  if (!/Number\(value\)/.test(body)) numShapeBad.push(np[0] + ' no Number');
+  if (!/isFinite\(n\)/.test(body)) numShapeBad.push(np[0] + ' no isFinite');
+  if (/parse(?:Int|Float)\(/.test(body)) {
+    numShapeBad.push(np[0] + ' parse*');
+  }
+});
+assert(numShapeBad.length === 0,
+  'the page and the parser read a number the same way (' +
+  numShapeBad.join('; ') + ')');
 
 // The chain count is a numeric flag too, so it should be read the same way:
 // an exponent walks the whole ten-seed chain, and a value with junk on the

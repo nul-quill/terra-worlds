@@ -243,9 +243,17 @@
     // comparison against NaN is false, so a single unparsed field turns a
     // whole world into flat dry land. Leaving the key undefined lets the
     // generator's own default stand.
+    // `Number` rather than the two `parse*` functions: those stop at the first
+    // character they cannot read, so a value with junk on the end (`800x`)
+    // still reaches the generator as its leading digits. Here as in the CLI an
+    // unreadable value means unset, and an empty box is a missing value rather
+    // than a zero — `Number('')` is 0, which would shrink the grid to the
+    // smallest one the generator can draw.
     function num(value, isInt) {
-      var n = isInt ? parseInt(value, 10) : parseFloat(value);
-      return isNaN(n) ? undefined : n;
+      if (value == null || value === '') return undefined;
+      var n = Number(value);
+      if (!isFinite(n)) return undefined;
+      return isInt ? Math.round(n) : n;
     }
     return {
       seed: inputs.seed.value || 'terra',
