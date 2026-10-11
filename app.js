@@ -1226,7 +1226,9 @@
     // Chain from the current seed rather than picking a fresh random one, so
     // the same starting phrase always walks the same sequence of worlds and a
     // shared link lands on the same tenth reroll.
-    inputs.seed.value = String(TerraCore.nextSeed(inputs.seed.value));
+    // The empty box is the fallback phrase here too, so the chain continues
+    // from the world actually on screen rather than from an empty string.
+    inputs.seed.value = String(TerraCore.nextSeed(inputs.seed.value || 'terra'));
     render();
   });
   document.getElementById('save').addEventListener('click', savePng);

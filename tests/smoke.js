@@ -2233,6 +2233,19 @@ var seedSame = coreSeed !== '' && shellWords.length >= 2 &&
 assert(seedSame,
   'a blank seed means one world everywhere (' + coreSeed + ' / ' +
   shellWords.join(',') + ')');
+// The Reroll button is a fourth place a blank box reaches: it derives the next
+// phrase from the one in the box, so an empty field has to fall back here too —
+// otherwise the button walks a chain off `''` while the map, the stats row and
+// the file name all describe the default world. Count the guarded read at that
+// call site and ask that no bare one is left beside it.
+var rerollSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var rerollGuarded = (rerollSrc.match(
+  /nextSeed\(inputs\.seed\.value \|\| '[^']+'\)/g) || []).length;
+var rerollBare = (rerollSrc.match(
+  /nextSeed\(inputs\.seed\.value\)/g) || []).length;
+assert(rerollGuarded === 1 && rerollBare === 0,
+  'a reroll from an empty box continues the default world (' +
+  rerollGuarded + ' guarded, ' + rerollBare + ' bare)');
 
 // The record holds the relief twice: once as a number of its own, once inside
 // the summary sentence in brackets. Both come from the same difference in
