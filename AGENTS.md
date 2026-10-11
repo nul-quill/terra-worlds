@@ -1191,6 +1191,13 @@ Conventions:
   of the same picture rather than a sharp grid under a soft strip. Two copies
   of the clamp could be edited apart while each still looked reasonable, so the
   suite counts the one definition and the two reads beside it.
+  Converting a CSS measurement into that store is one lookup too —
+  `bufferSize(cssPx, dpr)` — read four times: twice for the map's layout box and
+  twice for the chart's column. Both round, since a fractional store puts every
+  cell edge between two pixels. Written beside each canvas, one of them could
+  truncate instead and still look sharp on its own, while the map and the strip
+  under it disagreed about how wide a device pixel is; the suite counts the
+  definition, the four reads and the single `* dpr)` inside the helper.
   Those two canvases also draw four thin marks — the crosshair's pair of
   hairlines, the sea rule, the decade ticks and the median mark — and every
   stroke coordinate goes through one `hairline(x)`, which rounds and adds the

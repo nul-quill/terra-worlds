@@ -3856,6 +3856,18 @@ assert(dprDefs === 1 && dprUses === 2 && dprClamps === 1,
   'both canvases share one pixel scale (' + dprDefs + ' def, ' + dprUses +
   ' reads, ' + dprClamps + ' clamp)');
 
+// Turning a CSS measurement into a backing store is the same rounding on both
+// canvases: the map from its layout box, the chart from the sidebar's column.
+// Written twice, one of them could truncate instead of rounding and still look
+// sharp on its own, while the two pictures in one sidebar disagreed about how
+// wide a device pixel is.
+var bufDefs = (appSrc.match(/function bufferSize\(/g) || []).length;
+var bufCalls = (appSrc.match(/= bufferSize\(/g) || []).length;
+var bufInline = (appSrc.match(/\* dpr\)/g) || []).length;
+assert(bufDefs === 1 && bufCalls === 4 && bufInline === 1,
+  'both canvases size their store one way (' + bufDefs + ' def, ' + bufCalls +
+  ' reads, ' + bufInline + ' in the helper)');
+
 // The two axes of the grid are snapped by one rule: a cell at least two device
 // pixels wide is rounded and its count trimmed, below that the axis keeps its
 // fractional size. Written twice, the pair could be edited apart — columns

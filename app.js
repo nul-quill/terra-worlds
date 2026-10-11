@@ -272,6 +272,16 @@
     return Math.round(x) + 0.5;
   }
 
+  // How many device pixels a CSS measurement is worth. Both canvases size their
+  // backing store this way — the map from the layout box, the chart from the
+  // sidebar's column — and both round, since a fractional store makes every
+  // cell edge land between two pixels. Written beside each canvas, one of them
+  // could truncate instead and still look sharp on its own, while the two
+  // pictures in one sidebar disagreed about how wide a pixel is.
+  function bufferSize(cssPx, dpr) {
+    return Math.round(cssPx * dpr);
+  }
+
   // Snap one axis of the grid to a whole number of device pixels. A cell at
   // least two pixels wide is rounded and the count trimmed to whatever still
   // fits, so every cell is the same size and only the last couple of pixels
@@ -313,8 +323,8 @@
     }
 
     // Cells must be a whole number of device pixels wide, or the columns come
-    var bw = Math.round(rect.width * dpr);
-    var bh = Math.round(rect.height * dpr);
+    var bw = bufferSize(rect.width, dpr);
+    var bh = bufferSize(rect.height, dpr);
     // When a cell is at least two pixels wide, snap it to a whole number of
     // device pixels and trim the count to whatever fits: every cell then comes
     // out identical, and only the last couple of pixels stay sky-coloured.
@@ -935,7 +945,7 @@
     var cssW = histCanvas.clientWidth || TerraCore.histWidth;
     var cssH = histCanvas.clientHeight || TerraCore.histHeight;
     var dpr = pixelScale();
-    var bw = Math.round(cssW * dpr), bhPix = Math.round(cssH * dpr);
+    var bw = bufferSize(cssW, dpr), bhPix = bufferSize(cssH, dpr);
     if (histCanvas.width !== bw) histCanvas.width = bw;
     if (histCanvas.height !== bhPix) histCanvas.height = bhPix;
     // One bin per ~5 CSS pixels, clamped: a narrow sidebar with 48 bars reads
