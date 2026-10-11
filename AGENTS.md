@@ -177,6 +177,11 @@ Conventions:
   reader with a block of bars and one line of JSON can place both without the
   page. Keep every caption figure a record field: a number that exists only in
   the text is one a terminal cannot verify.
+  `peak` is the last of those: it is the divisor every row of the block is
+  drawn against, so without it a pasted block says nothing about how tall a
+  full column is and cannot be redrawn at all. The suite compares the caption's
+  figure with the record's on every phrase, which is what keeps the block's
+  height tied to the counts rather than to the width it was printed at.
   The suite re-reads every one of those figures and compares, so a block of
   bars and a line of JSON cannot describe two different worlds.
   That comparison is a pair of renders per phrase rather than one, since the

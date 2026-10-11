@@ -989,7 +989,9 @@ nextPairs.forEach(function (cp2, ci2) {
   var c2ends = /^(\d+) \.\. (\d+) relief/.exec(c2cap);
   var c2sea = /sea (\d+)/.exec(c2cap);
   var c2med = /median (\d+)/.exec(c2cap);
+  var c2peak = /peak (\d+) cells/.exec(c2cap);
   if (!c2ends || !c2sea || !c2med ||
+    !c2peak || Number(c2peak[1]) !== c2rec.peak ||
     Number(c2ends[1]) !== c2rec.low || Number(c2ends[2]) !== c2rec.high ||
     Number(c2sea[1]) !== Math.round(c2rec.sea * 100) ||
     Number(c2med[1]) !== Math.round(c2rec.median * 100) ||
@@ -1508,11 +1510,18 @@ var capEnds = /^(\d+) \.\. (\d+) relief/.exec(histCaption);
 var capBins = /(\d+) bins/.exec(histCaption);
 var capSea = /sea (\d+)/.exec(histCaption);
 var capMed = /median (\d+)/.exec(histCaption);
+var capPeak = /peak (\d+) cells/.exec(histCaption);
 assert(capEnds && Number(capEnds[1]) === Math.round(histWorld.stats.min * 100) &&
   Number(capEnds[2]) === Math.round(histWorld.stats.max * 100) &&
   capBins && Number(capBins[1]) === histBins &&
   capMed && Number(capMed[1]) === Math.round(histWorld.stats.median * 100) &&
-  capSea && Number(capSea[1]) === Math.round(histWorld.seaLevel * 100),
+  capSea && Number(capSea[1]) === Math.round(histWorld.seaLevel * 100) &&
+  // The tallest bar is the divisor every row of the block is drawn against, so
+  // it belongs to the caption as well: a reader holding only a pasted block
+  // can then ask how tall a full column is, rather than having to open the
+  // page to find out. Compared against a fresh pass over the height field.
+  capPeak && Number(capPeak[1]) ===
+  core.histogram(histWorld, histBins).peak,
   'the caption repeats the record it came from (' + histCaption + ')');
 // The sea line is the one figure the ruler marks, so it has to be a field of
 // the record as well: the two ends and the column count only place the block,
@@ -1569,11 +1578,13 @@ core.phrases.forEach(function (cp) {
   var cSea = /sea (\d+)/.exec(cCap);
   var cMed = /median (\d+)/.exec(cCap);
   var cBins = /(\d+) bins/.exec(cCap);
+  var cPeak = /peak (\d+) cells/.exec(cCap);
   var cOne = cRec.seaCol === cRec.medCol;
   var cMarks = cRuler.replace(/-/g, '').length;
   if (!cEnds || !cSea || !cMed || !cBins ||
     Number(cEnds[1]) !== cRec.low || Number(cEnds[2]) !== cRec.high ||
     Number(cBins[1]) !== cRec.bins ||
+    !cPeak || Number(cPeak[1]) !== cRec.peak ||
     Number(cSea[1]) !== Math.round(cRec.sea * 100) ||
     Number(cMed[1]) !== Math.round(cRec.median * 100) ||
     cCap.indexOf(cRec.checksum) < 0 ||

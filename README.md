@@ -26,7 +26,8 @@ of sentences can still be traced back to the phrase that produced it; a single
 seed keeps the bare sentence, which is what the sidebar prints.
 `--hist` adds the relief silhouette as text: six rows of blocks over the same
 bins the sidebar chart draws, a ruler under them with the sea and the median
-marked, and a caption naming the range, the column count and the checksum. With
+marked, and a caption naming the range, the column count, the tallest bar and
+the checksum. With
 `--json` the block stays out of the way — one line per world is what makes that
 form pipeable, and the record's `bins`, `peak` and `hist` already describe it.
 `--palettes` lists the palette keys the `--palette` flag takes, with the label
