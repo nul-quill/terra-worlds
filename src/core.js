@@ -1207,6 +1207,16 @@
     return (stats.counts.lake || 0) / stats.pixels;
   }
 
+  // Share of the grid a single class covers. Same shape as the lake fraction
+  // above: a class that never occurs on this world is absent from the counts
+  // map rather than holding a zero, so the empty case is folded in here. The
+  // legend rows, the note under the map and the CLI's per-class list all take
+  // their pair of numbers from this one division, which is what lets a row on
+  // screen and a `key=NN%` token in a record be checked against each other.
+  function classShare(stats, key) {
+    return (stats.counts[key] || 0) / stats.pixels;
+  }
+
   // Share of the grid, as printed text. Whole numbers above ten percent; below
   // that one decimal, so a two-percent class and a nought-point-two-percent
   // class never collapse onto the same string. Both the sidebar rows and the
@@ -1288,6 +1298,7 @@
     percentText: percentText,
     hundred: hundred,
     lakeShare: lakeShare,
+    classShare: classShare,
     legendOrder: legendOrder,
     biomeCount: biomeCount,
     readNumber: readNumber,

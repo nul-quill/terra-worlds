@@ -508,7 +508,7 @@ function summarise(seed, result, name, asJson) {
   // filled.
   var classes = core.legendOrder(result)
     .map(function (k) {
-      return k + '=' + core.percentText(s.counts[k] / s.pixels);
+      return k + '=' + core.percentText(core.classShare(s, k));
     })
     .join(' ');
   var rec = {

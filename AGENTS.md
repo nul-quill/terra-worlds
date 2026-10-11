@@ -395,6 +395,14 @@ Conventions:
   re-derives every pair in that column from the counts with the same helper, so a
   second rounding on either side shows up as a mismatch rather than as two
   plausible-looking numbers.
+  The fraction beside each of those pairs is one division too —
+  `TerraCore.classShare(stats, key)` — read by the legend's right column, the
+  note under the map and the record's `classes` column. A class that never
+  occurs on a world is absent from `stats.counts` rather than holding a zero, so
+  that fallback lives in the lookup: two copies could disagree about a missing
+  class while each figure still looked plausible, one printing a bare `0%` and
+  the other an empty string. The suite counts the definition and the three
+  readers, and re-checks one pair against a hand-written division.
   That switch at ten is checked rather than assumed: the suite walks every share
   the page prints — each class, the drainage figure, the three cover rows — over
   every hand-picked world and asks that a string carry a decimal exactly when its

@@ -1964,6 +1964,24 @@ jsonPairs.forEach(function (p) {
 });
 assert(fmtOk,
   'cli shares use the sidebar formatter (' + jsonPairs[0][0] + '=' + jsonPairs[0][1] + '%)');
+
+// Those two views take their fraction from one division rather than each
+// writing its own: the legend rows, the note under the map and the record's
+// per-class column all go through the core's `classShare`, so a class absent
+// from the counts map cannot read as zero on one side and blank on the other.
+// Counted as text — one definition, and a lookup on each side of the pair.
+var csCore = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var csApp = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var csDefs = (csCore.match(/function classShare\(stats, key\) \{/g) || []).length;
+var csReaders = (csApp.match(/TerraCore\.classShare\(/g) || []).length;
+var csCli = (require('fs').readFileSync(__dirname + '/../cli.js', 'utf8')
+  .match(/core\.classShare\(/g) || []).length;
+assert(csDefs === 1 && csReaders === 2 && csCli === 1 &&
+  /classShare: classShare/.test(csCore) &&
+  core.classShare(jsonWorld.stats, jsonPairs[0][0]) ===
+    jsonWorld.stats.counts[jsonPairs[0][0]] / jsonWorld.stats.pixels,
+  'one division feeds every class share (' + csDefs + ' def, ' +
+  csReaders + '+' + csCli + ' readers)');
 // The same record has a plain form for reading in a terminal: one padded label
 // per line, then the value. Both forms come out of one object in `summarise()`,
 // so the two must agree field by field — every key of the JSON line has to be a

@@ -510,14 +510,6 @@
       Math.round(c[2]) + ',' + alpha + ')';
   }
 
-  // Share of the grid a class covers. Whole numbers are fine above ten
-  // percent; below that a rounded value collapses a lot of rows onto "0%" or
-  // "1%" and the ordering the list is sorted by stops being visible, so the
-  // small end keeps one decimal.
-  function shareText(count, pixels) {
-    return percentText(count / pixels);
-  }
-
   // Same rule for a fraction that is already normalised: whole numbers above
   // ten percent, one decimal below, so a two-percent class and a
   // zero-two-percent class never print the same string.
@@ -561,7 +553,7 @@
         label.textContent = TerraCore.biomeNames[key] || key;
         var pct = document.createElement('span');
         pct.className = 'pct';
-        pct.textContent = shareText(counts[key], result.stats.pixels);
+        pct.textContent = percentText(TerraCore.classShare(result.stats, key));
         li.appendChild(sw); li.appendChild(label); li.appendChild(pct);
         // Hovering a row isolates that class on the map; leaving restores it.
         // Both halves repaint through drawHover(), so a cell picked earlier —
@@ -1285,7 +1277,7 @@
       // exactly when the map keeps the class after the pointer leaves.
       readout.textContent = (TerraCore.biomeNames[want] || want) +
         (solo ? '' : ' pinned') + ' — ' +
-        shareText(current.stats.counts[want] || 0, current.stats.pixels);
+        percentText(TerraCore.classShare(current.stats, want));
       return;
     }
     if (band < 0 || !histState) {
