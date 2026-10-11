@@ -254,9 +254,15 @@ if (opts.help) {
   console.log('       the flags without opening the source; -h does the same');
   console.log('       several seeds at once are fine: each gets its own file');
   console.log('       (--out becomes a prefix), and [--json] prints one line of');
-  console.log('       JSON per world instead of the table; [--out] on its own');
-  console.log('       keeps the default world.ppm rather than reading the');
-  console.log('       next flag as the name');
+  console.log('       JSON per world instead of the table');
+  // One rule covers every value-taking flag, so it is stated once here rather
+  // than beside each of them: a dashed word after a flag belongs to that next
+  // flag, which is why `--out --json` and `--palette --json` both keep their
+  // own defaults and still print a record.
+  console.log('       a value is optional when the next word is itself a flag:');
+  console.log('       that word belongs to the next flag, so [--out --json]');
+  console.log('       keeps world.ppm and [--palette --json] the default');
+  console.log('       scheme, both still printing JSON');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
   console.log('channels: ' + core.channels.map(function (c) {
     return c.key || 'biome';

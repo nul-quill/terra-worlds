@@ -1328,6 +1328,18 @@ var aspectNote = helpOut.replace(/\r/g, '').split('\n').filter(function (hl2) {
 assert(aspectNote.length >= 1,
   '--help explains what a lone size flag does (' + aspectNote.length + ' notes)');
 
+// The optional-value rule is a second note a terminal needs, and unlike the
+// aspect rule it applies to EVERY value-taking flag, so it has to be readable
+// from the same listing rather than inferred from the parser. Look for one
+// line saying a value is optional beside the word for the next word being a
+// flag — the pair is what separates it from the surrounding list of flags.
+var valueNote = helpOut.replace(/\r/g, '').split('\n').filter(function (hn) {
+  return /optional/i.test(hn) && /flag/i.test(hn);
+});
+assert(valueNote.length >= 1,
+  '--help explains when a flag value is optional (' + valueNote.length +
+  ' notes)');
+
 // A dashed word that matches no flag is a typo, not a seed: the CLI says so
 // and still renders one world, rather than treating the stray word (and its
 // value) as extra seeds. Checked by counting the summaries it prints.
