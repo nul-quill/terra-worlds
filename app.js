@@ -423,6 +423,20 @@
     return { w: current.cellW, h: current.cellH };
   }
 
+  // Where a pointer sits, in backing-store pixels. The crosshair is drawn in
+  // that space, so both pointer paths convert through here: the ratio of the
+  // canvas's own width to its layout width is what maps a click onto the
+  // buffer, guarded so an empty layout still divides. Two copies of that pair
+  // could be edited apart, and the hover mark would then sit on one cell while
+  // the readout named the neighbour to its left.
+  function pointerPos(ev) {
+    var rect = view.getBoundingClientRect();
+    return {
+      x: (ev.clientX - rect.left) * (view.width / Math.max(1, rect.width)),
+      y: (ev.clientY - rect.top) * (view.height / Math.max(1, rect.height))
+    };
+  }
+
   function drawHover() {
     if (!current) return;
     // Repaint from the offscreen copy first, so moving the cursor does not
@@ -928,11 +942,9 @@
   /* ---- interaction ---- */
 
   function setHoverFromEvent(ev) {
-    var rect = view.getBoundingClientRect();
-    // Stored in backing-store pixels: the crosshair is drawn in that space, so
-    // dividing by the cell size works at any device-pixel ratio.
-    hover.x = (ev.clientX - rect.left) * (view.width / Math.max(1, rect.width));
-    hover.y = (ev.clientY - rect.top) * (view.height / Math.max(1, rect.height));
+    var p = pointerPos(ev);
+    hover.x = p.x;
+    hover.y = p.y;
   }
 
   // Keyboard equivalent: put the cursor on a grid cell by index, which is how
@@ -973,12 +985,12 @@
     var px, py;
     if (typeof ev === 'number') { px = ev; py = arguments[1]; }
     else {
-      var rect = view.getBoundingClientRect();
-      // Convert to backing-store pixels first, then divide by the integer cell
-      // size — the same pair of numbers the crosshair is drawn with.
+      // Backing-store pixels first, then the integer cell size — the same pair
+      // of numbers the crosshair is drawn with.
       var cs = cellSize();
-      px = Math.floor((ev.clientX - rect.left) * (view.width / Math.max(1, rect.width)) / cs.w);
-      py = Math.floor((ev.clientY - rect.top) * (view.height / Math.max(1, rect.height)) / cs.h);
+      var p = pointerPos(ev);
+      px = Math.floor(p.x / cs.w);
+      py = Math.floor(p.y / cs.h);
     }
     px = Math.max(0, Math.min(current.width - 1, px));
     py = Math.max(0, Math.min(current.height - 1, py));

@@ -672,6 +672,12 @@ Conventions:
     way, so a pointer resting above or right of the canvas cannot write
     `at=48,-159` while the readout prints `(48, 0)`. Both the clamp and the
     wrap live in those two functions, never in `applyHash()`.
+    A pointer is mapped onto the buffer by one `pointerPos(ev)`: the canvas's
+    own width over its layout width, guarded so an empty layout still divides.
+    Both pointer paths — the hover mark and the readout's own cell — read that
+    one conversion, so the crosshair and the text cannot name two different
+    cells for one click. The suite counts the definition, the two reads and the
+    single ratio behind it.
     The arrow handler wraps its own pair before calling `hoverCell()`, so a walk
     in one direction keeps sweeping instead of sticking on the last column; the
     clamp in `hoverCell()` still handles a hash-restored index outside a smaller

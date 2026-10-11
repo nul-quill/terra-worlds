@@ -3794,6 +3794,20 @@ assert(spanDefs === 1 && spanUses === 2 && spanInline === 1,
   'both halves of the elevation share one span guard (' + spanDefs + ' def, ' +
   spanUses + ' reads, ' + spanInline + ' in the helper)');
 
+// A pointer is mapped onto the canvas by one ratio: the buffer's width over
+// the layout width. The hover mark and the readout both need that pair, so
+// both go through one conversion — written twice, the crosshair could sit on
+// one cell while the text named its neighbour, and each copy still looked
+// right on its own. Counted as text: one helper, one call per pointer path,
+// and no second copy of the ratio left in the shell.
+var posDefs = (appSrc.match(/function pointerPos\(/g) || []).length;
+var posCalls = (appSrc.match(/= pointerPos\(ev\)/g) || []).length;
+var posRatio = (appSrc.match(
+  /view\.width \/ Math\.max\(1, rect\.width\)/g) || []).length;
+assert(posDefs === 1 && posCalls === 2 && posRatio === 1,
+  'both pointer paths map through one helper (' + posDefs + ' def, ' +
+  posCalls + ' reads, ' + posRatio + ' ratio)');
+
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the
 // map drops it again. Held in one variable with one write from the bin lookup,
