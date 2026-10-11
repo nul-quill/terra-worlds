@@ -3813,6 +3813,23 @@ var hairInline = (appSrc.match(/Math\.round\([^)]*\) \+ 0\.5/g) || []).length;
 assert(hairDefs === 1 && hairCalls === 8 && hairInline === 1,
   'every thin mark shares one pixel offset (' + hairDefs + ' def, ' +
   hairCalls + ' reads, ' + hairInline + ' in the helper)');
+// The crosshair sets its box ink, draws the hairlines inside a save/restore,
+// then strokes the box. The restore puts the box ink back on its own, so a
+// second copy of that pair after it is one more place the border could be
+// edited — and a box drawn with the hairline's own ink still in effect is the
+// bug the first copy avoids. Count the pair: one stroke style, one border
+// width, one save and one restore around the hairlines.
+var hoverAt = appSrc.indexOf('function drawHover()');
+var hoverSrc = hoverAt < 0 ? '' : appSrc.slice(hoverAt, hoverAt + 1600);
+var edgeSets = (hoverSrc.match(/ctx\.strokeStyle = edge;/g) || []).length;
+var widthSets = (hoverSrc.match(
+  /ctx\.lineWidth = Math\.max\(1, Math\.round\(cellX \* 0\.25\)\);/g) ||
+  []).length;
+var saveSets = (hoverSrc.match(/ctx\.save\(\);/g) || []).length;
+var backSets = (hoverSrc.match(/ctx\.restore\(\);/g) || []).length;
+assert(edgeSets === 1 && widthSets === 1 && saveSets === 1 && backSets === 1,
+  'the crosshair box ink is set once and restored (' + edgeSets + ' inks, ' +
+  widthSets + ' widths, ' + saveSets + ' saves, ' + backSets + ' restores)');
 
 // The elevation reading is a share of one of two bands: room above the
 // shoreline for land, the sea itself for water. Each share is guarded against

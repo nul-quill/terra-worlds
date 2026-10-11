@@ -1115,6 +1115,13 @@ Conventions:
   soft line beside three crisp ones — a difference small enough that nobody
   opens the console over it, so the suite counts the definition, the eight
   reads and asks for no bare `Math.round(...) + 0.5` left beside them.
+  Inside that same pass the box ink is set once — a stroke style plus the
+  border width, a quarter of a cell and never less than one pixel — and the
+  hairlines are drawn between a `save()` and a `restore()`, which puts that
+  pair back on its own. Re-stating it after the restore is one more place the
+  border can be edited, and letting the hairline's own ink leak into the box
+  is the bug the first copy avoids, so the suite asks for one of each: one
+  stroke style, one width, one save and one restore.
   Each axis of the grid is then snapped by one `snapCell(boxes, count)`: a cell
   at least two device pixels wide is rounded and its count trimmed to whatever
   still fits, below two pixels the axis keeps its fractional size and stretches

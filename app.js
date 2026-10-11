@@ -500,8 +500,6 @@
       ctx.lineTo(view.width, cy);
       ctx.stroke();
       ctx.restore();
-      ctx.strokeStyle = edge;
-      ctx.lineWidth = Math.max(1, Math.round(cellX * 0.25));
       ctx.strokeRect(px * cellX, py * cellY, cellX, cellY);
       if (insetOn) drawInset(px, py);
     }
