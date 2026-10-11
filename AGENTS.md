@@ -635,9 +635,9 @@ Conventions:
   the band there would describe a set of cells the blit no longer shows. The
   suite pulls the note's own body out of the shell and asks both halves for that
   one expression, so the precedence cannot be dropped on one side only.
-  Exactly three places read that pair — the blit, the bars and the note — and
-  the suite counts all three, so a fourth opinion about which filter wins has
-  to be added there as well as in the shell.
+  Exactly four places read that pair — the blit, the bars, the note and the
+  hovered-cell reading — and the suite counts all four, so a fifth opinion
+  about which filter wins has to be added there as well as in the shell.
   The word beside the class is gated on the same pair: only a clicked row is
   called `pinned`, a hovered one just prints its name and share, since a preview
   is gone on the next mouse-move. The suite reads that gate out of the note's
@@ -651,6 +651,16 @@ Conventions:
     The note is the fourth caller of `bandSummary()`: it reads the SELECTED bin
     rather than the cell's own, so it cannot reuse the range already there. The
     suite counts the four callers and the gate behind the note.
+    A pinned or previewed class dims the map the same way, so the hovered cell
+    gets the matching note for that filter too — `not Grassland` beside a faded
+    cell, naming the SELECTED class rather than the cell's own, which is the
+    half a reader has to compare with the row they clicked. Same gate as the
+    band note: a cell already of that class printed its own name one field
+    earlier, so a second copy would only push moisture off the end of the line.
+    Both filters fold through the same `solo || pinned` lookup the blit uses,
+    which is why the hover follows a pinned row it did not hover. The suite
+    counts that lookup among the four readers and asks for exactly one such
+    mismatch note in the readout.
   The magnifier in `drawInset()` is the one overlay that covers map rather than
   tinting it, so `m` drops it: `insetOn` gates the call in `drawHover()` and
   nothing else. Like `solo` and `band` it is a view setting and stays out of

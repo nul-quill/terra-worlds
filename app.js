@@ -962,6 +962,16 @@
       (TerraCore.biomeNames[key] || key),
       (elev > 0 ? '+' : '') + elev + ' units'
     ];
+    // A selected legend class fades every cell that is not its own, so a
+    // washed-out cell beside a bright one needs the same explanation a picked
+    // bar gives: which side of the selection this cell falls on. Only the
+    // mismatch costs a word — when the cell already is the selected class, the
+    // name printed above is the answer. The word is the SELECTED class, since
+    // that is the half a reader has to compare against the row they clicked.
+    var want = solo || pinned;
+    if (want && key !== want) {
+      parts.push('not ' + (TerraCore.biomeNames[want] || want));
+    }
     // With an overlay on, the colour under the cursor is a ramp position, so
     // print that position: it is the same 0..100 number the blend used, which
     // is what makes two similar shades distinguishable.

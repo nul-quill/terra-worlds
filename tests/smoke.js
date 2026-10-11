@@ -3240,12 +3240,16 @@ var noteBody = (/function bandNote\(\)([\s\S]*?)\n  \}/.exec(appSrc) ||
 var notePrecedence = /var want = solo \|\| pinned;/.test(noteBody);
 var blitPrecedence = /var want = solo \|\| pinned;/.test(appSrc);
 // Three things read that pair, and only those three: the map blit, the chart's
-// bars, and the line under the map. A fourth would be a fourth opinion about
-// which filter is in charge, which is what the shared expression exists to
-// avoid. Counted rather than sampled, so a new reader has to be named here.
+// bars, the line under the map, and the hovered-cell reading. That last one is
+// the shortest link from a faded cell back to the row that faded it, so it has
+// to fold the pair the same way rather than notice only the hovered preview.
+// A fifth would be a fifth opinion about which filter is in charge, which is
+// what the shared expression exists to avoid. Counted rather than sampled, so
+// a new reader has to be named here.
 var readers = (appSrc.match(/var want = solo \|\| pinned;/g) || []).length;
+var cellWants = (appSrc.match(/if \(want && key !== want\) \{/g) || []).length;
 assert(noteDefs === 1 && noteCalls === 11 && notePlaceholder === 1 &&
-  notePrecedence && blitPrecedence && readers === 3,
+  notePrecedence && blitPrecedence && readers === 4 && cellWants === 1,
   'a selected band is readable under the map (' + noteDefs + ' def, ' +
   noteCalls + ' sites, ' + notePlaceholder + ' placeholder, ' + readers +
   ' readers, note precedence ' + notePrecedence + ', blit ' +

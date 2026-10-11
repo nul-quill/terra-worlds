@@ -151,6 +151,9 @@ takes priority while the pointer is on it, and leaving either one restores the
 full map. The legend works the other way too: bins that hold no cell of the
 selected class dim in the chart, so a row shows the slice of the height range it
 occupies. Every filter is a preview — only a clicked row ends up in the URL hash.
+Hovering the map while a filter is on says which side of it the cell falls on:
+a faded cell reads `not Grassland` beside its own name, and a cell that already
+is that class just prints its name.
 `k` walks those pins from the keyboard: each press keeps the next class on the
 map at full strength and releases the previous one, wrapping back to no pin
 after the last row. It walks the rows in the order the legend lists them, so
