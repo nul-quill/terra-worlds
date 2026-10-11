@@ -1157,7 +1157,7 @@
       var sel = bandSummary(band);
       parts.push('not in ' + bandTally(band, sel));
     }
-    readout.textContent = parts.join(' — ');
+    readout.textContent = joinParts(parts);
     paintHistogram(cellBand);
   }
 
@@ -1211,6 +1211,17 @@
   function bandTally(bin, sum) {
     return (bin + 1) + '/' + histState.bins +
       ' (' + hundred(sum.from) + '-' + hundred(sum.to) + ')';
+  }
+
+  // Every reading on that strip is a list of short fields, and the gap between
+  // two fields is one string rather than a detail of whichever view wrote the
+  // list. Three paths fill the strip — the hovered cell, the pinned or hovered
+  // class and the selected band — so the join lives here: written at each
+  // site, one of them could drop its space or swap in a comma while each
+  // still read fine on its own, and a single line of the readout would then
+  // look like a different kind of note than the ones around it.
+  function joinParts(parts) {
+    return parts.join(' — ');
   }
 
   function savePng() {
@@ -1400,9 +1411,10 @@
       // would promise a state the next mouse-move takes away. Which of the two
       // is in charge is the same test the blit makes, so this says "pinned"
       // exactly when the map keeps the class after the pointer leaves.
-      readout.textContent = biomeLabel(want) +
-        (solo ? '' : ' pinned') + ' — ' +
-        percentText(TerraCore.classShare(current.stats, want));
+      readout.textContent = joinParts([
+        biomeLabel(want) + (solo ? '' : ' pinned'),
+        percentText(TerraCore.classShare(current.stats, want))
+      ]);
       return;
     }
     if (band < 0 || !histState) {
@@ -1413,7 +1425,7 @@
     if (!sum) return;
     var parts = ['band ' + bandTally(band, sum), sum.cells + ' cells'];
     if (sum.top) parts.push(biomeLabel(sum.top));
-    readout.textContent = parts.join(' — ');
+    readout.textContent = joinParts(parts);
   }
 
   // Keyboard version of the same selection: Shift+arrows walk the bins, so the

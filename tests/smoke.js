@@ -3944,6 +3944,21 @@ assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 4 && !bandStray &&
   ', bracket ' + bandBracket + ', note ' + bandInside + ', gate ' +
   bandGate + ')');
 
+// Three paths fill the readout strip: the hovered cell, a hovered or pinned
+// legend class, and the selected band. Each of them is a list of short fields,
+// and the gap between two fields is one string rather than a detail of
+// whichever view wrote the list. Written at each site, one of them could drop
+// its space or swap in a comma while each still read fine beside its own
+// caption, and one line of the strip would look like a different kind of note
+// than the ones around it. So: one helper, three reads, and the only separator
+// literal left in the shell is the one inside that helper.
+var joinDefs = (appSrc.match(/function joinParts\(/g) || []).length;
+var joinCalls = (appSrc.match(/= joinParts\(/g) || []).length;
+var joinInline = (appSrc.match(/\.join\(' — '\)/g) || []).length;
+assert(joinDefs === 1 && joinCalls === 3 && joinInline === 1,
+  'every readout field is split by one separator (' + joinDefs + ' def, ' +
+  joinCalls + ' reads, ' + joinInline + ' literal)');
+
 // A bin selected on the chart is a filter over the whole grid, so its reading
 // also goes into the line under the map — that line is the only place the count
 // is big enough to read. Every path that moves a filter has to refresh it: a

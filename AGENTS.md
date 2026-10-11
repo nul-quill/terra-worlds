@@ -834,6 +834,13 @@ Conventions:
   division could round one bin three ways while each still looked right beside
   its own caption, so the suite counts the builder, its three reads and the
   denominator inside it.
+  Those three views each fill the whole strip with a list of short fields, and
+  the gap between two fields is one string too — `joinParts(parts)` — so the
+  hovered cell, the pinned class and the selected band all separate their
+  readings the same way. Written at each site, one of them could drop its space
+  or swap in a comma while each still read fine beside its own caption, so the
+  suite counts the definition, the three reads and asks that the only separator
+  literal left in the shell be the one inside that helper.
   A bin picked on the chart is a filter over the whole grid, so `bandNote()`
   writes the same reading into the line under the map — `band 40/72 (48-49) —
   485 cells — Deep water` — where the count is big enough to read. Every path
