@@ -1539,10 +1539,8 @@
         var nx = cell[0] + step[0];
         var ny = cell[1] + step[1];
         if (current) {
-          if (nx < 0) nx += current.width;
-          else if (nx >= current.width) nx -= current.width;
-          if (ny < 0) ny += current.height;
-          else if (ny >= current.height) ny -= current.height;
+          nx = cycleIndex(nx, 0, current.width);
+          ny = cycleIndex(ny, 0, current.height);
         }
         hoverCell(nx, ny);
       }

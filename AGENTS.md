@@ -638,8 +638,9 @@ Conventions:
   `prefers-color-scheme: dark` (only the CSS variables change). Both are checked
   with `page.emulateMedia()` followed by a reload.
   Every one of those cycles wraps through one `cycleIndex(i, step, count)`,
-  read by all six list cycles, the legend ring and the `Shift`+arrow walk over
-  the height bins — eight sites, since the ring's empty slot is itself a stop.
+  read by all six list cycles, the legend ring, the `Shift`+arrow walk over the
+  height bins and both axes of the arrow walk over cells — ten sites, since the
+  ring's empty slot is itself a stop.
   The double modulo is the point: a
   negative step under `Shift` has to come back positive, and a wrap written
   once would stick on the first entry for one key while the others backed out
@@ -714,10 +715,10 @@ Conventions:
     inset's patch clamp is a different shape — it holds a whole block inside
     the grid — so it stays outside this pair, and the suite asks for no second
     copy of the single-cell form left in the shell.
-    The arrow handler wraps its own pair before calling `hoverCell()`, so a walk
-    in one direction keeps sweeping instead of sticking on the last column; the
-    clamp in `hoverCell()` still handles a hash-restored index outside a smaller
-    grid.
+    The arrow handler wraps its own pair through `cycleIndex()` before calling
+    `hoverCell()`, so a walk in one direction keeps sweeping instead of sticking
+    on the last column; the clamp in `hoverCell()` still handles a hash-restored
+    index outside a smaller grid.
     A dropdown only takes a value its own list offers: `applyHash()` checks
     `hasOption()` before assigning, so a link saved against a key that has since
     been dropped keeps the current default instead of leaving the select blank.
