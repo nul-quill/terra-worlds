@@ -685,6 +685,12 @@ Conventions:
     one conversion, so the crosshair and the text cannot name two different
     cells for one click. The suite counts the definition, the two reads and the
     single ratio behind it.
+    Those two paths then run one shared sequence — `hoverFromPointer(ev)` —
+    which moves the mark, prints the readout, repaints and writes the hash, in
+    that order. A fifth step added to the mouse branch only would keep a
+    desktop link in sync while a phone's drifted, which no one notices with a
+    mouse plugged in, so the suite counts the one definition, the two reads,
+    the four steps inside it and asks for no bare sequence left beside them.
     The bound each of those cells ends with is one lookup too —
     `clampIndex(n, count)` — read by the keyboard walk, the reader that builds
     the `at=` pair and the readout's own pair, twice each since a cell has two

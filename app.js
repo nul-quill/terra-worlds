@@ -1304,23 +1304,29 @@
   document.getElementById('copy').addEventListener('click', copyLink);
 
   view.addEventListener('mousemove', function (ev) {
-    setHoverFromEvent(ev);
-    updateReadout(ev);
-    drawHover();
-    // The hovered cell belongs in the link, so a pasted URL reopens on the same
-    // inlet. replaceState does not fire hashchange, so this cannot loop.
-    writeHash();
+    hoverFromPointer(ev);
   });
   // Touch fires pointer events rather than mousemove, so the readout and the
   // crosshair would never move on a phone. One handler covers both, and the
   // mouse path is skipped when the pointer reports itself as a touch.
   view.addEventListener('pointermove', function (ev) {
     if (ev.pointerType === 'mouse') return;
+    hoverFromPointer(ev);
+  });
+
+  // Both pointer paths on the map do the same four things in the same order:
+  // take the cell out of the event, print it, paint the crosshair, then write
+  // the link. Written once so a fifth step cannot arrive on one path only — a
+  // phone that moved the crosshair without updating the hash is the shape that
+  // bug takes, and it never shows up while a mouse is plugged in.
+  function hoverFromPointer(ev) {
     setHoverFromEvent(ev);
     updateReadout(ev);
     drawHover();
+    // The hovered cell belongs in the link, so a pasted URL reopens on the same
+    // inlet. replaceState does not fire hashchange, so this cannot loop.
     writeHash();
-  });
+  }
 
   // The relief chart is small, so the readout for a bin is drawn inside the
   // chart rather than in the hud strip under the map. One function backs both

@@ -2918,6 +2918,26 @@ assert(pointerSites === 2 && mouseGuards === pointerSites &&
   mouseSites === pointerSites,
   'both canvases answer a finger (' + pointerSites + ' pointer paths, ' +
   mouseGuards + ' guards, ' + mouseSites + ' mouse paths)');
+// The two map paths do more than answer a finger: each moves the crosshair,
+// prints the readout and writes the link, in that order. Written twice those
+// four steps can drift — a hash update added to the mouse path only would keep
+// a phone's crosshair moving while its link stayed on the old inlet, which is
+// invisible the moment a mouse is plugged in. Count the shared sequence, so a
+// fifth step has to be added for both pointer kinds at once.
+var hoverDefs = (outSrc.match(/function hoverFromPointer\(/g) || []).length;
+var hoverCalls = (outSrc.match(/hoverFromPointer\(ev\);/g) || []).length;
+var hoverSteps = (outSrc.match(/function hoverFromPointer\([\s\S]*?\n  \}/) ||
+  [''])[0];
+var hoverInner = ['setHoverFromEvent(ev)', 'updateReadout(ev)', 'drawHover()',
+  'writeHash()'].filter(function (hStep) {
+    return hoverSteps.indexOf(hStep) >= 0;
+  }).length;
+var hoverBare = (outSrc.match(/\n    setHoverFromEvent\(ev\);/g) || []).length;
+assert(hoverDefs === 1 && hoverCalls === pointerSites && hoverInner === 4 &&
+  hoverBare === 1,
+  'both map paths share one hover sequence (' + hoverDefs + ' def, ' +
+  hoverCalls + ' reads, ' + hoverInner + ' steps, ' + hoverBare +
+  ' bare sequences)');
 // Moisture is not a standalone field: the orographic pass folds the relief
 // into it by walking each row west to east, so a cell keeps more of what the
 // air carried when it came in than after the next climb. That direction is the
