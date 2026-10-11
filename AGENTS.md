@@ -464,6 +464,10 @@ Conventions:
   The suite checks both halves against the generator's own default pair.
   Keep the `argv[++i]` advance at the call site — moving it inside the helper
   reads each value twice and shifts every later flag by one.
+  The chain count is read by that same helper, so `--next 1e1` walks ten seeds
+  and `--next 3x` falls back to the chain's own default of five rather than to
+  the leading digit. One reader for every numeric flag is what keeps a shell's
+  exponent form working everywhere at once.
   The parser holds no copy of the default grid: `width`/`height` start absent so
   the generator's own defaults stand, and `finishGrid()` only fills the side a
   caller did not name, from the ratio of those two defaults (300/480). That is

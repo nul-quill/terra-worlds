@@ -1355,6 +1355,20 @@ assert(numRec.width === 100 && numRec.height === 60 &&
   'a numeric flag reads its whole value or none (' + numRec.width + 'x' +
   numRec.height + ', ' + numFallback.width + 'x' + numFallback.height + ')');
 
+// The chain count is a numeric flag too, so it should be read the same way:
+// an exponent walks the whole ten-seed chain, and a value with junk on the
+// end falls back to the chain's own default length rather than to whatever
+// the leading digits happen to say. Counted from the lines each form prints.
+var chainWide = require('child_process')
+  .execSync('node cli.js "salt mirror" --next 1e1 --describe --width 60 ' +
+    '--height 40', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+var chainDefault = require('child_process')
+  .execSync('node cli.js "salt mirror" --next 3x --describe --width 60 ' +
+    '--height 40', {cwd: __dirname + '/..'}).toString().trim().split('\n');
+assert(chainWide.length === 10 && chainDefault.length === 5,
+  'the chain count reads its whole value or none (' + chainWide.length +
+  ', ' + chainDefault.length + ')');
+
 // Several seeds at once: every summary line has to name its own seed, or a
 // block of sentences cannot be traced back to the phrase that made it. One
 // seed keeps the bare sentence, which is what the page prints.

@@ -68,7 +68,7 @@ function parseArgs(argv) {
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--describe') opts.describe = true;
     else if (a === '--hist') opts.hist = true;
-    else if (a === '--next') opts.next = parseInt(argv[++i], 10) || 5;
+    else if (a === '--next') opts.next = nextNum(argv[++i], true) || 5;
     else if (a === '--help' || a === '-h') opts.help = true;
     else if (a === '--palettes') opts.palettes = true;
     else if (a === '--shapes') opts.shapes = true;
