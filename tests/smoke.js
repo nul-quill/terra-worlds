@@ -3724,6 +3724,24 @@ assert(rowDefs === 1 && rowUses === 2 && rowRecord === 1 &&
   rowUses + ' uses, ' + rowLiterals + ' literals, ' + core.histRows +
   ' rows)');
 
+// The strip's height is sized in three places: the canvas attribute, the
+// stylesheet rule that lays it out, and the shell's fallback for the frames
+// before the canvas has a measurement. Three numbers would be three boxes —
+// a chart drawn for one height and clipped by another — so the core publishes
+// the figure and every other place is compared with it.
+var hhDefs = (binCoreSrc.match(/var HIST_HEIGHT = \d+;/g) || []).length;
+var hhUses = (appSrc.match(/clientHeight \|\| TerraCore\.histHeight/g) || [])
+  .length;
+var hhAttr = (/height="(\d+)"/.exec(html.match(/<canvas id="hist"[^>]*>/)[0]) ||
+  [])[1];
+var hhCssSrc = require('fs').readFileSync(__dirname + '/../styles.css', 'utf8');
+var hhCss = (/#hist\s*\{[^}]*height: (\d+)px/.exec(hhCssSrc) || [])[1];
+assert(hhDefs === 1 && hhUses === 1 &&
+  Number(hhAttr) === core.histHeight && Number(hhCss) === core.histHeight,
+  'one height sizes the chart strip everywhere (' + hhDefs + ' def, ' +
+  hhUses + ' fallback, markup ' + hhAttr + ', css ' + hhCss +
+  ', core ' + core.histHeight + ')');
+
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the
 // map drops it again. Held in one variable with one write from the bin lookup,

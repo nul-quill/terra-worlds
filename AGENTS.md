@@ -174,6 +174,13 @@ Conventions:
   different sizes print the same number of columns, so their profiles can be
   laid over each other. The suite checks that pair directly — a count that
   tracked the grid would make every block a different width.
+  The strip's height is one published number too — `TerraCore.histHeight` —
+  because three places size that box: the canvas attribute, the `#hist` rule in
+  the sheet, and the shell's fallback for the frames before the canvas has a
+  measurement. Three literals would be three boxes, and a chart drawn for one
+  height while clipped by another still looks plausible at a glance. The suite
+  reads the core's figure and compares the attribute and the rule with it, so a
+  new height has to be written once and the other two follow.
   The caption under the ruler also carries the world's checksum, which is the
   only link a pasted block of bars has back to the picture it describes — a
   saved PNG keeps nothing but its name, and the checksum is in that name.

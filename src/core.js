@@ -1127,6 +1127,13 @@
   // to assume to get the same number of columns.
   var HIST_WIDTH = 200;
 
+  // The height of that same strip, for the same reason: the shell needs it
+  // before its canvas has a layout, and the markup plus the stylesheet each
+  // give the box a size. One number so a reader comparing a pasted profile
+  // with the page can ask how tall the strip is supposed to be, and so the
+  // three places that size it cannot drift into three different boxes.
+  var HIST_HEIGHT = 52;
+
   // How many rows of blocks the text profile stacks above its ruler: one
   // threshold each, so a terminal's silhouette has the same vertical resolution
   // whatever world it describes. Beside `HIST_WIDTH` for the same reason — the
@@ -1313,6 +1320,7 @@
     tickStep: tickStep,
     binCount: binCount,
     histWidth: HIST_WIDTH,
+    histHeight: HIST_HEIGHT,
     histRows: HIST_ROWS,
     lakeSteps: LAKE_STEPS,
     deepDrop: DEEP_DROP,
