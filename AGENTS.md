@@ -621,7 +621,11 @@ Conventions:
   time it is pressed, and the restore is one shared timer that each press
   clears before scheduling again — otherwise a second click inside the feedback
   window leaves the button reading `Copied` for good.
-  SELECT owns the caret, so a seed phrase can still be typed. Each cycle key
+  SELECT owns the caret, so a seed phrase can still be typed. That test is one
+  `ownsCaret()` lookup read by both keyboard paths — the arrow walk and the
+  letter block — since two copies could drop `SELECT` from one of them, which
+  reads as arrows moving a dropdown while every letter still waits for the
+  caret to move. Each cycle key
   reads the same array its dropdown does — `TerraCore.channels` for `c`,
   `TerraCore.shapes` for `h`, `TerraCore.phrases` for `p`, `TerraCore.lights` for
   `d`, `TerraCore.grids` for `w`, `TerraCore.scales` for `e` — so a key and the

@@ -1586,6 +1586,17 @@
     });
   });
 
+  // Whether the caret sits in a field that needs its own keys: the seed box
+  // takes typed characters, and a select takes the arrows that move between
+  // its options. Both are checked here so the arrow walk and the letter
+  // shortcuts agree on when to stand back — one list written twice could let
+  // the arrows into a dropdown the letters still avoided, which reads as a
+  // half-working keyboard rather than as a deliberate split.
+  function ownsCaret() {
+    var el = document.activeElement;
+    return !!(el && (el.tagName === 'INPUT' || el.tagName === 'SELECT'));
+  }
+
   // Space rerolls from anywhere, unless the caret is in the seed box.
   document.addEventListener('keydown', function (ev) {
     if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
@@ -1594,9 +1605,7 @@
     var step = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[ev.key];
     if (step) {
       // Only when a text field does not want the arrow for its own caret.
-      var ae = document.activeElement;
-      var typing = ae && (ae.tagName === 'INPUT' || ae.tagName === 'SELECT');
-      if (!typing) {
+      if (!ownsCaret()) {
         // With Shift the same arrows walk the relief chart instead of the
         // grid: the height-band filter then has a keyboard path, which a touch
         // device without a hover state needs. Left/Right move along the bins,
@@ -1639,8 +1648,7 @@
     // handful of scalar fields on the same seed.
     // Letters are shortcuts only when no text field owns the caret, so a seed
     // phrase like "salt mirror" can still be typed.
-    var ae2 = document.activeElement;
-    var typingLetter = ae2 && (ae2.tagName === 'INPUT' || ae2.tagName === 'SELECT');
+    var typingLetter = ownsCaret();
     if (!typingLetter && (ev.key === 'c' || ev.key === 'C')) {
       ev.preventDefault();
       var order = TerraCore.channels.map(function (ch) { return ch.key; });

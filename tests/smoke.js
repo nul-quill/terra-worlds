@@ -3167,6 +3167,20 @@ Object.keys(handled).forEach(function (lk) {
 assert(oneCase.length === 0,
   'every shortcut letter answers in both cases (' + oneCase.join(',') + ')');
 
+// Both keyboard paths — the arrow walk and the letter shortcuts — stand back
+// while a field owns the caret, so a seed phrase can still be typed. That test
+// is one lookup: two copies could be edited apart, and the shape that bug takes
+// is a dropdown that swallows the arrows while every letter still reaches the
+// page, which looks like a deliberate split rather than as a stale list. The
+// pair of tags is therefore counted inside the helper, and each branch is asked
+// to read the lookup rather than restate it.
+var caretDefs = (appSrc.match(/function ownsCaret\(/g) || []).length;
+var caretCalls = (appSrc.match(/ownsCaret\(\)/g) || []).length - caretDefs;
+var caretPair = (appSrc.match(/tagName === 'INPUT'/g) || []).length;
+assert(caretDefs === 1 && caretCalls === 2 && caretPair === 1,
+  'both keyboard paths check the caret through one lookup (' + caretDefs +
+  ' def, ' + caretCalls + ' reads, ' + caretPair + ' pair)');
+
 // The keys are only half of how the view is driven: a legend row and a chart
 // bar are both reachable with a pointer, and neither has a letter of its own.
 // The note is the only prose on the page, so each of those two has to be
