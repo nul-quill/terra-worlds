@@ -2849,6 +2849,30 @@ core.shapes.forEach(function (tk) {
 assert(tickBad.length === 0 && core.tickStep(15) === 5 && core.tickStep(500) === 50,
   'relief ticks stay between two and ten marks (' + tickBad.join(', ') + ')');
 
+// Two more things that check is not yet asking. The first is that the chosen
+// step is the SMALLEST candidate that still fits: a step that skipped a
+// workable smaller one would space the ticks wider than the strip needs, and a
+// chart could pass the count rule while reading coarser than it has to. So
+// walk the candidate ladder by hand and compare the whole result. The second is
+// that only the core holds that ladder: the shell must read it through the one
+// lookup rather than keeping a copy of the numbers next to its own drawing
+// code, which is where a second list would drift.
+var LADDER = [5, 10, 20, 25, 50];
+var ladderBad = [];
+[7, 15, 48, 55, 96, 140, 300, 500, 900].forEach(function (un) {
+  var want = LADDER[LADDER.length - 1];
+  for (var li = 0; li < LADDER.length; li++) {
+    if (un / LADDER[li] <= 10) { want = LADDER[li]; break; }
+  }
+  if (core.tickStep(un) !== want) ladderBad.push(un + '->' + core.tickStep(un));
+});
+var tickLookup = (appSrc.match(/TerraCore\.tickStep\(/g) || []).length;
+var tickCopied = /5,\s*10,\s*20,\s*25,\s*50/.test(appSrc);
+assert(ladderBad.length === 0 && tickLookup === 1 && !tickCopied,
+  'ticks take the tightest step that fits, from one list (' +
+  ladderBad.join(' ') + ', ' + tickLookup + ' lookups, copied ' +
+  tickCopied + ')');
+
 // The chart draws one vertical rule at the sea level, and the bars either side
 // of it are the whole reading of the strip. That split has to track the counted
 // water share: both follow the sea slider in the same direction, and the two

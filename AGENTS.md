@@ -837,6 +837,13 @@ Conventions:
   shape — one formula for "readable by eye", so a chart cannot quietly drift to
   a spacing the tests never saw. Keep the helper in the core; the shell only
   reads it.
+  "Reads it" is checked rather than assumed: the suite counts one
+  `TerraCore.tickStep(` lookup in the shell and asks that the shell hold no copy
+  of the ladder, so a second list cannot be edited into a different spacing than
+  the one the tests walk. The suite also re-picks the step by hand over a spread
+  of reliefs, which is what pins the choice to the TIGHTEST step that fits — a
+  helper that returned the last candidate instead of the first would still leave
+  at most ten marks, while spacing a flat world's ticks wider than it needs.
   The number of bars follows the same rule through `core.binCount(cssWidth)`:
   one bar per five CSS pixels, clamped 20..72. The clamp ends are part of the
   contract, not decoration — the suite asks that a narrow strip reaches the
