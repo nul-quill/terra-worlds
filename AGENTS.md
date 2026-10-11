@@ -1073,6 +1073,13 @@ Conventions:
   of the same picture rather than a sharp grid under a soft strip. Two copies
   of the clamp could be edited apart while each still looked reasonable, so the
   suite counts the one definition and the two reads beside it.
+  Each axis of the grid is then snapped by one `snapCell(boxes, count)`: a cell
+  at least two device pixels wide is rounded and its count trimmed to whatever
+  still fits, below two pixels the axis keeps its fractional size and stretches
+  to fill. Both axes read that one helper, so a wide window cannot snap its
+  columns while its rows stayed fractional — that pair reads as cells of two
+  different shapes in one picture. The suite counts the definition, the two
+  calls and asks for no second copy of the snap left in the renderer.
   The one handler that fires without being asked is `resize`: dragging a window
   edge fires one event per pixel, and each would rebuild the grid. The listener
   schedules a single `render()` through `requestAnimationFrame` behind a

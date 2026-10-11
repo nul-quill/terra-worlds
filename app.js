@@ -262,6 +262,21 @@
     return Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   }
 
+  // Snap one axis of the grid to a whole number of device pixels. A cell at
+  // least two pixels wide is rounded and the count trimmed to whatever still
+  // fits, so every cell is the same size and only the last couple of pixels
+  // stay sky-coloured; below two pixels the snap would throw away a visible
+  // slice, so the axis keeps its fractional size and stretches to fill. Both
+  // axes go through here so a wide window cannot snap its columns while its
+  // rows stayed fractional — that pair reads as cells two pixels tall and one
+  // and a half wide. Returns the cell size and the count that fits it.
+  function snapCell(boxes, count) {
+    var size = boxes / count;
+    if (size < 2) return { size: size, n: count };
+    size = Math.round(size);
+    return { size: size, n: Math.min(count, Math.floor(boxes / size)) };
+  }
+
   function render() {
     var opts = readOptions();
     writeHash();
@@ -287,16 +302,12 @@
     // out identical, and only the last couple of pixels stay sky-coloured.
     // Below two pixels the snap would throw away a visible slice of canvas, so
     // the grid keeps its fractional cell size and stretches to fill.
-    var cw = bw / cols;
-    var chh = bh / rows;
-    if (cw >= 2) {
-      cw = Math.round(cw);
-      cols = Math.min(cols, Math.floor(bw / cw));
-    }
-    if (chh >= 2) {
-      chh = Math.round(chh);
-      rows = Math.min(rows, Math.floor(bh / chh));
-    }
+    var snapX = snapCell(bw, cols);
+    var snapY = snapCell(bh, rows);
+    var cw = snapX.size;
+    var chh = snapY.size;
+    cols = snapX.n;
+    rows = snapY.n;
 
     var result = TerraCore.generate({
       seed: opts.seed, palette: opts.palette, shape: opts.shape,

@@ -3767,6 +3767,20 @@ assert(dprDefs === 1 && dprUses === 2 && dprClamps === 1,
   'both canvases share one pixel scale (' + dprDefs + ' def, ' + dprUses +
   ' reads, ' + dprClamps + ' clamp)');
 
+// The two axes of the grid are snapped by one rule: a cell at least two device
+// pixels wide is rounded and its count trimmed, below that the axis keeps its
+// fractional size. Written twice, the pair could be edited apart — columns
+// snapped while rows stayed fractional — and that reads as cells of two
+// different shapes in one picture. Counted as text: one helper, one call per
+// axis, and no second copy of the snap left in the renderer.
+var snapDefs = (appSrc.match(/function snapCell\(/g) || []).length;
+var snapCalls = (appSrc.match(/= snapCell\(/g) || []).length;
+var snapInline = (appSrc.match(
+  /if \(chh >= 2\) \{|if \(cw >= 2\) \{/g) || []).length;
+assert(snapDefs === 1 && snapCalls === 2 && snapInline === 0,
+  'both grid axes snap through one rule (' + snapDefs + ' def, ' + snapCalls +
+  ' axes, ' + snapInline + ' inline snaps)');
+
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the
 // map drops it again. Held in one variable with one write from the bin lookup,
