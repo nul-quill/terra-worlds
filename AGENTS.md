@@ -766,10 +766,10 @@ Conventions:
   same `pinned === key` comparison that sets the ring's class. The ring is only
   a colour difference, which a screen reader reads as nothing, so the attribute
   is the row's only spoken state. Keep one comparison feeding both — the suite
-  counts the single attribute write plus every use of that comparison — the two
-  toggles that set the pin (click, `Enter`/`Space`) and the two reads that paint
-  it — so the ink and the announcement cannot name different rows after a
-  rebuild, and a fifth opinion about which row is on has to be written down.
+  counts the single attribute write plus every use of that comparison — the one
+  flip inside `togglePin()` that both toggles share, and the two reads that
+  paint it — so the ink and the announcement cannot name different rows after a
+  rebuild, and a fourth opinion about which row is on has to be written down.
   "Survives a reroll" means a reroll of the same kind: a wider column count can
   drop a class entirely, and the legend is rebuilt from the classes that remain,
   so a pin left over from the previous grid would dim the whole map with no row
@@ -876,12 +876,20 @@ Conventions:
   `writeHash()`. Otherwise the line keeps describing a height band over a map
   that is now filtered by class, and the next pointer move is what fixes it: a
   link copied in between would show the wrong pair of numbers.
+  The first two of those are one sequence — flip the pin, rebuild the rows,
+  repaint, write the hash, refresh the note — held in `togglePin(key)` and read
+  by both the click and the row's `Enter`/`Space`. Written at each site, a
+  sixth step added to one branch only would keep a mouse pin and a keyboard pin
+  describing different worlds in the same link, which is what the suite checks:
+  one helper holding the note's write, two reads of it, and the nine remaining
+  direct writes beside them — ten literals in all, which is still eleven paths
+  into the note.
   A hovered or focused row is the same kind of change — `solo` is the first half
   of the note's precedence — so `drawHighlighted()` and both clear handlers call
-  the writer too. That is why the count of call sites is eleven rather than the
-  four the chart paths alone would give: a row that faded the map without
-  renaming itself in the line would leave the two halves of one filter saying
-  different things until something else repainted.
+  the writer too. That is why the count is ten writes plus a helper both halves
+  of a pin read, rather than the four the chart paths alone would give: a row
+  that faded the map without renaming itself in the line would leave the two
+  halves of one filter saying different things until something else repainted.
   A rebuild is a filter change as well, so `render()` calls the writer before it
   replays a hovered cell: a new grid moves every share in the legend, and a line
   that kept the old counts would describe the world that was just thrown away.

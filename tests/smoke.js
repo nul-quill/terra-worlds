@@ -3572,9 +3572,13 @@ assert(tieRows > 0 && tieBad.length === 0 && tieBreakSites === 1 &&
 var pinAttr = (appSrc.match(/setAttribute\('aria-current'/g) || []).length;
 var pinTest = (appSrc.match(/pinned === key/g) || []).length;
 var pinClass = (appSrc.match(/li\.className = 'on'/g) || []).length;
-assert(pinAttr === 1 && pinClass === 1 && pinTest === 4,
+var pinDefs = (appSrc.match(/function togglePin\(/g) || []).length;
+var pinReads = (appSrc.match(/togglePin\(key\);/g) || []).length;
+assert(pinAttr === 1 && pinClass === 1 && pinTest === 3 && pinDefs === 1 &&
+  pinReads === 2,
   'a pinned legend row states its pin (' + pinAttr + ' attribute, ' +
-  pinClass + ' class, ' + pinTest + ' comparisons)');
+  pinClass + ' class, ' + pinTest + ' comparisons, ' + pinDefs + ' toggle, ' +
+  pinReads + ' reads)');
 
 // The `k` cycle is a ring of the rows PLUS an empty slot, which is what the
 // comment over the handler promises: a lap has to come back through "nothing
@@ -4065,12 +4069,19 @@ var blitPrecedence = /var want = solo \|\| pinned;/.test(appSrc);
 // a new reader has to be named here.
 var readers = (appSrc.match(/var want = solo \|\| pinned;/g) || []).length;
 var cellWants = (appSrc.match(/if \(want && key !== want\) \{/g) || []).length;
-assert(noteDefs === 1 && noteCalls === 11 && notePlaceholder === 1 &&
-  notePrecedence && blitPrecedence && readers === 4 && cellWants === 1,
+// Both pin toggles reach the note through `togglePin()`, so the note is
+// written ten times rather than eleven: one of those ten sits inside that
+// helper and both halves of one pin interaction read it. A helper only one
+// branch called would show up here as a single read, which is the case this
+// count is for.
+var pinToggle = (appSrc.match(/togglePin\(key\);/g) || []).length;
+assert(noteDefs === 1 && noteCalls === 10 && pinToggle === 2 &&
+  notePlaceholder === 1 && notePrecedence && blitPrecedence && readers === 4 &&
+  cellWants === 1,
   'a selected band is readable under the map (' + noteDefs + ' def, ' +
-  noteCalls + ' sites, ' + notePlaceholder + ' placeholder, ' + readers +
-  ' readers, note precedence ' + notePrecedence + ', blit ' +
-  blitPrecedence + ')');
+  noteCalls + ' sites, ' + pinToggle + ' pin reads, ' + notePlaceholder +
+  ' placeholder, ' + readers + ' readers, note precedence ' + notePrecedence +
+  ', blit ' + blitPrecedence + ')');
 
 // The word beside a selected class also has to match what the map does with
 // it. A clicked row keeps its class after the pointer moves — that one is

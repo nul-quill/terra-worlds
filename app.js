@@ -715,6 +715,19 @@
   function renderLegend(result) {
     var keys = legendKeys(result);
     var counts = result.stats.counts;
+    // Both ways of pinning a row — the click and the row's own Enter/Space —
+    // run the same five steps: flip the pin, rebuild the rows so the ring and
+    // the attribute follow, repaint both views, store the pair in the link and
+    // refresh the line under the map. Written at each site, a sixth step added
+    // to one branch only would leave a keyboard pin and a mouse pin describing
+    // different worlds in the same link.
+    function togglePin(key) {
+      pinned = pinned === key ? null : key;
+      renderLegend(current);
+      drawMap();
+      writeHash();
+      bandNote();
+    }
     legendList.textContent = '';
     keys.forEach(function (key) {
         var li = document.createElement('li');
@@ -741,14 +754,7 @@
         // to compare a class against the relief chart without holding the
         // cursor on its row. Clicking the same row again releases it.
         li.addEventListener('click', function () {
-          pinned = pinned === key ? null : key;
-          renderLegend(current);
-          drawMap();
-          writeHash();
-          // The line under the map follows whichever filter is in charge, so a
-          // pin has to refresh it too: otherwise the old band reading stays up
-          // over a map that is now filtered by class.
-          bandNote();
+          togglePin(key);
         });
         // A row is in the tab order, so it has to answer to the keyboard too:
         // Enter or Space toggles the same pin a click would. Without this the
@@ -759,11 +765,7 @@
           // Space is also the reroll shortcut, so the row has to claim the key
           // before the document handler sees it.
           ev.stopPropagation();
-          pinned = pinned === key ? null : key;
-          renderLegend(current);
-          drawMap();
-          writeHash();
-          bandNote();
+          togglePin(key);
           // Rebuilding the list drops the caret, so put it back on the row that
           // was just activated: a second Enter should release the pin without
           // tabbing through the list again.
