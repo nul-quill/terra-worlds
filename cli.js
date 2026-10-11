@@ -44,40 +44,46 @@ function parseArgs(argv) {
     opts.unknown.push(value);
     return undefined;
   }
+  // Whether the word after this flag is a value at all. A dashed word is the
+  // next flag rather than this one's value, so a call that took it would both
+  // drop that flag and report its own name as an unknown value. Every
+  // value-taking flag below reads through this test, which is why the
+  // `argv[++i]` advance stays at each call site: the test only says whether
+  // the advance is allowed to happen.
+  function hasVal(list, i) {
+    return list[i + 1] != null && list[i + 1].charAt(0) !== '-';
+  }
   var PALETTE_KEYS = Object.keys(core.palettes);
   var SHAPE_KEYS = core.shapes.map(function (s) { return s.key; });
   var CHANNEL_KEYS = core.channels.map(function (c) { return c.key; });
   var LIGHT_KEYS = core.lights.map(function (lt) { return lt.key; });
   for (var i = 0; i < argv.length; i++) {
     var a = argv[i];
-    if (a === '--width') opts.width = nextNum(argv[++i], true);
-    else if (a === '--height') opts.height = nextNum(argv[++i], true);
-    else if (a === '--palette') opts.palette = nextKey(argv[++i], PALETTE_KEYS);
-    else if (a === '--shape') opts.shape = nextKey(argv[++i], SHAPE_KEYS);
-    else if (a === '--sea') opts.seaLevel = nextNum(argv[++i], false);
-    else if (a === '--detail') opts.detail = nextNum(argv[++i], false);
-    else if (a === '--polar') opts.polar = nextNum(argv[++i], false);
-    else if (a === '--light') opts.hillshade = nextNum(argv[++i], false);
-    else if (a === '--dir') opts.lightDir = nextKey(argv[++i], LIGHT_KEYS);
-    else if (a === '--terraces') opts.terraces = nextNum(argv[++i], true);
-    else if (a === '--rivers') opts.rivers = nextNum(argv[++i], true);
+    if (a === '--width') opts.width = nextNum(hasVal(argv, i) ? argv[++i] : null, true);
+    else if (a === '--height') opts.height = nextNum(hasVal(argv, i) ? argv[++i] : null, true);
+    else if (a === '--palette') opts.palette = nextKey(hasVal(argv, i) ? argv[++i] : null, PALETTE_KEYS);
+    else if (a === '--shape') opts.shape = nextKey(hasVal(argv, i) ? argv[++i] : null, SHAPE_KEYS);
+    else if (a === '--sea') opts.seaLevel = nextNum(hasVal(argv, i) ? argv[++i] : null, false);
+    else if (a === '--detail') opts.detail = nextNum(hasVal(argv, i) ? argv[++i] : null, false);
+    else if (a === '--polar') opts.polar = nextNum(hasVal(argv, i) ? argv[++i] : null, false);
+    else if (a === '--light') opts.hillshade = nextNum(hasVal(argv, i) ? argv[++i] : null, false);
+    else if (a === '--dir') opts.lightDir = nextKey(hasVal(argv, i) ? argv[++i] : null, LIGHT_KEYS);
+    else if (a === '--terraces') opts.terraces = nextNum(hasVal(argv, i) ? argv[++i] : null, true);
+    else if (a === '--rivers') opts.rivers = nextNum(hasVal(argv, i) ? argv[++i] : null, true);
     else if (a === '--no-grain') opts.dither = false;
     else if (a === '--contour') opts.contour = true;
-    else if (a === '--channel') opts.channel = nextKey(argv[++i], CHANNEL_KEYS);
-    else if (a === '--scale') opts.scale = nextNum(argv[++i], true);
+    else if (a === '--channel') opts.channel = nextKey(hasVal(argv, i) ? argv[++i] : null, CHANNEL_KEYS);
+    else if (a === '--scale') opts.scale = nextNum(hasVal(argv, i) ? argv[++i] : null, true);
     else if (a === '--out') {
-      // The only flag whose value is taken raw, so it is also the only one
-      // where a following flag can be swallowed as a file name. `--out
-      // --json` means "no name given", and the word after it belongs to the
-      // next flag: eating it would drop --json from the call entirely. The
-      // other readers already handle that themselves — `Number('--json')` is
-      // not finite and `nextKey` names the miss — so this stays here.
-      var outVal = argv[i + 1];
-      if (outVal != null && outVal.charAt(0) !== '-') opts.out = argv[++i];
+      // Same shape as the rest: a following flag is not this one's name, so
+      // the default file name stands and the flag after `--out` still applies.
+      // The value is taken as written rather than through a reader, since a
+      // file name is not a number or a key from a list.
+      if (hasVal(argv, i)) opts.out = argv[++i];
     }
     else if (a === '--describe') opts.describe = true;
     else if (a === '--hist') opts.hist = true;
-    else if (a === '--next') opts.next = nextNum(argv[++i], true) || 5;
+    else if (a === '--next') opts.next = nextNum(hasVal(argv, i) ? argv[++i] : null, true) || 5;
     else if (a === '--help' || a === '-h') opts.help = true;
     else if (a === '--palettes') opts.palettes = true;
     else if (a === '--shapes') opts.shapes = true;

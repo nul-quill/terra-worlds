@@ -1382,6 +1382,25 @@ var outRec = JSON.parse(outNext);
 assert(outNext.charAt(0) === '{' && outRec.file === 'world.ppm',
   'a flag after --out is not eaten as its value (' + outRec.file + ')');
 
+// The same shape has to hold for a key flag: `--palette --json` means "no
+// palette named", so the generator's default scheme stands and --json still
+// prints a record. The record proves the second flag survived; its `palette`
+// field proves the first kept the default rather than the following flag's
+// name. Behind that pair sits one guard shared by every value-taking flag, so
+// count the definition, the guarded reads, and any read that skipped it.
+var guardSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+var guardDefs = (guardSrc.match(/function hasVal\(/g) || []).length;
+var guardUses = (guardSrc.match(/hasVal\(argv, i\)/g) || []).length;
+var bareReads = (guardSrc.match(/=\s*next(?:Num|Key)\(argv\[\+\+i\]/g) || [])
+  .length;
+var keyNext = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --palette --json --width 60 ' +
+    '--height 40', {cwd: __dirname + '/..'}).toString().trim());
+assert(keyNext.palette === 'terra' && !!keyNext.checksum &&
+  guardDefs === 1 && guardUses >= 14 && bareReads === 0,
+  'no value flag eats the flag after it (' + keyNext.palette + ', ' +
+  guardUses + ' guarded reads, ' + bareReads + ' bare)');
+
 // Several seeds at once: every summary line has to name its own seed, or a
 // block of sentences cannot be traced back to the phrase that made it. One
 // seed keeps the bare sentence, which is what the page prints.

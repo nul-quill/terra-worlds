@@ -511,11 +511,12 @@ Conventions:
   can swallow the next one: `--out --json` would otherwise name the file
   `--json` and print the plain table. The reader therefore keeps the default
   name when the following word is itself dashed, and does not advance past it,
-  so the flag after `--out` still applies. The numeric and key readers handle
-  the same shape on their own — `Number('--json')` is not finite and
-  `nextKey()` names the miss — so the guard lives here rather than in a shared
-  helper. The suite checks both halves at once: the JSON form proves the flag
-  survived, the `file` field proves the name stayed default.
+  so the flag after `--out` still applies. Every other value-taking flag reads
+  through the same test — `hasVal(argv, i)` — so `--palette --json` keeps the
+  generator's scheme and still prints a record rather than naming `--json` as
+  an unknown value. The suite checks a key flag and a count of guarded reads
+  against bare ones, since a flag left outside the guard would swallow its
+  neighbour while every other flag behaved.
 - Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `m`, `p`, `s`) are skipped while an INPUT or
   (`x` joins that list: it is not a list cycle but a call to `copyLink()`, the
   same function the `Copy link` button is wired to, so the two paths cannot

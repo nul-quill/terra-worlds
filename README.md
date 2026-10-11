@@ -18,6 +18,9 @@ seed, and the word after it is skipped — otherwise a mistyped `--widht 30`
 would quietly render a second world from the number `30`.
 A numeric flag takes its value whole, exponent included (`--width 1e2` is 100),
 and a value with junk on the end is treated as unset so the default grid stands.
+A value is optional in one specific way: when the next word is itself a flag, it
+belongs to that flag rather than to this one, so `--out --json` keeps the default
+file name and still prints JSON.
 `--scale n` grows the saved pixels by nearest-neighbour without changing the
 grid the stats are computed from, so a small grid can still fill a screen.
 `--describe` prints only the one-line summary — the same sentence the sidebar
