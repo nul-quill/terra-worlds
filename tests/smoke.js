@@ -3742,6 +3742,18 @@ assert(hhDefs === 1 && hhUses === 1 &&
   hhUses + ' fallback, markup ' + hhAttr + ', css ' + hhCss +
   ', core ' + core.histHeight + ')');
 
+// Inside that strip the bars, the decade ticks and the median mark are each
+// measured from its top edge. Four separate literals would let a taller strip
+// grow the bars while the marks stayed where they were, which reads as a label
+// sitting on a bar. Counted as text: one reserve, every offset derived from it,
+// and no bare pixel offset left in the chart's own geometry.
+var stripDefs = (appSrc.match(/var STRIP = \d+;/g) || []).length;
+var stripUses = (appSrc.match(/h - STRIP/g) || []).length;
+var stripLiterals = (appSrc.match(/h - (12|11|8|5)\b/g) || []).length;
+assert(stripDefs === 1 && stripUses === 5 && stripLiterals === 0,
+  'one reserve holds the chart\'s bottom strip (' + stripDefs + ' def, ' +
+  stripUses + ' offsets, ' + stripLiterals + ' literals)');
+
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the
 // map drops it again. Held in one variable with one write from the bin lookup,

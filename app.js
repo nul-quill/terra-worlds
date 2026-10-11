@@ -779,10 +779,16 @@
     // reads as part of the world it describes rather than the page chrome.
     var wet = result.palette.colors.shallow;
     var dry = result.palette.colors.grass;
+    // The strip along the bottom holds the two corner labels, and everything
+    // drawn in it is measured from its own top edge: the bars stop there, the
+    // decade ticks hang just below it, the median mark reaches down through it.
+    // One number for all three, so a taller strip widens the marks with it
+    // rather than leaving a label sitting on a bar.
+    var STRIP = 12;
     for (i = 0; i < BINS; i++) {
       // Leave a strip along the bottom for the two corner labels, so the
       // tallest bar never sits on top of the numbers.
-      var bh = peak ? hist[i] / peak * (h - 12) : 0;
+      var bh = peak ? hist[i] / peak * (h - STRIP) : 0;
       var c = lo + (i + 0.5) / BINS * span < result.seaLevel ? wet : dry;
       var on = only < 0 ? (!member || member[i]) : i === only;
       var keep = on ? 1 : 0.45;
@@ -814,8 +820,8 @@
       var tickX = ((u / 100 - lo) / span) * w;
       if (tickX < pad - 1 || tickX > w - pad + 1) continue;
       hc.beginPath();
-      hc.moveTo(Math.round(tickX) + 0.5, h - 11);
-      hc.lineTo(Math.round(tickX) + 0.5, h - 8);
+      hc.moveTo(Math.round(tickX) + 0.5, h - STRIP + 1);
+      hc.lineTo(Math.round(tickX) + 0.5, h - STRIP + 4);
       hc.stroke();
     }
     // The marker line alone does not say what the sea level is, and the slider
@@ -842,8 +848,8 @@
     if (medX >= 0 && medX <= w) {
       hc.strokeStyle = rgba(INK, 0.7);
       hc.beginPath();
-      hc.moveTo(Math.round(medX) + 0.5, h - 12);
-      hc.lineTo(Math.round(medX) + 0.5, h - 5);
+      hc.moveTo(Math.round(medX) + 0.5, h - STRIP);
+      hc.lineTo(Math.round(medX) + 0.5, h - STRIP + 7);
       hc.stroke();
       // The mark alone says "most of the grid is around here"; the number says
       // how high that is, which is the difference between a shape and a

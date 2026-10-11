@@ -184,6 +184,13 @@ Conventions:
   The caption under the ruler also carries the world's checksum, which is the
   only link a pasted block of bars has back to the picture it describes — a
   saved PNG keeps nothing but its name, and the checksum is in that name.
+  Inside that box the bottom strip is one reserve too — `STRIP`, twelve CSS
+  pixels — because four marks are measured from it: the bars stop at its top
+  edge, the decade ticks hang one to four pixels below that, the median mark
+  runs from the edge down through the strip. Four literals would let a taller
+  strip grow the bars while the marks stayed put, which reads as a label
+  sitting on a bar, so every offset is written relative to the one number and
+  the suite asks for no bare pixel offset left beside it.
   Every other figure in that caption is a field of the JSON record as well:
   the two ends of the range are `low` and `high`, the column count is `bins`.
   The two marks on the ruler are named there too — `sea` and `median` — so a
