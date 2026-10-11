@@ -877,6 +877,14 @@ Conventions:
   compares both directions for each entry of `core.palettes`, so a scheme that
   renames one key in its own table is caught even when the default scheme is
   fine — the legend of that scheme alone would read differently.
+  That fallback is written once — `biomeLabel(key)` in the shell — and every
+  view that names a biome reads it: a legend row, the chart's hovered-bin
+  label, the hover readout, its mismatch note and the line under the map. Two
+  bodies could disagree about a key the table does not know, one printing the
+  raw key and one printing nothing, while each still looked reasonable beside
+  the other. The suite counts the one definition, the six uses and the two
+  reads of the table itself — the helper's own lookup and the hash reader's
+  existence test, which keeps a pin rather than naming it.
   `Shift+k` walks the same array backwards, which is why the cycle is a
   `(ki + step + slots) % slots` step rather than a plain increment: a mis-press
   should not need a whole lap to undo. Keep the one branch handling both

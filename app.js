@@ -536,6 +536,14 @@
     return TerraCore.biomeCount(counts);
   }
 
+  // A class's display name, with the raw key as its fallback. Every place a
+  // biome is named — a legend row, the chart's hovered-bin label, the hover
+  // readout and its mismatch note — reads it through here, so a key the lookup
+  // does not know cannot print as a name in one view and as the key in another.
+  function biomeLabel(key) {
+    return TerraCore.biomeNames[key] || key;
+  }
+
   function renderLegend(result) {
     var keys = legendKeys(result);
     var counts = result.stats.counts;
@@ -550,7 +558,7 @@
         var c = result.palette.colors[key] || result.palette.colors.grass;
         sw.style.background = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
         var label = document.createElement('span');
-        label.textContent = TerraCore.biomeNames[key] || key;
+        label.textContent = biomeLabel(key);
         var pct = document.createElement('span');
         pct.className = 'pct';
         pct.textContent = percentText(TerraCore.classShare(result.stats, key));
@@ -852,7 +860,7 @@
       // what ties the bump back to the map.
       var parts = [hundred(sum.from) + '-' + hundred(sum.to),
         sum.cells + ' cells',
-        sum.top ? (TerraCore.biomeNames[sum.top] || sum.top) : null];
+        sum.top ? biomeLabel(sum.top) : null];
       var label = parts.filter(Boolean).join('  ');
       while (parts.length > 1 &&
         hc.measureText(label).width > w - pad * 2) {
@@ -933,7 +941,7 @@
       : -hundred((current.seaLevel - h) / Math.max(0.001, current.seaLevel));
     var parts = [
       '(' + px + ', ' + py + ')',
-      (TerraCore.biomeNames[key] || key),
+      biomeLabel(key),
       (elev > 0 ? '+' : '') + elev + ' units'
     ];
     // A selected legend class fades every cell that is not its own, so a
@@ -944,7 +952,7 @@
     // that is the half a reader has to compare against the row they clicked.
     var want = solo || pinned;
     if (want && key !== want) {
-      parts.push('not ' + (TerraCore.biomeNames[want] || want));
+      parts.push('not ' + biomeLabel(want));
     }
     // With an overlay on, the colour under the cursor is a ramp position, so
     // print that position: it is the same 0..100 number the blend used, which
@@ -1275,7 +1283,7 @@
       // would promise a state the next mouse-move takes away. Which of the two
       // is in charge is the same test the blit makes, so this says "pinned"
       // exactly when the map keeps the class after the pointer leaves.
-      readout.textContent = (TerraCore.biomeNames[want] || want) +
+      readout.textContent = biomeLabel(want) +
         (solo ? '' : ' pinned') + ' — ' +
         percentText(TerraCore.classShare(current.stats, want));
       return;
@@ -1289,7 +1297,7 @@
     var parts = ['band ' + (band + 1) + '/' + histState.bins +
       ' (' + hundred(sum.from) + '-' + hundred(sum.to) + ')',
       sum.cells + ' cells'];
-    if (sum.top) parts.push(TerraCore.biomeNames[sum.top] || sum.top);
+    if (sum.top) parts.push(biomeLabel(sum.top));
     readout.textContent = parts.join(' — ');
   }
 

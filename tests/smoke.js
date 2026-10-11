@@ -1875,6 +1875,21 @@ assert(schemeBad.length === 0 && nameKeys.length >= 12,
   'every scheme colours exactly the named classes (' + nameKeys.length +
   ' names, ' + schemeBad.join('; ') + ')');
 
+// That fallback is written once rather than at each of the five places a biome
+// gets a word: a legend row, the chart's hovered-bin label, the hover readout,
+// its mismatch note and the line under the map. Two bodies could disagree about
+// an unknown key — one printing the raw key, one printing nothing — while each
+// still looked reasonable beside the other. Counted as text.
+var labelSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var labelDefs = (labelSrc.match(/function biomeLabel\(key\) \{/g) || []).length;
+var labelUses = (labelSrc.match(/[^a-zA-Z]biomeLabel\(/g) || []).length - labelDefs;
+// The helper holds the one fallback; the only other read of the name table is
+// the hash reader's existence test, which keeps a pin rather than naming it.
+var labelReads = (labelSrc.match(/TerraCore\.biomeNames\[/g) || []).length;
+assert(labelDefs === 1 && labelUses >= 5 && labelReads === 2,
+  'one lookup names a biome in every view (' + labelDefs + ' def, ' +
+  labelUses + ' uses, ' + labelReads + ' reads)');
+
 // The readout prints `N from water` only on dry ground, and it does so on the
 // strength of one fact: the sweeps start at the shoreline, so every water cell
 // already sits at zero and the `above` guard in the readout is never what
