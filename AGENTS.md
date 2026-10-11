@@ -1152,6 +1152,15 @@ Conventions:
   odd chart rather than as a bug. The suite counts the definition, the three
   reads and asks that the only division of that shape left in the shell be the
   one inside the helper.
+  The label over a hovered bar is a shrink-to-fit loop rather than a fixed
+  string, since the caption names a bin, a count and a class and a narrow
+  sidebar cannot hold all three. That loop is one `fitLabel(hc, parts, limit)`
+  — it drops the last field until the measured width fits — so the two joins
+  of its two-space gap sit in the helper and not beside the call. Written at
+  the call site, a label could be measured with one separator and printed with
+  another, which reads as a caption that truncates a field too early. The
+  suite counts the definition, the single read and asks that both joins be the
+  only ones in the shell.
   Inside that same pass the box ink is set once — a stroke style plus the
   border width, a quarter of a cell and never less than one pixel — and the
   hairlines are drawn between a `save()` and a `restore()`, which puts that

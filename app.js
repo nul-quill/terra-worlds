@@ -608,6 +608,27 @@
     return ((value - lo) / span) * w;
   }
 
+  // Shrink a list of short fields until its text fits a given width, dropping
+  // the least useful field first. The hovered-bin label is the only row that
+  // has to do this — a narrow sidebar cannot hold range, count and class at
+  // once — and the pair of ends is what ties a bar back to the map, so it is
+  // always the last one left. The gap between two fields is the same string on
+  // every pass of that loop, which is what keeps a trimmed label looking like
+  // the full one rather than like a different kind of note.
+  function fitLabel(hc, parts, limit) {
+    var keep = [];
+    var n;
+    for (n = 0; n < parts.length; n++) {
+      if (parts[n]) keep.push(parts[n]);
+    }
+    var label = keep.join('  ');
+    while (keep.length > 1 && hc.measureText(label).width > limit) {
+      keep.pop();
+      label = keep.join('  ');
+    }
+    return label;
+  }
+
   // Same rule for a fraction that is already normalised: whole numbers above
   // ten percent, one decimal below, so a two-percent class and a
   // zero-two-percent class never print the same string.
@@ -996,12 +1017,7 @@
       var parts = [hundred(sum.from) + '-' + hundred(sum.to),
         sum.cells + ' cells',
         sum.top ? biomeLabel(sum.top) : null];
-      var label = parts.filter(Boolean).join('  ');
-      while (parts.length > 1 &&
-        hc.measureText(label).width > w - pad * 2) {
-        parts.pop();
-        label = parts.filter(Boolean).join('  ');
-      }
+      var label = fitLabel(hc, parts, w - pad * 2);
       var tw = hc.measureText(label).width;
       hc.fillStyle = rgba(WHITE, 0.88);
       hc.fillRect(pad - 1, 1, tw + 4, 13);

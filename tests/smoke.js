@@ -3841,6 +3841,21 @@ var xInline = (appSrc.match(/\/ span\) \* w/g) || []).length;
 assert(xDefs === 1 && xCalls === 3 && xInline === 1,
   'every chart mark is placed by one lookup (' + xDefs + ' def, ' + xCalls +
   ' reads, ' + xInline + ' in the helper)');
+// A hovered bar's label has to shrink when the sidebar is narrow: range, then
+// count, then class, with the range always surviving. That trim is a loop over
+// the same two-space join, so the pair of filter-and-join calls it needs is
+// written once inside the helper rather than once per pass beside it. Counted
+// as text: one definition, one read, and no filter/join pair left in the
+// renderer to drift from it.
+var fitDefs = (appSrc.match(/function fitLabel\(/g) || []).length;
+var fitCalls = (appSrc.match(/= fitLabel\(/g) || []).length;
+// Both joins of the two-space gap live inside the helper — one for the first
+// measure, one for each trim — and the call site holds neither, so a label
+// cannot be built one way before the loop and another way after it.
+var fitJoin = (appSrc.match(/\.join\('  '\)/g) || []).length;
+assert(fitDefs === 1 && fitCalls === 1 && fitJoin === 2,
+  'a tight chart label trims through one loop (' + fitDefs + ' def, ' +
+  fitCalls + ' reads, ' + fitJoin + ' joins)');
 // The crosshair sets its box ink, draws the hairlines inside a save/restore,
 // then strokes the box. The restore puts the box ink back on its own, so a
 // second copy of that pair after it is one more place the border could be
