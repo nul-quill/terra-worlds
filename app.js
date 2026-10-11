@@ -722,6 +722,21 @@
     return TerraCore.biomeNames[key] || key;
   }
 
+  // Whichever way the legend's pin changed, the same four things follow: the
+  // rows are rebuilt so the ring and the spoken attribute follow, the map is
+  // repainted so its wash follows, the pair is stored so a pasted URL keeps the
+  // class, and the line under the map is refreshed so its word for the filter
+  // is the one actually in force. Both pin paths — a click on a row and the `k`
+  // cycle — end with this one call, so a sixth step cannot arrive on one of
+  // them and leave a mouse pin and a keyboard pin described differently in the
+  // same link.
+  function applyPin() {
+    renderLegend(current);
+    drawMap();
+    writeHash();
+    bandNote();
+  }
+
   function renderLegend(result) {
     var keys = legendKeys(result);
     var counts = result.stats.counts;
@@ -733,10 +748,7 @@
     // different worlds in the same link.
     function togglePin(key) {
       pinned = pinned === key ? null : key;
-      renderLegend(current);
-      drawMap();
-      writeHash();
-      bandNote();
+      applyPin();
     }
     legendList.textContent = '';
     keys.forEach(function (key) {
@@ -1732,10 +1744,7 @@
         var ki = rows.indexOf(pinned || '');
         if (ki < 0) ki = slots - 1;
         pinned = rows[cycleIndex(ki, step, slots)] || null;
-        renderLegend(current);
-        drawMap();
-        writeHash();
-        bandNote();
+        applyPin();
       }
       return;
     }

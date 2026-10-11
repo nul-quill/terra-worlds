@@ -883,14 +883,15 @@ Conventions:
   `writeHash()`. Otherwise the line keeps describing a height band over a map
   that is now filtered by class, and the next pointer move is what fixes it: a
   link copied in between would show the wrong pair of numbers.
-  The first two of those are one sequence — flip the pin, rebuild the rows,
-  repaint, write the hash, refresh the note — held in `togglePin(key)` and read
-  by both the click and the row's `Enter`/`Space`. Written at each site, a
-  sixth step added to one branch only would keep a mouse pin and a keyboard pin
-  describing different worlds in the same link, which is what the suite checks:
-  one helper holding the note's write, two reads of it, and the nine remaining
-  direct writes beside them — ten literals in all, which is still eleven paths
-  into the note.
+  The tail of all three — rebuild the rows, repaint the map, write the hash,
+  refresh the note — is one `applyPin()`, read by `togglePin(key)` (which the
+  click and the row's `Enter`/`Space` both call, after flipping the pin) and by
+  the `k` cycle (which sets its own index first). Written at each site, a sixth
+  step added to one branch only would keep a mouse pin and a keyboard pin
+  describing different worlds in the same link, which is what the suite counts:
+  one helper holding the note's write, two reads of that helper, and the eight
+  remaining direct writes beside them — nine literals in all, which is still
+  ten paths into the note.
   A hovered or focused row is the same kind of change — `solo` is the first half
   of the note's precedence — so `drawHighlighted()` and both clear handlers call
   the writer too. That is why the count is ten writes plus a helper both halves

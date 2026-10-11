@@ -4088,12 +4088,19 @@ var cellWants = (appSrc.match(/if \(want && key !== want\) \{/g) || []).length;
 // helper and both halves of one pin interaction read it. A helper only one
 // branch called would show up here as a single read, which is the case this
 // count is for.
+// The tail is shared one level further: both pin paths call `applyPin()`, so
+// the note is written at nine literal sites and reached by ten paths — the
+// helper's own write counts twice, once for a click and once for the `k`
+// cycle. A helper only one of those called would show up as a single read.
 var pinToggle = (appSrc.match(/togglePin\(key\);/g) || []).length;
-assert(noteDefs === 1 && noteCalls === 10 && pinToggle === 2 &&
-  notePlaceholder === 1 && notePrecedence && blitPrecedence && readers === 4 &&
-  cellWants === 1,
+var applyDefs = (appSrc.match(/function applyPin\(/g) || []).length;
+var applyCalls = (appSrc.match(/applyPin\(\);/g) || []).length;
+assert(noteDefs === 1 && noteCalls === 9 && pinToggle === 2 && applyDefs === 1 &&
+  applyCalls === 2 && notePlaceholder === 1 && notePrecedence &&
+  blitPrecedence && readers === 4 && cellWants === 1,
   'a selected band is readable under the map (' + noteDefs + ' def, ' +
-  noteCalls + ' sites, ' + pinToggle + ' pin reads, ' + notePlaceholder +
+  noteCalls + ' sites, ' + pinToggle + ' pin reads, ' + applyCalls +
+  ' shared tails, ' + notePlaceholder +
   ' placeholder, ' + readers + ' readers, note precedence ' + notePrecedence +
   ', blit ' + blitPrecedence + ')');
 
