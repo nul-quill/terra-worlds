@@ -24,13 +24,7 @@ function parseArgs(argv) {
   // for: an unreadable value leaves the option unset so the generator's own
   // default stands. Integer flags round what they are given.
   function nextNum(value, isInt) {
-    // An empty value is a missing value rather than a zero: `Number('')` is 0,
-    // which would silently replace the generator's default grid with the
-    // smallest one it can draw.
-    if (value == null || value === '') return undefined;
-    var n = Number(value);
-    if (!isFinite(n)) return undefined;
-    return isInt ? Math.round(n) : n;
+    return core.readNumber(value, isInt);
   }
   // A key that no dropdown offers is a typo rather than a style: `--palette
   // terraa` would otherwise render the default scheme and look like the flag

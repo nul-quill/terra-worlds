@@ -1222,6 +1222,22 @@
     return Math.round(value * 100);
   }
 
+  // Turn a flag or a slider into a number, or into nothing at all. `Number`
+  // rather than the two `parse*` functions: those stop at the first character
+  // they cannot read, so `800x` would reach the generator as its leading digits
+  // here and as a rejected value there — two grids for one phrase, depending on
+  // where it was typed. An unreadable value means unset, so the generator's own
+  // default stands; an empty box is a missing value rather than a zero, since
+  // `Number('')` is 0 and that would shrink a world to the smallest grid
+  // drawable. Both readers — the page's controls and the CLI's flags — go
+  // through this one function for exactly that reason.
+  function readNumber(value, isInt) {
+    if (value == null || value === '') return undefined;
+    var n = Number(value);
+    if (!isFinite(n)) return undefined;
+    return isInt ? Math.round(n) : n;
+  }
+
   global.TerraCore = {
     generate: generate,
     upscale: upscale,
@@ -1230,6 +1246,7 @@
     channelValue: channelValue,
     percentText: percentText,
     hundred: hundred,
+    readNumber: readNumber,
     hashString: hashString,
     randomSeed: randomSeed,
     nextSeed: nextSeed,

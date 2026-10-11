@@ -1386,11 +1386,15 @@ assert(numRec.width === 100 && numRec.height === 60 &&
   'a numeric flag reads its whole value or none (' + numRec.width + 'x' +
   numRec.height + ', ' + numFallback.width + 'x' + numFallback.height + ')');
 // The page reads its sliders through a helper of its own, and it promises the
-// same rule the parser just followed. Both bodies are scraped and compared:
-// each must go through `Number` behind an `isFinite` test, and neither may
-// keep a `parse*` call, since those stop at the first character they cannot
-// read and would let `800x` through as 800 in one place and reject it in the
-// other — two grids for one phrase, depending on where it was typed.
+// same rule the parser just followed. That rule is the core's — one
+// `readNumber` behind both forwards — since two bodies written out in full can
+// be edited apart while each still looks reasonable on its own. So the core's
+// definition is asked for the three traits (`Number`, an `isFinite` test, no
+// `parse*` call that would keep the leading digits of `800x`), and each reader
+// is asked to be a forward to it rather than a second copy.
+var coreNumSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var coreNumBody = (/function readNumber\(value, isInt\) \{([\s\S]*?)\n  \}/
+  .exec(coreNumSrc) || ['', ''])[1];
 var shellNum = (/function num\(value, isInt\) \{([\s\S]*?)\n  \}/
   .exec(require('fs').readFileSync(__dirname + '/../app.js', 'utf8')) ||
   ['', ''])[1];
@@ -1398,17 +1402,16 @@ var cliNum = (/function nextNum\(value, isInt\) \{([\s\S]*?)\n  \}/
   .exec(require('fs').readFileSync(__dirname + '/../cli.js', 'utf8')) ||
   ['', ''])[1];
 var numShapeBad = [];
+if (!coreNumBody) numShapeBad.push('core unreadable');
+if (!/Number\(value\)/.test(coreNumBody)) numShapeBad.push('core no Number');
+if (!/isFinite\(n\)/.test(coreNumBody)) numShapeBad.push('core no isFinite');
+if (/parse(?:Int|Float)\(/.test(coreNumBody)) numShapeBad.push('core parse*');
 [['shell', shellNum], ['cli', cliNum]].forEach(function (np) {
-  var body = np[1];
-  if (!body) { numShapeBad.push(np[0] + ' unreadable'); return; }
-  if (!/Number\(value\)/.test(body)) numShapeBad.push(np[0] + ' no Number');
-  if (!/isFinite\(n\)/.test(body)) numShapeBad.push(np[0] + ' no isFinite');
-  if (/parse(?:Int|Float)\(/.test(body)) {
-    numShapeBad.push(np[0] + ' parse*');
-  }
+  if (!/return (?:TerraCore|core)\.readNumber\(value, isInt\);/
+    .test(np[1])) numShapeBad.push(np[0] + ' no forward');
 });
-assert(numShapeBad.length === 0,
-  'the page and the parser read a number the same way (' +
+assert(numShapeBad.length === 0 && /readNumber: readNumber/.test(coreNumSrc),
+  'the page and the parser read a number through one helper (' +
   numShapeBad.join('; ') + ')');
 
 // The two helpers are not the only place the shell turns a slider attribute

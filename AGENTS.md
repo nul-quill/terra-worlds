@@ -487,11 +487,14 @@ Conventions:
   digits. An empty value counts as unset rather than as zero, since `Number('')`
   is 0 and that would replace the default grid with the smallest drawable one.
   The suite checks both halves against the generator's own default pair.
-  The page's own reader — `num()` in `app.js` — is the same shape rather than a
-  second policy: `Number` behind an `isFinite` test, no `parse*` call. Two
-  readers that disagree about `800x` would give one phrase two grids depending
-  on whether it was typed in a terminal or in the seed box, so the suite scrapes
-  both bodies and asks each for the same three traits.
+  The policy itself is the core's — `TerraCore.readNumber(value, isInt)` — and
+  both readers are forwards to it: `nextNum()` in the CLI and `num()` in the
+  shell. Two bodies written out in full can be edited apart while each still
+  looks reasonable on its own, and a pair that disagrees about `800x` gives one
+  phrase two grids depending on whether it was typed in a terminal or in the
+  seed box. The suite therefore asks the core's definition for the three traits
+  (`Number`, an `isFinite` test, no `parse*` call) and asks each reader to be a
+  forward rather than a second copy.
   It sits at the top of the shell rather than inside `readOptions()`, because
   `exportFactor()` reads the export dropdown through it too: the factor behind
   the `export` row, the saved file's name and the multiplier in the CLI record

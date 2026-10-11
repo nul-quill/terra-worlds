@@ -68,10 +68,7 @@
   // own number through this one helper, so a slider and a flag cannot pick
   // two different grids for one phrase.
   function num(value, isInt) {
-    if (value == null || value === '') return undefined;
-    var n = Number(value);
-    if (!isFinite(n)) return undefined;
-    return isInt ? Math.round(n) : n;
+    return TerraCore.readNumber(value, isInt);
   }
 
   function readHash() {
