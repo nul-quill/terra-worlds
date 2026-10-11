@@ -757,6 +757,13 @@ Conventions:
   slab under a dark scheme, so the suite walks the `ctx` assignments and asks
   for none of them to be a literal string. The relief chart keeps its own fixed
   ink: it sits on the page, not on the map.
+  That sky is parsed by one lookup — `skyRgb()` — read by all four overlay
+  sites: the isolation blend twice (a pinned class, a hovered band), the
+  crosshair's ink and the mat under the magnifier. Written at each site, the
+  parse could be guarded on one branch only, which leaves a map fading toward
+  one colour while its own crosshair is drawn in a slightly different one —
+  close enough to pass at a glance. The suite counts the definition, the four
+  reads and the single `hexToRgb` call inside it.
 - Legend isolation lives in `drawMap()`: `solo` follows the pointer/focus,
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend

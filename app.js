@@ -392,7 +392,7 @@
     // A hovered row wins over a pinned one, so hovering elsewhere in the list
     // still previews while the click selection waits underneath it.
     var want = solo || pinned;
-    var sky = want ? hexToRgb(current.palette.sky) : null;
+    var sky = want ? skyRgb() : null;
     // A hovered bar in the relief chart is the other way to isolate: it selects
     // by height instead of by class, so a band of the histogram lights up the
     // matching cells on the map. Same blend, one more test in the same loop.
@@ -408,7 +408,7 @@
     if (want) bandOn = false;
     if (bandOn) {
       bandLo = hs.lo; bandSpan = hs.span;
-      sky = sky || hexToRgb(current.palette.sky);
+      sky = sky || skyRgb();
     }
     var i;
     for (i = 0; i < src.length; i += 4) {
@@ -501,7 +501,7 @@
     drawMap();
     // The crosshair takes the palette's own darkest ink rather than a fixed
     // white, which disappears on the pale sky of Sepia or Mono.
-    var ink = hexToRgb(current.palette.sky);
+    var ink = skyRgb();
     var deep = current.palette.colors.deep;
     var hair = rgba(mix(deep, ink, 0.45), 0.45);
     var edge = rgba(mix(deep, ink, 0.15), 0.9);
@@ -553,7 +553,7 @@
     // uses, so a dark scheme keeps a dark mat under the magnified patch instead
     // of a bright slab. Both colours come from the lookup above, which is also
     // what the isolation blend reads — one source for every overlay colour.
-    var sky = hexToRgb(current.palette.sky);
+    var sky = skyRgb();
     ctx.fillStyle = rgba(sky, 0.85);
     ctx.fillRect(dx - 2, dy - 2, size + 4, size + 4);
     ctx.imageSmoothingEnabled = false;
@@ -586,6 +586,16 @@
     if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
     var n = parseInt(s, 16);
     return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  // Every overlay on the map — the isolation wash, the crosshair's ink, the
+  // mat under the magnifier — is the palette's own sky, so the parse of that
+  // hex string is one lookup. Written at each site, a scheme whose sky is
+  // stored as a triple rather than a string would need the same guard four
+  // times, and a wash that skipped it would fade toward a different colour
+  // than the ink drawn over it.
+  function skyRgb() {
+    return hexToRgb(current.palette.sky);
   }
 
   // The wash every dimmed thing is blended toward: the hovered cells on the

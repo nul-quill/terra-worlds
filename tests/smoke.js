@@ -3241,6 +3241,20 @@ assert(inkDefs === 1 && inkUses === 7 && inkStrings === 0,
   'the chart draws with one named ink (' + inkDefs + ' def, ' + inkUses +
   ' uses, ' + inkStrings + ' literal strings)');
 
+// Every overlay on the map washes toward the palette's own sky: the isolation
+// blend twice (a pinned class, a hovered band), the crosshair's ink and the mat
+// under the magnifier. Each of those is a hex string that has to be parsed, and
+// a parse written at the site can be edited on one branch only — a map that
+// fades toward one colour while its own crosshair is drawn in a slightly
+// different one still looks plausible at a glance. Counted as text: one lookup,
+// four reads, and the single parse inside it.
+var skyDefs = (appSrc.match(/function skyRgb\(/g) || []).length;
+var skyCalls = (appSrc.match(/skyRgb\(\)/g) || []).length - skyDefs;
+var skyInline = (appSrc.match(/hexToRgb\(current\.palette\.sky\)/g) || []).length;
+assert(skyDefs === 1 && skyCalls === 4 && skyInline === 1,
+  'every map overlay washes to one sky colour (' + skyDefs + ' def, ' +
+  skyCalls + ' reads, ' + skyInline + ' parse)');
+
 // The Copy button shows a short confirmation and then puts its own name back.
 // Pressing it twice inside that window has to be one pending restore, not two:
 // the second press clears the first timer before scheduling its own, otherwise
