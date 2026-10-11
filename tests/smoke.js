@@ -1020,6 +1020,33 @@ assert(chainPeakBad.length === 0 && nextJson.length >= 3,
   'each chain record peaks at its own tallest bar (' +
   chainPeakBad.join('; ') + ')');
 
+// The ruler above each block has to be placed by that seed's own two columns as
+// well. The caption already names the sea level and the median, so a chain that
+// drew every ruler from the FIRST world's pair would still print five plausible
+// captions — and the one mark a reader places by hand would sit in the wrong
+// column for four of them. Counted per seed, with the same combined-glyph rule
+// the single-world ruler follows.
+var chainRulerBad = [];
+nextPairs.forEach(function (rp2, ri2) {
+  var r2from = nextHist.indexOf(rp2);
+  var r2to = ri2 + 1 < nextPairs.length ? nextHist.indexOf(nextPairs[ri2 + 1])
+    : nextHist.length;
+  var r2lines = nextHist.slice(r2from, r2to)
+    .map(function (l) { return l.replace(/\r$/, ''); })
+    .filter(function (l) { return l.length; });
+  var r2ruler = r2lines[r2lines.length - 2] || '';
+  var r2rec = nextJson[ri2];
+  var r2one = r2rec.seaCol === r2rec.medCol;
+  if (r2ruler.charAt(r2rec.seaCol) !== (r2one ? '+' : '|') ||
+    (!r2one && r2ruler.charAt(r2rec.medCol) !== ':') ||
+    r2ruler.replace(/-/g, '').length !== (r2one ? 1 : 2)) {
+    chainRulerBad.push(rp2 + ' ' + r2rec.seaCol + '/' + r2rec.medCol);
+  }
+});
+assert(chainRulerBad.length === 0,
+  'each chain ruler marks its own two columns (' +
+  chainRulerBad.join('; ') + ')');
+
 // `--json` is the pipeable form, so the profile block has to stay out of it
 // even when both flags are given: one line per world, each a whole record.
 // That is what lets a chain be read by `Select-String` or `jq` without first

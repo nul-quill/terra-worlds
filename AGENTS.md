@@ -205,6 +205,11 @@ Conventions:
   The suite reads a ruler and a record for one world and asks that the glyph
   counts match: one `+` when the two columns coincide, otherwise a `|` and a
   `:` at the two numbers the record names.
+  The same pair is checked on every seed of a `--next` chain, since the chain
+  builds its worlds through its own helper: a ruler drawn from the first
+  world's columns would still sit under a caption naming that seed's own two
+  figures, so the mismatch is only visible when each block is compared with its
+  own record.
   Above the ruler sit six rows of blocks, one threshold each, so the counts can
   only grow going down — an inverted level still prints a correct caption while
   showing the silhouette upside down. The suite checks that ramp, and that the
