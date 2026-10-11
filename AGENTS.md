@@ -379,6 +379,11 @@ Conventions:
   ending in that seed's checksum, which is what lets a pasted block of bars be
   matched to its own line of JSON. The suite reads both forms and compares the
   two checksums per seed.
+  The rest of each chain caption is compared the same way — the two ends of the
+  range, the sea level and the median — against that seed's own record rather
+  than against the first one. The chain builds its worlds through a helper the
+  plain listing never uses, so a caption that read its figures from the wrong
+  world would still print a plausible silhouette above it.
   Those two forms also have to agree about the bars themselves, per seed: the
   ruler above a block is as wide as that seed's own `bins`, and the record's
   `hist` array has that many entries summing to `width * height`. Checked

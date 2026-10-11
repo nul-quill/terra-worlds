@@ -950,6 +950,37 @@ nextPairs.forEach(function (np, ni) {
 assert(chainBarBad.length === 0,
   'each chain block is drawn over its own record (' +
   chainBarBad.join('; ') + ')');
+// The caption of each chain block is compared with its own record too, since
+// the chain builds its worlds through a helper the plain listing never uses.
+// Two renders per seed: the record keeps `sea` and `median` to three decimals
+// and the caption prints both out of a hundred, so the caption's rounding is
+// applied before comparing. A chain that built one world and copied it into
+// every seed would already fail the pair above; this catches a chain whose
+// blocks and records disagree about where the sea sits.
+var chainCapBad = [];
+nextPairs.forEach(function (cp2, ci2) {
+  var c2from = nextHist.indexOf(cp2);
+  var c2to = ci2 + 1 < nextPairs.length ? nextHist.indexOf(nextPairs[ci2 + 1])
+    : nextHist.length;
+  var c2lines = nextHist.slice(c2from, c2to)
+    .map(function (l) { return l.replace(/\r$/, ''); })
+    .filter(function (l) { return l.length; });
+  var c2cap = c2lines[c2lines.length - 1] || '';
+  var c2rec = nextJson[ci2];
+  var c2ends = /^(\d+) \.\. (\d+) relief/.exec(c2cap);
+  var c2sea = /sea (\d+)/.exec(c2cap);
+  var c2med = /median (\d+)/.exec(c2cap);
+  if (!c2ends || !c2sea || !c2med ||
+    Number(c2ends[1]) !== c2rec.low || Number(c2ends[2]) !== c2rec.high ||
+    Number(c2sea[1]) !== Math.round(c2rec.sea * 100) ||
+    Number(c2med[1]) !== Math.round(c2rec.median * 100) ||
+    c2cap.indexOf(c2rec.checksum) < 0) {
+    chainCapBad.push(cp2 + ' -> ' + c2cap);
+  }
+});
+assert(chainCapBad.length === 0 && nextPairs.length >= 3,
+  'each chain caption repeats its own record (' + nextPairs.length +
+  ' seeds, off at ' + chainCapBad.join('; ') + ')');
 
 // `--json` is the pipeable form, so the profile block has to stay out of it
 // even when both flags are given: one line per world, each a whole record.
