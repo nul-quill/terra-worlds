@@ -216,6 +216,12 @@ Conventions:
   each row from the record's own counts and compares the whole string: a column
   is filled when its count reaches that row's share of `peak`. That is what
   makes a pasted block of bars plus one line of JSON enough to redraw a picture.
+  That rebuild runs over every hand-picked phrase rather than one world, since a
+  block built from a fixed bin count — or from another seed's counts — still has
+  the right ramp and a caption that reads correctly. Per phrase, the row count,
+  the column count and every row string are compared against that seed's own
+  `bins`, `hist` and `peak`. Note the block sits between the summary sentence
+  and the ruler, so a reader of the raw output slices those two off first.
   The `relief` row carries the spread and its two ends — `70 units (10-80)` —
   where the pair in brackets is what the chart prints at its corners. The record
   keeps those ends as `low` and `high`, already out of a hundred, so a terminal

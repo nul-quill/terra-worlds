@@ -1556,6 +1556,46 @@ assert(capBad.length === 0 && core.phrases.length >= 4,
   'every caption figure is a field of its own record (' +
   core.phrases.length + ' worlds, off at ' + capBad.join('; ') + ')');
 
+// The caption is only the label under the block, so the bars themselves have to
+// be compared per phrase too. One world would let a block built from a fixed
+// bin count — or from another world's counts — pass while its caption still
+// read correctly. For each seed: render a profile and a record, then rebuild
+// every row from THAT record's `hist` and `peak`, one threshold per row, and
+// ask for the whole string to match. That is the pair a reader has when only a
+// pasted block and one line of JSON survive.
+var blockBad = [];
+core.phrases.forEach(function (bp) {
+  var bRec = JSON.parse(require('child_process')
+    .execSync('node cli.js "' + bp + '" --width 130 --height 84 --json',
+      {cwd: __dirname + '/..'}).toString().trim());
+  var bOut = require('child_process')
+    .execSync('node cli.js "' + bp + '" --width 130 --height 84 --describe ' +
+      '--hist',
+      {cwd: __dirname + '/..'}).toString().replace(/\r/g, '').split('\n')
+    .filter(function (l) { return l.length; });
+  // The CLI prints its summary sentence above the block, and the ruler plus the
+  // caption sit under it: the rows are what is left between those.
+  var bRows = bOut.slice(1, bOut.length - 2);
+  if (bRows.length !== 6 || bRec.hist.length !== bRec.bins) {
+    blockBad.push(bp + ' ' + bRows.length + ' rows');
+    return;
+  }
+  for (var bri = 0; bri < bRows.length; bri++) {
+    var bLevel = (bRows.length - bri) / bRows.length;
+    var bWant = '';
+    for (var bci = 0; bci < bRec.bins; bci++) {
+      bWant += (bRec.hist[bci] / bRec.peak) >= bLevel ? '#' : ' ';
+    }
+    if (bRows[bri] !== bWant.replace(/\s+$/, '')) {
+      blockBad.push(bp + ' row ' + bri);
+      break;
+    }
+  }
+});
+assert(blockBad.length === 0,
+  'every block is redrawn by its own record (' + core.phrases.length +
+  ' worlds, off at ' + blockBad.join('; ') + ')');
+
 // The readout calls a water cell `off-shelf` at one fixed depth below the sea
 // line, and the core calls the same cell `deep` at that same depth. Two numbers
 // written in two files, so both are read out of their own source and compared,
