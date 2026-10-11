@@ -2085,6 +2085,26 @@ assert(emptySlot.length === 0 && /\w/.test(nameShape) &&
   [nameShape].concat(nameSlots.map(function (nk) { return pngRec[nk]; }))
     .join('-') + ')');
 
+// An empty seed box is not a fourth seed: it has to mean the same world as a
+// blank `--seed` from a terminal. The generator names its own fallback, and the
+// shell reads that same word in the two places a blank box reaches — the stats
+// row and the saved file name. Compare the three by scraping each source, so a
+// rename on one side shows up here rather than as a link and a PNG that
+// describe two different worlds from one empty field.
+var seedSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var coreSeed = (/opts\.seed == null \?\s*'([^']+)'/ .exec(seedSrc) ||
+  ['', ''])[1];
+var shellSeed = require('fs').readFileSync(__dirname + '/../app.js', 'utf8')
+  .match(/inputs\.seed\.value \|\| '([^']+)'/g) || [];
+var shellWords = shellSeed.map(function (s) {
+  return /'([^']+)'/.exec(s)[1];
+});
+var seedSame = coreSeed !== '' && shellWords.length >= 2 &&
+  shellWords.every(function (sw) { return sw === coreSeed; });
+assert(seedSame,
+  'a blank seed means one world everywhere (' + coreSeed + ' / ' +
+  shellWords.join(',') + ')');
+
 // The record holds the relief twice: once as a number of its own, once inside
 // the summary sentence in brackets. Both come from the same difference in
 // stats, so they must agree — a record saying `relief 74` above a sentence

@@ -335,6 +335,11 @@ Conventions:
   smoke suite reads the row labels out of `renderStats()` and checks that first
   pair plus that no label is reused — two rows with one name would make the
   list ambiguous to read back.
+  An empty seed box is not a fourth seed: it names the generator's own default,
+  so the fallback word is that one string in every place a blank field reaches —
+  the core's `seed == null` default, the option reader, the `seed` row and the
+  second slot of a saved file name. The suite scrapes all of them and asks for
+  one word, since a link and a PNG from an empty box should be the same world.
   Every height on the page is stored 0..1 and printed out of a hundred, through
   one helper — `hundred(value)` — shared by the `relief` and `median` rows, the
   chart's corner labels, the sea rule, the median mark, the hovered-bin range and

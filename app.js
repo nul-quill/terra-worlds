@@ -675,7 +675,7 @@
     var rows = [
       // First so a printed page or a screenshot of the sidebar still says
       // which phrase the world came from — the hash is not on paper.
-      ['seed', inputs.seed.value || 'world'],
+      ['seed', inputs.seed.value || 'terra'],
       ['grid', result.width + ' x ' + result.height],
       // The multiplier only ever touches the saved file, so without this row
       // the `e` key would look like it did nothing until a PNG was opened.
@@ -1142,7 +1142,7 @@
     // and the grid size tell you which of the many rerolls this was, the
     // palette separates two looks of the same seed, and the checksum is the
     // shortest way back from a file to the link that produced it.
-    var nameParts = ['terra', inputs.seed.value || 'world', inputs.shape.value,
+    var nameParts = ['terra', inputs.seed.value || 'terra', inputs.shape.value,
       inputs.palette.value, current.width + 'x' + current.height,
       current.stats.checksum];
     // The multiplier belongs in the name too: the same world saved at 2x and
