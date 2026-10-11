@@ -1465,7 +1465,7 @@
     // Same wrap the cell walk uses: sweeping one direction across the height
     // range keeps going instead of sticking on the last bar.
     var n = histState.bins;
-    band = ((bin % n) + n) % n;
+    band = cycleIndex(bin, 0, n);
     drawHover();
     bandNote();
   }
