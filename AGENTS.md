@@ -1067,6 +1067,12 @@ Conventions:
   contract, not decoration — the suite asks that a narrow strip reaches the
   floor and a wide one the ceiling, so a band that never engages is caught
   rather than mistaken for a formula. Keep the count out of the shell too.
+  Both canvases size their backing store through one `pixelScale()` — the
+  clamp on `devicePixelRatio` between 1 and 2. The map blits its cells at that
+  scale and the chart scales its own context by it, so a phone at 3x gets two
+  of the same picture rather than a sharp grid under a soft strip. Two copies
+  of the clamp could be edited apart while each still looked reasonable, so the
+  suite counts the one definition and the two reads beside it.
   The one handler that fires without being asked is `resize`: dragging a window
   edge fires one event per pixel, and each would rebuild the grid. The listener
   schedules a single `render()` through `requestAnimationFrame` behind a

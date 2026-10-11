@@ -3754,6 +3754,19 @@ assert(stripDefs === 1 && stripUses === 5 && stripLiterals === 0,
   'one reserve holds the chart\'s bottom strip (' + stripDefs + ' def, ' +
   stripUses + ' offsets, ' + stripLiterals + ' literals)');
 
+// Both canvases size their backing store from the same clamp on the device
+// pixel ratio. Two copies of that clamp could be edited apart, and a map
+// blitted at one scale under a chart drawn at another reads as a blurry strip
+// under a sharp picture. Counted as text: one definition, one read per canvas,
+// and no second clamp written out beside them.
+var dprDefs = (appSrc.match(/function pixelScale\(\)/g) || []).length;
+var dprUses = (appSrc.match(/= pixelScale\(\)/g) || []).length;
+var dprClamps = (appSrc.match(
+  /Math\.max\(1, Math\.min\(2, window\.devicePixelRatio/g) || []).length;
+assert(dprDefs === 1 && dprUses === 2 && dprClamps === 1,
+  'both canvases share one pixel scale (' + dprDefs + ' def, ' + dprUses +
+  ' reads, ' + dprClamps + ' clamp)');
+
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the
 // map drops it again. Held in one variable with one write from the bin lookup,

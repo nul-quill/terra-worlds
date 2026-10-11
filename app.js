@@ -252,11 +252,21 @@
 
   /* ---- drawing ---- */
 
+  // Both canvases size their backing store from this one number. The clamp is
+  // the contract: at 1 the grid is drawn one device pixel per cell, above 2 a
+  // phone's third or fourth band would buy no readable detail while quadrupling
+  // the work, so the scale is held between those two. Two copies of the clamp
+  // could be edited apart, and a map blitted at one scale under a chart drawn at
+  // another reads as a blurry strip beneath a sharp picture.
+  function pixelScale() {
+    return Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  }
+
   function render() {
     var opts = readOptions();
     writeHash();
     var rect = view.getBoundingClientRect();
-    var dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    var dpr = pixelScale();
 
     // Native grid: keep cells chunky so the pixel look survives upscaling.
     var cols = Math.max(120, Math.round(rect.width / 3));
@@ -722,7 +732,7 @@
     // device-pixel scale is applied with a transform.
     var cssW = histCanvas.clientWidth || TerraCore.histWidth;
     var cssH = histCanvas.clientHeight || TerraCore.histHeight;
-    var dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    var dpr = pixelScale();
     var bw = Math.round(cssW * dpr), bhPix = Math.round(cssH * dpr);
     if (histCanvas.width !== bw) histCanvas.width = bw;
     if (histCanvas.height !== bhPix) histCanvas.height = bhPix;
