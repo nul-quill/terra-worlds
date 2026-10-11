@@ -775,6 +775,9 @@ Conventions:
   `upscale()` replicates each cell as a solid f x f block rather than blending
   it, which is what keeps a 6x save the same picture as a 2x one; the smoke
   suite checks that block-for-block on a small grid.
+  The block walk runs over every entry of `core.scales`, not just one factor:
+  dimensions alone would also pass for a smoothing resize, which saves a softer
+  picture than the one on screen while reporting the same counts.
   The same list is checked from a terminal too: each multiplier must report
   itself in the JSON record while the checksum and the river count stay put,
   which is what lets the `export` row change size without changing a number.

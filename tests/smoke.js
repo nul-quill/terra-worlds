@@ -1099,7 +1099,24 @@ core.scales.forEach(function (sc) {
   var n = parseInt(sc.key, 10);
   var small = core.generate({seed: 'pale shelf', width: 20, height: 12});
   var big = core.upscale(small, n);
+  // Growing has to be plain replication at every multiplier the dropdown
+  // offers, not just at the one a block check happens to use: a factor that
+  // averaged its neighbours would still report the right dimensions while
+  // saving a softer picture than the one on screen. Walk each cell's block.
   if (big.width !== small.width * n || big.height !== small.height * n) scaleOk = false;
+  for (var sy = 0; sy < small.height && scaleOk; sy++) {
+    for (var sx = 0; sx < small.width && scaleOk; sx++) {
+      var src = (sy * small.width + sx) * 4;
+      for (var oy = 0; oy < n && scaleOk; oy++) {
+        for (var ox = 0; ox < n; ox++) {
+          var dst = ((sy * n + oy) * big.width + sx * n + ox) * 4;
+          for (var oc = 0; oc < 4; oc++) {
+            if (big.data[dst + oc] !== small.data[src + oc]) scaleOk = false;
+          }
+        }
+      }
+    }
+  }
 });
 assert(scaleOk, 'every export multiplier upscales by that factor');
 
