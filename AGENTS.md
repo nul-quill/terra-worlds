@@ -556,6 +556,15 @@ Conventions:
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend
   path, or hover and click will disagree about the result.
+  The pinned row also states itself in text: each `<li>` gets
+  `aria-current="true"` on the kept class and `"false"` on the rest, from the
+  same `pinned === key` comparison that sets the ring's class. The ring is only
+  a colour difference, which a screen reader reads as nothing, so the attribute
+  is the row's only spoken state. Keep one comparison feeding both — the suite
+  counts the single attribute write plus every use of that comparison — the two
+  toggles that set the pin (click, `Enter`/`Space`) and the two reads that paint
+  it — so the ink and the announcement cannot name different rows after a
+  rebuild, and a fifth opinion about which row is on has to be written down.
   "Survives a reroll" means a reroll of the same kind: a wider column count can
   drop a class entirely, and the legend is rebuilt from the classes that remain,
   so a pin left over from the previous grid would dim the whole map with no row

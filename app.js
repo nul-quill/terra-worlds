@@ -619,6 +619,12 @@
           if (again) again.focus();
         });
         if (pinned === key) li.className = 'on';
+        // The class only carries the ring, which a screen reader cannot read
+        // back, so the row also states its own pin: `true` on the one class
+        // kept at full strength, `false` on every other row. One assignment
+        // covers both halves, so the two can never disagree about which row is
+        // pinned after a rebuild.
+        li.setAttribute('aria-current', pinned === key ? 'true' : 'false');
         // Same thing for a keyboard user tabbing through the list: focus takes
         // the place of the pointer, so the isolation trick works without a
         // mouse. The rows are only there to be read, so they are in the tab

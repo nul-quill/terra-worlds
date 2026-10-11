@@ -3121,6 +3121,23 @@ assert(tieRows > 0 && tieBad.length === 0 && tieBreakSites === 1,
   'equal legend rows keep the palette order (' + tieRows + ' ties, ' +
   tieBad.join(',') + ', ' + tieBreakSites + ' tie-break)');
 
+// A pinned row has to say so in text as well as in ink: the ring is a colour
+// difference, which a screen reader reads as nothing. So each row also carries
+// `aria-current`, and both halves of that pair — the ring's class and the
+// attribute — are decided by ONE comparison of the row's key against the pin.
+// Two views could otherwise disagree about which row is pinned after a rebuild,
+// which is exactly when a keyboard user is looking. Counted: one write of the
+// attribute, one write of the ring's class, and the shared comparison at each
+// of its four sites — the two toggles that set the pin (click, Enter/Space) and
+// the two reads that paint it. A fifth opinion about which row is on would have
+// to be added here as well as in the shell.
+var pinAttr = (appSrc.match(/setAttribute\('aria-current'/g) || []).length;
+var pinTest = (appSrc.match(/pinned === key/g) || []).length;
+var pinClass = (appSrc.match(/li\.className = 'on'/g) || []).length;
+assert(pinAttr === 1 && pinClass === 1 && pinTest === 4,
+  'a pinned legend row states its pin (' + pinAttr + ' attribute, ' +
+  pinClass + ' class, ' + pinTest + ' comparisons)');
+
 // The `k` cycle is a ring of the rows PLUS an empty slot, which is what the
 // comment over the handler promises: a lap has to come back through "nothing
 // pinned". Rebuilt here with the same arithmetic, one lap must show every class
