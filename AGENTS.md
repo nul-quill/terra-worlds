@@ -1107,6 +1107,14 @@ Conventions:
   of the same picture rather than a sharp grid under a soft strip. Two copies
   of the clamp could be edited apart while each still looked reasonable, so the
   suite counts the one definition and the two reads beside it.
+  Those two canvases also draw four thin marks — the crosshair's pair of
+  hairlines, the sea rule, the decade ticks and the median mark — and every
+  stroke coordinate goes through one `hairline(x)`, which rounds and adds the
+  half pixel a one-pixel line needs to land on a whole device pixel. Written at
+  each site the offset can be dropped on one mark only, which leaves a single
+  soft line beside three crisp ones — a difference small enough that nobody
+  opens the console over it, so the suite counts the definition, the eight
+  reads and asks for no bare `Math.round(...) + 0.5` left beside them.
   Each axis of the grid is then snapped by one `snapCell(boxes, count)`: a cell
   at least two device pixels wide is rounded and its count trimmed to whatever
   still fits, below two pixels the axis keeps its fractional size and stretches

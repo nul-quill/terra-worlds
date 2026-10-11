@@ -262,6 +262,16 @@
     return Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   }
 
+  // A one-pixel stroke lands between two device pixels unless its coordinate is
+  // pushed to the middle of one, which is what the half-pixel offset does. Both
+  // canvases draw hairlines — the crosshair, the sea rule, the decade ticks and
+  // the median mark — and each of those reads the offset through this one
+  // lookup, so a change to the stroke width of one mark cannot leave the others
+  // sitting a half pixel away from the marks beside them.
+  function hairline(x) {
+    return Math.round(x) + 0.5;
+  }
+
   // Snap one axis of the grid to a whole number of device pixels. A cell at
   // least two pixels wide is rounded and the count trimmed to whatever still
   // fits, so every cell is the same size and only the last couple of pixels
@@ -482,10 +492,12 @@
       ctx.strokeStyle = hair;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(Math.round((px + 0.5) * cellX) + 0.5, 0);
-      ctx.lineTo(Math.round((px + 0.5) * cellX) + 0.5, view.height);
-      ctx.moveTo(0, Math.round((py + 0.5) * cellY) + 0.5);
-      ctx.lineTo(view.width, Math.round((py + 0.5) * cellY) + 0.5);
+      var cx = hairline((px + 0.5) * cellX);
+      var cy = hairline((py + 0.5) * cellY);
+      ctx.moveTo(cx, 0);
+      ctx.lineTo(cx, view.height);
+      ctx.moveTo(0, cy);
+      ctx.lineTo(view.width, cy);
       ctx.stroke();
       ctx.restore();
       ctx.strokeStyle = edge;
@@ -866,8 +878,8 @@
     hc.strokeStyle = rgba(INK, 0.7);
     hc.lineWidth = 1;
     hc.beginPath();
-    hc.moveTo(Math.round(seaX) + 0.5, 0);
-    hc.lineTo(Math.round(seaX) + 0.5, h);
+    hc.moveTo(hairline(seaX), 0);
+    hc.lineTo(hairline(seaX), h);
     hc.stroke();
     // Ticks every ten units of height, in the strip under the bars. Two corner
     // numbers give the ends of the range but nothing in between, and the ticks
@@ -885,8 +897,8 @@
       var tickX = ((u / 100 - lo) / span) * w;
       if (tickX < pad - 1 || tickX > w - pad + 1) continue;
       hc.beginPath();
-      hc.moveTo(Math.round(tickX) + 0.5, h - STRIP + 1);
-      hc.lineTo(Math.round(tickX) + 0.5, h - STRIP + 4);
+      hc.moveTo(hairline(tickX), h - STRIP + 1);
+      hc.lineTo(hairline(tickX), h - STRIP + 4);
       hc.stroke();
     }
     // The marker line alone does not say what the sea level is, and the slider
@@ -913,8 +925,8 @@
     if (medX >= 0 && medX <= w) {
       hc.strokeStyle = rgba(INK, 0.7);
       hc.beginPath();
-      hc.moveTo(Math.round(medX) + 0.5, h - STRIP);
-      hc.lineTo(Math.round(medX) + 0.5, h - STRIP + 7);
+      hc.moveTo(hairline(medX), h - STRIP);
+      hc.lineTo(hairline(medX), h - STRIP + 7);
       hc.stroke();
       // The mark alone says "most of the grid is around here"; the number says
       // how high that is, which is the difference between a shape and a

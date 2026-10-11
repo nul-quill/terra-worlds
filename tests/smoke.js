@@ -3800,6 +3800,19 @@ var snapInline = (appSrc.match(
 assert(snapDefs === 1 && snapCalls === 2 && snapInline === 0,
   'both grid axes snap through one rule (' + snapDefs + ' def, ' + snapCalls +
   ' axes, ' + snapInline + ' inline snaps)');
+// A one-pixel stroke needs its coordinate pushed to the middle of a device
+// pixel, and four marks on these two canvases are that thin: the crosshair,
+// the sea rule, the decade ticks and the median mark. Written out at each site
+// the offset can be dropped on one mark only, which leaves a single line
+// looking soft beside three crisp ones — plausible at a glance, so it is
+// counted here. One definition, two reads per mark, and no bare offset left
+// beside them.
+var hairDefs = (appSrc.match(/function hairline\(/g) || []).length;
+var hairCalls = (appSrc.match(/hairline\(/g) || []).length - hairDefs;
+var hairInline = (appSrc.match(/Math\.round\([^)]*\) \+ 0\.5/g) || []).length;
+assert(hairDefs === 1 && hairCalls === 8 && hairInline === 1,
+  'every thin mark shares one pixel offset (' + hairDefs + ' def, ' +
+  hairCalls + ' reads, ' + hairInline + ' in the helper)');
 
 // The elevation reading is a share of one of two bands: room above the
 // shoreline for land, the sea itself for water. Each share is guarded against
