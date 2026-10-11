@@ -585,6 +585,12 @@ Conventions:
   lookup and each variable for exactly two declarations. The one leftover in
   the block is the readout's ink, since that strip sits on the map rather than
   on the panel, so the variable swap does not decide its text colour.
+  A filled button is the accent behind its own label, so its ink is `--on-accent`
+  rather than `--ink`: the dark scheme's accent is the lighter of its two greens,
+  which a white label would wash out. With that lookup the last literal in the
+  sheet sits inside a declaration, so every colour a rule reads is one the
+  name-list comparison already walks — the suite asks the button rule for that
+  lookup and the variable for exactly two declarations.
   The tint alone is too faint to follow as a tab stop on a ten-row list, so
   `:focus-visible` also draws the inset ring a pinned row wears — both halves
   from `--accent`, so neither scheme needs a third colour for the caret.

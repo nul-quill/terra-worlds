@@ -16,6 +16,9 @@
      to repeat as a second rule. */
   --field: #fbfcfd;
   --hud: rgba(255, 255, 255, 0.88);
+  /* The ink a filled button wears: the accent is the button's background, so
+     its text colour is a pair with that hue rather than the page's ink. */
+  --on-accent: #ffffff;
 }
 
 * { box-sizing: border-box; }
@@ -125,7 +128,7 @@ button {
   border: 1px solid var(--accent);
   border-radius: 6px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   font: inherit;
   cursor: pointer;
 }
@@ -312,6 +315,7 @@ button:last-child {
     --line: #2c353a;
     --accent: #4fb39a;
     --accent-soft: rgba(79, 179, 154, 0.18);
+    --on-accent: #10221d;
     --field: #171d21;
     --hud: rgba(20, 24, 27, 0.88);
   }

@@ -3714,6 +3714,18 @@ assert(fieldRule && hudRule && fieldDeclared === 2 && hudDeclared === 2,
   fieldRule + '/' + hudRule + ', ' + fieldDeclared + '/' + hudDeclared +
   ' declarations)');
 
+// A filled button is the accent behind its own label, so its ink is a pair
+// with that hue rather than the page's ink — and it is the last colour written
+// outside `:root`. Reading it through a variable means both schemes set it in
+// the one place the suite already compares by name, and the stylesheet keeps
+// its promise that a literal only ever appears in a variable declaration.
+var buttonRule = /button\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--on-accent\)/
+  .test(cssSrc);
+var buttonDeclared = (cssSrc.match(/--on-accent\s*:/g) || []).length;
+assert(buttonRule && buttonDeclared === 2,
+  'the button ink reads a variable both schemes restate (' + buttonRule +
+  ', ' + buttonDeclared + ' declarations)');
+
 // The tint is only a wash of colour, which is hard to follow as a tab stop on
 // a ten-row list, so focus also gets the inset ring a pinned row wears. Both
 // are lookups rather than literals, which is what keeps the ring readable in
