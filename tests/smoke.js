@@ -3781,6 +3781,19 @@ assert(snapDefs === 1 && snapCalls === 2 && snapInline === 0,
   'both grid axes snap through one rule (' + snapDefs + ' def, ' + snapCalls +
   ' axes, ' + snapInline + ' inline snaps)');
 
+// The elevation reading is a share of one of two bands: room above the
+// shoreline for land, the sea itself for water. Each share is guarded against
+// an empty band, and that guard is one lookup rather than a floor written in
+// both branches — a pair could be edited apart while each still looked
+// reasonable beside the other, and the two halves of one hovered cell would
+// then scale their heights against different notions of a flat world.
+var spanDefs = (appSrc.match(/function fillSpan\(/g) || []).length;
+var spanUses = (appSrc.match(/= fillSpan\(/g) || []).length;
+var spanInline = (appSrc.match(/Math\.max\(0\.001/g) || []).length;
+assert(spanDefs === 1 && spanUses === 2 && spanInline === 1,
+  'both halves of the elevation share one span guard (' + spanDefs + ' def, ' +
+  spanUses + ' reads, ' + spanInline + ' in the helper)');
+
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the
 // map drops it again. Held in one variable with one write from the bin lookup,

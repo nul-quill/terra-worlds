@@ -563,6 +563,16 @@
     return TerraCore.hundred(value);
   }
 
+  // The smallest band a height can be scaled against. A sea level of 1 leaves
+  // no room above the shoreline, and one of 0 leaves none below it, so each
+  // share of the elevation reading divides by this floor rather than by an
+  // empty band. One lookup so the two halves of that reading — the height of
+  // land above the line, the depth of water below it — cannot be scaled
+  // against two different notions of a flat world.
+  function fillSpan(span) {
+    return Math.max(0.001, span);
+  }
+
   // How many classes actually occur on this map. The legend only lists those,
   // so the count has to be taken from the occupancy map rather than the
   // fixed list of fourteen names.
@@ -976,9 +986,18 @@
     var key = current.biome[i];
     var h = current.heightField[i];
     var above = h >= current.seaLevel;
+    // Both halves of the reading are a share of their own band: a cell above
+    // the line is measured against the room left over above the sea, a cell
+    // below against the sea itself. Each share is guarded against an empty
+    // band by this one floor, so the two branches of one measurement cannot
+    // disagree about how flat a world has to be before its heights stop
+    // scaling — a pair of guards could be edited apart while each still
+    // looked reasonable beside the other.
+    var upSpan = fillSpan(1 - current.seaLevel);
+    var downSpan = fillSpan(current.seaLevel);
     var elev = above
-      ? hundred((h - current.seaLevel) / Math.max(0.001, 1 - current.seaLevel))
-      : -hundred((current.seaLevel - h) / Math.max(0.001, current.seaLevel));
+      ? hundred((h - current.seaLevel) / upSpan)
+      : -hundred((current.seaLevel - h) / downSpan);
     var parts = [
       '(' + px + ', ' + py + ')',
       biomeLabel(key),

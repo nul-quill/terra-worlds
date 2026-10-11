@@ -400,6 +400,12 @@ Conventions:
   `"median":0.459` rounded by a terminal are one measurement. The suite counts
   the core definition, the shell's forward and the CLI's uses, and asks for no
   leftover inline round in either reader.
+  The elevation in the hover readout is a share of one of two bands — room above
+  the shoreline for land, the sea itself for water — and each share is guarded
+  against an empty band by one lookup, `fillSpan(span)`. Both branches of that
+  ternary read it, so the two halves of one hovered cell cannot scale their
+  heights against different notions of a flat world; the suite counts the one
+  definition, the two reads and the single `Math.max(0.001` inside the helper.
   Shares of the grid go through `TerraCore.percentText(fraction)` — whole percent
   at or above ten, one decimal below that, two under one percent, so a 2% class,
   a 0.2% class and a 0.04% class each keep their own figure in the legend. The
