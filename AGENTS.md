@@ -893,16 +893,21 @@ Conventions:
   `writeHash()`. Otherwise the line keeps describing a height band over a map
   that is now filtered by class, and the next pointer move is what fixes it: a
   link copied in between would show the wrong pair of numbers.
+  The chart's four paths — hover a bar, tap one, walk with `Shift`+arrow, or
+  leave the strip — end with one `applyBand()`, which holds `drawHover();
+  bandNote();`. Written beside each handler, a step added for the mouse only
+  would keep a desktop link in sync while a phone's drifted, so the suite counts
+  the one definition and its three reads beside the direct writes.
   The tail of all three — rebuild the rows, repaint the map, write the hash,
   refresh the note — is one `applyPin()`, read by `togglePin(key)` (which the
   click and the row's `Enter`/`Space` both call, after flipping the pin) and by
   the `k` cycle (which sets its own index first). Written at each site, a sixth
   step added to one branch only would keep a mouse pin and a keyboard pin
   describing different worlds in the same link, which is what the suite counts:
-  the two helpers that each hold one write (`applyPin()` for the pins,
-  `clearSolo()` for the two legend clears), the four reads of those helpers, and
-  the six remaining direct writes beside them — eight literals in all, which is
-  still ten paths into the note.
+  the three helpers that each hold one write (`applyPin()` for the pins,
+  `clearSolo()` for the two legend clears, `applyBand()` for the chart paths),
+  the seven reads of those helpers, and the three direct writes beside them —
+  six writes in all, reached from every handler that moves a filter.
   A hovered or focused row is the same kind of change — `solo` is the first half
   of the note's precedence — so `drawHighlighted()` and both clear handlers call
   the writer too. That is why the count is ten writes plus a helper both halves

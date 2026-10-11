@@ -1483,8 +1483,7 @@
     // each other without moving the pointer back and forth. drawHover() goes
     // through drawMap(), which repaints this chart with the same `band`, so one
     // call keeps both views in step.
-    drawHover();
-    bandNote();
+    applyBand();
   }
 
   histCanvas.addEventListener('mousemove', hoverHistogram);
@@ -1494,6 +1493,15 @@
     if (ev.pointerType === 'mouse') return;
     hoverHistogram(ev, true);
   });
+
+  // Every chart path ends the same way: repaint both views so the lit bar and
+  // the faded cells agree, then rewrite the line under the map so its figures
+  // are the ones now in force. Written beside each handler, a step dropped on
+  // one of them reads as a bar that dims the map without naming itself.
+  function applyBand() {
+    drawHover();
+    bandNote();
+  }
 
   // The chart's caption is a 10px strip inside a 52px canvas, so the same
   // reading goes into the line under the map: a selected bin is a filter over
@@ -1543,13 +1551,11 @@
     // range keeps going instead of sticking on the last bar.
     var n = histState.bins;
     band = cycleIndex(bin, 0, n);
-    drawHover();
-    bandNote();
+    applyBand();
   }
   histCanvas.addEventListener('mouseleave', function () {
     band = -1;
-    drawHover();
-    bandNote();
+    applyBand();
   });
 
   view.addEventListener('mouseleave', function () {

@@ -4083,16 +4083,23 @@ assert(joinDefs === 1 && joinCalls === 3 && joinInline === 1,
 // each of the three ways a legend pin is set or released, the legend's own
 // hover and clear paths, and the rebuild that follows a resize or a slider
 // step — a new grid changes every share in the legend, so the line beside it
-// has to be rewritten too. Eight literal writes, one definition, and the
-// placeholder
-// is restored by that same function rather than by a second write of the
-// literal.
+// has to be rewritten too. Six literal writes, one definition, and the
+// placeholder is restored by that same function rather than by a second write
+// of the literal. Three of those six sit inside a helper — `applyPin()` for
+// the pins, `clearSolo()` for the two legend clears, `applyBand()` for the
+// three chart paths — so the six are reached by eleven paths.
 // The note also has to follow the same precedence the blit does: a pinned
 // legend class beats a height band, so the line cannot describe a band while
 // the map is fading everything that is not the pinned class. Both sides of that
 // rule are read out of the source — the blit's own test and the note's.
 var noteDefs = (appSrc.match(/function bandNote\(/g) || []).length;
 var noteCalls = (appSrc.match(/bandNote\(\);/g) || []).length;
+// The three chart paths — a hover over a bar, a tap, a `Shift`+arrow walk, and
+// a pointer leaving the chart — all end by repainting both views and rewriting
+// the note. That pair is one helper too, so a step added for the mouse cannot
+// be missing after a tap, which is the shape a phone-only bug takes.
+var bandTailDefs = (appSrc.match(/function applyBand\(/g) || []).length;
+var bandTailCalls = (appSrc.match(/applyBand\(\);/g) || []).length;
 var notePlaceholder = (appSrc.match(/= 'hover the map'/g) || []).length;
 var noteBody = (/function bandNote\(\)([\s\S]*?)\n  \}/.exec(appSrc) ||
   ['', ''])[1];
@@ -4107,25 +4114,26 @@ var blitPrecedence = /var want = solo \|\| pinned;/.test(appSrc);
 // a new reader has to be named here.
 var readers = (appSrc.match(/var want = solo \|\| pinned;/g) || []).length;
 var cellWants = (appSrc.match(/if \(want && key !== want\) \{/g) || []).length;
-// Both pin toggles reach the note through `togglePin()`, and both legend
-// clears through `clearSolo()`, so the eight writes are reached by ten paths:
-// six sit beside their own handler, one lives in the pin helper that a click
-// and the `k` cycle both call, and one lives in the clear helper both the
-// pointer and the caret hand off to. A helper only one branch called would
-// show up here as a single read, which is the case these counts are for.
-// The tail is shared one level further: both pin paths call `applyPin()`, so
-// the note is written at eight literal sites and reached by ten paths — the
-// helper's own write counts twice, once for a click and once for the `k`
-// cycle. A helper only one of those called would show up as a single read.
+// Where those writes sit: three beside their own handler — the rebuild at the
+// end of `render()`, the hovered legend row, and the pointer leaving the map —
+// and one inside each of the three
+// helpers. Each helper is read more than once: `applyPin()` by a pin toggle and
+// by the `k` cycle, `clearSolo()` by the pointer leaving the list and by the
+// caret moving off a row, `applyBand()` by the chart's hover, its tap, its
+// leave and the keyboard walk. Together those eleven paths reach the six
+// writes. A helper only one branch called would show up here as a single read,
+// which is the case these counts are for.
 var pinToggle = (appSrc.match(/togglePin\(key\);/g) || []).length;
 var applyDefs = (appSrc.match(/function applyPin\(/g) || []).length;
 var applyCalls = (appSrc.match(/applyPin\(\);/g) || []).length;
-assert(noteDefs === 1 && noteCalls === 8 && pinToggle === 2 && applyDefs === 1 &&
-  applyCalls === 2 && notePlaceholder === 1 && notePrecedence &&
+assert(noteDefs === 1 && noteCalls === 6 && pinToggle === 2 && applyDefs === 1 &&
+  applyCalls === 2 && bandTailDefs === 1 && bandTailCalls === 3 &&
+  notePlaceholder === 1 && notePrecedence &&
   blitPrecedence && readers === 4 && cellWants === 1,
   'a selected band is readable under the map (' + noteDefs + ' def, ' +
   noteCalls + ' sites, ' + pinToggle + ' pin reads, ' + applyCalls +
-  ' shared tails, ' + notePlaceholder +
+  ' pin tails, ' + bandTailDefs + ' chart tail, ' + bandTailCalls +
+  ' chart reads, ' + notePlaceholder +
   ' placeholder, ' + readers + ' readers, note precedence ' + notePrecedence +
   ', blit ' + blitPrecedence + ')');
 
