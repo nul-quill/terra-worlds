@@ -1660,6 +1660,27 @@ Object.keys(jsonLine).forEach(function (jk) {
 assert(tableBad.length === 0 && Object.keys(tableMap).length >= 20,
   'the plain table repeats the JSON record (' + Object.keys(jsonLine).length +
   ' fields, off at ' + tableBad.join('; ') + ')');
+// A lone size flag should not decide the other side by accident. `--width 100`
+// on its own used to mean 100x300 — a letterbox strip — because the untouched
+// side fell back to the plain default height. Both one-sided forms are checked
+// against the ratio of the two defaults, and against each other, so the missing
+// side is derived rather than fixed. Naming both sides is the control: the pair
+// must come through exactly as given, which is what stops the derivation from
+// becoming a second place the grid is decided.
+var oneWide = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --width 100 --json --out aspect-w.ppm',
+    {cwd: __dirname + '/..'}).toString().trim());
+var oneTall = JSON.parse(require('child_process')
+  .execSync('node cli.js "salt mirror" --height 60 --json --out aspect-h.ppm',
+    {cwd: __dirname + '/..'}).toString().trim());
+var aspect = 480 / 300;
+function ratioNear(rec) {
+  return Math.abs(rec.width / rec.height - aspect) < 0.06;
+}
+assert(oneWide.width === 100 && ratioNear(oneWide) && oneWide.height < 300 &&
+  oneTall.height === 60 && ratioNear(oneTall) && oneTall.width < 480,
+  'a lone size flag keeps the default aspect (' + oneWide.width + 'x' +
+  oneWide.height + ', ' + oneTall.width + 'x' + oneTall.height + ')');
 // That formatter switches at ten percent: whole numbers above, one decimal
 // below. That boundary is what keeps a `2%` class and a `0.2%` class in the
 // order their counts give them, which is how the legend reads biggest-first —

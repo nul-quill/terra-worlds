@@ -10,6 +10,9 @@ node cli.js "aurora basin" --width 320 --height 200 --out world.ppm
 Several seeds can be rendered in one call — each writes its own file
 (`world-1.ppm`, `world-2.ppm`, …) — and `--json` swaps the stats table for one
 JSON record per world, which is what a script would consume.
+A lone `--width` or `--height` keeps the default aspect: the side you did not
+name is filled from the ratio of the two defaults, so `--width 800` is a wide
+landscape rather than an 800x300 strip. Name both sides to override that.
 A dashed word that matches no flag is named on stderr rather than swallowed as a
 seed, and the word after it is skipped — otherwise a mistyped `--widht 30`
 would quietly render a second world from the number `30`.

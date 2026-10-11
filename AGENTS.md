@@ -410,6 +410,15 @@ Conventions:
   comes back as dry land; `undefined` lets the generator's own default stand.
   Keep the `argv[++i]` advance at the call site — moving it inside the helper
   reads each value twice and shifts every later flag by one.
+  The parser holds no copy of the default grid: `width`/`height` start absent so
+  the generator's own defaults stand, and `finishGrid()` only fills the side a
+  caller did not name, from the ratio of those two defaults (300/480). That is
+  what makes `--width 800` a wide landscape instead of an 800x300 letterbox, and
+  `--height 200` a wide strip rather than a tall column. When both sides are
+  given the pair passes through untouched, so the derivation is never a second
+  place the grid is decided. The suite checks both one-sided forms against that
+  ratio, since a fixed fallback for the missing side would still look plausible
+  in either direction on its own.
   Key-valued flags (`--palette`, `--shape`, `--channel`, `--dir`) read theirs
   through `nextKey()`, which matches against the same array its dropdown is
   filled from and pushes a miss onto the one `unknown` list. Both kinds of typo

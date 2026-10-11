@@ -7,7 +7,11 @@ var core = globalThis.TerraCore;
 var zlib = require('zlib');
 
 function parseArgs(argv) {
-  var opts = { seeds: [], unknown: [], width: 480, height: 300, out: 'world.ppm' };
+  // The two sizes are deliberately absent here: the generator owns the default
+  // grid, and a second copy of it in this object would be one more number to
+  // keep in step. What is left for the CLI to decide is only the side a caller
+  // did not name — see finishGrid.
+  var opts = { seeds: [], unknown: [], out: 'world.ppm' };
   // A flag value that is not a number would otherwise reach the generator as
   // NaN, where every comparison against it is false: the sea level in
   // particular turns a whole world into dry land that way. Reading the number
@@ -85,6 +89,21 @@ function parseArgs(argv) {
   return opts;
 }
 
+// Fill whichever side of the grid a caller did not name, from the ratio of the
+// two defaults. `--width 800` alone should be a wide landscape rather than an
+// 800x300 letterbox, and `--height 200` alone should not be a tall column. Both
+// sides named is left exactly as given.
+function finishGrid(opts) {
+  var w = typeof opts.width === 'number' && isFinite(opts.width);
+  var h = typeof opts.height === 'number' && isFinite(opts.height);
+  if (w && !h) {
+    opts.height = Math.round(opts.width * 300 / 480);
+  } else if (h && !w) {
+    opts.width = Math.round(opts.height * 480 / 300);
+  }
+  return opts;
+}
+
 function toPpm(img) {
   var out = 'P6\n' + img.width + ' ' + img.height + '\n255\n';
   var chars = new Array(img.width * img.height * 3);
@@ -152,6 +171,7 @@ function toPng(img) {
 }
 
 var opts = parseArgs(process.argv.slice(2));
+finishGrid(opts);
 
 if (opts.help) {
   console.log('usage: node cli.js "<seed>" [--width n] [--height n] [--palette name]');
