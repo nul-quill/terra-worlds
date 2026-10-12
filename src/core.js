@@ -70,6 +70,16 @@
     return (step - 0.5) * 0.05;
   }
 
+  // How much a filled cell keeps of its own colour at a given depth. The sea
+  // and a tarn both dim by that one shape — a full-depth cell keeps its colour
+  // less the basin's own strength — so the two fills share the arithmetic and
+  // differ only in the strength they pass. Written beside each fill the shape
+  // could be edited apart until a tarn graded its depth on a curve the open sea
+  // did not use, which still reads as two plausible basins side by side.
+  function depthWash(depth, strength) {
+    return 1 - depth * strength;
+  }
+
   // Does any neighbour of this cell sit on the other side of the shoreline?
   // The coast ink and a river mouth both ask that question of the same four
   // cells, so the sweep is one helper: written beside each call the pair could
@@ -745,11 +755,11 @@
         // Depth shading under water.
         if (isWater) {
           var depth = clamp01((seaLevel - h) / spanFloor(seaLevel));
-          var dw = 1 - depth * 0.30;
+          var dw = depthWash(depth, 0.30);
           r *= dw; g *= dw; b *= dw;
         } else if (lake[i]) {
           var ldepth = lake[i] / LAKE_STEPS;
-          var lw = 1 - ldepth * 0.22;
+          var lw = depthWash(ldepth, 0.22);
           r *= lw; g *= lw; b *= lw;
         } else if (h > SNOW_LINE) {
           // Snow line: high ground fades toward the ice colour, so peaks read

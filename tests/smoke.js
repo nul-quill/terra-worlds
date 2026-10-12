@@ -4611,6 +4611,18 @@ assert(sweepDefs === 1 && sweepReads === 3 && sweepInline === 0,
   'one sweep finds the far side of the shoreline (' + sweepDefs + ' def, ' +
   sweepReads + ' reads, ' + sweepInline + ' inline)');
 
+// Both fills under water dim by one shape: a cell keeps its colour less the
+// basin's own strength at its own depth. The sea and a tarn differ only in that
+// strength, so the shape is one helper. Written beside each fill it could be
+// edited apart until a tarn graded its depth on a curve the open sea did not
+// use — two plausible basins side by side, one of them wrong.
+var washDefs = (coreSrc.match(/function depthWash\(/g) || []).length;
+var washReads = (coreSrc.match(/= depthWash\(/g) || []).length;
+var washInline = (coreSrc.match(/1 - (depth|ldepth) \* 0\.\d/g) || []).length;
+assert(washDefs === 1 && washReads === 2 && washInline === 0,
+  'one shape dims both kinds of water (' + washDefs + ' def, ' + washReads +
+  ' reads, ' + washInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

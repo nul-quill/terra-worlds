@@ -346,6 +346,12 @@ Conventions:
   ignored, which reads as a mouth sitting a cell off the shore rather than as a
   broken sweep, so the suite counts the definition, its three reads and asks for
   no inline four-neighbour test left beside them.
+  Both fills under water in that same pass dim by one shape — `depthWash(depth,
+  strength)` — since a sea and a tarn differ only in how hard their own depth is
+  pressed down. Written beside each fill the shape could be edited apart until a
+  tarn graded its depth on a curve the open sea did not use, which still reads as
+  two plausible basins beside each other; the suite counts the definition, its two
+  reads and asks for no inline `1 - depth *` left beside them.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
