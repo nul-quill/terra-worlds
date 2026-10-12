@@ -1310,10 +1310,20 @@
 
   /* ---- interaction ---- */
 
+  // Every path that moves the cursor ends by putting the crosshair somewhere,
+  // and the mark is a pair: a column and a row. Written at each site the pair
+  // could lose one half on one branch only, which reads as a cursor that
+  // tracks sideways while its own row stays put — a difference small enough to
+  // look like an odd mouse rather than a bug, so both halves go through this
+  // one writer and every caller hands over two numbers.
+  function setHoverPoint(x, y) {
+    hover.x = x;
+    hover.y = y;
+  }
+
   function setHoverFromEvent(ev) {
     var p = pointerPos(ev);
-    hover.x = p.x;
-    hover.y = p.y;
+    setHoverPoint(p.x, p.y);
   }
 
   // Keyboard equivalent: put the cursor on a grid cell by index, which is how
@@ -1324,8 +1334,7 @@
     px = clampIndex(px, current.width);
     py = clampIndex(py, current.height);
     var cs = cellSize();
-    hover.x = cellCentre(px, cs.w);
-    hover.y = cellCentre(py, cs.h);
+    setHoverPoint(cellCentre(px, cs.w), cellCentre(py, cs.h));
     updateReadout(px, py);
     drawHover();
     // The walked cell is part of the shared state too, so the link follows the
@@ -1816,7 +1825,7 @@
   });
 
   view.addEventListener('mouseleave', function () {
-    hover.x = -1; hover.y = -1;
+    setHoverPoint(-1, -1);
     // The cell reading goes with it: nothing is under the cursor any more, so
     // the chart should show the whole silhouette again.
     cellBand = -1;

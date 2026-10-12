@@ -851,6 +851,14 @@ Conventions:
     desktop link in sync while a phone's drifted, which no one notices with a
     mouse plugged in, so the suite counts the one definition, the two reads,
     the four steps inside it and asks for no bare sequence left beside them.
+    The mark those steps move is a pair too — a column and a row — and one
+    `setHoverPoint(x, y)` writes both halves for all three paths that reach it:
+    a pointer on the map, the keyboard walk, and a pointer leaving. Written
+    beside each caller the pair could lose one half on one branch only, which
+    reads as a cursor that tracks sideways while its own row stays put — close
+    enough to a working crosshair that nobody opens the console over it. The
+    suite counts the definition, the three reads and asks that exactly one
+    assignment to the pair's halves be left, inside that helper.
     That readout is filled from two kinds of caller — a pointer event, which it
     turns into a cell itself, and the pair of indices a keyboard walk just
     clamped — so both halves of that pair are named parameters of

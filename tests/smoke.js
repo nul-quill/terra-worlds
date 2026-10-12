@@ -3111,6 +3111,17 @@ var readArgs = (outSrc.match(/arguments\[/g) || []).length;
 assert(readDefs === 1 && readCalls === 2 && readArgs === 0,
   'the readout reads both of its axes from its own parameters (' + readDefs +
   ' def, ' + readCalls + ' reads, ' + readArgs + ' arguments slots)');
+// The crosshair is a pair — a column and a row — and three paths move it: a
+// pointer on the map, the keyboard walk, and the pointer leaving. Written at
+// each site the pair could lose one half on one branch only, which reads as a
+// cursor that tracks sideways while its own row stays put. Count the one
+// writer, every path that reaches it, and any assignment left outside it.
+var pointDefs = (outSrc.match(/function setHoverPoint\(x, y\) \{/g) || []).length;
+var pointCalls = (outSrc.match(/setHoverPoint\(/g) || []).length - pointDefs;
+var pointPairs = (outSrc.match(/hover\.x = /g) || []).length;
+assert(pointDefs === 1 && pointCalls === 3 && pointPairs === 1,
+  'every cursor move writes its pair in one place (' + pointDefs + ' def, ' +
+  pointCalls + ' reads, ' + pointPairs + ' assignments)');
 // Moisture is not a standalone field: the orographic pass folds the relief
 // into it by walking each row west to east, so a cell keeps more of what the
 // air carried when it came in than after the next climb. That direction is the
