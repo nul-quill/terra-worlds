@@ -1112,8 +1112,14 @@
     var seaLabel = 'sea ' + hundred(result.seaLevel);
     var seaTw = hc.measureText(seaLabel).width;
     hc.fillStyle = rgba(INK, 0.75);
+    // The gap between the rule and its number is one measure: it is the lead
+    // on whichever side the label lands, and twice that lead is what the flip
+    // test needs before it commits to the right. Written per site the pair
+    // could be edited apart, which puts the number closer to the line on one
+    // side of the chart than on the other.
+    var LEAD = 4;
     hc.fillText(seaLabel,
-      seaTw + 6 + seaX < w ? seaX + 4 : seaX - seaTw - 4, 9);
+      seaTw + LEAD * 2 + seaX < w ? seaX + LEAD : seaX - seaTw - LEAD, 9);
     // Corner labels give the chart a scale: without them the shape of the
     // spread is readable but the numbers are not. Drawn before the hovered-bin
     // label so a hover can cover them when space is tight.

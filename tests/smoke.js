@@ -3926,6 +3926,19 @@ assert(slackDefs === 1 && slackUses === 2 && slackLiterals === 0,
   'one tolerance skips ticks that crowd a corner label (' + slackDefs +
   ' def, ' + slackUses + ' reads, ' + slackLiterals + ' literals)');
 
+// The sea number beside its own rule sits one measure away, and the flip that
+// moves it to the other side of the line is measured against twice that same
+// gap. Written per site the pair could be edited apart, which puts the figure
+// closer to the rule on one side of the chart than on the other. Counted as
+// text: one number, every offset derived from it, no bare gap left beside them.
+var leadDefs = (appSrc.match(/var LEAD = \d+;/g) || []).length;
+var leadUses = (appSrc.match(/LEAD/g) || []).length - leadDefs;
+var leadLiterals = (appSrc.match(/seaX \+ 4\b|seaTw \+ \d \+ seaX/g) || [])
+  .length;
+assert(leadDefs === 1 && leadUses === 3 && leadLiterals === 0,
+  'one gap sets the sea label beside its rule (' + leadDefs + ' def, ' +
+  leadUses + ' reads, ' + leadLiterals + ' literals)');
+
 // Both canvases size their backing store from the same clamp on the device
 // pixel ratio. Two copies of that clamp could be edited apart, and a map
 // blitted at one scale under a chart drawn at another reads as a blurry strip

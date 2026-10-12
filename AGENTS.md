@@ -1224,6 +1224,12 @@ Conventions:
   comparison would report a mismatch that no rendering can show.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
+  The gap between that rule and its number is one measure — `LEAD`, four CSS
+  pixels — which is the lead on whichever side the label lands and twice itself
+  in the flip test. Written beside each site the pair could be edited apart,
+  which puts the figure nearer the line on one side of the chart than on the
+  other, so the suite counts the one number, its reads and asks for no bare gap
+  left beside them.
   That rule is also the wet/dry split of the bars, so it has to agree with the
   counted `water` share: the suite walks each phrase at three sea levels and
   asks that both figures rise together and land in the same neighbourhood. A
