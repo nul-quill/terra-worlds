@@ -1317,6 +1317,20 @@ assert(fillDefs === 1 && fillUses >= 6 && fillBuilt === 1,
   'one loop fills every dropdown (' + fillDefs + ' def, ' + fillUses +
   ' selects, ' + fillBuilt + ' option builder)');
 
+// The palette dropdown and the digit keys both walk the schemes in the order
+// the table declares them, so both take that order from one lookup rather than
+// each calling `Object.keys` beside itself. Two copies could be edited apart —
+// one sorting the keys, one keeping declaration order — and `3` would then pick
+// a different scheme from the third row of the dropdown, which is a difference
+// small enough to look like an odd choice rather than a bug. Counted as text:
+// one definition, two reads, and no second key list left beside them.
+var pkDefs = (fillSrc.match(/function paletteKeys\(/g) || []).length;
+var pkCalls = (fillSrc.match(/= paletteKeys\(\);|paletteKeys\(\)\.map/g) || []).length;
+var pkInline = (fillSrc.match(/Object\.keys\(TerraCore\.palettes\)/g) || []).length;
+assert(pkDefs === 1 && pkCalls === 2 && pkInline === 1,
+  'the palette list is one ordered lookup (' + pkDefs + ' def, ' + pkCalls +
+  ' reads, ' + pkInline + ' key list inside it)');
+
 // The help text is the shortest listing, so it must agree with the lists the
 // dropdowns read: a shape key missing from --help would look unavailable even
 // though --shape accepts it.

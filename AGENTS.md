@@ -1373,6 +1373,14 @@ Conventions:
   the option's value — what a link stores — and the label its text. Six copies
   of that loop could be edited apart while each still looked right, so the suite
   counts the one definition, a call per select and a single option builder.
+  The palettes are the one list that needs a step before that loop: the scheme
+  table is a map rather than an array, so its keys come out through
+  `paletteKeys()`. Two readers take that order — the dropdown builder and the
+  digit keys — and both go through the lookup, since a pair written out in full
+  could be edited apart, one sorting the keys and one keeping declaration order.
+  That would make `3` pick a different scheme from the third row of the
+  dropdown, which reads as an odd choice rather than as a bug, so the suite
+  counts the definition, the two reads and the single `Object.keys` inside it.
   `core.phrases` is the fourth: the hand-picked seed phrases. `PRESETS` in
   `app.js` is that array, the `p` key walks it, `cli.js --phrases` prints it and
   the smoke suite renders every entry, so a phrase is only worth adding if it

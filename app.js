@@ -214,9 +214,19 @@
     select.appendChild(frag);
   }
 
+  // The order the palette dropdown and the digit keys walk. Both are a list of
+  // keys in the order the scheme table declares them, so the two read it
+  // through this one lookup: written beside each caller, one could sort the
+  // keys while the other kept declaration order, which reads as `3` picking a
+  // different scheme from the third row of the dropdown — close enough to a
+  // working pair that nobody looks twice at it.
+  function paletteKeys() {
+    return Object.keys(TerraCore.palettes);
+  }
+
   function fillPalettes() {
     var names = TerraCore.palettes;
-    var items = Object.keys(names).map(function (key) {
+    var items = paletteKeys().map(function (key) {
       return {key: key, label: names[key].label};
     });
     fillOptions(inputs.palette, items);
@@ -1975,7 +1985,7 @@
     // Number keys pick the palette by position, so a look can be recalled
     // without reaching for the select.
     if (/^[1-9]$/.test(ev.key)) {
-      var names = Object.keys(TerraCore.palettes);
+      var names = paletteKeys();
       // Read through `num()` like every other number on the page, so the
       // digit that picks a scheme is parsed by the one rule the sliders and
       // the option reader follow rather than by a second one beside it.
