@@ -1858,7 +1858,13 @@
       var nowSea = num(inputs.seaLevel.value);
       if (!isFinite(nowSea)) return;
       var nextSea = nowSea + (ev.key === ']' ? stepSea : -stepSea);
-      nextSea = Math.round(nextSea * 100) / 100;
+      // The nudge has to drop the float drift a run of steps accumulates, and
+      // the quantum it drops to is the one every other figure on the page
+      // prints at: the shared out-of-a-hundred scale, divided back into the
+      // 0..1 the slider holds. A second rounding written beside this branch
+      // could be cut finer than the figures next to it, so the slider would
+      // hold a level no readout on the page is able to name.
+      nextSea = hundred(nextSea) / 100;
       if (isFinite(loSea)) nextSea = Math.max(loSea, nextSea);
       if (isFinite(hiSea)) nextSea = Math.min(hiSea, nextSea);
       inputs.seaLevel.value = String(nextSea);

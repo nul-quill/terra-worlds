@@ -1476,6 +1476,17 @@ assert(seaNudgeSrc &&
   'the sea nudge reads its bounds by the same rule (' +
   (seaNudgeSrc ? 'read' : 'unreadable') + ')');
 
+// That branch also tidies the float drift a run of steps leaves behind, and it
+// does so on the scale every other figure on the page prints at: one read of
+// the shared out-of-a-hundred helper, no second rounding written beside it. A
+// local rounding could be cut finer than the rows next to the slider, so the
+// control would hold a level no readout can name.
+assert(seaNudgeSrc &&
+  (seaNudgeSrc.match(/hundred\(nextSea\)/g) || []).length === 1 &&
+  (seaNudgeSrc.match(/Math\.round\(nextSea/g) || []).length === 0,
+  'the sea nudge rounds on the printed scale (' +
+  (seaNudgeSrc ? 'one scale' : 'unreadable') + ')');
+
 // The chain count is a numeric flag too, so it should be read the same way:
 // an exponent walks the whole ten-seed chain, and a value with junk on the
 // end falls back to the chain's own default length rather than to whatever

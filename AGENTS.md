@@ -1217,6 +1217,12 @@ Conventions:
   is applied only when it reads, so the markup stays the single source of the
   range; the suite scrapes that branch for the four `num()` reads, the
   `isFinite` test behind them, and no bare `Number(` left beside them.
+  That branch also has to shed the float drift a run of steps leaves behind, and
+  it does so on the scale every other figure prints at — one `hundred(nextSea)`
+  divided back out of a hundred, rather than a second rounding written beside
+  it. Cut finer than the rows next to the slider, the control would hold a level
+  no readout on the page can name; the suite asks for that one read and no bare
+  `Math.round(nextSea` left in the branch.
   The number the slider starts on is written three times — the generator's
   `seaLevel == null` fallback, the value the shell assigns on first load, and the
   `min`/`max` span in the markup — so the suite reads all three and asks that the
