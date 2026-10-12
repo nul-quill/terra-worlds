@@ -438,6 +438,14 @@ Conventions:
   into `generate`: an overlay must not change the biome map. Stretch each field by
   its own 2%/98% percentiles, and keep the log transform on `drain` and `coast` —
   both are heavy-tailed and a linear ramp collapses them into one colour.
+  Both of those sorts order their field through one `byNumber(a, b)`, since a
+  quantile is only ever a middle of a list of numbers. Written beside each sort
+  the comparison could be edited apart — one keeping a tie-break the other drops
+  — which lets a cut come from a neighbouring cell while each sorted list still
+  looked ordered beside its own caption. The legend's ranking is a different
+  shape on purpose (a count with a tie-break on declaration order), so it stays
+  outside this pair; the suite counts the definition, its two reads and asks for
+  no second plain comparator left beside them.
   `fieldFor(key, result)` is the single field lookup shared by the ramp and by
   `channelValue(result, cell)`, which is what the hover readout prints. The scale
   is cached in `result.channelScale` during `channelize` so a hover does not sort

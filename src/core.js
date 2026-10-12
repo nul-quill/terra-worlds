@@ -70,6 +70,15 @@
     return (step - 0.5) * 0.05;
   }
 
+  // Every quantile in this generator starts by putting a field in order, and
+  // every one of those sorts is the same comparison of two numbers. Written at
+  // each sort the tie on the field's own value could be dropped from one of
+  // them, which leaves a cut taken from a different cell each run while the
+  // sorted list still looks ordered beside its own caption.
+  function byNumber(a, b) {
+    return a - b;
+  }
+
   // How much a filled cell keeps of its own colour at a given depth. The sea
   // and a tarn both dim by that one shape — a full-depth cell keeps its colour
   // less the basin's own strength — so the two fills share the arithmetic and
@@ -550,7 +559,7 @@
     // share of the network.
     var accSorted = new Array(n);
     for (i = 0; i < n; i++) accSorted[i] = acc[i];
-    accSorted.sort(function (a, b) { return a - b; });
+    accSorted.sort(byNumber);
     var keep = 0.01 + clamp01(riverMin / 400) * 0.19;
     var qIndex = Math.min(n - 1, Math.round((1 - keep) * (n - 1)));
     var riverCut = accSorted[qIndex];
@@ -1120,7 +1129,7 @@
     for (var i = 0; i < n; i++) {
       sample[i] = useLog ? Math.log(1 + values[i]) : values[i];
     }
-    sample.sort(function (a, b) { return a - b; });
+    sample.sort(byNumber);
     var lo = sample[Math.round((n - 1) * 0.02)];
     var hi = sample[Math.round((n - 1) * 0.98)];
     if (!(hi > lo)) hi = lo + 1;

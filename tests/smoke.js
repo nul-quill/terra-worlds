@@ -4706,6 +4706,21 @@ assert(bandDefs === 1 && bandReads === 2 && bandClamp === 1 && bandInline === 0,
   'both band counts are a clamped multiple of a spread (' + bandDefs + ' def, ' +
   bandReads + ' reads, ' + bandClamp + ' clamp, ' + bandInline + ' inline)');
 
+// Both quantile sorts — the one behind the river cut and the one behind an
+// overlay's scale — order a field by comparing two numbers, so both go through
+// one comparator. Written beside each sort a tie-break could be dropped from
+// one of them, which leaves a cut taken from a neighbouring cell while the
+// sorted list still looks ordered beside its own caption. The legend's ranking
+// is a different shape on purpose — a count with a tie-break on declaration
+// order — so it is counted outside this pair, and the suite asks that the only
+// plain two-number comparator in the core sit inside the helper.
+var cmpDefs = (coreSrc.match(/function byNumber\(/g) || []).length;
+var cmpReads = (coreSrc.match(/\.sort\(byNumber\)/g) || []).length;
+var cmpInline = (coreSrc.match(/sort\(function \(a, b\) \{ return a - b; \}\)/g) || []).length;
+assert(cmpDefs === 1 && cmpReads === 2 && cmpInline === 0,
+  'both quantile sorts compare numbers one way (' + cmpDefs + ' def, ' +
+  cmpReads + ' reads, ' + cmpInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division
