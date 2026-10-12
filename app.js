@@ -305,6 +305,18 @@
     return Math.max(floor, Math.round(px / 3));
   }
 
+  // Whether the map has no pointer on it right now. Two reads in `render()`
+  // Three reads depend on that one notion: the two in `render()` — the note
+  // under the map may refill the whole strip only while nothing is hovered,
+  // and a hash-restored cell only wins while nothing is hovered — plus the
+  // reader that builds the `at=` pair, which falls back to the middle cell.
+  // Written beside each caller the pair could be edited apart, and a rebuild
+  // that restored a cell while its own line still showed the placeholder would
+  // read as a stale caption rather than as a bug.
+  function pointerAway() {
+    return hover.x < 0;
+  }
+
   function render() {
     var opts = readOptions();
     writeHash();
@@ -379,12 +391,12 @@
     // legend, and a stale figure beside a fresh one reads as two worlds. Done
     // before the hovered cell is restored so a cell reading still wins over
     // the note, which is what a pointer resting on the map expects to see.
-    if (hover.x < 0) bandNote();
+    if (pointerAway()) bandNote();
     // A link that named one cell gets it back after the rebuild, as long as the
     // pointer has not taken over in the meantime. The indices are clamped by
     // hoverCell, so a link written on a wide window still lands sensibly in a
     // narrow one.
-    if (hover.x < 0 && atCell) hoverCell(atCell[0], atCell[1]);
+    if (pointerAway() && atCell) hoverCell(atCell[0], atCell[1]);
   }
 
   // Blit the generated grid onto the visible canvas, nearest-neighbour.
@@ -1178,7 +1190,7 @@
   }
 
   function currentCell() {
-    if (hover.x < 0 || !current) {
+    if (pointerAway() || !current) {
       return [Math.floor(current ? current.width / 2 : 0),
         Math.floor(current ? current.height / 2 : 0)];
     }

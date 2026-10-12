@@ -4320,6 +4320,18 @@ assert(halfDefs === 1 && halfReads === 2 && halfInline === 0,
   'both axes of the magnifier pick their half through one lookup (' +
   halfDefs + ' def, ' + halfReads + ' reads, ' + halfInline + ' inline)');
 
+// A rebuild only rewrites the line under the map, or replays a cell from the
+// hash, while no pointer is on the canvas. Both reads test that one way, so a
+// second copy could drop the guard on one branch and leave a hovered cell
+// under a caption describing the whole grid. One definition, two reads, and no
+// bare comparison of the hover against zero left beside them.
+var awayDefs = (appSrc.match(/function pointerAway\(/g) || []).length;
+var awayReads = (appSrc.match(/if \(pointerAway\(\)/g) || []).length;
+var awayInline = (appSrc.match(/if \(hover\.x < 0/g) || []).length;
+assert(awayDefs === 1 && awayReads === 3 && awayInline === 0,
+  'a rebuild checks for a pointer through one lookup (' + awayDefs + ' def, ' +
+  awayReads + ' reads, ' + awayInline + ' inline)');
+
 // The dark scheme is meant to change nothing but the colour variables, which
 // only works if it replaces every one of them: a variable declared once in
 // `:root` and left alone by the dark block would keep its light value under a

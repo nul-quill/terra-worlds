@@ -719,6 +719,15 @@ Conventions:
     way, so a pointer resting above or right of the canvas cannot write
     `at=48,-159` while the readout prints `(48, 0)`. Both the clamp and the
     wrap live in those two functions, never in `applyHash()`.
+    Whether the map has a pointer on it at all is one lookup — `pointerAway()`
+    — read by the two guards in `render()` and by that reader. The note under
+    the map may refill the whole strip only while nothing is hovered, a
+    hash-restored cell only wins while nothing is hovered, and the `at=` pair
+    falls back to the middle cell otherwise. Written beside each caller the
+    three could be edited apart, which reads as a rebuild that restored a cell
+    under a caption describing the whole grid — a stale line, not an obvious
+    bug — so the suite counts the definition, the three guarded reads and asks
+    for no bare comparison of the hover against zero left beside them.
     A pointer is mapped onto the buffer by one `pointerPos(ev)`, which reads its
     pair of fractions from `pointerFraction(ev, rect)`: the offset inside the
     layout box over that box, guarded so an empty layout still divides. Both
