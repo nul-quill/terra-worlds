@@ -4300,6 +4300,20 @@ var hairInline = (appSrc.match(/Math\.round\([^)]*\) \+ 0\.5/g) || []).length;
 assert(hairDefs === 1 && hairCalls === 8 && hairInline === 1,
   'every thin mark shares one pixel offset (' + hairDefs + ' def, ' +
   hairCalls + ' reads, ' + hairInline + ' in the helper)');
+// The width those marks are stroked at is the same kind of pair: three of them
+// — the crosshair's hairlines, the border of the magnifier's mat and the sea
+// rule — are one device pixel wide, and each reads that through one number.
+// Written beside each stroke the width could be edited on one mark only, which
+// leaves a single thick line among thin ones. Counted as text: one definition,
+// three reads, and no bare one-pixel width left beside them. The box around a
+// hovered cell is a different shape on purpose — it scales with the cell — so
+// it is not part of that count.
+var hairWDeps = (appSrc.match(/var HAIR = \d;/g) || []).length;
+var hairWReads = (appSrc.match(/lineWidth = HAIR;/g) || []).length;
+var hairWBare = (appSrc.match(/lineWidth = \d;/g) || []).length;
+assert(hairWDeps === 1 && hairWReads === 3 && hairWBare === 0,
+  'every hairline stroke is one pixel wide by one number (' + hairWDeps +
+  ' def, ' + hairWReads + ' reads, ' + hairWBare + ' literals)');
 // Three marks on the relief chart are placed along its width from a height:
 // the sea rule, the decade ticks and the median. Each of those is the same
 // subtraction of the chart's own low end over its span, times the width.

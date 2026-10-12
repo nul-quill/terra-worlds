@@ -303,6 +303,15 @@
     return Math.round(x) + 0.5;
   }
 
+  // The width those marks are stroked at is the other half of the same idea: a
+  // hairline is one device pixel, and the three of them — the crosshair's pair
+  // of hairlines, the border of the magnifier's mat and the sea rule under the
+  // bars — all want the same one. Written beside each stroke the number could
+  // be edited on one mark only, which leaves a single thick line among thin
+  // ones: close enough to read as an odd cursor rather than as a bug, so it is
+  // one lookup the three reads share.
+  var HAIR = 1;
+
   // How many device pixels a CSS measurement is worth. Both canvases size their
   // backing store this way — the map from the layout box, the chart from the
   // sidebar's column — and both round, since a fractional store makes every
@@ -618,7 +627,7 @@
       // on a dense grid, where the box alone is hard to place.
       ctx.save();
       ctx.strokeStyle = hair;
-      ctx.lineWidth = 1;
+      ctx.lineWidth = HAIR;
       ctx.beginPath();
       var cx = hairline(cellCentre(px, cellX));
       var cy = hairline(cellCentre(py, cellY));
@@ -689,7 +698,7 @@
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(off, x0, y0, span, span, dx, dy, size, size);
     ctx.strokeStyle = rgba(mix(inkColour(), sky, 0.35), 0.55);
-    ctx.lineWidth = 1;
+    ctx.lineWidth = HAIR;
     ctx.strokeRect(dx - MAT - 0.5, dy - MAT - 0.5,
       size + MAT * 2 + 1, size + MAT * 2 + 1);
     // The patch is a dozen cells wide, so the one under the cursor still has
@@ -1239,7 +1248,7 @@
       hc.fillRect(Math.round(i * binW), Math.round(h - bh), Math.ceil(binW), Math.round(bh));
     }
     hc.strokeStyle = rgba(INK, 0.7);
-    hc.lineWidth = 1;
+    hc.lineWidth = HAIR;
     hc.beginPath();
     hc.moveTo(hairline(seaX), 0);
     hc.lineTo(hairline(seaX), h);

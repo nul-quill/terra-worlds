@@ -1540,6 +1540,16 @@ Conventions:
   soft line beside three crisp ones — a difference small enough that nobody
   opens the console over it, so the suite counts the definition, the eight
   reads and asks for no bare `Math.round(...) + 0.5` left beside them.
+  The width those marks are stroked at is one number as well — `HAIR` — read by
+  the three of them: the crosshair's pair of hairlines, the border of the
+  magnifier's mat and the sea rule. Each sits over its own background at its own
+  alpha, so the alpha is written per mark while the width is not. Written beside
+  each stroke, one mark could grow a second pixel while the others stayed thin,
+  which reads as a stray line across the chart rather than as a bug — close
+  enough to a working cursor that nobody opens the console over it. The suite
+  therefore counts the definition, the three reads, and asks that no bare
+  one-pixel width be left written beside them. The box around a hovered cell
+  keeps its own width on purpose, since that one scales with the cell.
   Those same three chart marks are also placed by one lookup —
   `chartX(value, lo, span, w)` — since each is a height over the range the bars
   were binned over, times the chart's width. Written at each site, one mark
