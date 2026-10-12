@@ -450,14 +450,23 @@
     // How many hypsometric bands the relief can carry. Counted above the
     // shoreline, because that is the span the lines are drawn across: a low
     // world gets a handful of wide steps, a jagged one gets more.
+    // Both counts are the same shape — a multiple of a spread, held between a
+    // floor and a cap — so the shape is one lookup. Written beside each count
+    // the clamp could be dropped on one of them, which lets a flat craton turn
+    // into stripes above its shoreline while its basins stayed in three wide
+    // steps: still plausible bands, so the shape is what is counted.
+    function bandCount(spread, mult, floor, cap) {
+      return Math.max(floor, Math.min(cap, Math.round(spread * mult)));
+    }
+
     var reliefAboveSea = spanFloor(maxH - seaLevel);
-    var contourBands = Math.max(6, Math.min(20, Math.round(reliefAboveSea * 26)));
+    var contourBands = bandCount(reliefAboveSea, 26, 6, 20);
 
     // The basin gets its own count from the depth range, so a shallow shelf
     // is not crossed by lines every few pixels while a deep ocean still shows
     // a few steps.
     var reliefBelowSea = spanFloor(seaLevel - minH);
-    var basinBands = Math.max(3, Math.min(12, Math.round(reliefBelowSea * 22)));
+    var basinBands = bandCount(reliefBelowSea, 22, 3, 12);
 
     /* ---- Drainage: flow accumulation over the height field. ---- */
 

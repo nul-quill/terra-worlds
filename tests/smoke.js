@@ -4691,6 +4691,21 @@ assert(dropDefs === 1 && dropReads === 4 && dropInline === 0,
   'one helper is a neighbour\'s share of a slope (' + dropDefs + ' def, ' +
   dropReads + ' reads, ' + dropInline + ' literals)');
 
+// The two band counts — hypsometric steps above the shoreline, depth steps
+// under it — are the same shape: a multiple of a spread held between a floor
+// and a cap. Written beside each count that clamp could be dropped on one of
+// them, which lets a flat craton turn into stripes above its own shoreline
+// while its basins stayed in three wide steps. Both counts still look like
+// bands either way, so the shape of the clamp is what is counted: one lookup,
+// its two reads, the one clamp inside it and no second copy beside them.
+var bandDefs = (coreSrc.match(/function bandCount\(/g) || []).length;
+var bandReads = (coreSrc.match(/= bandCount\(/g) || []).length;
+var bandClamp = (coreSrc.match(/Math\.max\(floor, Math\.min\(cap,/g) || []).length;
+var bandInline = (coreSrc.match(/Math\.max\(6, Math\.min\(20,|Math\.max\(3, Math\.min\(12,/g) || []).length;
+assert(bandDefs === 1 && bandReads === 2 && bandClamp === 1 && bandInline === 0,
+  'both band counts are a clamped multiple of a spread (' + bandDefs + ' def, ' +
+  bandReads + ' reads, ' + bandClamp + ' clamp, ' + bandInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

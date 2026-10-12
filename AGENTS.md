@@ -127,6 +127,13 @@ Conventions:
   does not turn into stripes. Keep it derived, not a fixed constant.
   The water gets its own count from the depth range (`basinBands`, clamped 3..12)
   drawn by the same `contour` switch. Both stay derived, never constants.
+  Both are that derivation through one `bandCount(spread, mult, floor, cap)`,
+  since a band count is only ever a multiple of a spread held between two bounds.
+  Written beside each count the clamp could be dropped on one of them, which lets
+  a flat craton grow stripes above its shoreline while its own basins stayed in
+  three wide steps — still plausible bands, so the suite counts the definition,
+  its two reads, the single clamp inside it and asks for no second copy of either
+  bound left beside them.
   The sidebar prints the pair on one `contours` row — `12 land / 7 basin` — and
   the smoke suite checks both halves: each field is in that row's own source and
   each is a key of the CLI record, so a terminal can reproduce the stripes under
