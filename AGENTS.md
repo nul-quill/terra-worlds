@@ -999,6 +999,16 @@ Conventions:
   bandNote();`. Written beside each handler, a step added for the mouse only
   would keep a desktop link in sync while a phone's drifted, so the suite counts
   the one definition and its three reads beside the direct writes.
+  Dropping the height filter is a fifth path of that kind, and it is one
+  `clearBand()` holding `band = -1;` plus a read of that same tail. Three ways
+  reach it: a second tap on the bar already selected, a pointer leaving the
+  chart, and a pointer leaving the map. Written beside each handler the reset
+  could stay while the repaint pair was dropped, which reads as a map that
+  forgot its band while the line under it still named the old one — so the
+  suite counts the definition, its three reads, the one reset and the one tail
+  inside it, and asks for no bare `band = -1;` written outside the helper.
+  On the map's own leave the cell reading is cleared first, since the shared
+  tail repaints the chart from that number.
   The tail of all three — rebuild the rows, repaint the map, write the hash,
   refresh the note — is one `applyPin()`, read by `togglePin(key)` (which the
   click and the row's `Enter`/`Space` both call, after flipping the pin) and by

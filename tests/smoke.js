@@ -4355,11 +4355,11 @@ assert(joinDefs === 1 && joinCalls === 3 && joinInline === 1,
 // each of the three ways a legend pin is set or released, the legend's own
 // hover and clear paths, and the rebuild that follows a resize or a slider
 // step — a new grid changes every share in the legend, so the line beside it
-// has to be rewritten too. Six literal writes, one definition, and the
+// has to be rewritten too. Five literal writes, one definition, and the
 // placeholder is restored by that same function rather than by a second write
-// of the literal. Three of those six sit inside a helper — `applyPin()` for
+// of the literal. Three of those five sit inside a helper — `applyPin()` for
 // the pins, `clearSolo()` for the two legend clears, `applyBand()` for the
-// three chart paths — so the six are reached by eleven paths.
+// chart paths — so the five are reached by nine reads of them.
 // The note also has to follow the same precedence the blit does: a pinned
 // legend class beats a height band, so the line cannot describe a band while
 // the map is fading everything that is not the pinned class. Both sides of that
@@ -4386,19 +4386,19 @@ var blitPrecedence = /var want = solo \|\| pinned;/.test(appSrc);
 // a new reader has to be named here.
 var readers = (appSrc.match(/var want = solo \|\| pinned;/g) || []).length;
 var cellWants = (appSrc.match(/if \(want && key !== want\) \{/g) || []).length;
-// Where those writes sit: three beside their own handler — the rebuild at the
-// end of `render()`, the hovered legend row, and the pointer leaving the map —
-// and one inside each of the three
-// helpers. Each helper is read more than once: `applyPin()` by a pin toggle and
-// by the `k` cycle, `clearSolo()` by the pointer leaving the list and by the
-// caret moving off a row, `applyBand()` by the chart's hover, its tap, its
-// leave and the keyboard walk. Together those eleven paths reach the six
-// writes. A helper only one branch called would show up here as a single read,
+// Where those writes sit: two beside their own handler — the rebuild at the
+// end of `render()`, and the hovered legend row — and one inside each of the
+// three helpers. Each helper is read more than once: `applyPin()` by a pin
+// toggle and by the `k` cycle, `clearSolo()` by the pointer leaving the list
+// and by the caret moving off a row, `applyBand()` by the chart's hover, its
+// keyboard walk and the shared clear. Together those seven reads plus the two
+// beside their own handler reach the five writes. A helper only one branch
+// called would show up here as a single read,
 // which is the case these counts are for.
 var pinToggle = (appSrc.match(/togglePin\(key\);/g) || []).length;
 var applyDefs = (appSrc.match(/function applyPin\(/g) || []).length;
 var applyCalls = (appSrc.match(/applyPin\(\);/g) || []).length;
-assert(noteDefs === 1 && noteCalls === 6 && pinToggle === 2 && applyDefs === 1 &&
+assert(noteDefs === 1 && noteCalls === 5 && pinToggle === 2 && applyDefs === 1 &&
   applyCalls === 2 && bandTailDefs === 1 && bandTailCalls === 3 &&
   notePlaceholder === 1 && notePrecedence &&
   blitPrecedence && readers === 4 && cellWants === 1,
@@ -4408,6 +4408,26 @@ assert(noteDefs === 1 && noteCalls === 6 && pinToggle === 2 && applyDefs === 1 &
   ' chart reads, ' + notePlaceholder +
   ' placeholder, ' + readers + ' readers, note precedence ' + notePrecedence +
   ', blit ' + blitPrecedence + ')');
+
+// Putting the height filter back is one sequence too: drop the picked bin, then
+// repaint both views and rewrite the line under the map. Three ways reach it —
+// a second tap on the bar already selected, a pointer leaving the chart, a
+// pointer leaving the map — and each reads the same helper, so a clear cannot
+// drop the selection from the map while the note beside it still names the old
+// band. Counted as text: one definition holding the reset and the shared tail,
+// three reads of it, and no second reset written outside that helper.
+var cbDefs = (appSrc.match(/function clearBand\(/g) || []).length;
+var cbCalls = (appSrc.match(/clearBand\(\);/g) || []).length;
+var cbBody = (/function clearBand\(\) \{([\s\S]*?)\n  \}/
+  .exec(appSrc) || ['', ''])[1];
+var cbSteps = (cbBody.match(/band = -1;/g) || []).length;
+var cbTail = (cbBody.match(/applyBand\(\);/g) || []).length;
+var cbInline = (appSrc.match(/^\s+band = -1;/gm) || []).length;
+assert(cbDefs === 1 && cbCalls === 3 && cbSteps === 1 && cbTail === 1 &&
+  cbInline === 1,
+  'every chart clear reads one helper (' + cbDefs + ' def, ' + cbCalls +
+  ' reads, ' + cbSteps + ' reset, ' + cbTail + ' tail, ' + cbInline +
+  ' outside)');
 
 // The word beside a selected class also has to match what the map does with
 // it. A clicked row keeps its class after the pointer moves — that one is

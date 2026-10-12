@@ -1626,13 +1626,16 @@
     // A touch has no hover-out, so nothing would ever clear the band again:
     // tapping the bar that is already selected drops it instead. The mouse
     // path keeps the plain rule, since leaving the chart clears it there.
-    if (toggleSame && band === bin) band = -1;
+    // Dropping the bar that is already selected is the same clear the two
+    // pointer-leave paths do, so it reads that one helper rather than writing
+    // its own reset beside a repaint.
+    if (toggleSame && band === bin) { clearBand(); return; }
     // The same bound the three cell paths use: a bin is one index over one
     // count, so a pointer just past the last bar and a link restored against
     // a narrower grid both come back inside by this one rule. Written here as
     // well it could drop its lower guard while the cell walk kept its own, so
     // a tap left of the first bar would name a bar that was never counted.
-    else band = clampIndex(bin, histState.bins);
+    band = clampIndex(bin, histState.bins);
     // And the matching cells on the map, so the two charts can be read against
     // each other without moving the pointer back and forth. drawHover() goes
     // through drawMap(), which repaints this chart with the same `band`, so one
@@ -1655,6 +1658,17 @@
   function applyBand() {
     drawHover();
     bandNote();
+  }
+
+  // Every way of putting the height filter back the way it was — a second tap
+  // on the same bar, a pointer leaving the chart, a pointer leaving the map —
+  // is the same reset followed by the same pair of repaints. Written beside
+  // each handler the trio could be edited apart, which reads as a clear that
+  // drops the selection from the map while the line under it still names the
+  // old band. The reset itself lives here so no caller restates it.
+  function clearBand() {
+    band = -1;
+    applyBand();
   }
 
   // The chart's caption is a 10px strip inside a 52px canvas, so the same
@@ -1708,23 +1722,18 @@
     applyBand();
   }
   histCanvas.addEventListener('mouseleave', function () {
-    band = -1;
-    applyBand();
+    clearBand();
   });
 
   view.addEventListener('mouseleave', function () {
     hover.x = -1; hover.y = -1;
-    // The chart's hovered bin is cleared together with the crosshair, so the
-    // map never keeps a height filter after the pointer has gone while the
-    // chart itself shows no selection.
-    band = -1;
     // The cell reading goes with it: nothing is under the cursor any more, so
     // the chart should show the whole silhouette again.
     cellBand = -1;
-    // One writer for the line under the map: with the selection gone this
-    // restores the placeholder rather than a stale range.
-    bandNote();
-    drawHover();
+    // The chart's hovered bin is cleared together with the crosshair, so the
+    // map never keeps a height filter after the pointer has gone while the
+    // chart itself shows no selection.
+    clearBand();
     // The chart keeps the last hovered bin until something else picks one, so
     // dropping the pointer off the map clears it along with the readout.
     paintHistogram(-1);
