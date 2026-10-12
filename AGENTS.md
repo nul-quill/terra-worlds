@@ -385,8 +385,9 @@ Conventions:
   graded, and the published scale is the mask's own range rather than a
   percentile pair.
   That step count is one constant — `TerraCore.lakeSteps` — shared by the depth
-  written into the mask, the overlay's scale and the `% deep` division in the
-  hover readout. Keep it a lookup rather than repeating `60`: a shallow tarn
+  written into the mask, the depth shading under water, the overlay's scale and
+  the `% deep` division in the hover readout. Keep it a lookup rather than
+  repeating `60`: a shallow tarn
   tops out below the cap, so the suite asks that every filled cell sit inside
   1..the constant and that the published scale be that same number.
   The share of the grid those steps cover is one fraction too —

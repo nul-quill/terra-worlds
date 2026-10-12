@@ -727,7 +727,7 @@
           var dw = 1 - depth * 0.30;
           r *= dw; g *= dw; b *= dw;
         } else if (lake[i]) {
-          var ldepth = lake[i] / 60;
+          var ldepth = lake[i] / LAKE_STEPS;
           var lw = 1 - ldepth * 0.22;
           r *= lw; g *= lw; b *= lw;
         } else if (h > SNOW_LINE) {

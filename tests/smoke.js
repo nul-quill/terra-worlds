@@ -4543,6 +4543,22 @@ assert(slopeDefs === 1 && slopeReads === 2 && slopeInline === 0,
   'one scale turns a height difference into a slope (' + slopeDefs + ' def, ' +
   slopeReads + ' reads, ' + slopeInline + ' literals)');
 
+// The lake mask stores a depth as a step count, and that count is the core's
+// one constant. Three readers inside the core divide or scale by it — the fill
+// that writes the mask, the depth shading under water, and the `lake` overlay's
+// scale — so a bare cap written beside any of them would let the shading grade
+// a tarn against one range while its own overlay graded it against another.
+// Counted as one constant, its reads inside the core, and no bare cap left.
+var stepDefs = (coreSrc.match(/var LAKE_STEPS = /g) || []).length;
+// Three readers plus the export that publishes the number: the fill that writes
+// the mask, the depth shading, the overlay's scale, and the `lakeSteps` entry of
+// the core's own record.
+var stepUses = (coreSrc.match(/LAKE_STEPS/g) || []).length - stepDefs;
+var stepBare = (coreSrc.match(/lake\[i\] \/ 60/g) || []).length;
+assert(stepDefs === 1 && stepUses === 4 && stepBare === 0,
+  'one constant is the lake depth range inside the core (' + stepDefs +
+  ' def, ' + stepUses + ' reads, ' + stepBare + ' bare caps)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division
