@@ -1499,6 +1499,21 @@ assert(seaNudgeSrc &&
   'the sea nudge rounds on the printed scale (' +
   (seaNudgeSrc ? 'one scale' : 'unreadable') + ')');
 
+// The palette digits are a numeric read of their own: the key names a
+// position in `TerraCore.palettes`, so the same rule that decides whether
+// `800x` is a grid has to decide whether a digit names a scheme. Ask for the
+// one `num()` read on that branch, and for no `parse*` call left beside it —
+// a second reading could keep the leading digits of a value the helpers
+// reject, which would pick one scheme in a terminal and another on the page.
+var digitSrc = (/if \(\/\^\[1-9\]\$\/\.test\(ev\.key\)\) \{([\s\S]*?)\n    \}/
+  .exec(require('fs').readFileSync(__dirname + '/../app.js', 'utf8')) ||
+  ['', ''])[1];
+assert(digitSrc &&
+  (digitSrc.match(/num\(ev\.key/g) || []).length === 1 &&
+  !/parse(?:Int|Float)\(/.test(digitSrc),
+  'the palette digit reads its number by the same rule (' +
+  (digitSrc ? 'one read' : 'unreadable') + ')');
+
 // The chain count is a numeric flag too, so it should be read the same way:
 // an exponent walks the whole ten-seed chain, and a value with junk on the
 // end falls back to the chain's own default length rather than to whatever

@@ -1284,6 +1284,12 @@ Conventions:
   is applied only when it reads, so the markup stays the single source of the
   range; the suite scrapes that branch for the four `num()` reads, the
   `isFinite` test behind them, and no bare `Number(` left beside them.
+  The palette digits are a numeric read of that same kind: the key names a
+  position in `TerraCore.palettes`, so the digit goes through `num()` too rather
+  than a `parseInt` beside it. Two readings could disagree about a value with
+  junk on the end — one keeping the leading digits, one rejecting the whole
+  thing — which would pick one scheme from a terminal and another on the page.
+  The suite asks that branch for the one `num()` read and no `parse*` call.
   That branch also has to shed the float drift a run of steps leaves behind, and
   it does so on the scale every other figure prints at — one `hundred(nextSea)`
   divided back out of a hundred, rather than a second rounding written beside

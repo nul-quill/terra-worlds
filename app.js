@@ -1825,7 +1825,10 @@
     // without reaching for the select.
     if (/^[1-9]$/.test(ev.key)) {
       var names = Object.keys(TerraCore.palettes);
-      var idx = parseInt(ev.key, 10) - 1;
+      // Read through `num()` like every other number on the page, so the
+      // digit that picks a scheme is parsed by the one rule the sliders and
+      // the option reader follow rather than by a second one beside it.
+      var idx = num(ev.key, true) - 1;
       if (idx < names.length) {
         ev.preventDefault();
         inputs.palette.value = names[idx];
