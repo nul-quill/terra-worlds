@@ -3899,6 +3899,20 @@ assert(stripDefs === 1 && stripUses === 5 && stripLiterals === 0,
   'one reserve holds the chart\'s bottom strip (' + stripDefs + ' def, ' +
   stripUses + ' offsets, ' + stripLiterals + ' literals)');
 
+// Three labels share that strip — the two ends of the range and the median —
+// and the gap between two of them is one number: it keeps the median clear of
+// both corners and is scaled up when the row is measured for fit. Written per
+// site the pair could be edited apart, and a median printed on top of its own
+// corner figure still reads as a plausible chart at a glance. Counted as text:
+// one number, every offset derived from it, no bare gap left beside them.
+var gapDefs = (appSrc.match(/var GAP = \d+;/g) || []).length;
+var gapUses = (appSrc.match(/GAP/g) || []).length - gapDefs;
+var gapLiterals = (appSrc.match(/loTw \+ 4\b|hiTw - 4\b|hiTw - 16\b/g) || [])
+  .length;
+assert(gapDefs === 1 && gapUses === 5 && gapLiterals === 0,
+  'one gap squeezes the median label between its corners (' + gapDefs +
+  ' def, ' + gapUses + ' reads, ' + gapLiterals + ' literals)');
+
 // Both canvases size their backing store from the same clamp on the device
 // pixel ratio. Two copies of that clamp could be edited apart, and a map
 // blitted at one scale under a chart drawn at another reads as a blurry strip

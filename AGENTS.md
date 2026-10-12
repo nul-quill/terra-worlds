@@ -1232,6 +1232,12 @@ Conventions:
   The median mark prints its number in the same bottom strip, squeezed between
   the two corner labels: measure all three first and skip the median label when
   the strip cannot hold the whole row, rather than overlapping the corners.
+  That squeeze is one gap — `GAP`, four CSS pixels — since four measurements
+  read it five times: each of the two bounds uses it on both sides of its own
+  comparison, and the fit test scales it up once. Written beside each site the
+  pair could be edited apart, which leaves a median printed on top of its own
+  corner number — still a plausible chart at a glance — so the suite counts the
+  one number, its reads and asks for no bare gap left beside them.
   The decade ticks under the bars do not use a fixed ten-unit step: the step is
   the first of 5/10/20/25/50 that leaves at most ten marks over this world's own
   relief. A flat craton would otherwise get one tick, a tall fjord twenty.

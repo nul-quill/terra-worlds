@@ -1133,12 +1133,19 @@
       var medTw = hc.measureText(medLabel).width;
       var loTw = hc.measureText(loLabel).width;
       var hiTw = hc.measureText(hiLabel).width;
+      // Three labels share that strip, so the gap between two of them is one
+      // number: it pushes the median clear of the low-end figure, pulls it back
+      // from the high end, and is multiplied up when the row is measured to see
+      // whether the whole thing fits. Written per site the pair could be edited
+      // apart, and a median sitting on top of its own corner number still reads
+      // as a plausible chart at a glance.
+      var GAP = 4;
       var medTextX = medX - medTw / 2;
-      if (medTextX < pad + loTw + 4) medTextX = pad + loTw + 4;
-      if (medTextX + medTw > w - pad - hiTw - 4) {
-        medTextX = w - pad - hiTw - 4 - medTw;
+      if (medTextX < pad + loTw + GAP) medTextX = pad + loTw + GAP;
+      if (medTextX + medTw > w - pad - hiTw - GAP) {
+        medTextX = w - pad - hiTw - GAP - medTw;
       }
-      if (medTw < w - pad * 2 - loTw - hiTw - 16) {
+      if (medTw < w - pad * 2 - loTw - hiTw - GAP * 4) {
         hc.fillStyle = rgba(INK, 0.7);
         hc.fillText(medLabel, medTextX, h - 1);
       }
