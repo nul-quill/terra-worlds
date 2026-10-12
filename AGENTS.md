@@ -96,6 +96,13 @@ Conventions:
   The spillway search caps the rim at `seaLevel + 0.30` on the first pass, then
   retries without the cap — a terraced plateau stacks its rims high enough that
   the capped pass alone would leave a big basin with no outlet at all.
+  Both passes walk that ring through one `sweepRim(count, cap)`, since the
+  retry is only a fair second opinion while it visits the same neighbours in the
+  same order. Written as two loops the capped sweep could gain a direction the
+  retry lacks, which leaves a basin whose outlet sits on a rim cell its own
+  second pass would never have chosen — still a plausible shore, so the suite
+  counts the definition, its two reads, the four neighbour steps inside it and
+  asks for one ring loop.
   The chosen cell is the lowest DRY neighbour on the whole rim, which is what
   lets a filled basin keep draining; the smoke suite re-derives that minimum
   from the height field, so a mark on a higher step or inside the fill fails.

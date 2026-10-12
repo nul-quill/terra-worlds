@@ -638,6 +638,25 @@
       return lower(hf[candidate], candidate, hf[best], best) ? candidate : best;
     }
 
+    // Every dry neighbour of every filled cell, as a candidate outlet. The
+    // first pass caps the rim so a terraced plateau cannot hand its surplus to
+    // a cliff; when that cap leaves a basin with nowhere to go the caller
+    // retries without it. Both passes walk the same ring in the same order, so
+    // the ring is written once: two copies could be trimmed on one side only,
+    // which leaves a capped sweep seeing a rim its own retry never visits.
+    function sweepRim(count, cap) {
+      var best = -1;
+      for (var q = 0; q < count; q++) {
+        var bc = queue[q];
+        var bx = bc % width, by = (bc / width) | 0;
+        if (bx > 0) best = pickSpill(bc - 1, best, cap);
+        if (bx < width - 1) best = pickSpill(bc + 1, best, cap);
+        if (by > 0) best = pickSpill(bc - width, best, cap);
+        if (by < height - 1) best = pickSpill(bc + width, best, cap);
+      }
+      return best;
+    }
+
     function recordSpill(count) {
       lakeBasins++;
       // Label every cell this fill claimed, so a hover can name its lake.
@@ -650,25 +669,8 @@
         sumX += lcq % width;
         sumY += (lcq / width) | 0;
       }
-      var best = -1;
-      for (var q = 0; q < count; q++) {
-        var bc = queue[q];
-        var bx = bc % width, by = (bc / width) | 0;
-        if (bx > 0) best = pickSpill(bc - 1, best, true);
-        if (bx < width - 1) best = pickSpill(bc + 1, best, true);
-        if (by > 0) best = pickSpill(bc - width, best, true);
-        if (by < height - 1) best = pickSpill(bc + width, best, true);
-      }
-      if (best < 0) {
-        for (var q2 = 0; q2 < count; q2++) {
-          var cc = queue[q2];
-          var cx3 = cc % width, cy3 = (cc / width) | 0;
-          if (cx3 > 0) best = pickSpill(cc - 1, best, false);
-          if (cx3 < width - 1) best = pickSpill(cc + 1, best, false);
-          if (cy3 > 0) best = pickSpill(cc - width, best, false);
-          if (cy3 < height - 1) best = pickSpill(cc + width, best, false);
-        }
-      }
+      var best = sweepRim(count, true);
+      if (best < 0) best = sweepRim(count, false);
       // Every basin has a rim, so an outlet is essentially always found. When
       // a fill touches the whole grid there is nothing outside it, and the
       // surplus simply stays where it is.

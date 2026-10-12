@@ -4663,6 +4663,21 @@ assert(edgeDefs === 1 && edgeReads === 2 && edgeInline === 0,
   'one wrap is the leading edge of a contour band (' + edgeDefs + ' def, ' +
   edgeReads + ' reads, ' + edgeInline + ' inline)');
 
+// A basin's outlet is picked by walking the ring around its fill. The first
+// pass caps the rim height and the retry drops that cap, so both sweeps have to
+// visit the same neighbours in the same order — otherwise a capped sweep could
+// settle on a rim its own retry never considers, and the note beside an outlet
+// would describe a cell the fill cannot reach. Counted as one sweep, its two
+// reads (capped and uncapped) and no second ring loop left beside them.
+var rimDefs = (coreSrc.match(/function sweepRim\(/g) || []).length;
+var rimReads = (coreSrc.match(/= sweepRim\(count, (true|false)\)/g) || []).length;
+var rimPick = (coreSrc.match(/= pickSpill\(/g) || []).length;
+var rimLoops = (coreSrc.match(/q < count; q\+\+/g) || []).length;
+assert(rimDefs === 1 && rimReads === 2 && rimPick === 4 && rimLoops === 1,
+  'one sweep walks a basin rim for both passes (' + rimDefs + ' def, ' +
+  rimReads + ' reads, ' + rimPick + ' neighbour steps, ' + rimLoops +
+  ' ring loop)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division
