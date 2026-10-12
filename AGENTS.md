@@ -460,6 +460,14 @@ Conventions:
   `"median":0.459` rounded by a terminal are one measurement. The suite counts
   the core definition, the shell's forward and the CLI's uses, and asks for no
   leftover inline round in either reader.
+  The word that follows such a figure is one suffix too — `unitText(n)` — read by
+  the three views that name a height in words: the `relief` row, the `median` row
+  and the elevation in the hover readout. Written beside each view it could lose
+  its space on one of them, which reads as two columns of numbers set by two
+  different hands — close enough to look right in a screenshot, so the suite
+  counts the definition, the three reads and asks that the only `' units'` in the
+  shell sit inside the helper. The chart's corner labels stay outside this pair on
+  purpose: they sit under a ruler that already names the unit in its caption.
   The summary sentence is a printed height too. Its relief figure picks the word
   in front of it, so `describe()` reads the same lookup rather than writing a
   rounding of its own: a second one could be cut against another range and leave

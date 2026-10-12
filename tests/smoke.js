@@ -3628,6 +3628,20 @@ assert(splitDefs === 1 && splitCalls === 2 && splitMarks === 1,
   'both split rows print through one builder (' + splitDefs + ' def, ' +
   splitCalls + ' reads, ' + splitMarks + ' slashes)');
 
+// Three views print a height followed by the word that says what the number
+// counts: the two rows in the stats list and the elevation in the hover
+// readout. Each already scales through one lookup, and the suffix is the other
+// half of that pair. Written beside each view it could lose its space on one of
+// them, which reads as two columns of numbers set by two different hands —
+// close enough to look fine in a screenshot. Count the definition, its reads
+// and every spaced suffix, which has to sit inside the helper.
+var unitDefs = (appSrc.match(/function unitText\(/g) || []).length;
+var unitCalls = (appSrc.match(/unitText\(/g) || []).length - unitDefs;
+var unitMarks = (appSrc.match(/' units'/g) || []).length;
+assert(unitDefs === 1 && unitCalls === 3 && unitMarks === 1,
+  'every height prints its unit through one builder (' + unitDefs + ' def, ' +
+  unitCalls + ' reads, ' + unitMarks + ' suffixes)');
+
 // Every number the sidebar prints has to be reachable from a terminal too,
 // or a record cannot stand in for a screenshot. The two lists are named
 // differently in places — the page says `grid`, the record says `width` — so

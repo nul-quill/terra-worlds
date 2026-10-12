@@ -872,6 +872,17 @@
     return n > 1;
   }
 
+  // A height out of a hundred, with the word that says what the number counts.
+  // Three views print one: the `relief` row, the `median` row and the elevation
+  // in the hover readout. Each already scales through the same out-of-a-hundred
+  // lookup, and the unit is the other half of that pair — written beside each
+  // view it could lose its space on one of them, which reads as two columns of
+  // numbers set by two different hands. One builder keeps the suffix in step
+  // with the scaling above it.
+  function unitText(n) {
+    return n + ' units';
+  }
+
   // One axis of the biome lookup, written into the readout. The pair — the
   // moisture that moved a cell and the temperature that moved it with it — is
   // two fields of the same shape: a field or nothing, an index, and the same
@@ -1101,11 +1112,11 @@
       // The spread plus its two ends: the difference alone cannot say whether a
       // world climbs from a deep shelf or from a damp plain, and the pair in
       // brackets is the same two numbers printed at the corners of the chart.
-      ['relief', hundred(s.max - s.min) + ' units (' + hundred(s.min) +
+      ['relief', unitText(hundred(s.max - s.min)) + ' (' + hundred(s.min) +
         '-' + hundred(s.max) + ')'],
       // Half the grid sits below this height, which is what separates a broad
       // plateau from a plain with one peak when both share a relief range.
-      ['median', hundred(s.median) + ' units'],
+      ['median', unitText(hundred(s.median))],
       ['biomes', String(biomeCount(s.counts))],
       ['contours', splitText(s.contourBands, 'land', s.basinBands, 'basin')],
       ['checksum', s.checksum],
@@ -1422,7 +1433,7 @@
     var parts = [
       '(' + px + ', ' + py + ')',
       biomeLabel(key),
-      (elev > 0 ? '+' : '') + elev + ' units'
+      (elev > 0 ? '+' : '') + unitText(elev)
     ];
     // A selected legend class fades every cell that is not its own, so a
     // washed-out cell beside a bright one needs the same explanation a picked
