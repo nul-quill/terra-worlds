@@ -79,6 +79,16 @@
     return a - b;
   }
 
+  // Which entry of a sorted field a given share of it falls on. Both river
+  // cuts — the network's own and the trunk slice taken from the same list —
+  // are that one position, so the clamp that keeps the last entry reachable
+  // is written once. Held beside each cut the clamp could be dropped from one
+  // of them, which lets a trunk cut read past the end of its own list and come
+  // back undefined while the network beside it still looked right.
+  function quantileIndex(share, n) {
+    return Math.min(n - 1, Math.round(share * (n - 1)));
+  }
+
   // How much a filled cell keeps of its own colour at a given depth. The sea
   // and a tarn both dim by that one shape — a full-depth cell keeps its colour
   // less the basin's own strength — so the two fills share the arithmetic and
@@ -561,11 +571,11 @@
     for (i = 0; i < n; i++) accSorted[i] = acc[i];
     accSorted.sort(byNumber);
     var keep = 0.01 + clamp01(riverMin / 400) * 0.19;
-    var qIndex = Math.min(n - 1, Math.round((1 - keep) * (n - 1)));
+    var qIndex = quantileIndex(1 - keep, n);
     var riverCut = accSorted[qIndex];
     // Major channels: the top slice of the same field. Drawn with a stronger
     // blend so a trunk river does not look like its own tributaries.
-    var majorCut = accSorted[Math.min(n - 1, Math.round((1 - keep * 0.28) * (n - 1)))];
+    var majorCut = accSorted[quantileIndex(1 - keep * 0.28, n)];
 
     // Lakes are closed depressions. A cell holds water when every route off it
     // climbs: compare its height against the lowest point on a ring of radius
@@ -1130,8 +1140,8 @@
       sample[i] = useLog ? Math.log(1 + values[i]) : values[i];
     }
     sample.sort(byNumber);
-    var lo = sample[Math.round((n - 1) * 0.02)];
-    var hi = sample[Math.round((n - 1) * 0.98)];
+    var lo = sample[quantileIndex(0.02, n)];
+    var hi = sample[quantileIndex(0.98, n)];
     if (!(hi > lo)) hi = lo + 1;
     return { lo: lo, hi: hi };
   }

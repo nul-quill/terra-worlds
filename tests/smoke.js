@@ -4721,6 +4721,19 @@ assert(cmpDefs === 1 && cmpReads === 2 && cmpInline === 0,
   'both quantile sorts compare numbers one way (' + cmpDefs + ' def, ' +
   cmpReads + ' reads, ' + cmpInline + ' inline)');
 
+// Every quantile in the core is a share of a sorted field, and each of the
+// four reads the same position: the rounded share of the list, held inside its
+// own length. Written beside each cut that clamp could be dropped on one of
+// them, which lets a cut ask past the end of its list and come back undefined
+// while the field beside it still looked ordered. Counted as one helper, its
+// four reads and the single clamp living inside it.
+var qDefs = (coreSrc.match(/function quantileIndex\(/g) || []).length;
+var qReads = (coreSrc.match(/quantileIndex\(/g) || []).length - qDefs;
+var qClamp = (coreSrc.match(/Math\.min\(n - 1, Math\.round\(/g) || []).length;
+assert(qDefs === 1 && qReads === 4 && qClamp === 1,
+  'every quantile is one clamped share of a sorted list (' + qDefs + ' def, ' +
+  qReads + ' reads, ' + qClamp + ' clamp)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

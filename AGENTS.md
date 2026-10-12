@@ -446,6 +446,12 @@ Conventions:
   shape on purpose (a count with a tie-break on declaration order), so it stays
   outside this pair; the suite counts the definition, its two reads and asks for
   no second plain comparator left beside them.
+  Each of those sorts is read at one position through `quantileIndex(share, n)`
+  — the rounded share of a list, held inside its own length — since that is what
+  keeps the last entry reachable. Written beside each cut the clamp could be
+  dropped on one of them, which lets a cut ask past the end of its own list and
+  come back undefined while the field beside it still looked ordered; the suite
+  counts the definition, its four reads and the single clamp inside it.
   `fieldFor(key, result)` is the single field lookup shared by the ramp and by
   `channelValue(result, cell)`, which is what the hover readout prints. The scale
   is cached in `result.channelScale` during `channelize` so a hover does not sort
