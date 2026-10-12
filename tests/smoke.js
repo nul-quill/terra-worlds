@@ -3483,7 +3483,7 @@ assert(fontDefs === 1 && fontUses === 2 && fontInline === 0,
 var skyDefs = (appSrc.match(/function skyRgb\(/g) || []).length;
 var skyCalls = (appSrc.match(/skyRgb\(\)/g) || []).length - skyDefs;
 var skyInline = (appSrc.match(/hexToRgb\(current\.palette\.sky\)/g) || []).length;
-assert(skyDefs === 1 && skyCalls === 4 && skyInline === 1,
+assert(skyDefs === 1 && skyCalls === 5 && skyInline === 1,
   'every map overlay washes to one sky colour (' + skyDefs + ' def, ' +
   skyCalls + ' reads, ' + skyInline + ' parse)');
 
@@ -3501,6 +3501,20 @@ var inkLookInline = (appSrc.match(/palette\.colors\.deep/g) || []).length;
 assert(inkLookDefs === 1 && inkLookCalls === 3 && inkLookInline === 1,
   'every map mark strokes with one ink (' + inkLookDefs + ' def, ' +
   inkLookCalls + ' reads, ' + inkLookInline + ' table access)');
+
+// The box around a hovered cell is drawn twice: once on the map, once as the
+// one-cell mark inside the magnifier's patch. Both name the same cell, so both
+// are the same blend of ink and sky at the same strength. Written beside each
+// site that pair could be edited on one of them only, which reads as a box a
+// shade off the mark inside its own panel — close enough to a working cursor
+// that nobody opens the console over it. Counted as text: one lookup, two
+// reads, and the single blend inside it.
+var cellDefs = (appSrc.match(/function cellInk\(\) \{/g) || []).length;
+var cellCalls = (appSrc.match(/cellInk\(\)/g) || []).length - cellDefs;
+var cellBlend = (appSrc.match(/, 0\.15\), 0\.9\)/g) || []).length;
+assert(cellDefs === 1 && cellCalls === 2 && cellBlend === 1,
+  'a hovered cell is boxed in one ink (' + cellDefs + ' def, ' + cellCalls +
+  ' reads, ' + cellBlend + ' blend)');
 
 // The Copy button shows a short confirmation and then puts its own name back.
 // Pressing it twice inside that window has to be one pending restore, not two:

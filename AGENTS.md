@@ -951,11 +951,13 @@ Conventions:
   for none of them to be a literal string. The relief chart keeps its own fixed
   ink: it sits on the page, not on the map.
   That sky is parsed by one lookup — `skyRgb()` — read by all four overlay
+  That sky is parsed by one lookup — `skyRgb()` — read by all five overlay
   sites: the isolation blend twice (a pinned class, a hovered band), the
-  crosshair's ink and the mat under the magnifier. Written at each site, the
+  crosshair's ink, the mat under the magnifier and the blend behind the box
+  around a hovered cell. Written at each site, the
   parse could be guarded on one branch only, which leaves a map fading toward
   one colour while its own crosshair is drawn in a slightly different one —
-  close enough to pass at a glance. The suite counts the definition, the four
+  close enough to pass at a glance. The suite counts the definition, the five
   reads and the single `hexToRgb` call inside it.
   The ink those marks are stroked with is one lookup as well —
   `inkColour()` — read by the three of them: the crosshair's pair of hairlines,
@@ -966,6 +968,13 @@ Conventions:
   ink next to the other two — a slightly odd cursor rather than a bug, so the
   suite counts the definition, the three reads and asks that the only table
   access of that shape be the one inside the helper.
+  The box around a hovered cell is that ink blended a little toward the sky, and
+  it is drawn twice: the rectangle on the map, and the one-cell mark inside the
+  magnifier's patch. Both name the same cell, so that blend is one lookup too —
+  `cellInk()` — since writing it beside each site could deepen one of them while
+  the other stayed put, which reads as a box sitting a shade off the mark inside
+  its own panel. The suite counts the definition, the two reads and asks that the
+  only blend of that strength be the one inside the helper.
 - Legend isolation lives in `drawMap()`: `solo` follows the pointer/focus,
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend

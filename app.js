@@ -604,7 +604,7 @@
     var ink = skyRgb();
     var deep = inkColour();
     var hair = rgba(mix(deep, ink, 0.45), 0.45);
-    var edge = rgba(mix(deep, ink, 0.15), 0.9);
+    var edge = cellInk();
     var cs = cellSize();
     var cellX = cs.w;
     var cellY = cs.h;
@@ -688,7 +688,7 @@
     // patch's own scale — the offset is the difference of two clamped indices,
     // so it stays inside the panel at every edge of the grid.
     var patch = size / span;
-    ctx.strokeStyle = rgba(mix(inkColour(), sky, 0.15), 0.9);
+    ctx.strokeStyle = cellInk();
     ctx.strokeRect(dx + (px - x0) * patch, dy + (py - y0) * patch, patch, patch);
     ctx.restore();
   }
@@ -729,6 +729,18 @@
   // other two, which reads as a slightly odd cursor rather than as a bug.
   function inkColour() {
     return current.palette.colors.deep;
+  }
+
+  // The enclosing box around the hovered cell is drawn twice: the rectangle on
+  // the map, and the one-cell mark inside the magnifier's patch. Both name the
+  // same cell, so both are the same ink at the same strength — the palette's
+  // darkest ink pulled a little toward its own sky. Written at each site, that
+  // blend could be edited on one of them only, which reads as a box sitting a
+  // shade off the mark inside its own panel: close enough to pass beside a
+  // crosshair, so the suite counts the lookup, its two reads and asks that the
+  // one blend be the only such pair left in the shell.
+  function cellInk() {
+    return rgba(mix(inkColour(), skyRgb(), 0.15), 0.9);
   }
 
   // The wash every dimmed thing is blended toward: the hovered cells on the
