@@ -3965,10 +3965,24 @@ assert(histTallyBad.length === 0,
 // window at all. Both go through the core's lookup, so a text profile and the
 // bars on screen cannot disagree about how many columns a sidebar buys.
 var histCliSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+// The CLI reaches that width through one helper rather than writing the pair
+// of lookups beside each of its two readers: the block of bars and the record
+// under it are then the same pass, and a width edited on one side only would
+// print a silhouette too wide for the `bins` its own caption names. The shell
+// still reads the core's figure directly, as the fallback before its canvas is
+// laid out, so the count is: one lookup in the shell, one helper in the CLI,
+// two reads of that helper, and no second copy of the pair beside them.
+var cliHistDefs = (histCliSrc.match(/function histPass\(/g) || []).length;
+var cliHistCalls = (histCliSrc.match(/histPass\(result\)/g) || []).length -
+  cliHistDefs;
+var cliHistPairs = (histCliSrc.match(
+  /core\.histogram\(result, core\.binCount\(core\.histWidth\)\)/g) || []).length;
 assert(/clientWidth \|\| TerraCore\.histWidth/.test(appSrc) &&
-  (histCliSrc.match(/core\.binCount\(core\.histWidth\)/g) || []).length === 2,
+  cliHistDefs === 1 && cliHistCalls === 2 && cliHistPairs === 1 &&
+  histSummed.bins === jsonLine.bins,
   'one sidebar width feeds the chart and the text profile (' +
-  core.histWidth + ' -> ' + histSummed.bins + ' bars)');
+  core.histWidth + ' -> ' + histSummed.bins + ' bars, ' + cliHistCalls +
+  ' cli reads)');
 // The height of that same block is one number too. The profile stacks a fixed
 // number of threshold rows, and a reader who has only a pasted block and one
 // line of JSON has to be able to ask whether the block is complete — so the

@@ -181,6 +181,12 @@ Conventions:
   has a layout, and by the CLI which has no window at all. Two literals would
   let a text profile and the bars on screen disagree about how many columns a
   sidebar buys; the suite counts the lookup on both sides.
+  Inside the CLI that pair of lookups is one helper — `histPass(result)` — read
+  by the writer of the bar block and by the record beneath it, since the two
+  must describe one pass: a width edited on one side only would print a
+  silhouette too wide for the `bins` its own caption names, which still looks
+  like a plausible chart. The suite counts the definition, its two reads and
+  the single nested pair inside it.
   Keep it the strip's measured width (the canvas inside a 250px column, so
   about 200) rather than the column's: the fallback is what a terminal assumes,
   and a figure the page never measures would print a different bar count than

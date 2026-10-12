@@ -467,8 +467,16 @@ function rulerMarks(result, h) {
 // sidebar chart draws, so a saved PNG plus one line of JSON can still be
 // redrawn by eye. The bins come from `core.histogram` at the sidebar's own
 // width, which is what ties these columns to the bars on screen.
+// The relief bins for one world, at the width the sidebar draws into. Both
+// readers of that pass — the text profile and the record — go through here, so
+// the bars a terminal counts from the record are the bars the block above the
+// caption shows, and the width behind the column count is written once.
+function histPass(result) {
+  return core.histogram(result, core.binCount(core.histWidth));
+}
+
 function profile(result) {
-  var h = core.histogram(result, core.binCount(core.histWidth));
+  var h = histPass(result);
   // The row count is the profile's own constant rather than a number written
   // here, so a reader who has the block and the record can ask the core how
   // many rows the block should have instead of counting them off.
@@ -520,7 +528,7 @@ function summarise(seed, result, name, asJson) {
   // width is the sidebar's own default rather than this world's grid, since
   // the chart bins by the strip it is drawn into — 240 CSS pixels is what the
   // core maps to 48 bars, which is also what the suite compares against.
-  var hist = core.histogram(result, core.binCount(core.histWidth));
+  var hist = histPass(result);
   // Per-class shares, biggest first. The one-line summary only names the
   // dominant class, which is not enough to tell two worlds apart when most of
   // the grid is water. Kept as "key=NN%" pairs so the table form stays a
