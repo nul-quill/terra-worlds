@@ -1603,7 +1603,12 @@
     // tapping the bar that is already selected drops it instead. The mouse
     // path keeps the plain rule, since leaving the chart clears it there.
     if (toggleSame && band === bin) band = -1;
-    else band = bin < 0 ? 0 : Math.min(histState.bins - 1, bin);
+    // The same bound the three cell paths use: a bin is one index over one
+    // count, so a pointer just past the last bar and a link restored against
+    // a narrower grid both come back inside by this one rule. Written here as
+    // well it could drop its lower guard while the cell walk kept its own, so
+    // a tap left of the first bar would name a bar that was never counted.
+    else band = clampIndex(bin, histState.bins);
     // And the matching cells on the map, so the two charts can be read against
     // each other without moving the pointer back and forth. drawHover() goes
     // through drawMap(), which repaints this chart with the same `band`, so one

@@ -765,6 +765,12 @@ Conventions:
     inset's patch clamp is a different shape — it holds a whole block inside
     the grid — so it stays outside this pair, and the suite asks for no second
     copy of the single-cell form left in the shell.
+    A picked bar is one index over one count as well, so the chart's own
+    selection reads that same bound: seven reads in all. Written beside that
+    handler the lower guard could be dropped while the cell walk kept its own,
+    which reads as a tap left of the first bar naming a bin nothing ever
+    counted — a one-column error too small to notice, so the suite counts the
+    reads and asks for no second clamp of that shape in the chart.
     Before that bound, the same three paths turn a backing-store pixel into a
     cell index through one `cellOf(x, y)`, which divides by the very cell size
     the blit was drawn with. Written at each site, one of them could divide by

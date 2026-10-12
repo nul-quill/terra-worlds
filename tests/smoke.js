@@ -4167,9 +4167,19 @@ var idxDefs = (appSrc.match(/function clampIndex\(/g) || []).length;
 var idxCalls = (appSrc.match(/clampIndex\(/g) || []).length - idxDefs;
 var idxInline = (appSrc.match(
   /Math\.max\(0, Math\.min\(current\.\w+ - 1,/g) || []).length;
-assert(idxDefs === 1 && idxCalls === 6 && idxInline === 0,
+assert(idxDefs === 1 && idxCalls === 7 && idxInline === 0,
   'every cell clamp reads one bound (' + idxDefs + ' def, ' + idxCalls +
   ' reads, ' + idxInline + ' inline)');
+
+// The chart's picked bar is one index over one count too, so it takes the same
+// bound rather than a pair of comparisons of its own. Written beside that
+// handler the lower guard could be dropped while the cell walk kept its own,
+// which reads as a tap left of the first bar naming a bin nothing counted.
+var bandBound = (appSrc.match(
+  /band = bin < 0 \? 0 : Math\.min\(histState\.bins - 1, bin\)/g) || []).length;
+assert(bandBound === 0,
+  'the chart picks its bar through the same bound (' + bandBound +
+  ' second copy)');
 // Turning a backing-store pixel into a cell index is the same division on
 // three paths: the crosshair, the reader behind the `at=` pair and the readout
 // itself. Written at each site, one of them could round against a different
