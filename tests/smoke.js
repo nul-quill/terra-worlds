@@ -2486,33 +2486,34 @@ assert(nameListDefs === 1 && nameFactor === 1 && nameShapeWrites === 1 &&
 
 // An empty seed box is not a fourth seed: it has to mean the same world as a
 // blank `--seed` from a terminal. The generator names its own fallback, and the
-// shell reads that same word in the two places a blank box reaches — the stats
-// row and the saved file name. Compare the three by scraping each source, so a
-// rename on one side shows up here rather than as a link and a PNG that
-// describe two different worlds from one empty field.
+// shell keeps that word in one lookup — `seedPhrase()` — which every place a
+// blank box reaches reads: the option reader, the `seed` row, the second slot
+// of a saved file name and the phrase a reroll derives from. Compare the core's
+// word with the one inside that helper, count the four reads, and ask that no
+// inline fallback survives beside them — a second copy could be edited on one
+// side only, which is a link and a PNG describing two worlds from one field.
 var seedSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
 var coreSeed = (/opts\.seed == null \?\s*'([^']+)'/ .exec(seedSrc) ||
   ['', ''])[1];
-var shellSeed = require('fs').readFileSync(__dirname + '/../app.js', 'utf8')
-  .match(/inputs\.seed\.value \|\| '([^']+)'/g) || [];
-var shellWords = shellSeed.map(function (s) {
-  return /'([^']+)'/.exec(s)[1];
-});
-var seedSame = coreSeed !== '' && shellWords.length >= 2 &&
-  shellWords.every(function (sw) { return sw === coreSeed; });
-assert(seedSame,
-  'a blank seed means one world everywhere (' + coreSeed + ' / ' +
-  shellWords.join(',') + ')');
-// The Reroll button is a fourth place a blank box reaches: it derives the next
-// phrase from the one in the box, so an empty field has to fall back here too —
-// otherwise the button walks a chain off `''` while the map, the stats row and
-// the file name all describe the default world. Count the guarded read at that
-// call site and ask that no bare one is left beside it.
-var rerollSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
-var rerollGuarded = (rerollSrc.match(
-  /nextSeed\(inputs\.seed\.value \|\| '[^']+'\)/g) || []).length;
-var rerollBare = (rerollSrc.match(
-  /nextSeed\(inputs\.seed\.value\)/g) || []).length;
+var shellSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var seedBody = (/function seedPhrase\(\)([\s\S]*?)\n  \}/
+  .exec(shellSrc) || ['', ''])[1];
+var seedDefs = (shellSrc.match(/function seedPhrase\(/g) || []).length;
+var seedUses = (shellSrc.match(/seedPhrase\(\)/g) || []).length;
+var seedCalls = seedUses - seedDefs;
+var seedWord = (/return inputs\.seed\.value \|\| '([^']+)'/
+  .exec(seedBody) || ['', ''])[1];
+var seedInline = (shellSrc.match(/inputs\.seed\.value \|\| '/g) || []).length;
+assert(seedDefs === 1 && seedCalls === 4 && seedWord === coreSeed &&
+  seedInline === 1,
+  'a blank seed means one world everywhere (' + coreSeed + ' / ' + seedWord +
+  ', ' + seedCalls + ' reads, ' + seedInline + ' inline)');
+// The reroll is a derivation rather than a display, so its read of that lookup
+// is counted on its own: a chain started from `''` would walk a different
+// sequence of worlds than the one the empty box draws. Ask for one guarded call
+// and no bare read of the box left beside it.
+var rerollGuarded = (shellSrc.match(/nextSeed\(seedPhrase\(\)\)/g) || []).length;
+var rerollBare = (shellSrc.match(/nextSeed\(inputs\.seed\.value\)/g) || []).length;
 assert(rerollGuarded === 1 && rerollBare === 0,
   'a reroll from an empty box continues the default world (' +
   rerollGuarded + ' guarded, ' + rerollBare + ' bare)');

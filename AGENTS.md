@@ -421,15 +421,17 @@ Conventions:
   token of a saved file name is a different shape on purpose and keeps its own
   form: a filename is not a row of a table.
   An empty seed box is not a fourth seed: it names the generator's own default,
-  so the fallback word is that one string in every place a blank field reaches —
-  the core's `seed == null` default, the option reader, the `seed` row, the
-  second slot of a saved file name and the seed the Reroll button derives from.
-  That last one is a derivation rather than a display, so it is counted on its
-  own: the suite asks for one guarded `nextSeed(inputs.seed.value || ...)` read
+  so the fallback lives in one lookup — `seedPhrase()` — read by every place a
+  blank field reaches: the option reader, the `seed` row, the second slot of a
+  saved file name and the seed the Reroll button derives from. Written beside
+  each of those it could be edited on one side only, which reads as a link and a
+  PNG describing two worlds from one empty field — so the suite compares the
+  word inside the helper with the core's `seed == null` default, counts the four
+  reads, and asks for one inline fallback left beside them (the one inside that
+  lookup). The reroll is a derivation rather than a display, so its read is
+  counted on its own: the suite asks for one guarded `nextSeed(seedPhrase())`
   and no bare one beside it, since a chain started from `''` would walk a
-  different sequence of worlds than the one the empty box draws. The suite
-  scrapes all of them and asks for one word, since a link and a PNG from an
-  empty box should be the same world.
+  different sequence of worlds than the one the empty box draws.
   Every height on the page is stored 0..1 and printed out of a hundred, through
   one helper — `hundred(value)` — shared by the `relief` and `median` rows, the
   chart's corner labels, the sea rule, the median mark, the hovered-bin range and

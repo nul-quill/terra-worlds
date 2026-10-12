@@ -252,9 +252,19 @@
     fillOptions(inputs.scale, TerraCore.scales);
   }
 
+  // What an empty seed box means. A blank field is not a fourth seed: it names
+  // the generator's own default, so the fallback word has to be that one string
+  // everywhere a blank box reaches — the world that gets built, the `seed` row,
+  // the second slot of a saved file name and the phrase a reroll derives from.
+  // Written beside each of those it could be edited on one side only, which
+  // reads as a link and a PNG describing two worlds from one empty field.
+  function seedPhrase() {
+    return inputs.seed.value || 'terra';
+  }
+
   function readOptions() {
     return {
-      seed: inputs.seed.value || 'terra',
+      seed: seedPhrase(),
       palette: inputs.palette.value,
       shape: inputs.shape.value,
       gridSize: num(inputs.gridSize.value, true) || 0,
@@ -1006,7 +1016,7 @@
     var rows = [
       // First so a printed page or a screenshot of the sidebar still says
       // which phrase the world came from — the hash is not on paper.
-      ['seed', inputs.seed.value || 'terra'],
+      ['seed', seedPhrase()],
       ['grid', sizeText(result.width, result.height)],
       // The multiplier only ever touches the saved file, so without this row
       // the `e` key would look like it did nothing until a PNG was opened.
@@ -1533,7 +1543,7 @@
     // and the grid size tell you which of the many rerolls this was, the
     // palette separates two looks of the same seed, and the checksum is the
     // shortest way back from a file to the link that produced it.
-    var nameParts = ['terra', inputs.seed.value || 'terra', inputs.shape.value,
+    var nameParts = ['terra', seedPhrase(), inputs.shape.value,
       inputs.palette.value, current.width + 'x' + current.height,
       exportFactor() + 'x', current.stats.checksum];
     // The multiplier is part of the ordered list rather than a later insert:
@@ -1618,7 +1628,7 @@
     // shared link lands on the same tenth reroll.
     // The empty box is the fallback phrase here too, so the chain continues
     // from the world actually on screen rather than from an empty string.
-    inputs.seed.value = String(TerraCore.nextSeed(inputs.seed.value || 'terra'));
+    inputs.seed.value = String(TerraCore.nextSeed(seedPhrase()));
     render();
   });
   document.getElementById('save').addEventListener('click', savePng);
