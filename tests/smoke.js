@@ -4492,6 +4492,19 @@ assert(floorDefs === 1 && floorReads === 6 && floorExported && floorInline === 1
   'one floor keeps every height span non-empty (' + floorDefs + ' def, ' +
   floorReads + ' reads, ' + floorInline + ' inside the helper)');
 
+// The cap on high ground is one level rather than two: the branch that starts
+// the fade and the ramp that grows it are measured from the same height, so a
+// pair written beside each other could be edited apart while each still looked
+// fine on its own — a cap that began at one level and grew from another leaves
+// a hard step inside its own ramp. Counted as one number, the two reads that
+// name it, and no bare level left beside them.
+var snowDefs = (coreSrc.match(/var SNOW_LINE = [\d.]+;/g) || []).length;
+var snowReads = (coreSrc.match(/h > SNOW_LINE|h - SNOW_LINE/g) || []).length;
+var snowInline = (coreSrc.match(/h > 0\.80|h - 0\.80/g) || []).length;
+assert(snowDefs === 1 && snowReads === 2 && snowInline === 0,
+  'one level starts the snow cap and its own ramp (' + snowDefs + ' def, ' +
+  snowReads + ' reads, ' + snowInline + ' literals)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

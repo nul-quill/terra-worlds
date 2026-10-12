@@ -719,10 +719,10 @@
           var ldepth = lake[i] / 60;
           var lw = 1 - ldepth * 0.22;
           r *= lw; g *= lw; b *= lw;
-        } else if (h > 0.80) {
+        } else if (h > SNOW_LINE) {
           // Snow line: high ground fades toward the ice colour, so peaks read
           // as caps on top of whatever biome the slope carries.
-          var sn = clamp01((h - 0.80) / 0.16) * 0.85;
+          var sn = clamp01((h - SNOW_LINE) / 0.16) * 0.85;
           r += (colors.ice[0] - r) * sn;
           g += (colors.ice[1] - g) * sn;
           b += (colors.ice[2] - b) * sn;
@@ -915,6 +915,12 @@
   // basin. The depth shading, the `lake` overlay's scale and the hover readout
   // all divide by this one number rather than repeating it.
   var LAKE_STEPS = 60;
+
+  // Height at which ground starts wearing a cap. The branch test and the fade
+  // that follows it are one measurement — a cap that started at one level and
+  // grew from another would leave a hard step in the middle of its own ramp —
+  // so both halves read this one number.
+  var SNOW_LINE = 0.80;
 
   // How far below the shoreline a cell has to sit before it stops being a
   // shelf and reads as open ocean. The classification and the hover note are

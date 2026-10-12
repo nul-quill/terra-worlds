@@ -302,6 +302,11 @@ Conventions:
     boundary: classification happens before the colour pass. The smoke suite
     asserts that, so keep it that way. `contour` (hypsometric lines) belongs to
     this same group.
+  The snow cap in that same colour pass is one level — `SNOW_LINE` — read by the
+  branch that starts the fade and by the ramp that grows it. Written beside each
+  half the pair could be edited apart, which leaves a hard step inside a cap that
+  still reads as snow at a glance, so the suite counts the one number, its two
+  reads and asks for no bare level left beside them.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
