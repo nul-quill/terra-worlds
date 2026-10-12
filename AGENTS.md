@@ -463,6 +463,13 @@ Conventions:
   it is a difference of the height field, so it still cannot move a biome
   boundary, and it is cached on `result.slopeField` for the same reason the
   scale is — a hover reads the field once per cell.
+  That field compares a cell with each of its four neighbours through one
+  `neighbourDrop(hf, here, there)`, since all four are the same difference
+  without a sign. Written beside each step the sign could be dropped on three of
+  them, which measures a downhill face harder than the uphill one it faces — a
+  ridge leaning one way only, still plausible relief at a glance. The suite
+  counts the definition, its four reads and asks for no bare difference of two
+  heights left beside them.
   A key that is not in the ramp table falls back to `relief` rather than
   rendering nothing, so a hash saved against an older build still shows a map.
   The smoke suite walks every entry of `TerraCore.channels` and checks each

@@ -4678,6 +4678,19 @@ assert(rimDefs === 1 && rimReads === 2 && rimPick === 4 && rimLoops === 1,
   rimReads + ' reads, ' + rimPick + ' neighbour steps, ' + rimLoops +
   ' ring loop)');
 
+// The steepest-drop pass compares a cell with each of its four neighbours, and
+// every one of those comparisons is a difference without a sign. Written at each
+// step the sign could be dropped on three of them, which measures a downhill
+// face harder than the uphill one it faces — a ridge leaning one way only, still
+// plausible as relief. Counted as one helper, its four reads and no bare
+// difference of two heights left beside them.
+var dropDefs = (coreSrc.match(/function neighbourDrop\(/g) || []).length;
+var dropReads = (coreSrc.match(/= Math\.max\(best, neighbourDrop\(|= neighbourDrop\(/g) || []).length;
+var dropInline = (coreSrc.match(/Math\.abs\(hf\[i\] - hf\[/g) || []).length;
+assert(dropDefs === 1 && dropReads === 4 && dropInline === 0,
+  'one helper is a neighbour\'s share of a slope (' + dropDefs + ' def, ' +
+  dropReads + ' reads, ' + dropInline + ' literals)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

@@ -1079,16 +1079,24 @@
   // Steepest drop from each cell to its four neighbours, in height units. This
   // is what separates a scarp from a plain when the height field itself is a
   // near-flat plateau: the two share a median and differ entirely in gradient.
+  // One neighbour's share of that steepness is a difference without a sign, so
+  // the sign is dropped in one place: written beside each of the four steps a
+  // comparison could lose its flip and measure a downhill face harder than the
+  // uphill one it faces, which reads as a ridge leaning one way only.
+  function neighbourDrop(hf, here, there) {
+    return Math.abs(hf[here] - hf[there]);
+  }
+
   function slopeField(result) {
     var w = result.width, h = result.height, hf = result.heightField;
     var out = new Float32Array(w * h);
     for (var y = 0; y < h; y++) {
       for (var x = 0; x < w; x++) {
         var i = y * w + x;
-        var best = Math.abs(hf[i] - hf[x > 0 ? i - 1 : i]);
-        if (x + 1 < w) best = Math.max(best, Math.abs(hf[i] - hf[i + 1]));
-        if (y > 0) best = Math.max(best, Math.abs(hf[i] - hf[i - w]));
-        if (y + 1 < h) best = Math.max(best, Math.abs(hf[i] - hf[i + w]));
+        var best = neighbourDrop(hf, i, x > 0 ? i - 1 : i);
+        if (x + 1 < w) best = Math.max(best, neighbourDrop(hf, i, i + 1));
+        if (y > 0) best = Math.max(best, neighbourDrop(hf, i, i - w));
+        if (y + 1 < h) best = Math.max(best, neighbourDrop(hf, i, i + w));
         out[i] = best;
       }
     }
