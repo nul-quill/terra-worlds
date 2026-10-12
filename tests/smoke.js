@@ -2090,12 +2090,28 @@ var csDefs = (csCore.match(/function classShare\(stats, key\) \{/g) || []).lengt
 var csReaders = (csApp.match(/TerraCore\.classShare\(/g) || []).length;
 var csCli = (require('fs').readFileSync(__dirname + '/../cli.js', 'utf8')
   .match(/core\.classShare\(/g) || []).length;
-assert(csDefs === 1 && csReaders === 2 && csCli === 1 &&
+assert(csDefs === 1 && csReaders === 1 && csCli === 1 &&
   /classShare: classShare/.test(csCore) &&
   core.classShare(jsonWorld.stats, jsonPairs[0][0]) ===
     jsonWorld.stats.counts[jsonPairs[0][0]] / jsonWorld.stats.pixels,
   'one division feeds every class share (' + csDefs + ' def, ' +
   csReaders + '+' + csCli + ' readers)');
+// On the page side that division is printed through one builder as well, since
+// both views of a class show the pair: the right column of the legend and the
+// note under the map when a row is pinned. Two copies of the scaling could be
+// edited apart while each still looked plausible beside its own caption — a row
+// reading `6.2%` over a note saying `6%` for the class they both name. Counted
+// as text: one definition, a read from each view, one formatter call inside the
+// helper, and no bare pair left beside them.
+var stDefs = (csApp.match(/function shareText\(stats, key\) \{/g) || []).length;
+var stReads = (csApp.match(/= shareText\(|\n        shareText\(/g) || []).length;
+var stScale = (csApp.match(
+  /return percentText\(TerraCore\.classShare\(stats, key\)\);/g) || []).length;
+var stBare = (csApp.match(
+  /percentText\(TerraCore\.classShare\((result|current)\.stats/g) || []).length;
+assert(stDefs === 1 && stReads === 2 && stScale === 1 && stBare === 0,
+  'both views of a class share print one way (' + stDefs + ' def, ' +
+  stReads + ' reads, ' + stScale + ' scaling, ' + stBare + ' inline pairs)');
 // The same record has a plain form for reading in a terminal: one padded label
 // per line, then the value. Both forms come out of one object in `summarise()`,
 // so the two must agree field by field — every key of the JSON line has to be a

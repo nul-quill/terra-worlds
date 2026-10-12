@@ -897,6 +897,18 @@
     return TerraCore.biomeNames[key] || key;
   }
 
+  // A class's share of the grid, already printed: the division of its count by
+  // the grid plus the one formatter every share on the page uses. Two views
+  // show that pair — the right column of the legend and the note under the
+  // map when a row is pinned — and each of them needs both halves, so the
+  // scaling lives here rather than beside each caller. Written twice, one
+  // view could round a small class to a whole percent while the other kept a
+  // decimal, which reads as a row and a note disagreeing about the same class
+  // they both name.
+  function shareText(stats, key) {
+    return percentText(TerraCore.classShare(stats, key));
+  }
+
   // Whichever way the legend's pin changed, the same four things follow: the
   // rows are rebuilt so the ring and the spoken attribute follow, the map is
   // repainted so its wash follows, the pair is stored so a pasted URL keeps the
@@ -939,7 +951,7 @@
         label.textContent = biomeLabel(key);
         var pct = document.createElement('span');
         pct.className = 'pct';
-        pct.textContent = percentText(TerraCore.classShare(result.stats, key));
+        pct.textContent = shareText(result.stats, key);
         li.appendChild(sw); li.appendChild(label); li.appendChild(pct);
         // Hovering a row isolates that class on the map; leaving restores it.
         // Both halves repaint through drawHover(), so a cell picked earlier —
@@ -1774,7 +1786,7 @@
       // exactly when the map keeps the class after the pointer leaves.
       readout.textContent = joinParts([
         biomeLabel(want) + (solo ? '' : ' pinned'),
-        percentText(TerraCore.classShare(current.stats, want))
+        shareText(current.stats, want)
       ]);
       return;
     }

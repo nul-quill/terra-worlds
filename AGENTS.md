@@ -489,13 +489,22 @@ Conventions:
   second rounding on either side shows up as a mismatch rather than as two
   plausible-looking numbers.
   The fraction beside each of those pairs is one division too —
-  `TerraCore.classShare(stats, key)` — read by the legend's right column, the
-  note under the map and the record's `classes` column. A class that never
+  `TerraCore.classShare(stats, key)` — read through one shell lookup by the
+  legend's right column and the note under the map, and directly by the
+  record's `classes` column. A class that never
   occurs on a world is absent from `stats.counts` rather than holding a zero, so
   that fallback lives in the lookup: two copies could disagree about a missing
   class while each figure still looked plausible, one printing a bare `0%` and
-  the other an empty string. The suite counts the definition and the three
-  readers, and re-checks one pair against a hand-written division.
+  the other an empty string. The suite counts the definition, the one lookup on
+  each side of the pair, and re-checks one pair against a hand-written division.
+  On the page side those two readers go through one builder — `shareText(stats,
+  key)` — since both show the pair rather than the fraction alone: the legend's
+  right column and the note under the map each print a share out of a hundred.
+  Written beside each view the scaling could be edited apart while each still
+  looked plausible on its own, which reads as a row saying `6.2%` over a note
+  saying `6%` for the class they both name. The suite counts the definition, the
+  two reads, the one formatter call inside the helper and asks for no bare pair
+  left beside them.
   That switch at ten is checked rather than assumed: the suite walks every share
   the page prints — each class, the drainage figure, the three cover rows — over
   every hand-picked world and asks that a string carry a decimal exactly when its
