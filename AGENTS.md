@@ -486,7 +486,14 @@ Conventions:
   against an empty band by one lookup, `fillSpan(span)`. Both branches of that
   ternary read it, so the two halves of one hovered cell cannot scale their
   heights against different notions of a flat world; the suite counts the one
-  definition, the two reads and the single `Math.max(0.001` inside the helper.
+  definition, the two reads and the single forward inside the helper. That
+  forward lands on the core's `spanFloor(value)`, which holds the floor itself:
+  the two band counts, the depth shading under water, both contour ramps and the
+  chart's bin range divide by a difference of levels in the generator, so a
+  seventh reader written beside its own `Math.max(0.001` would let a level
+  craton count its stripes against one floor while its own readout scaled
+  against another. The suite counts that definition, its six reads, the export,
+  the shell's forward and the single floor left inside the helper.
   The two counts in that same readout — how far a dry cell sits from the
   shoreline, and how many cells drain behind a channel — are whole numbers over
   one grid, so both round through `cellCount(value)`. Written beside each note,

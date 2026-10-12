@@ -883,7 +883,7 @@
   // land above the line, the depth of water below it — cannot be scaled
   // against two different notions of a flat world.
   function fillSpan(span) {
-    return Math.max(0.001, span);
+    return TerraCore.spanFloor(span);
   }
 
   // A count of cells, printed whole. The readout carries two of them — how far

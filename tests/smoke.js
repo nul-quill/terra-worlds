@@ -4471,9 +4471,26 @@ assert(edgeSets === 1 && widthSets === 1 && saveSets === 1 && backSets === 1,
 var spanDefs = (appSrc.match(/function fillSpan\(/g) || []).length;
 var spanUses = (appSrc.match(/= fillSpan\(/g) || []).length;
 var spanInline = (appSrc.match(/Math\.max\(0\.001/g) || []).length;
-assert(spanDefs === 1 && spanUses === 2 && spanInline === 1,
+var spanForward = (appSrc.match(/return TerraCore\.spanFloor\(span\);/g) || []).length;
+assert(spanDefs === 1 && spanUses === 2 && spanInline === 0 && spanForward === 1,
   'both halves of the elevation share one span guard (' + spanDefs + ' def, ' +
-  spanUses + ' reads, ' + spanInline + ' in the helper)');
+  spanUses + ' reads, ' + spanForward + ' forward, ' + spanInline + ' inline)');
+
+// The same guard is needed by the generator itself: the two band counts, the
+// depth shading, both contour ramps and the chart's bin range each divide by a
+// difference of levels, and a level world makes that difference zero. One
+// lookup in the core holds the floor, and the shell's helper forwards to it, so
+// a flat craton cannot end up with its bands counted against one floor while
+// its hover readout scaled against another. Counted as one definition, the
+// reads inside the generator, the export, the shell's forward and no bare
+// floor left beside them.
+var floorDefs = (coreSrc.match(/function spanFloor\(/g) || []).length;
+var floorReads = (coreSrc.match(/= spanFloor\(|\/ spanFloor\(/g) || []).length;
+var floorExported = /spanFloor:\s*spanFloor/.test(coreSrc);
+var floorInline = (coreSrc.match(/Math\.max\(0\.001/g) || []).length;
+assert(floorDefs === 1 && floorReads === 6 && floorExported && floorInline === 1,
+  'one floor keeps every height span non-empty (' + floorDefs + ' def, ' +
+  floorReads + ' reads, ' + floorInline + ' inside the helper)');
 
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers

@@ -36,6 +36,17 @@
     return v < 0 ? 0 : v > 1 ? 1 : v;
   }
 
+  // Smallest span a division may see. Every height range on the page is a
+  // difference of two levels, and a flat world makes that difference zero:
+  // the two band counts, the depth shading under water, both contour ramps and
+  // the chart's bin range all divide by such a span, so one floor keeps a
+  // level craton from turning those six readings into NaN. Written at each
+  // site the guard could be cut against another scale, which reads as one
+  // view going blank on a world the other five still describe.
+  function spanFloor(value) {
+    return Math.max(0.001, value);
+  }
+
   // Is neighbour (hv,hi) a valid downhill step from (bv,bi)? Equal heights are
   // resolved by index, which keeps the flow graph acyclic on flat plateaus.
   function lower(hv, hi, bv, bi) {
@@ -362,13 +373,13 @@
     // How many hypsometric bands the relief can carry. Counted above the
     // shoreline, because that is the span the lines are drawn across: a low
     // world gets a handful of wide steps, a jagged one gets more.
-    var reliefAboveSea = Math.max(0.001, maxH - seaLevel);
+    var reliefAboveSea = spanFloor(maxH - seaLevel);
     var contourBands = Math.max(6, Math.min(20, Math.round(reliefAboveSea * 26)));
 
     // The basin gets its own count from the depth range, so a shallow shelf
     // is not crossed by lines every few pixels while a deep ocean still shows
     // a few steps.
-    var reliefBelowSea = Math.max(0.001, seaLevel - minH);
+    var reliefBelowSea = spanFloor(seaLevel - minH);
     var basinBands = Math.max(3, Math.min(12, Math.round(reliefBelowSea * 22)));
 
     /* ---- Drainage: flow accumulation over the height field. ---- */
@@ -701,7 +712,7 @@
 
         // Depth shading under water.
         if (isWater) {
-          var depth = clamp01((seaLevel - h) / Math.max(0.001, seaLevel));
+          var depth = clamp01((seaLevel - h) / spanFloor(seaLevel));
           var dw = 1 - depth * 0.30;
           r *= dw; g *= dw; b *= dw;
         } else if (lake[i]) {
@@ -746,14 +757,14 @@
         // shoreline keeps the spacing even when the sea slider floods most
         // of the map.
         if (contour && h >= seaLevel) {
-          var above = (h - seaLevel) / Math.max(0.001, 1 - seaLevel);
+          var above = (h - seaLevel) / spanFloor(1 - seaLevel);
           var band = above * contourBands - Math.floor(above * contourBands);
           if (band < 0.10) { r *= 0.88; g *= 0.88; b *= 0.88; }
         } else if (contour && isWater) {
           // Bathymetric lines: the same idea under water, measured from the
           // deepest cell up to the shoreline. Lighter touch than the land
           // lines, since the depth falloff already carries most of the shape.
-          var below = (h - minH) / Math.max(0.001, seaLevel - minH);
+          var below = (h - minH) / spanFloor(seaLevel - minH);
           var wband = below * basinBands - Math.floor(below * basinBands);
           if (wband < 0.10) { r *= 1.10; g *= 1.10; b *= 1.10; }
         }
@@ -1151,7 +1162,7 @@
   function histogram(result, bins) {
     var hf = result.heightField;
     var lo = result.stats.min;
-    var span = Math.max(0.001, result.stats.max - lo);
+    var span = spanFloor(result.stats.max - lo);
     var hist = new Array(bins);
     var peak = 0;
     var i;
@@ -1319,6 +1330,7 @@
     percentText: percentText,
     hundred: hundred,
     three: three,
+    spanFloor: spanFloor,
     lakeShare: lakeShare,
     classShare: classShare,
     legendOrder: legendOrder,
