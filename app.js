@@ -659,8 +659,17 @@
     var span = 12;
     var x0 = insetOrigin(px, current.width, span);
     var y0 = insetOrigin(py, current.height, span);
-    var size = Math.round(Math.min(view.width, view.height) * 0.28);
-    var pad = Math.round(size * 0.10);
+    // Two fractions decide the panel: how much of the shorter canvas edge the
+    // patch may take, and how much of that patch is given back as padding. Both
+    // are read once each, and the second is measured against the first, so a
+    // wider panel keeps its own margin rather than crowding the map with a
+    // fixed gap. Written as bare numbers beside each other the pair could be
+    // edited apart, which reads as a panel whose border grows while its picture
+    // stays the same size.
+    var PANEL = 0.28;
+    var PAD = 0.10;
+    var size = Math.round(Math.min(view.width, view.height) * PANEL);
+    var pad = Math.round(size * PAD);
     var dx = farHalf(px, current.width, view.width - size, pad);
     var dy = farHalf(py, current.height, view.height - size, pad);
     ctx.save();

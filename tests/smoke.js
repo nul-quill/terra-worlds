@@ -4764,6 +4764,24 @@ assert(matDefs === 1 && matUses === 8 && matLiterals === 0,
   'one reserve sizes the magnifier mat (' + matDefs + ' def, ' + matUses +
   ' reads, ' + matLiterals + ' literals)');
 
+// Two fractions also size that panel: how much of the shorter canvas edge the
+// patch may take, and how much of the patch is given back as padding. The
+// second is measured against the first, so a wider panel keeps its own margin
+// instead of crowding the map with a fixed gap. Written as two bare numbers
+// beside each other the pair could be edited apart, which reads as a border
+// that grows while the picture inside it stays put. Counted as text: one
+// definition of each, one read of each, and no bare fraction left beside them.
+var panelDefs = (appSrc.match(/var PANEL = \d/g) || []).length;
+var panelReads = (appSrc.match(/\* PANEL\)/g) || []).length;
+var padDefs = (appSrc.match(/var PAD = \d/g) || []).length;
+var padReads = (appSrc.match(/\* PAD\)/g) || []).length;
+var fracInline = (appSrc.match(/\* 0\.28\)|\* 0\.10\)/g) || []).length;
+assert(panelDefs === 1 && panelReads === 1 && padDefs === 1 && padReads === 1 &&
+  fracInline === 0,
+  'two named fractions size the magnifier (' + panelDefs + '/' + padDefs +
+  ' defs, ' + panelReads + '/' + padReads + ' reads, ' + fracInline +
+  ' literals)');
+
 // The patch itself is held inside the grid on both axes, and each axis is a
 // bound of the same shape: a cell minus half the patch, kept off the negative
 // edge and off the far one. Written twice the pair could be edited apart, and

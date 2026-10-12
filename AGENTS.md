@@ -1222,6 +1222,14 @@ Conventions:
   past its background on one branch only, which reads as a line floating off the
   panel it frames, so the suite counts the one number, its eight reads and asks
   for no bare offset left beside them.
+  The panel's own size is a pair of fractions — `PANEL`, the share of the shorter
+  canvas edge the patch may take, and `PAD`, the share of that patch given back as
+  padding. The second is measured against the first rather than the canvas, so a
+  wider panel keeps its own margin instead of crowding the map with a fixed gap.
+  Written as two bare numbers beside each other the pair could be edited apart,
+  which reads as a border that grows while the picture inside it stays put, so the
+  suite counts one definition and one read of each and asks for no bare fraction
+  left beside them.
   Which half of the canvas that panel sits in is one lookup as well —
   `farHalf(pos, extent, room, pad)` — read once per axis, since the panel has a
   column to place and a row. Written beside each axis the comparison could be
