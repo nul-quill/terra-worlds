@@ -1771,11 +1771,11 @@
       // away — so the nudge would move a sea level the world never used.
       // Each bound is only applied when it reads, which is what lets the
       // slider's own attributes stay the single source of the range.
-      var stepSea = Number(inputs.seaLevel.step);
+      var stepSea = num(inputs.seaLevel.step);
       if (!isFinite(stepSea) || stepSea <= 0) stepSea = 0.01;
-      var loSea = Number(inputs.seaLevel.min);
-      var hiSea = Number(inputs.seaLevel.max);
-      var nowSea = Number(inputs.seaLevel.value);
+      var loSea = num(inputs.seaLevel.min);
+      var hiSea = num(inputs.seaLevel.max);
+      var nowSea = num(inputs.seaLevel.value);
       if (!isFinite(nowSea)) return;
       var nextSea = nowSea + (ev.key === ']' ? stepSea : -stepSea);
       nextSea = Math.round(nextSea * 100) / 100;

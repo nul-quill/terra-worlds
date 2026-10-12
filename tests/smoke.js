@@ -1461,15 +1461,17 @@ assert(numShapeBad.length === 0 && /readNumber: readNumber/.test(coreNumSrc),
 // into a number: `[` and `]` read the sea slider's own step and bounds. That
 // pair goes into the hash, so a nudge reading a different number than the
 // option reader would move the shoreline to a level the world never used.
-// Ask for the same three traits on that branch: a `Number` read of the
-// slider's own attributes, an `isFinite` test behind it, and no `parse*` call
-// that would keep the leading digits of a value the helpers reject.
+// Ask for that on the branch itself: every bound read through the shell's own
+// `num()` — which forwards to the core's rule — an `isFinite` test behind it,
+// no bare `Number(` beside those reads, and no `parse*` call that would keep
+// the leading digits of a value the helpers reject.
 var seaNudgeSrc = (/if \(!typingLetter && \(ev\.key === '\[' \|\| ev\.key === '\]'\)\) \{([\s\S]*?)\n    \}/
   .exec(require('fs').readFileSync(__dirname + '/../app.js', 'utf8')) ||
   ['', ''])[1];
 assert(seaNudgeSrc &&
-  /Number\(inputs\.seaLevel\./.test(seaNudgeSrc) &&
+  (seaNudgeSrc.match(/num\(inputs\.seaLevel\./g) || []).length === 4 &&
   /isFinite\(/.test(seaNudgeSrc) &&
+  !/Number\(inputs\.seaLevel\./.test(seaNudgeSrc) &&
   !/parse(?:Int|Float)\(/.test(seaNudgeSrc),
   'the sea nudge reads its bounds by the same rule (' +
   (seaNudgeSrc ? 'read' : 'unreadable') + ')');

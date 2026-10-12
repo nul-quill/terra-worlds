@@ -1165,12 +1165,15 @@ Conventions:
   reading `min`/`max`/`step` off the input itself so the key and the slider
   cannot disagree about the size of a step. Keep the clamp there rather than
   hard-coding the range in the handler.
-  Those three attributes are read by the same rule as `num()` — `Number` behind
-  an `isFinite` test, no `parse*` — since the pair the nudge writes goes into
-  the hash, and a reader that kept the leading digits of a value would move the
-  shoreline to a level the option reader had already thrown away. Each bound is
-  applied only when it reads, so the markup stays the single source of the
-  range; the suite scrapes that branch for the three traits.
+  Those three attributes are read through `num()` itself — the same forward to
+  the core's rule that every other numeric read uses — since the pair the nudge
+  writes goes into the hash, and a reader that kept the leading digits of a
+  value would move the shoreline to a level the option reader had already
+  thrown away. Restating `Number` beside that helper would let the two drift:
+  the slider would keep `80x` while the option reader threw it away. Each bound
+  is applied only when it reads, so the markup stays the single source of the
+  range; the suite scrapes that branch for the four `num()` reads, the
+  `isFinite` test behind them, and no bare `Number(` left beside them.
   The number the slider starts on is written three times — the generator's
   `seaLevel == null` fallback, the value the shell assigns on first load, and the
   `min`/`max` span in the markup — so the suite reads all three and asks that the
