@@ -4308,6 +4308,21 @@ assert(axisDefs === 1 && axisCalls === 2 && axisScale === 1 && axisInline === 0,
   'both biome axes in the readout print one way (' + axisDefs + ' def, ' +
   axisCalls + ' reads, ' + axisScale + ' scaling, ' + axisInline + ' inline)');
 
+// Two views end with the same pair about a bin: how many cells fell in the
+// bar, and which class fills most of it. The caption drawn inside the chart
+// and the line under the map both print it, so the pair is one builder — a
+// second copy could count cells while its neighbour named a class the first
+// never mentioned, and each still read as a plausible note about one bar.
+// Counted as text: one definition, a read from each view, one cells field
+// inside the helper, and no bare pair left beside them.
+var bfDefs = (appSrc.match(/function bandFields\(/g) || []).length;
+var bfCalls = (appSrc.match(/\.concat\(bandFields\(sum\)\)/g) || []).length;
+var bfCells = (appSrc.match(/sum\.cells \+ ' cells'/g) || []).length;
+var bfTop = (appSrc.match(/if \(sum\.top\) /g) || []).length;
+assert(bfDefs === 1 && bfCalls === 2 && bfCells === 1 && bfTop === 1,
+  'both views of a bin end with one pair of fields (' + bfDefs + ' def, ' +
+  bfCalls + ' reads, ' + bfCells + ' count field, ' + bfTop + ' class gate)');
+
 // A pointer is mapped onto the canvas by one ratio: the buffer's width over
 // the layout width. Both canvases need that pair — the map turns it into
 // backing-store pixels for the crosshair, the chart turns it into a bin index —

@@ -1278,9 +1278,8 @@
       // sidebar that runs past the chart, so the least useful parts are
       // dropped first: class, then count. The range always survives — it is
       // what ties the bump back to the map.
-      var parts = [hundred(sum.from) + '-' + hundred(sum.to),
-        sum.cells + ' cells',
-        sum.top ? biomeLabel(sum.top) : null];
+      var parts = [hundred(sum.from) + '-' + hundred(sum.to)]
+        .concat(bandFields(sum));
       var label = fitLabel(hc, parts, w - pad * 2);
       var tw = hc.measureText(label).width;
       // The box behind the caption is the label plus one padding on every
@@ -1535,6 +1534,20 @@
       ' (' + hundred(sum.from) + '-' + hundred(sum.to) + ')';
   }
 
+  // The two fields every view of a bin prints after its tally: how many cells
+  // fell in the bar, and which class fills most of it. Both the caption drawn
+  // inside the chart and the line under the map end with this pair, and each
+  // leaves the class out when a bin has none. Written beside each view the
+  // pair could be edited apart — one counting cells and the other naming a
+  // class the first never mentioned — which still reads as two plausible
+  // readings of one bar. Both go through this list so the two views say the
+  // same thing about the same bin, at whatever length each of them fits.
+  function bandFields(sum) {
+    var fields = [sum.cells + ' cells'];
+    if (sum.top) fields.push(biomeLabel(sum.top));
+    return fields;
+  }
+
   // Every reading on that strip is a list of short fields, and the gap between
   // two fields is one string rather than a detail of whichever view wrote the
   // list. Three paths fill the strip — the hovered cell, the pinned or hovered
@@ -1771,8 +1784,7 @@
     }
     var sum = bandSummary(band);
     if (!sum) return;
-    var parts = ['band ' + bandTally(band, sum), sum.cells + ' cells'];
-    if (sum.top) parts.push(biomeLabel(sum.top));
+    var parts = ['band ' + bandTally(band, sum)].concat(bandFields(sum));
     readout.textContent = joinParts(parts);
   }
 

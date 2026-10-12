@@ -1045,6 +1045,14 @@ Conventions:
   division could round one bin three ways while each still looked right beside
   its own caption, so the suite counts the builder, its three reads and the
   denominator inside it.
+  The two fields that follow that tally — how many cells fell in the bar, and
+  which class fills most of it — are one list too, `bandFields(sum)`, read by
+  the caption drawn inside the chart and by the line under the map. The class
+  is dropped when a bin has none, so the gate lives inside the helper rather
+  than beside each caller: written twice, one view could count cells while the
+  other named a class the first never mentioned, and each still read as a
+  plausible note about one bar. The suite counts the definition, the two reads,
+  the one count field and the single class gate inside it.
   Those three views each fill the whole strip with a list of short fields, and
   the gap between two fields is one string too — `joinParts(parts)` — so the
   hovered cell, the pinned class and the selected band all separate their
