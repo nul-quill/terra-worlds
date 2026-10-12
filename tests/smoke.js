@@ -3953,6 +3953,19 @@ assert(baseDefs === 1 && baseUses === 3 && baseLiterals === 0,
   'one baseline holds the strip\'s three labels (' + baseDefs + ' def, ' +
   baseUses + ' reads, ' + baseLiterals + ' literals)');
 
+// The box behind a hovered bin's caption is that label plus one padding on
+// every side: the fill starts that far left of the text and grows by twice
+// itself. Written beside each call the pair could be edited apart, which pads
+// the box deeply on one side and tightly on the other — reads as a stray mark
+// rather than as a bug. Counted as text: one number, both halves derived from
+// it, no bare offset left in that box.
+var pillDefs = (appSrc.match(/var PILL = \d+;/g) || []).length;
+var pillUses = (appSrc.match(/PILL/g) || []).length - pillDefs;
+var pillLiterals = (appSrc.match(/pad - \d\b|tw \+ \d+, 13/g) || []).length;
+assert(pillDefs === 1 && pillUses === 2 && pillLiterals === 0,
+  'one padding pads the hovered bin\'s box (' + pillDefs + ' def, ' +
+  pillUses + ' reads, ' + pillLiterals + ' literals)');
+
 // Both canvases size their backing store from the same clamp on the device
 // pixel ratio. Two copies of that clamp could be edited apart, and a map
 // blitted at one scale under a chart drawn at another reads as a blurry strip

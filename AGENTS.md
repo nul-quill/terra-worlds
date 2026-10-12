@@ -1250,6 +1250,13 @@ Conventions:
   numbers rather than one. The hovered bin's caption is its own row at the top
   of the chart, so it stays outside this pair; the suite counts the one number,
   its three reads and asks for no bare offset left in that strip.
+  That caption is the one label in the chart with a box behind it, and the
+  padding of that box is one number too — `PILL`, two CSS pixels — since the
+  fill starts that far left of the text and grows by twice itself. Written
+  beside each call the pair could be edited apart, which pads the box deeply on
+  one side and tightly on the other — an asymmetry small enough to read as a
+  stray mark rather than as a bug, so the suite counts the one number, its two
+  reads and asks for no bare offset left in that box.
   The decade ticks under the bars do not use a fixed ten-unit step: the step is
   the first of 5/10/20/25/50 that leaves at most ten marks over this world's own
   relief. A flat craton would otherwise get one tick, a tall fjord twenty.

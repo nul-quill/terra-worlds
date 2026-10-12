@@ -1181,10 +1181,17 @@
         sum.top ? biomeLabel(sum.top) : null];
       var label = fitLabel(hc, parts, w - pad * 2);
       var tw = hc.measureText(label).width;
+      // The box behind the caption is the label plus one padding on every
+      // side: the fill starts that far left of the text and grows by twice
+      // itself, so the ink never touches the edge of its own pill. Written per
+      // site the pair could be edited apart, which leaves the padding deep on
+      // one side of the box and tight on the other — an asymmetry small enough
+      // to read as a stray mark rather than as a bug.
+      var PILL = 2;
       hc.fillStyle = rgba(WHITE, 0.88);
-      hc.fillRect(pad - 1, 1, tw + 4, 13);
+      hc.fillRect(pad - PILL, 1, tw + PILL * 2, 13);
       hc.fillStyle = rgba(INK, 0.9);
-      hc.fillText(label, pad + 1, 11);
+      hc.fillText(label, pad, 11);
     }
   }
 
