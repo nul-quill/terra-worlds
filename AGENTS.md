@@ -307,6 +307,13 @@ Conventions:
   half the pair could be edited apart, which leaves a hard step inside a cap that
   still reads as snow at a glance, so the suite counts the one number, its two
   reads and asks for no bare level left beside them.
+  The two scalars of that cap's fade — the width of its ramp and the share it
+  reaches — sit inside one helper, `snowFade(h)`, since both belong to the cap
+  rather than to the branch that starts it. Written beside the call the pair
+  could be edited away from the level the cap starts from, which leaves a cap
+  finishing its fade a hundredth too early while still reading as snow, so the
+  suite counts the definition, its single read, both scalars inside it and asks
+  for no second ramp left beside the branch.
   The two contour ramps in that same pass share one thickness — `LINE_WIDTH`,
   the share of a band its own line occupies. Both are a test on the leading edge
   of a band, so a pair could be edited apart until the stripes above the

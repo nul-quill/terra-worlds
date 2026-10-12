@@ -80,6 +80,16 @@
     return 1 - depth * strength;
   }
 
+  // How far a cell above the snow line has faded toward the ice colour. The
+  // width of that ramp and the share it reaches are both properties of the cap
+  // rather than of its caller, so they are written once here beside the level
+  // the cap starts from. Written beside the call the pair could be edited away
+  // from that level — a cap that finished its fade a hundredth of a unit too
+  // early still reads as snow at a glance.
+  function snowFade(h) {
+    return clamp01((h - SNOW_LINE) / 0.16) * 0.85;
+  }
+
   // Does any neighbour of this cell sit on the other side of the shoreline?
   // The coast ink and a river mouth both ask that question of the same four
   // cells, so the sweep is one helper: written beside each call the pair could
@@ -764,7 +774,7 @@
         } else if (h > SNOW_LINE) {
           // Snow line: high ground fades toward the ice colour, so peaks read
           // as caps on top of whatever biome the slope carries.
-          var sn = clamp01((h - SNOW_LINE) / 0.16) * 0.85;
+          var sn = snowFade(h);
           r += (colors.ice[0] - r) * sn;
           g += (colors.ice[1] - g) * sn;
           b += (colors.ice[2] - b) * sn;

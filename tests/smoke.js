@@ -4623,6 +4623,23 @@ assert(washDefs === 1 && washReads === 2 && washInline === 0,
   'one shape dims both kinds of water (' + washDefs + ' def, ' + washReads +
   ' reads, ' + washInline + ' inline)');
 
+// The snow cap's fade is a ramp with a width and a top strength, and both
+// belong to the cap rather than to the branch that starts it. Written beside
+// the call the pair could be edited away from the level the cap starts from —
+// a fade that finished a hundredth too early still reads as snow at a glance,
+// so the suite counts the helper, its single read, the two scalars inside it
+// and no second copy of the ramp left beside the branch.
+var fadeDefs = (coreSrc.match(/function snowFade\(/g) || []).length;
+var fadeReads = (coreSrc.match(/= snowFade\(/g) || []).length;
+var fadeWidth = (coreSrc.match(/\/ 0\.16\)/g) || []).length;
+var fadeTop = (coreSrc.match(/0\.16\) \* 0\.85;/g) || []).length;
+var fadeInline = (coreSrc.match(/var sn = clamp01/g) || []).length;
+assert(fadeDefs === 1 && fadeReads === 1 && fadeWidth === 1 && fadeTop === 1 &&
+  fadeInline === 0,
+  'one helper is the whole snow fade (' + fadeDefs + ' def, ' + fadeReads +
+  ' read, ' + fadeWidth + ' width, ' + fadeTop + ' top, ' + fadeInline +
+  ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division
