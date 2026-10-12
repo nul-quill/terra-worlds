@@ -427,6 +427,13 @@ Conventions:
   two reads and asks for one spaced separator left in the shell. The `WxH`
   token of a saved file name is a different shape on purpose and keeps its own
   form: a filename is not a row of a table.
+  Two rows are a split rather than a pair of counts — `rivers` and `contours` —
+  and both print through one `splitText(first, firstWord, second, secondWord)`,
+  since the spaced slash is the only thing they share. Written beside each row
+  that gap could be edited on one of them only, which reads as two tables of
+  numbers set by two different hands. The suite counts the definition, the two
+  reads and asks that the only spaced slash in the shell sit inside the helper;
+  the two row probes now look for that lookup rather than for a literal slash.
   An empty seed box is not a fourth seed: it names the generator's own default,
   so the fallback lives in one lookup — `seedPhrase()` — read by every place a
   blank field reaches: the option reader, the `seed` row, the second slot of a

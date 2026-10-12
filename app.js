@@ -1048,6 +1048,14 @@
     function sizeText(w, h) {
       return w + ' x ' + h;
     }
+    // Two of these rows are a split rather than a single figure: the network's
+    // two weights, the two band counts on either side of the shoreline. Each
+    // prints a count, a word, the slash, then the other pair. Written beside
+    // each row the separator could gain or lose its spaces on one of them,
+    // which reads as two tables of numbers set by two different hands.
+    function splitText(first, firstWord, second, secondWord) {
+      return first + ' ' + firstWord + ' / ' + second + ' ' + secondWord;
+    }
     var rows = [
       // First so a printed page or a screenshot of the sidebar still says
       // which phrase the world came from — the hash is not on paper.
@@ -1066,7 +1074,7 @@
       // Both halves of the network, same split as the `contours` row: the
       // weight of a line on the map comes from this pair, so the numbers that
       // explain the drawing sit next to it.
-      ['rivers', (s.rivers - s.trunks) + ' tri / ' + s.trunks + ' trunk'],
+      ['rivers', splitText(s.rivers - s.trunks, 'tri', s.trunks, 'trunk')],
       // The spread plus its two ends: the difference alone cannot say whether a
       // world climbs from a deep shelf or from a damp plain, and the pair in
       // brackets is the same two numbers printed at the corners of the chart.
@@ -1076,7 +1084,7 @@
       // plateau from a plain with one peak when both share a relief range.
       ['median', hundred(s.median) + ' units'],
       ['biomes', String(biomeCount(s.counts))],
-      ['contours', s.contourBands + ' land / ' + s.basinBands + ' basin'],
+      ['contours', splitText(s.contourBands, 'land', s.basinBands, 'basin')],
       ['checksum', s.checksum],
     ];
     // When an overlay is on, say which one: the legend below still lists the

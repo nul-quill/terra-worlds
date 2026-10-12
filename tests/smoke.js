@@ -3600,6 +3600,19 @@ var sizeSpaced = (appSrc.match(/ \+ ' x ' \+/g) || []).length;
 assert(sizeDefs === 1 && sizeCalls === 2 && sizeSpaced === 1,
   'both size rows print one pair of counts (' + sizeDefs + ' def, ' +
   sizeCalls + ' reads, ' + sizeSpaced + ' separators)');
+// Two other rows are a split rather than a pair of counts: the network's two
+// weights and the band counts on either side of the shoreline. Each prints a
+// count, a word, a slash and the other pair, so that shape is one builder too.
+// Written beside each row the gap around the slash could be edited on one of
+// them only, which reads as two tables of numbers set by two different hands —
+// still plausible in a screenshot. Count the definition, its reads and every
+// spaced slash, which has to sit inside the helper.
+var splitDefs = (appSrc.match(/function splitText\(/g) || []).length;
+var splitCalls = (appSrc.match(/[^t]splitText\(/g) || []).length - splitDefs;
+var splitMarks = (appSrc.match(/ \+ ' \/ ' \+/g) || []).length;
+assert(splitDefs === 1 && splitCalls === 2 && splitMarks === 1,
+  'both split rows print through one builder (' + splitDefs + ' def, ' +
+  splitCalls + ' reads, ' + splitMarks + ' slashes)');
 
 // Every number the sidebar prints has to be reachable from a terminal too,
 // or a record cannot stand in for a screenshot. The two lists are named
@@ -3642,7 +3655,7 @@ var unprinted = contourFields.filter(function (field) {
   return contourRowSrc.indexOf('.' + field) < 0;
 });
 assert(contourMissing.length === 0 && unprinted.length === 0 &&
-  /\//.test(contourRowSrc),
+  contourRowSrc.indexOf('splitText(') === 0,
   'both halves of the contours row reach a terminal (' +
   contourMissing.concat(unprinted).join(',') + ')');
 
@@ -3661,7 +3674,7 @@ var riverUnprinted = riverFields.filter(function (field) {
   return riverRowSrc.indexOf('.' + field) < 0;
 });
 assert(riverMissing.length === 0 && riverUnprinted.length === 0 &&
-  /\//.test(riverRowSrc) && riverRowSrc.indexOf('-') > 0,
+  riverRowSrc.indexOf('splitText(') === 0 && riverRowSrc.indexOf('-') > 0,
   'both halves of the rivers row reach a terminal (' +
   riverMissing.concat(riverUnprinted).join(',') + ')');
 
