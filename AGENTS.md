@@ -307,6 +307,12 @@ Conventions:
   half the pair could be edited apart, which leaves a hard step inside a cap that
   still reads as snow at a glance, so the suite counts the one number, its two
   reads and asks for no bare level left beside them.
+  The two contour ramps in that same pass share one thickness — `LINE_WIDTH`,
+  the share of a band its own line occupies. Both are a test on the leading edge
+  of a band, so a pair could be edited apart until the stripes above the
+  shoreline and the ones under it stopped looking like one grid of lines; the
+  suite counts the one number, its two reads and asks for no bare share left
+  beside them.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.

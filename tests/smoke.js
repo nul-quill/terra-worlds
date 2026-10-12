@@ -4505,6 +4505,18 @@ assert(snowDefs === 1 && snowReads === 2 && snowInline === 0,
   'one level starts the snow cap and its own ramp (' + snowDefs + ' def, ' +
   snowReads + ' reads, ' + snowInline + ' literals)');
 
+// Both sets of contour lines are drawn by the same test — the leading edge of
+// a band — so the share a line occupies is one number read twice rather than a
+// pair that could be edited apart until the stripes above the shoreline and the
+// ones under it stopped looking like one grid. Counted as one number, its two
+// reads and no bare share left beside them.
+var lineDefs = (coreSrc.match(/var LINE_WIDTH = [\d.]+;/g) || []).length;
+var lineReads = (coreSrc.match(/band < LINE_WIDTH/g) || []).length;
+var lineInline = (coreSrc.match(/band < 0\.10/g) || []).length;
+assert(lineDefs === 1 && lineReads === 2 && lineInline === 0,
+  'one width thickens both sets of contour lines (' + lineDefs + ' def, ' +
+  lineReads + ' reads, ' + lineInline + ' literals)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

@@ -747,26 +747,23 @@
           r *= sh; g *= sh; b *= sh;
         }
 
-        // Hypsometric contours: every 0.06 of height gets a slightly darker
-        // line above sea level, which makes the relief legible without a
-        // gradient ramp. Measuring from the shoreline keeps the spacing even
-        // when the sea slider floods most of the map.
-        // The number of bands follows this world's own relief: a flat craton
-        // would turn into stripes under a fixed count, while a mountainous
-        // spill needs the extra lines to read at all. Measuring from the
-        // shoreline keeps the spacing even when the sea slider floods most
-        // of the map.
+        // Hypsometric contours: a slightly darker line at each step above sea
+        // level makes the relief legible without a gradient ramp. Both counts
+        // are measured from the shoreline, which keeps the spacing even when
+        // the sea slider floods most of the map, and each follows this world's
+        // own relief: a flat craton would turn into stripes under a fixed
+        // count, while a mountainous spill needs the extra lines to read.
         if (contour && h >= seaLevel) {
           var above = (h - seaLevel) / spanFloor(1 - seaLevel);
           var band = above * contourBands - Math.floor(above * contourBands);
-          if (band < 0.10) { r *= 0.88; g *= 0.88; b *= 0.88; }
+          if (band < LINE_WIDTH) { r *= 0.88; g *= 0.88; b *= 0.88; }
         } else if (contour && isWater) {
           // Bathymetric lines: the same idea under water, measured from the
           // deepest cell up to the shoreline. Lighter touch than the land
           // lines, since the depth falloff already carries most of the shape.
           var below = (h - minH) / spanFloor(seaLevel - minH);
           var wband = below * basinBands - Math.floor(below * basinBands);
-          if (wband < 0.10) { r *= 1.10; g *= 1.10; b *= 1.10; }
+          if (wband < LINE_WIDTH) { r *= 1.10; g *= 1.10; b *= 1.10; }
         }
 
         // Coastline ink: the first ring of water against land catches a little
@@ -921,6 +918,13 @@
   // grew from another would leave a hard step in the middle of its own ramp —
   // so both halves read this one number.
   var SNOW_LINE = 0.80;
+
+  // How much of each band a contour line occupies. Land lines and bathymetric
+  // lines are drawn by the same test — the leading edge of a band — so one
+  // number keeps both sets the same thickness; a pair could be edited apart
+  // until the stripes above the shoreline and the ones under it stopped
+  // looking like one grid of lines.
+  var LINE_WIDTH = 0.10;
 
   // How far below the shoreline a cell has to sit before it stops being a
   // shelf and reads as open ocean. The classification and the hover note are
