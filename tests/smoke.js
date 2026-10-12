@@ -4517,6 +4517,19 @@ assert(lineDefs === 1 && lineReads === 2 && lineInline === 0,
   'one width thickens both sets of contour lines (' + lineDefs + ' def, ' +
   lineReads + ' reads, ' + lineInline + ' literals)');
 
+// A shaded pixel is held between two bounds, and both ends are one decision:
+// how far a slope may move its own colour. Written beside the two comparisons
+// that apply them, the pair could be edited apart until a lit face and its own
+// shadowed one were measured on different scales — which still reads as
+// plausible relief at a glance. Counted as one lookup, its read and no bare
+// bound left beside it.
+var shadeDefs = (coreSrc.match(/function shadeClamp\(/g) || []).length;
+var shadeReads = (coreSrc.match(/= shadeClamp\(/g) || []).length;
+var shadeInline = (coreSrc.match(/if \(sh < |if \(sh > /g) || []).length;
+assert(shadeDefs === 1 && shadeReads === 1 && shadeInline === 2,
+  'one pair of bounds holds every shaded pixel (' + shadeDefs + ' def, ' +
+  shadeReads + ' read, ' + shadeInline + ' bounds inside it)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

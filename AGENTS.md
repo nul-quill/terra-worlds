@@ -313,6 +313,12 @@ Conventions:
   shoreline and the ones under it stopped looking like one grid of lines; the
   suite counts the one number, its two reads and asks for no bare share left
   beside them.
+  The shade pass in that same group holds a pixel between two bounds through one
+  `shadeClamp(sh)`, since the two ends are one decision about how far a slope may
+  move its own colour. Written beside each comparison the pair could be edited
+  apart until a lit face and its shadow were measured on different scales, which
+  still reads as plausible relief; the suite counts the definition, its single
+  read and the two bounds living inside it.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.

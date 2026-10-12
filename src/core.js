@@ -47,6 +47,17 @@
     return Math.max(0.001, value);
   }
 
+  // Bounds on one shaded pixel. The two ends are one decision — how far a
+  // slope may darken or lighten its own colour — so they are written together:
+  // a low end kept beside the call and a high end kept beside the helper could
+  // be edited apart until the shade of a lit face no longer matched the shade
+  // of its own shadowed one.
+  function shadeClamp(sh) {
+    if (sh < 0.62) return 0.62;
+    if (sh > 1.22) return 1.22;
+    return sh;
+  }
+
   // Is neighbour (hv,hi) a valid downhill step from (bv,bi)? Equal heights are
   // resolved by index, which keeps the flow graph acyclic on flat plateaus.
   function lower(hv, hi, bv, bi) {
@@ -742,8 +753,7 @@
           if (dither) {
             sh += ((bayer[((y & 3) << 2) | (x & 3)] / 15) - 0.5) * 0.05;
           }
-          if (sh < 0.62) sh = 0.62;
-          if (sh > 1.22) sh = 1.22;
+          sh = shadeClamp(sh);
           r *= sh; g *= sh; b *= sh;
         }
 
