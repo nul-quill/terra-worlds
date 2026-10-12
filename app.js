@@ -1090,10 +1090,16 @@
     // chart is drawn with rather than repeating the candidate list here.
     var stepUnits = TerraCore.tickStep(span * 100);
     hc.strokeStyle = rgba(INK, 0.35);
+    // A tick that would sit under one of the corner numbers is skipped rather
+    // than drawn short, and the tolerance for "under" is one number that both
+    // ends of the strip read. Written beside each bound the pair could be
+    // edited apart, which crowds the ticks into one corner while the other
+    // still breathes — an asymmetry small enough to read as an odd chart.
+    var SLACK = 1;
     for (var u = Math.ceil(lo * 100 / stepUnits) * stepUnits;
       u <= (lo + span) * 100; u += stepUnits) {
       var tickX = chartX(u / 100, lo, span, w);
-      if (tickX < pad - 1 || tickX > w - pad + 1) continue;
+      if (tickX < pad - SLACK || tickX > w - pad + SLACK) continue;
       hc.beginPath();
       hc.moveTo(hairline(tickX), h - STRIP + 1);
       hc.lineTo(hairline(tickX), h - STRIP + 4);

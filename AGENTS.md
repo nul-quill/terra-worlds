@@ -1253,6 +1253,13 @@ Conventions:
   of reliefs, which is what pins the choice to the TIGHTEST step that fits — a
   helper that returned the last candidate instead of the first would still leave
   at most ten marks, while spacing a flat world's ticks wider than it needs.
+  A tick that would land under one of the corner numbers is skipped rather than
+  drawn short, and the tolerance for that skip is one number — `SLACK`, one CSS
+  pixel — read by both bounds of the strip. Written beside each bound the pair
+  could be edited apart, which crowds the ticks toward one corner while the
+  other stays empty: an asymmetry small enough to read as a slightly odd chart
+  rather than as a bug, so the suite counts the one number, its two reads and
+  asks for no bare tolerance left in those bounds.
   The number of bars follows the same rule through `core.binCount(cssWidth)`:
   one bar per five CSS pixels, clamped 20..72. The clamp ends are part of the
   contract, not decoration — the suite asks that a narrow strip reaches the

@@ -3913,6 +3913,19 @@ assert(gapDefs === 1 && gapUses === 5 && gapLiterals === 0,
   'one gap squeezes the median label between its corners (' + gapDefs +
   ' def, ' + gapUses + ' reads, ' + gapLiterals + ' literals)');
 
+// The same strip also skips a decade tick that would land under a corner
+// number, and the tolerance for that skip is one number read by both bounds.
+// Two literals could be edited apart, which crowds the ticks toward one corner
+// of the chart while the other stays empty. Counted as text: one number, both
+// bounds derived from it, no bare tolerance left beside them.
+var slackDefs = (appSrc.match(/var SLACK = \d+;/g) || []).length;
+var slackUses = (appSrc.match(/pad - SLACK|pad \+ SLACK/g) || []).length;
+var slackLiterals = (appSrc.match(/tickX < pad - \d|tickX > w - pad \+ \d/g) ||
+  []).length;
+assert(slackDefs === 1 && slackUses === 2 && slackLiterals === 0,
+  'one tolerance skips ticks that crowd a corner label (' + slackDefs +
+  ' def, ' + slackUses + ' reads, ' + slackLiterals + ' literals)');
+
 // Both canvases size their backing store from the same clamp on the device
 // pixel ratio. Two copies of that clamp could be edited apart, and a map
 // blitted at one scale under a chart drawn at another reads as a blurry strip
