@@ -58,6 +58,18 @@
     return sh;
   }
 
+  // One grain step for a cell. The divisor is the top of the bayer table — the
+  // largest entry it holds — and the amplitude is how far that step may move a
+  // pixel's shade. Both belong to the grain rather than to the caller, so the
+  // table's own span is measured from the table: a divisor written beside the
+  // call could be edited away from the entries it divides, which would shift
+  // every cell's grain by a constant while still reading as a dither.
+  function ditherOffset(bayer, x, y) {
+    var top = bayer.length - 1;
+    var step = bayer[((y & 3) << 2) | (x & 3)] / top;
+    return (step - 0.5) * 0.05;
+  }
+
   // Is neighbour (hv,hi) a valid downhill step from (bv,bi)? Equal heights are
   // resolved by index, which keeps the flow graph acyclic on flat plateaus.
   function lower(hv, hi, bv, bi) {
@@ -751,7 +763,7 @@
           var dot = (nxg * lx + nyg * ly + lz) / len;
           var sh = 0.86 + (dot - 0.56) * hillshade * 1.5;
           if (dither) {
-            sh += ((bayer[((y & 3) << 2) | (x & 3)] / 15) - 0.5) * 0.05;
+            sh += ditherOffset(bayer, x, y);
           }
           sh = shadeClamp(sh);
           r *= sh; g *= sh; b *= sh;

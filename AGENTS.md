@@ -325,6 +325,13 @@ Conventions:
   beside each axis could set one sideways and leave the other up and down, which
   reads as a ridge leaning one way only; the suite counts the one number, its two
   reads and asks for no bare divisor left beside either axis.
+  The grain step in that same pass is one helper — `ditherOffset(bayer, x, y)` —
+  whose divisor is the bayer table's own span (`bayer.length - 1`) rather than a
+  number written beside the call. That divisor is the top of the table, so a
+  second copy could be edited away from the entries it divides and shift every
+  cell's grain by a constant while still reading as a dither; the suite counts the
+  definition, its single read, the length-derived divisor inside it and the one
+  site that indexes the table.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.

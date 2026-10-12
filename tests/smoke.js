@@ -4571,6 +4571,21 @@ assert(inlandDefs === 1 && inlandReads === 1 && inlandInline === 0,
   'one cap bounds how far inland a biome lookup dries (' + inlandDefs +
   ' def, ' + inlandReads + ' read, ' + inlandInline + ' literals)');
 
+// Grain is one step of a bayer table, and the divisor of that step is the
+// table's own span. Written as a bare number beside the call it could be edited
+// away from the entries it divides, which shifts every cell's grain by a
+// constant while still reading as a dither. Counted as one helper, its single
+// read, the length-derived divisor inside it and no bare fraction left beside
+// the shade pass.
+var grainDefs = (coreSrc.match(/function ditherOffset\(/g) || []).length;
+var grainReads = (coreSrc.match(/\+= ditherOffset\(/g) || []).length;
+var grainSpan = (coreSrc.match(/bayer\.length - 1/g) || []).length;
+var grainSite = (coreSrc.match(/bayer\[/g) || []).length;
+assert(grainDefs === 1 && grainReads === 1 && grainSpan === 1 &&
+  grainSite === 1,
+  'one helper is the whole grain step (' + grainDefs + ' def, ' + grainReads +
+  ' read, ' + grainSpan + ' span, ' + grainSite + ' site)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division
