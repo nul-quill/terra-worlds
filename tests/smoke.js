@@ -4559,6 +4559,18 @@ assert(stepDefs === 1 && stepUses === 4 && stepBare === 0,
   'one constant is the lake depth range inside the core (' + stepDefs +
   ' def, ' + stepUses + ' reads, ' + stepBare + ' bare caps)');
 
+// The biome lookup dries a continental interior with a capped distance, and the
+// cap and its divisor are one measurement. Written beside each half they could
+// be edited apart until an interior dried over one range while its own reading
+// scaled against another — which still looks like a plain gradient at a glance.
+// Counted as one number, its two reads and no bare pair left beside them.
+var inlandDefs = (coreSrc.match(/var INLAND_CAP = /g) || []).length;
+var inlandReads = (coreSrc.match(/INLAND_CAP, dist\[i\]\) \/ INLAND_CAP/g) || []).length;
+var inlandInline = (coreSrc.match(/Math\.min\(12, dist\[i\]\) \/ 12/g) || []).length;
+assert(inlandDefs === 1 && inlandReads === 1 && inlandInline === 0,
+  'one cap bounds how far inland a biome lookup dries (' + inlandDefs +
+  ' def, ' + inlandReads + ' read, ' + inlandInline + ' literals)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

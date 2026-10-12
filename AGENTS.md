@@ -348,8 +348,11 @@ Conventions:
   plain FIFO queue and compares every cell, so the sweeps cannot drift from it.
   The field itself is unclamped — the furthest cell grows with the grid, which
   the smoke suite checks between a small and a large world — while the biome
-  drying reads it through a capped `min(12, dist) / 12`. Keep both: the cap is
-  what stops a big grid from turning its whole interior into desert.
+  drying reads it through a capped `min(INLAND_CAP, dist) / INLAND_CAP`. Keep
+  both halves on that one number: the cap is what stops a big grid from turning
+  its whole interior into desert, and a divisor written beside the fraction
+  could be edited apart from it until the interior dried over one range while
+  its own reading scaled against another.
   The readout's `N from water` part prints on dry ground only, and it can rely
   on that because the sweeps seed at the shoreline: every water cell is already
   at zero, so the note's own threshold does the filtering and the dry/wet test

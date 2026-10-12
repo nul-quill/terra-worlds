@@ -693,7 +693,7 @@
             // latitude: an airmass gives up most of its moisture in the first
             // dozen cells inland. The distance field is already computed, so
             // this costs one multiply.
-            var far = Math.min(12, dist[i]) / 12;
+            var far = Math.min(INLAND_CAP, dist[i]) / INLAND_CAP;
             var moist = clamp01(mf[i] + (seaLevel + 0.10 - h) * 0.35 +
               (lake[i - 1] || lake[i + 1] || lake[i - width] || lake[i + width] ? 0.10 : 0) -
               far * 0.10);
@@ -942,6 +942,14 @@
   // pair could be edited apart until a slope read differently sideways than it
   // did up and down, which still looks like relief at a glance.
   var SLOPE_SCALE = 3.2;
+
+  // How far inland an airmass still carries moisture. The biome lookup caps the
+  // distance field at this many cells and divides by the same number, so the
+  // two halves of that division are one measurement: a cap written beside the
+  // test and a divisor written beside the fraction could be edited apart until
+  // an interior dried out over one range while its own reading scaled against
+  // another — which still looks like a plain enough gradient at a glance.
+  var INLAND_CAP = 12;
 
   // How far below the shoreline a cell has to sit before it stops being a
   // shelf and reads as open ocean. The classification and the hover note are
