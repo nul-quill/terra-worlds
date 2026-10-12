@@ -10,6 +10,12 @@
   var statsBox = document.getElementById('stats');
   var histCanvas = document.getElementById('hist');
   var summaryLine = document.getElementById('summary');
+  // The copy button is read once here, beside the two canvases and the three
+  // text boxes, so the wiring at the bottom and the body it calls both hold
+  // the same node. Two lookups of one button could be edited apart — a renamed
+  // id would leave the click wired to nothing while the label still restored
+  // itself on the node the other read found.
+  var copyBtn = document.getElementById('copy');
 
   var inputs = {
     seed: document.getElementById('seed'),
@@ -1507,7 +1513,7 @@
   var copyTimer = 0;
   function copyLink() {
     var url = location.href;
-    var btn = document.getElementById('copy');
+    var btn = copyBtn;
     // The button's real name is remembered the first time it is pressed, so a
     // second click while "Copied" is showing restores the label rather than
     // freezing the feedback word in its place.
@@ -1576,7 +1582,7 @@
   document.getElementById('save').addEventListener('click', savePng);
 
   // The hash already holds every option, so the current URL is the whole state.
-  document.getElementById('copy').addEventListener('click', copyLink);
+  copyBtn.addEventListener('click', copyLink);
 
   view.addEventListener('mousemove', function (ev) {
     hoverFromPointer(ev);

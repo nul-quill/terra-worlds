@@ -651,6 +651,13 @@ Conventions:
   time it is pressed, and the restore is one shared timer that each press
   clears before scheduling again — otherwise a second click inside the feedback
   window leaves the button reading `Copied` for good.
+  That button is also the one control whose node two bodies need: the wiring at
+  the bottom of the shell, and `copyLink()` itself, which has to write its
+  feedback into the same element the click lands on. The lookup therefore sits
+  beside the canvases and the text boxes, and each caller reads the variable.
+  With two lookups an id rename could be fixed on one side only, which reads as
+  a button that never answers a click while its label still restores itself —
+  plausible in a screenshot, so the suite counts the one lookup and the reads.
   SELECT owns the caret, so a seed phrase can still be typed. That test is one
   `ownsCaret()` lookup read by both keyboard paths — the arrow walk and the
   letter block — since two copies could drop `SELECT` from one of them, which

@@ -3386,6 +3386,18 @@ assert(timers === 1 && clears === 1 &&
   'the copy button keeps one restore timer (' + timers + ' set, ' + clears +
   ' clear)');
 
+// That button is the one control whose node is needed by two bodies: the
+// wiring at the bottom of the shell, and the function the click calls. Both
+// must hold the same node, so the lookup happens once beside the canvases and
+// each caller reads the variable. With two lookups a renamed id could be fixed
+// on one side only, which leaves the click wired to nothing while the label
+// still restores itself on the node the other read found.
+var copyLookups = (appSrc.match(/getElementById\('copy'\)/g) || []).length;
+var copyNodes = (appSrc.match(/copyBtn/g) || []).length;
+assert(copyLookups === 1 && copyNodes === 3,
+  'both halves of the copy button read one node (' + copyLookups + ' lookup, ' +
+  copyNodes + ' reads)');
+
 // The stats list is the only trace of a world once it is printed or screenshotted,
 // so it has to open with the thing every other number hangs off: the seed. Read
 // the row labels straight out of the shell and check the order, plus that no label
