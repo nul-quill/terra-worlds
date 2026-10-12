@@ -1371,10 +1371,18 @@
       // one side of the box and tight on the other — an asymmetry small enough
       // to read as a stray mark rather than as a bug.
       var PILL = 2;
+      // The box and its caption are one row of the chart, so the height of
+      // the fill and the baseline of the ink inside it are one measurement:
+      // the box is this tall, and the text sits two pixels above its own
+      // bottom edge. Written beside each call the pair could be edited apart,
+      // which leaves a caption riding low in a box grown taller around it —
+      // an asymmetry small enough to read as a stray mark rather than as a
+      // bug, so both halves read the one number.
+      var CAP = 13;
       hc.fillStyle = rgba(WHITE, 0.88);
-      hc.fillRect(pad - PILL, 1, tw + PILL * 2, 13);
+      hc.fillRect(pad - PILL, 1, tw + PILL * 2, CAP);
       hc.fillStyle = rgba(INK, 0.9);
-      hc.fillText(label, pad, 11);
+      hc.fillText(label, pad, CAP - 2);
     }
   }
 

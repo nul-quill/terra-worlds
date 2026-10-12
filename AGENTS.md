@@ -1500,6 +1500,12 @@ Conventions:
   one side and tightly on the other — an asymmetry small enough to read as a
   stray mark rather than as a bug, so the suite counts the one number, its two
   reads and asks for no bare offset left in that box.
+  That box and the caption inside it are one row too — `CAP`, thirteen CSS
+  pixels — since the fill is that tall and the ink sits two pixels above its own
+  bottom edge. Written beside each call the pair could be edited apart, which
+  leaves a caption riding low in a box grown taller around it, so the suite
+  counts the one number, its two reads and asks for no bare height or baseline
+  left beside them.
   The decade ticks under the bars do not use a fixed ten-unit step: the step is
   the first of 5/10/20/25/50 that leaves at most ten marks over this world's own
   relief. A flat craton would otherwise get one tick, a tall fjord twenty.

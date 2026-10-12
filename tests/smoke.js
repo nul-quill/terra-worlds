@@ -4251,6 +4251,19 @@ assert(pillDefs === 1 && pillUses === 2 && pillLiterals === 0,
   'one padding pads the hovered bin\'s box (' + pillDefs + ' def, ' +
   pillUses + ' reads, ' + pillLiterals + ' literals)');
 
+// That box and the caption inside it are one row of the chart: the height of
+// the fill and the baseline of the ink are measured off the same number. Cut
+// them apart and a caption rides low in a box grown taller around it, which is
+// the kind of stray mark that still reads as a plausible chart at a glance.
+// Counted as text: one number, both halves derived from it, no bare offset
+// left beside them.
+var capDefs = (appSrc.match(/var CAP = \d+;/g) || []).length;
+var capUses = (appSrc.match(/CAP\)|CAP - 2/g) || []).length;
+var capLiterals = (appSrc.match(/, 13\)|, 11\)/g) || []).length;
+assert(capDefs === 1 && capUses === 2 && capLiterals === 0,
+  'one row height holds the caption in its box (' + capDefs + ' def, ' +
+  capUses + ' reads, ' + capLiterals + ' literals)');
+
 // Both canvases size their backing store from the same clamp on the device
 // pixel ratio. Two copies of that clamp could be edited apart, and a map
 // blitted at one scale under a chart drawn at another reads as a blurry strip
