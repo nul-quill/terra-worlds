@@ -1812,6 +1812,21 @@ core.phrases.forEach(function (cp) {
 assert(capBad.length === 0 && core.phrases.length >= 4,
   'every caption figure is a field of its own record (' +
   core.phrases.length + ' worlds, off at ' + capBad.join('; ') + ')');
+// Those two columns are one lookup rather than a pair of divisions written at
+// each site. The ruler and the record are compared above, so a helper only one
+// of them used would still pass that check while the other placed its marks by
+// hand; count the definition, its three reads and the single sea-level
+// division, which is where the pair is actually decided.
+var marksSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+var marksDefs = (marksSrc.match(/function rulerMarks\(/g) || []).length;
+var marksReads = (marksSrc.match(/rulerMarks\(result, /g) || []).length;
+var marksSeaDivs =
+  (marksSrc.match(/core\.binOf\(result\.seaLevel/g) || []).length;
+// The reads count includes the definition's own parameter list, so one helper
+// with three callers shows four of those.
+assert(marksDefs === 1 && marksReads === marksDefs + 3 && marksSeaDivs === 1,
+  'one lookup places both ruler marks for both forms (' + marksDefs +
+  ' def, ' + marksReads + ' reads, ' + marksSeaDivs + ' sea divisions)');
 
 // The caption is only the label under the block, so the bars themselves have to
 // be compared per phrase too. One world would let a block built from a fixed

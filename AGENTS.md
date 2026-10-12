@@ -245,6 +245,10 @@ Conventions:
   The suite reads a ruler and a record for one world and asks that the glyph
   counts match: one `+` when the two columns coincide, otherwise a `|` and a
   `:` at the two numbers the record names.
+  That pair is one lookup too — `rulerMarks(result, h)` — read by the ruler and
+  by both fields of the record, since two divisions could be cut over two
+  ranges while each still landed inside its own box. The suite counts the
+  definition, its three reads and the one sea-level division inside it.
   The same pair is checked on every seed of a `--next` chain, since the chain
   builds its worlds through its own helper: a ruler drawn from the first
   world's columns would still sit under a caption naming that seed's own two

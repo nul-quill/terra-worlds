@@ -453,6 +453,16 @@ if (opts.help) {
   });
 }
 
+// Which columns the two ruler marks fall in. Both readers of that pair — the
+// text ruler below and the record's `seaCol`/`medCol` — go through here, so a
+// mark is never placed against one range in one form and another in the next.
+function rulerMarks(result, h) {
+  return {
+    sea: core.binOf(result.seaLevel, h.lo, h.span, h.bins),
+    med: core.binOf(result.stats.median, h.lo, h.span, h.bins)
+  };
+}
+
 // The relief profile as text: six rows of blocks over the same bins the
 // sidebar chart draws, so a saved PNG plus one line of JSON can still be
 // redrawn by eye. The bins come from `core.histogram` at the sidebar's own
@@ -477,8 +487,9 @@ function profile(result) {
   // the range the bins were cut over — the same figures the chart prints. The
   // median gets a second mark, since the spread alone cannot say whether a
   // world is a plateau or a peak squeezed between two ends.
-  var seaCol = core.binOf(result.seaLevel, h.lo, h.span, h.bins);
-  var medCol = core.binOf(result.stats.median, h.lo, h.span, h.bins);
+  var marks = rulerMarks(result, h);
+  var seaCol = marks.sea;
+  var medCol = marks.med;
   var ruler = '';
   for (var c = 0; c < h.bins; c++) {
     // A world whose middle sits exactly on its shoreline gets one column for
@@ -579,8 +590,8 @@ function summarise(seed, result, name, asJson) {
     // by a column, so the two positions are published rather than left for a
     // reader to re-derive from `low` and `high`. Both come from the same
     // `binOf` the text ruler is drawn with.
-    seaCol: core.binOf(result.seaLevel, hist.lo, hist.span, hist.bins),
-    medCol: core.binOf(result.stats.median, hist.lo, hist.span, hist.bins),
+    seaCol: rulerMarks(result, hist).sea,
+    medCol: rulerMarks(result, hist).med,
     // The bars themselves. `bins` and `peak` say how tall the silhouette is
     // but not where its weight sits, which is the difference between a plateau
     // and a peak squeezed between its own two ends. The array is the same pass
