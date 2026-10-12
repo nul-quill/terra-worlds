@@ -602,7 +602,7 @@
     // The crosshair takes the palette's own darkest ink rather than a fixed
     // white, which disappears on the pale sky of Sepia or Mono.
     var ink = skyRgb();
-    var deep = current.palette.colors.deep;
+    var deep = inkColour();
     var hair = rgba(mix(deep, ink, 0.45), 0.45);
     var edge = rgba(mix(deep, ink, 0.15), 0.9);
     var cs = cellSize();
@@ -679,7 +679,7 @@
     ctx.fillRect(dx - MAT, dy - MAT, size + MAT * 2, size + MAT * 2);
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(off, x0, y0, span, span, dx, dy, size, size);
-    ctx.strokeStyle = rgba(mix(current.palette.colors.deep, sky, 0.35), 0.55);
+    ctx.strokeStyle = rgba(mix(inkColour(), sky, 0.35), 0.55);
     ctx.lineWidth = 1;
     ctx.strokeRect(dx - MAT - 0.5, dy - MAT - 0.5,
       size + MAT * 2 + 1, size + MAT * 2 + 1);
@@ -688,7 +688,7 @@
     // patch's own scale — the offset is the difference of two clamped indices,
     // so it stays inside the panel at every edge of the grid.
     var patch = size / span;
-    ctx.strokeStyle = rgba(mix(current.palette.colors.deep, sky, 0.15), 0.9);
+    ctx.strokeStyle = rgba(mix(inkColour(), sky, 0.15), 0.9);
     ctx.strokeRect(dx + (px - x0) * patch, dy + (py - y0) * patch, patch, patch);
     ctx.restore();
   }
@@ -718,6 +718,17 @@
   // than the ink drawn over it.
   function skyRgb() {
     return hexToRgb(current.palette.sky);
+  }
+
+  // The palette's own darkest ink, which every hairline on the map is stroked
+  // with: the crosshair's pair of lines, the border of the magnifier's mat and
+  // the one-cell mark inside that patch. Three marks read it, so the hue is
+  // named once and only the alpha varies per mark — the same shape as the sky
+  // lookup above. Written at each site, one mark could be pointed at another
+  // entry of the colour table and still look like the scheme's ink beside the
+  // other two, which reads as a slightly odd cursor rather than as a bug.
+  function inkColour() {
+    return current.palette.colors.deep;
   }
 
   // The wash every dimmed thing is blended toward: the hovered cells on the

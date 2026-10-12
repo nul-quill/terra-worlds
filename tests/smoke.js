@@ -3435,6 +3435,21 @@ assert(skyDefs === 1 && skyCalls === 4 && skyInline === 1,
   'every map overlay washes to one sky colour (' + skyDefs + ' def, ' +
   skyCalls + ' reads, ' + skyInline + ' parse)');
 
+// The other half of every overlay mark is the palette's darkest ink: the
+// crosshair's hairlines, the border of the magnifier's mat and the one-cell
+// mark inside that patch. Each is a stroke over its own background at its own
+// alpha, so the alpha differs per mark while the hue must not. Written at each
+// site, one mark could be pointed at another entry of the colour table and
+// still read as the scheme's ink beside the other two — a slightly odd cursor,
+// not an obvious bug. Counted as text: one lookup, three reads, and the single
+// table access inside it.
+var inkLookDefs = (appSrc.match(/function inkColour\(/g) || []).length;
+var inkLookCalls = (appSrc.match(/inkColour\(\)/g) || []).length - inkLookDefs;
+var inkLookInline = (appSrc.match(/palette\.colors\.deep/g) || []).length;
+assert(inkLookDefs === 1 && inkLookCalls === 3 && inkLookInline === 1,
+  'every map mark strokes with one ink (' + inkLookDefs + ' def, ' +
+  inkLookCalls + ' reads, ' + inkLookInline + ' table access)');
+
 // The Copy button shows a short confirmation and then puts its own name back.
 // Pressing it twice inside that window has to be one pending restore, not two:
 // the second press clears the first timer before scheduling its own, otherwise

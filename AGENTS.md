@@ -916,6 +916,15 @@ Conventions:
   one colour while its own crosshair is drawn in a slightly different one —
   close enough to pass at a glance. The suite counts the definition, the four
   reads and the single `hexToRgb` call inside it.
+  The ink those marks are stroked with is one lookup as well —
+  `inkColour()` — read by the three of them: the crosshair's pair of hairlines,
+  the border of the magnifier's mat and the one-cell mark inside that patch.
+  Each sits over its own background at its own alpha, so the alpha is written
+  per mark while the hue is not. Written beside each stroke, one mark could be
+  pointed at another entry of the colour table and still read as the scheme's
+  ink next to the other two — a slightly odd cursor rather than a bug, so the
+  suite counts the definition, the three reads and asks that the only table
+  access of that shape be the one inside the helper.
 - Legend isolation lives in `drawMap()`: `solo` follows the pointer/focus,
   `pinned` is the click selection and survives a reroll. Both blend non-matching
   cells toward the palette sky in that one loop — do not add a second blend
