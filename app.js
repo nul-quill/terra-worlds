@@ -473,6 +473,15 @@
     return Math.max(0, Math.min(count - 1, n));
   }
 
+  // The middle cell of one axis, which is what the hash falls back to when no
+  // pointer is on the map. Both axes of that pair are the same rule over their
+  // own count, so the division is one lookup rather than two that could be
+  // edited to round differently — a link would then name a cell in the left
+  // half of a wide map while its crosshair sat in the top third.
+  function middleIndex(count) {
+    return Math.floor((count || 0) / 2);
+  }
+
   // Which cell a backing-store pixel falls in. Three paths ask that question —
   // the crosshair, the reader behind the `at=` pair and the readout — and each
   // divides by the very cell size the blit was drawn with, so the division is
@@ -1233,8 +1242,12 @@
 
   function currentCell() {
     if (pointerAway() || !current) {
-      return [Math.floor(current ? current.width / 2 : 0),
-        Math.floor(current ? current.height / 2 : 0)];
+      // With no pointer the link names the middle cell of each axis, so a
+      // reopened page has something under its crosshair. Both halves are the
+      // same rule over one count, and a world that is not built yet counts as
+      // nothing — the same fallback the two guards above already imply.
+      return [middleIndex(current && current.width),
+        middleIndex(current && current.height)];
     }
     var xy = cellOf(hover.x, hover.y);
     // Same clamp the readout applies, so the pair in the hash is the pair a

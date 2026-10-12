@@ -741,6 +741,15 @@ Conventions:
     under a caption describing the whole grid — a stale line, not an obvious
     bug — so the suite counts the definition, the three guarded reads and asks
     for no bare comparison of the hover against zero left beside them.
+    That fallback pair — the middle cell of each axis, for a link with no cell
+    in it — is one lookup too, `middleIndex(count)`, read once per axis. Both
+    halves are the same division over their own count, and a pair written side
+    by side could be cut differently while each still looked reasonable beside
+    its own caption: a link would then name a cell in the left half of a wide
+    map while its crosshair sat in the top third of a tall one. An unbuilt
+    world counts as nothing inside the helper, which is the empty case both
+    callers already relied on. The suite counts the definition, the two reads
+    and asks for no bare division of a grid side by two left beside them.
     A pointer is mapped onto the buffer by one `pointerPos(ev)`, which reads its
     pair of fractions from `pointerFraction(ev, rect)`: the offset inside the
     layout box over that box, guarded so an empty layout still divides. Both

@@ -4180,6 +4180,19 @@ var bandBound = (appSrc.match(
 assert(bandBound === 0,
   'the chart picks its bar through the same bound (' + bandBound +
   ' second copy)');
+
+// With no pointer on the map the `at=` pair falls back to the middle cell of
+// each axis. Two halves of one pair are the same rule over their own count, so
+// the division is one lookup rather than a pair written beside each other: cut
+// one of them finer and a link names a cell in one half of a wide map while its
+// crosshair sits in another quarter of a tall one.
+var midDefs = (appSrc.match(/function middleIndex\(/g) || []).length;
+var midCalls = (appSrc.match(/middleIndex\(current/g) || []).length;
+var midInline = (appSrc.match(
+  /Math\.floor\(current \? current\.\w+ \/ 2 : 0\)/g) || []).length;
+assert(midDefs === 1 && midCalls === 2 && midInline === 0,
+  'both halves of the fallback cell read one middle (' + midDefs + ' def, ' +
+  midCalls + ' reads, ' + midInline + ' inline)');
 // Turning a backing-store pixel into a cell index is the same division on
 // three paths: the crosshair, the reader behind the `at=` pair and the readout
 // itself. Written at each site, one of them could round against a different
