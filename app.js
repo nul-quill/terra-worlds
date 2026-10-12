@@ -1284,9 +1284,16 @@
       u <= (lo + span) * 100; u += stepUnits) {
       var tickX = chartX(u / 100, lo, span, w);
       if (tickX < pad - SLACK || tickX > w - pad + SLACK) continue;
+      // Every tick is the same short mark hanging from the strip's own top
+      // edge, so its length is one number: the mark starts one pixel below
+      // that edge and runs down to this depth. Written as two offsets the
+      // pair could be edited apart, which leaves one tick shorter than its
+      // neighbours while the rest of the row still reads as a plausible
+      // scale — an asymmetry too small for anyone to open the console over.
+      var TICK = 4;
       hc.beginPath();
       hc.moveTo(hairline(tickX), h - STRIP + 1);
-      hc.lineTo(hairline(tickX), h - STRIP + 4);
+      hc.lineTo(hairline(tickX), h - STRIP + TICK);
       hc.stroke();
     }
     // The marker line alone does not say what the sea level is, and the slider

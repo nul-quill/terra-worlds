@@ -207,8 +207,8 @@ Conventions:
   saved PNG keeps nothing but its name, and the checksum is in that name.
   Inside that box the bottom strip is one reserve too — `STRIP`, twelve CSS
   pixels — because four marks are measured from it: the bars stop at its top
-  edge, the decade ticks hang one to four pixels below that, the median mark
-  runs from the edge down through the strip. Four literals would let a taller
+  edge, the decade ticks hang below that down to `TICK`, the median mark
+  runs from the edge down through the strip. Bare literals would let a taller
   strip grow the bars while the marks stayed put, which reads as a label
   sitting on a bar, so every offset is written relative to the one number and
   the suite asks for no bare pixel offset left beside it.

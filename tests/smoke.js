@@ -4211,6 +4211,18 @@ assert(slackDefs === 1 && slackUses === 2 && slackLiterals === 0,
   'one tolerance skips ticks that crowd a corner label (' + slackDefs +
   ' def, ' + slackUses + ' reads, ' + slackLiterals + ' literals)');
 
+// Each decade tick is one short mark hanging from the strip's own top edge, so
+// how far down it reaches is a single number beside that edge. Two offsets
+// could be edited apart, which leaves one tick shorter than its neighbours
+// while the row still reads as a plausible scale. Counted as text: one number,
+// its read, and no bare depth left beside it.
+var tickDefs = (appSrc.match(/var TICK = \d+;/g) || []).length;
+var tickUses = (appSrc.match(/STRIP \+ TICK/g) || []).length;
+var tickLiterals = (appSrc.match(/STRIP \+ 4\b/g) || []).length;
+assert(tickDefs === 1 && tickUses === 1 && tickLiterals === 0,
+  'one depth sets every decade tick (' + tickDefs + ' def, ' + tickUses +
+  ' reads, ' + tickLiterals + ' literals)');
+
 // The sea number beside its own rule sits one measure away, and the flip that
 // moves it to the other side of the line is measured against twice that same
 // gap. Written per site the pair could be edited apart, which puts the figure
