@@ -758,6 +758,16 @@ Conventions:
     leaves a box sitting on a cell's left edge under a crosshair that stayed in
     the middle: close enough to read as an odd cursor, so the suite counts the
     definition, the four reads and the single offset inside the helper.
+    The patch that panel draws is held inside the grid by one more bound of its
+    own — `insetOrigin(pos, extent, span)` — read once per axis, since a block
+    has two edges to keep in and a single index has only one. That is why it
+    sits beside `clampIndex()` rather than inside it: the wider shape measures
+    the span as well as the position, and a shared body would have to guess
+    which of the two a caller meant. Written beside each axis the offset could
+    be dropped on one of them only, which leaves a panel flush against the
+    right edge of a map while its own top row still floats — an asymmetry small
+    enough to read as an odd cursor, so the suite counts the definition, the two
+    reads and asks for no bare clamp of that shape left beside them.
     The arrow handler wraps its own pair through `cycleIndex()` before calling
     `hoverCell()`, so a walk in one direction keeps sweeping instead of sticking
     on the last column; the clamp in `hoverCell()` still handles a hash-restored

@@ -4293,6 +4293,20 @@ assert(matDefs === 1 && matUses === 8 && matLiterals === 0,
   'one reserve sizes the magnifier mat (' + matDefs + ' def, ' + matUses +
   ' reads, ' + matLiterals + ' literals)');
 
+// The patch itself is held inside the grid on both axes, and each axis is a
+// bound of the same shape: a cell minus half the patch, kept off the negative
+// edge and off the far one. Written twice the pair could be edited apart, and
+// a panel whose rows were clamped but not its columns would read as a magnifier
+// that drifts off one edge of the map. Counted as text: one definition, two
+// reads, no bare clamp of that shape left beside them.
+var patchDefs = (appSrc.match(/function insetOrigin\(/g) || []).length;
+var patchReads = (appSrc.match(/insetOrigin\((?:px|py),/g) || []).length;
+var patchInline = (appSrc.match(
+  /= Math\.max\(0, Math\.min\(current\.\w+ - span/g) || []).length;
+assert(patchDefs === 1 && patchReads === 2 && patchInline === 0,
+  'both axes of the magnifier patch clamp through one bound (' + patchDefs +
+  ' def, ' + patchReads + ' reads, ' + patchInline + ' inline)');
+
 // The dark scheme is meant to change nothing but the colour variables, which
 // only works if it replaces every one of them: a variable declared once in
 // `:root` and left alone by the dark block would keep its light value under a

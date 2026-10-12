@@ -566,10 +566,19 @@
   // A magnified patch around the hovered cell, drawn in the corner of the
   // canvas: at 2x-3x the individual cells are hard to read, and this shows
   // the pixel structure without touching the main blit.
+  // Where a patch of `span` cells starts, given the cell it is centred on.
+  // The inset holds a whole block inside the grid rather than a single index,
+  // which is why this bound is wider than the one a hovered cell ends with.
+  // Both axes read it, so a patch cannot be kept on one axis and left to run
+  // off the canvas on the other.
+  function insetOrigin(pos, extent, span) {
+    return Math.max(0, Math.min(extent - span, pos - (span >> 1)));
+  }
+
   function drawInset(px, py) {
     var span = 12;
-    var x0 = Math.max(0, Math.min(current.width - span, px - (span >> 1)));
-    var y0 = Math.max(0, Math.min(current.height - span, py - (span >> 1)));
+    var x0 = insetOrigin(px, current.width, span);
+    var y0 = insetOrigin(py, current.height, span);
     var size = Math.round(Math.min(view.width, view.height) * 0.28);
     var pad = Math.round(size * 0.10);
     // Put the inset in whichever half of the canvas the cursor is NOT in, so
