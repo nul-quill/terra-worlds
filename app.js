@@ -379,9 +379,13 @@
     // A chosen grid size pins the column count, so the same seed gives the same
     // cell count in a narrow window and on a wide one. Rows keep the aspect of
     // the canvas, which is what makes the cells square rather than stretched.
+    // A very wide window still needs a world rather than a ribbon, so the
+    // derived row count has one floor. The two auto counts pass their own
+    // floors as arguments; this is the only bound the pinned form needs.
+    var MINROWS = 40;
     if (opts.gridSize) {
       cols = opts.gridSize;
-      rows = Math.max(40, Math.round(cols * rect.height / Math.max(1, rect.width)));
+      rows = Math.max(MINROWS, Math.round(cols * rect.height / Math.max(1, rect.width)));
     }
 
     // Cells must be a whole number of device pixels wide, or the columns come

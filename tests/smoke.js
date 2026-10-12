@@ -4337,6 +4337,17 @@ var autoInline = (appSrc.match(/Math\.round\(rect\.[a-z]+ \/ 3\)/g) || []).lengt
 assert(autoDefs === 1 && autoCalls === 2 && autoInline === 0,
   'the auto grid counts both axes by one rule (' + autoDefs + ' def, ' +
   autoCalls + ' reads, ' + autoInline + ' inline divisions)');
+// When a column count is pinned, the row count follows the canvas aspect and
+// only has to be kept from collapsing into a ribbon. That one floor is a
+// single number beside the derivation: the two auto counts already pass their
+// own floors as arguments, so a second literal here would be a third bound on
+// the same shape. Counted as text: one number, its read, no bare floor left.
+var rowFloorDefs = (appSrc.match(/var MINROWS = \d+;/g) || []).length;
+var rowFloorReads = (appSrc.match(/Math\.max\(MINROWS/g) || []).length;
+var rowFloorLiterals = (appSrc.match(/Math\.max\(40\b/g) || []).length;
+assert(rowFloorDefs === 1 && rowFloorReads === 1 && rowFloorLiterals === 0,
+  'one floor holds up a pinned grid\'s rows (' + rowFloorDefs + ' def, ' +
+  rowFloorReads + ' reads, ' + rowFloorLiterals + ' literals)');
 // A one-pixel stroke needs its coordinate pushed to the middle of a device
 // pixel, and four marks on these two canvases are that thin: the crosshair,
 // the sea rule, the decade ticks and the median mark. Written out at each site

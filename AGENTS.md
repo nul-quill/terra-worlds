@@ -1609,6 +1609,12 @@ Conventions:
   which reads as rectangular cells in an unpinned window while every pinned
   count still looks right. The suite counts the definition, the two reads and
   asks for no bare division by that divisor left beside them.
+  When a count is pinned, the other axis follows the canvas aspect and needs a
+  single bound: a floor so a very wide window still gets a world rather than a
+  ribbon. That floor is one `MINROWS` beside the derivation, since the two auto
+  counts already carry their floors as arguments — a third literal would be a
+  second place the shape of a small window is decided. The suite counts the one
+  number, its read and asks for no bare floor left beside them.
   The one handler that fires without being asked is `resize`: dragging a window
   edge fires one event per pixel, and each would rebuild the grid. The listener
   schedules a single `render()` through `requestAnimationFrame` behind a
