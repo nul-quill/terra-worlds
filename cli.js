@@ -148,6 +148,17 @@ function three(value) {
   return core.three(value);
 }
 
+// Every listing prints a key column and then the words that explain it. The
+// width behind that pair is one number, so a listing added later lines up with
+// the ones already here instead of buying its own gap: six copies of a padding
+// call could be edited apart while each listing still looked tidy on its own,
+// and the pair of columns a reader scans would then stop lining up between one
+// flag and the next. The numbered phrase column is a different shape — a count
+// rather than a name — so it keeps its own narrow width beside its loop.
+function listingRow(key, text) {
+  return String(key).padEnd(11) + text;
+}
+
 function toPpm(img) {
   var out = 'P6\n' + img.width + ' ' + img.height + '\n255\n';
   var chars = new Array(img.width * img.height * 3);
@@ -315,19 +326,19 @@ if (opts.help) {
   // them. Each is a --width that keeps a world's cell count stable across
   // window sizes; "auto" is the one that follows the window instead.
   core.grids.forEach(function (gr) {
-    console.log((gr.key || 'auto').padEnd(11) + gr.note);
+    console.log(listingRow(gr.key || 'auto', gr.note));
   });
 } else if (opts.scales) {
   // The multipliers --scale takes, in the order the `e` key walks them. Each
   // one only enlarges the saved pixels, so the world behind them is identical.
   core.scales.forEach(function (sc) {
-    console.log(sc.key.padEnd(11) + sc.note);
+    console.log(listingRow(sc.key, sc.note));
   });
 } else if (opts.lights) {
   // The bearings --dir accepts, with the words the dropdown shows. Same list
   // the shade pass reads, so a key copied here is always valid.
   core.lights.forEach(function (lt) {
-    console.log(lt.key.padEnd(11) + lt.note);
+    console.log(listingRow(lt.key, lt.note));
   });
 } else if (opts.palettes) {
   // One row per palette: the key that --palette takes, plus the label the
@@ -335,21 +346,21 @@ if (opts.help) {
   // so it is cheap to eyeball before choosing a scheme for a render.
   Object.keys(core.palettes).forEach(function (name) {
     var p = core.palettes[name];
-    console.log(name.padEnd(11) + p.label + '  sky ' + p.sky);
+    console.log(listingRow(name, p.label + '  sky ' + p.sky));
   });
   } else if (opts.shapes) {
     // Same idea for the shape curve: the key --shape takes, plus a short note
     // on what the curve does to the height field. Both lists are read from the
     // generator, so a name copied from here is always valid.
     core.shapes.forEach(function (s) {
-      console.log(s.key.padEnd(11) + s.note);
+      console.log(listingRow(s.key, s.note));
     });
 } else if (opts.channels) {
   // The overlay ramps in the order the dropdown and the `c` key walk them.
   // The empty key is the plain biome map, which prints as "biome" so the
   // line is never a blank column.
   core.channels.forEach(function (c) {
-    console.log((c.key || 'biome').padEnd(11) + c.note);
+    console.log(listingRow(c.key || 'biome', c.note));
   });
 } else if (opts.phrases) {
   // The hand-picked seed phrases the `p` key walks. Each one is a whole

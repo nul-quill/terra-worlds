@@ -1093,6 +1093,14 @@ Conventions:
   last digit, which is why the count and the span are checked together.
   The six `--listings` themselves are checked too: every line must carry a
   note beside its key, since a terminal has no dropdown label to explain it.
+  That pair of columns is one builder — `listingRow(key, text)` — read by all
+  six, so a listing added later lines up with the ones already here. Six
+  separate pad calls could be edited apart while each listing still looked tidy
+  on its own, and the columns a reader scans would then stop matching between
+  one flag and the next; the suite counts the definition, the six reads and the
+  one padding call left inside the helper. The numbered phrase column is outside
+  that pair on purpose: its first field is a count rather than a name, so it
+  keeps its own narrow width beside its loop.
   Each curve must also be its own picture: the suite renders one seed through
   every entry and compares the checksums, so a new curve that only re-skims an
   existing one loses its slot in the `h` cycle rather than diluting it.

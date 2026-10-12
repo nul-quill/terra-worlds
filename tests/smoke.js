@@ -1246,6 +1246,22 @@ var bareLines = [];
 assert(bareLines.length === 0,
   'every listing explains its key (' + bareLines.join(' | ') + ')');
 
+// Those six listings also share the shape of their rows: a key column and then
+// its note. The padding behind that pair is one helper, so a listing added
+// later lines up with the ones already here — six separate pad calls could be
+// edited apart while each listing still looked tidy alone, and the columns a
+// reader scans would then stop matching between one flag and the next. Counted
+// as text: one definition, a read per listing, and no padded key column left
+// beside them. The numbered phrase column is deliberately outside that pair —
+// a count rather than a name — so it keeps its own narrow width.
+var rowSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+var rowDefs = (rowSrc.match(/function listingRow\(/g) || []).length;
+var rowReads = (rowSrc.match(/listingRow\(/g) || []).length - rowDefs;
+var rowLeft = (rowSrc.match(/\.padEnd\(11\)/g) || []).length;
+assert(rowDefs === 1 && rowReads >= 6 && rowLeft === 1,
+  'one row builder pads every listing (' + rowDefs + ' def, ' + rowReads +
+  ' listings, ' + rowLeft + ' padding)');
+
 // Every shared list is also what a URL hash is matched against, so its keys
 // must be unique: two options sharing a key would make a restored link depend
 // on which of the two the dropdown happened to reach first.
