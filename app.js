@@ -1773,7 +1773,10 @@
         if (ev.shiftKey && histState) {
           ev.preventDefault();
           var dx = step[0] || step[1];
-          stepBand(band < 0 ? Math.round(histState.bins / 2) : band + dx);
+          // With no bar picked yet the walk starts in the middle of the range,
+          // which is the same middle the `at=` pair falls back to — one rule
+          // for both, so a chart and a link cannot name two centres.
+          stepBand(band < 0 ? middleIndex(histState.bins) : band + dx);
           return;
         }
         var cell = currentCell();

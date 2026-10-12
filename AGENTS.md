@@ -762,6 +762,10 @@ Conventions:
     world counts as nothing inside the helper, which is the empty case both
     callers already relied on. The suite counts the definition, the two reads
     and asks for no bare division of a grid side by two left beside them.
+    The first `Shift`+arrow on the chart starts from that same middle — the
+    middle bar of the bin count, since most worlds keep most of their cells
+    near the middle of their own range — so a walk that begins without a
+    pointer lands where a link without a cell does. Three reads in all.
     A pointer is mapped onto the buffer by one `pointerPos(ev)`, which reads its
     pair of fractions from `pointerFraction(ev, rect)`: the offset inside the
     layout box over that box, guarded so an empty layout still divides. Both
