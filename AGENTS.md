@@ -419,6 +419,13 @@ Conventions:
   `"median":0.459` rounded by a terminal are one measurement. The suite counts
   the core definition, the shell's forward and the CLI's uses, and asks for no
   leftover inline round in either reader.
+  The summary sentence is a printed height too. Its relief figure picks the word
+  in front of it, so `describe()` reads the same lookup rather than writing a
+  rounding of its own: a second one could be cut against another range and leave
+  `rugged (71)` beside a row reading `relief 70 units`, which is two
+  measurements of one grid while each still looks fine alone. The suite pulls
+  that sentence's body out of the core and asks for the lookup plus no inline
+  `* 100` left inside it.
   The elevation in the hover readout is a share of one of two bands — room above
   the shoreline for land, the sea itself for water — and each share is guarded
   against an empty band by one lookup, `fillSpan(span)`. Both branches of that

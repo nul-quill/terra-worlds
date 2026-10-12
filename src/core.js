@@ -1181,7 +1181,11 @@
     Object.keys(s.counts).forEach(function (key) {
       if (s.counts[key] > topCount) { topCount = s.counts[key]; top = key; }
     });
-    var relief = Math.round((s.max - s.min) * 100);
+    // The same scaling the `relief` row and the chart's corners use, so the
+    // number inside this sentence is the number printed beside it. A second
+    // rounding written here could be cut against another range and leave the
+    // word `rugged (71)` next to a row reading `relief 70 units`.
+    var relief = hundred(s.max - s.min);
     var word = relief > 70 ? 'rugged' : relief > 40 ? 'rolling' : 'plain';
     var parts = [
       result.shape,

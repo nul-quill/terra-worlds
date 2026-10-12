@@ -534,6 +534,18 @@ assert(coreHundredDefs === 1 && coreHundredExported && shellForwards &&
   coreHundredDefs + ' def, ' + shellForwards + ' forward, ' + cliReads +
   ' cli uses, ' + cliInline + ' inline)');
 
+// The summary sentence is a printed height too. Its relief figure picks the
+// word in front of it — `rugged`, `rolling`, `plain` — so a rounding written
+// inside that sentence could disagree with the `relief` row beside it while
+// each still looked reasonable alone. Ask for the shared lookup in the
+// sentence's own body, and no inline scaling left there.
+var describeBody = (/function describe\(result\) \{([\s\S]*?)\n  \}/
+  .exec(coreSrc) || ['', ''])[1];
+assert(describeBody && /hundred\(s\.max - s\.min\)/.test(describeBody) &&
+  !/Math\.round\([^)]*\* 100\)/.test(describeBody),
+  'the sentence scales its relief the way every other figure does (' +
+  (describeBody ? 'one scale' : 'unreadable') + ')');
+
 // The readout prints the overlay's own ramp position, so it has to agree with
 // the pixels: the colour under the cursor must be the palette pair lerped by
 // exactly that number. Checked on the log-scaled field, whose raw values are
