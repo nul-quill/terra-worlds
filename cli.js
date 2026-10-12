@@ -159,6 +159,18 @@ function listingRow(key, text) {
   return String(key).padEnd(11) + text;
 }
 
+// What an entry with no key of its own is called. Two of the core's lists open
+// with such an entry — the plain biome map among the overlays, the
+// following-the-window count among the grids — and each list's own first label
+// is the word every print uses, so the fallback comes from that entry rather
+// than a second spelling of it. Copies of the word written beside each print
+// could be edited apart while each listing still looked right on its own: a
+// usage line naming `plain` above a column naming `biome` for one and the same
+// overlay, or `default` beside `auto` for one and the same grid.
+function entryName(list, entry) {
+  return entry.key || list[0].label;
+}
+
 function toPpm(img) {
   var out = 'P6\n' + img.width + ' ' + img.height + '\n255\n';
   var chars = new Array(img.width * img.height * 3);
@@ -268,7 +280,7 @@ if (opts.help) {
   // terminal. The empty-key entry is shown as 'biome', which is what the
   // dropdown calls it.
   console.log('       [--channel ' + core.channels.map(function (c) {
-    return c.key || 'biome';
+    return entryName(core.channels, c);
   }).join('|') + '] to flatten');
   console.log('       the world to one scalar field instead of the biome colours');
   console.log('       [--scale n] nearest-neighbour multiplier applied to the');
@@ -310,13 +322,13 @@ if (opts.help) {
   console.log('       scheme, both still printing JSON');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
   console.log('channels: ' + core.channels.map(function (c) {
-    return c.key || 'biome';
+    return entryName(core.channels, c);
   }).join(', '));
   console.log('lights: ' + core.lights.map(function (lt) {
     return lt.key;
   }).join(', '));
   console.log('grids: ' + core.grids.map(function (gr) {
-    return gr.key || 'auto';
+    return entryName(core.grids, gr);
   }).join(', '));
   console.log('scales: ' + core.scales.map(function (sc) {
     return sc.key;
@@ -326,7 +338,7 @@ if (opts.help) {
   // them. Each is a --width that keeps a world's cell count stable across
   // window sizes; "auto" is the one that follows the window instead.
   core.grids.forEach(function (gr) {
-    console.log(listingRow(gr.key || 'auto', gr.note));
+    console.log(listingRow(entryName(core.grids, gr), gr.note));
   });
 } else if (opts.scales) {
   // The multipliers --scale takes, in the order the `e` key walks them. Each
@@ -360,7 +372,7 @@ if (opts.help) {
   // The empty key is the plain biome map, which prints as "biome" so the
   // line is never a blank column.
   core.channels.forEach(function (c) {
-    console.log(listingRow(c.key || 'biome', c.note));
+    console.log(listingRow(entryName(core.channels, c), c.note));
   });
 } else if (opts.phrases) {
   // The hand-picked seed phrases the `p` key walks. Each one is a whole

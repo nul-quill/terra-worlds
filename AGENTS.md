@@ -1246,6 +1246,16 @@ Conventions:
   one padding call left inside the helper. The numbered phrase column is outside
   that pair on purpose: its first field is a count rather than a name, so it
   keeps its own narrow width beside its loop.
+  Two of those lists open with an entry that has no key of its own — the plain
+  biome map among the overlays, the `auto` count among the grids — and each
+  needs a word beside it in every print. That word is one lookup,
+  `entryName(list, entry)`, which reads the first label of the list it is handed
+  rather than a spelling written beside the print: five reads in all (the
+  overlay usage line, the two summary lines and the two listing rows). Written
+  at each site the pair could be edited apart while each listing still looked
+  right alone — a usage line naming `plain` above a column naming `biome` for
+  one and the same overlay — so the suite counts the definition, the five reads
+  and asks for no leftover word beside them.
   Each curve must also be its own picture: the suite renders one seed through
   every entry and compares the checksums, so a new curve that only re-skims an
   existing one loses its slot in the `h` cycle rather than diluting it.

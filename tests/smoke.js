@@ -1274,6 +1274,20 @@ assert(rowDefs === 1 && rowReads >= 6 && rowLeft === 1,
   'one row builder pads every listing (' + rowDefs + ' def, ' + rowReads +
   ' listings, ' + rowLeft + ' padding)');
 
+// Two of those lists open with an entry that has no key of its own — the plain
+// biome map among the overlays, the following-the-window count among the grids —
+// and each needs a word beside it in every print. That word is one lookup, so a
+// usage line and the listing under it cannot name two different things for one
+// and the same overlay. Counted as text: one definition, a read per print (the
+// overlay usage line, the two summary lines and the two listing rows), and no
+// spelling of the fallback left beside them.
+var nameDefs = (rowSrc.match(/function entryName\(/g) || []).length;
+var nameReads = (rowSrc.match(/entryName\(core\./g) || []).length;
+var nameLeft = (rowSrc.match(/\|\| '(biome|auto)'/g) || []).length;
+assert(nameDefs === 1 && nameReads === 5 && nameLeft === 0,
+  'one lookup names the keyless entry of a list (' + nameDefs + ' def, ' +
+  nameReads + ' reads, ' + nameLeft + ' leftover words)');
+
 // Every shared list is also what a URL hash is matched against, so its keys
 // must be unique: two options sharing a key would make a restored link depend
 // on which of the two the dropdown happened to reach first.
