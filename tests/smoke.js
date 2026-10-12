@@ -4307,6 +4307,19 @@ assert(patchDefs === 1 && patchReads === 2 && patchInline === 0,
   'both axes of the magnifier patch clamp through one bound (' + patchDefs +
   ' def, ' + patchReads + ' reads, ' + patchInline + ' inline)');
 
+// The panel also picks the half of the canvas the cursor is NOT in, once per
+// axis. Two copies of that comparison could be edited apart, and a panel that
+// followed the cursor sideways while its own row stayed on a fixed side reads
+// as a second cursor rather than as a magnifier. One definition, two reads,
+// and no bare half-plane choice left beside them.
+var halfDefs = (appSrc.match(/function farHalf\(/g) || []).length;
+var halfReads = (appSrc.match(/farHalf\((?:px|py),/g) || []).length;
+var halfInline = (appSrc.match(
+  /\? pad : view\.\w+ - size - pad/g) || []).length;
+assert(halfDefs === 1 && halfReads === 2 && halfInline === 0,
+  'both axes of the magnifier pick their half through one lookup (' +
+  halfDefs + ' def, ' + halfReads + ' reads, ' + halfInline + ' inline)');
+
 // The dark scheme is meant to change nothing but the colour variables, which
 // only works if it replaces every one of them: a variable declared once in
 // `:root` and left alone by the dark block would keep its light value under a

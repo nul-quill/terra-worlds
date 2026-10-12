@@ -575,18 +575,24 @@
     return Math.max(0, Math.min(extent - span, pos - (span >> 1)));
   }
 
+  // Which half of the canvas the panel sits in: the one the cursor is NOT in,
+  // so the cell being inspected is never hidden behind its own magnifier. The
+  // choice is a comparison, not a random offset, so the same hover still
+  // produces the same pixels. Both axes read it, since a panel that followed
+  // the cursor sideways while its own row stayed on a fixed side reads as a
+  // second cursor rather than as a magnifier.
+  function farHalf(pos, extent, room, pad) {
+    return pos * 2 > extent ? pad : room - pad;
+  }
+
   function drawInset(px, py) {
     var span = 12;
     var x0 = insetOrigin(px, current.width, span);
     var y0 = insetOrigin(py, current.height, span);
     var size = Math.round(Math.min(view.width, view.height) * 0.28);
     var pad = Math.round(size * 0.10);
-    // Put the inset in whichever half of the canvas the cursor is NOT in, so
-    // the cell being inspected is never hidden behind its own magnifier. The
-    // choice is a comparison, not a random offset, so the same hover still
-    // produces the same pixels.
-    var dx = px * 2 > current.width ? pad : view.width - size - pad;
-    var dy = py * 2 > current.height ? pad : view.height - size - pad;
+    var dx = farHalf(px, current.width, view.width - size, pad);
+    var dy = farHalf(py, current.height, view.height - size, pad);
     ctx.save();
     // The mat around the patch is one box drawn twice: a filled backing and a
     // hairline on its edge. Both are this much wider than the patch, and the

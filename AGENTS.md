@@ -1014,6 +1014,13 @@ Conventions:
   past its background on one branch only, which reads as a line floating off the
   panel it frames, so the suite counts the one number, its eight reads and asks
   for no bare offset left beside them.
+  Which half of the canvas that panel sits in is one lookup as well —
+  `farHalf(pos, extent, room, pad)` — read once per axis, since the panel has a
+  column to place and a row. Written beside each axis the comparison could be
+  dropped on one of them only, which leaves a panel that tracks the cursor
+  sideways while its own row stays pinned to one side — that reads as a second
+  cursor rather than as a magnifier, so the suite counts the definition, the
+  two reads and asks for no bare half-plane choice left beside them.
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.
