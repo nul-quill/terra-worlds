@@ -1496,6 +1496,14 @@ Conventions:
   pair could be edited apart, which leaves a median printed on top of its own
   corner number — still a plausible chart at a glance — so the suite counts the
   one number, its reads and asks for no bare gap left beside them.
+  Those marks all sit inside one inset — `GUT`, three CSS pixels — which is the
+  gutter every non-bar mark is measured from: the two tick bounds, both corner
+  labels, the three comparisons of the median squeeze, the width a hovered
+  caption may fill and the pill behind it. Twelve reads of one number, since a
+  gutter written beside each site could be edited apart, which lets a corner
+  label sit closer to its edge than the tick under it — close enough to read as
+  a slightly odd chart, so the suite counts the one number, its twelve reads and
+  asks for no bare gutter left beside them.
   Those three labels also sit on one baseline — `BASE`, one CSS pixel up from
   the strip's bottom edge — since a second offset written beside one of them
   would drop that figure a pixel below the others, which reads as two rows of

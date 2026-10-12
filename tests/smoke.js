@@ -4215,12 +4215,26 @@ assert(gapDefs === 1 && gapUses === 5 && gapLiterals === 0,
 // of the chart while the other stays empty. Counted as text: one number, both
 // bounds derived from it, no bare tolerance left beside them.
 var slackDefs = (appSrc.match(/var SLACK = \d+;/g) || []).length;
-var slackUses = (appSrc.match(/pad - SLACK|pad \+ SLACK/g) || []).length;
-var slackLiterals = (appSrc.match(/tickX < pad - \d|tickX > w - pad \+ \d/g) ||
+var slackUses = (appSrc.match(/GUT - SLACK|GUT \+ SLACK/g) || []).length;
+var slackLiterals = (appSrc.match(/tickX < GUT - \d|tickX > w - GUT \+ \d/g) ||
   []).length;
 assert(slackDefs === 1 && slackUses === 2 && slackLiterals === 0,
   'one tolerance skips ticks that crowd a corner label (' + slackDefs +
   ' def, ' + slackUses + ' reads, ' + slackLiterals + ' literals)');
+
+// Everything in the chart that is not a bar is measured from one inset: the
+// tick bounds, the two corner labels, the median's squeeze, the width a hovered
+// caption may fill and the pill behind it. Written beside each site that inset
+// could be edited apart, which lets a corner label sit closer to its edge than
+// the tick under it — a difference small enough to read as a slightly odd chart
+// rather than as a bug. Counted as text: one number, every read through it, and
+// no bare gutter left beside them.
+var gutDefs = (appSrc.match(/var GUT = \d+;/g) || []).length;
+var gutUses = (appSrc.match(/GUT/g) || []).length - gutDefs;
+var gutLiterals = (appSrc.match(/w - pad|pad - PILL|pad \* 2/g) || []).length;
+assert(gutDefs === 1 && gutUses === 12 && gutLiterals === 0,
+  'one inset frames every label in the chart (' + gutDefs + ' def, ' +
+  gutUses + ' reads, ' + gutLiterals + ' literals)');
 
 // Each decade tick is one short mark hanging from the strip's own top edge, so
 // how far down it reaches is a single number beside that edge. Two offsets

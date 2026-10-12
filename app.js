@@ -1220,7 +1220,13 @@
     hc.clearRect(0, 0, w, h);
     var binW = w / BINS;
     // Left/right inset for the text drawn into the chart.
-    var pad = 3;
+    // Every mark that is not a bar is measured from that inset: the tick
+    // bounds, the two corner labels, the three-way squeeze of the median, the
+    // width a hovered caption may fill and the pill behind it. Written beside
+    // each site the pair could be edited apart, which would let a corner label
+    // sit closer to its edge than the tick under it — a difference small enough
+    // to read as a slightly odd chart rather than as a bug.
+    var GUT = 3;
     var seaX = chartX(result.seaLevel, lo, span, w);
     if (seaX < 0) seaX = 0;
     if (seaX > w) seaX = w;
@@ -1292,7 +1298,7 @@
     for (var u = Math.ceil(lo * 100 / stepUnits) * stepUnits;
       u <= (lo + span) * 100; u += stepUnits) {
       var tickX = chartX(u / 100, lo, span, w);
-      if (tickX < pad - SLACK || tickX > w - pad + SLACK) continue;
+      if (tickX < GUT - SLACK || tickX > w - GUT + SLACK) continue;
       // Every tick is the same short mark hanging from the strip's own top
       // edge, so its length is one number: the mark starts one pixel below
       // that edge and runs down to this depth. Written as two offsets the
@@ -1331,8 +1337,8 @@
     // second offset written beside one of them would put that figure a pixel
     // off the others, which reads as two rows of numbers rather than one.
     var BASE = 1;
-    hc.fillText(loLabel, pad, h - BASE);
-    hc.fillText(hiLabel, w - pad - hc.measureText(hiLabel).width, h - BASE);
+    hc.fillText(loLabel, GUT, h - BASE);
+    hc.fillText(hiLabel, w - GUT - hc.measureText(hiLabel).width, h - BASE);
     // The median gets a taller mark than the decade ticks: it is the one
     // number that says where most of the grid actually sits, so it is worth
     // seeing against the bars without reading the stats list.
@@ -1358,11 +1364,11 @@
       // as a plausible chart at a glance.
       var GAP = 4;
       var medTextX = medX - medTw / 2;
-      if (medTextX < pad + loTw + GAP) medTextX = pad + loTw + GAP;
-      if (medTextX + medTw > w - pad - hiTw - GAP) {
-        medTextX = w - pad - hiTw - GAP - medTw;
+      if (medTextX < GUT + loTw + GAP) medTextX = GUT + loTw + GAP;
+      if (medTextX + medTw > w - GUT - hiTw - GAP) {
+        medTextX = w - GUT - hiTw - GAP - medTw;
       }
-      if (medTw < w - pad * 2 - loTw - hiTw - GAP * 4) {
+      if (medTw < w - GUT * 2 - loTw - hiTw - GAP * 4) {
         hc.fillStyle = rgba(INK, 0.7);
         hc.fillText(medLabel, medTextX, h - BASE);
       }
@@ -1378,7 +1384,7 @@
       // what ties the bump back to the map.
       var parts = [rangeText(sum)]
         .concat(bandFields(sum));
-      var label = fitLabel(hc, parts, w - pad * 2);
+      var label = fitLabel(hc, parts, w - GUT * 2);
       var tw = hc.measureText(label).width;
       // The box behind the caption is the label plus one padding on every
       // side: the fill starts that far left of the text and grows by twice
@@ -1396,9 +1402,9 @@
       // bug, so both halves read the one number.
       var CAP = 13;
       hc.fillStyle = rgba(WHITE, 0.88);
-      hc.fillRect(pad - PILL, 1, tw + PILL * 2, CAP);
+      hc.fillRect(GUT - PILL, 1, tw + PILL * 2, CAP);
       hc.fillStyle = rgba(INK, 0.9);
-      hc.fillText(label, pad, CAP - 2);
+      hc.fillText(label, GUT, CAP - 2);
     }
   }
 
