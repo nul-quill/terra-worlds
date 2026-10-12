@@ -934,7 +934,7 @@
         var sw = document.createElement('span');
         sw.className = 'sw';
         var c = result.palette.colors[key] || result.palette.colors.grass;
-        sw.style.background = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
+        sw.style.background = rgba(c, 1);
         var label = document.createElement('span');
         label.textContent = biomeLabel(key);
         var pct = document.createElement('span');

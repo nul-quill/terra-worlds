@@ -1198,6 +1198,12 @@ Conventions:
   and asks for the same number: a class counted but not drawn would drop a row
   off the legend while the stats still said it was there, and the swatch keeps a
   palette-derived fallback for exactly that case.
+  That swatch is also the one colour the page paints outside the two canvases,
+  and it prints its triple through `rgba(c, 1)` like every mark on the map. A
+  hand-built `'rgb(' + …` beside it could keep a triple the printer rounds and
+  it does not, which reads as a swatch a shade off its own row — close enough
+  to look right in a screenshot, so the suite asks for the one read through the
+  printer and for no bare triple left beside it.
   The count of occupied classes is one lookup — `TerraCore.biomeCount(counts)` —
   that the `biomes` row and the record's `biomes` field both read, since the
   classification pass only writes a key when it hands that key a cell. Two

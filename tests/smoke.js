@@ -3408,6 +3408,18 @@ assert(inkDefs === 1 && inkUses === 7 && inkStrings === 0,
   'the chart draws with one named ink (' + inkDefs + ' def, ' + inkUses +
   ' uses, ' + inkStrings + ' literal strings)');
 
+// The legend swatch is the one colour the page paints outside the two
+// canvases, and it is a palette triple like every other one. Written as its
+// own `rgb()` string it could keep a triple the printer rounds and it does
+// not, which reads as a swatch a shade off its own row — close enough to look
+// right in a screenshot. Counted as text: one read through the printer, and no
+// hand-built triple left beside it.
+var swatchPrints = (appSrc.match(/= rgba\(c, /g) || []).length;
+var swatchBare = (appSrc.match(/'rgb\(' \+/g) || []).length;
+assert(swatchPrints === 1 && swatchBare === 0,
+  'the legend swatch prints its triple through the shared printer (' +
+  swatchPrints + ' read, ' + swatchBare + ' bare triples)');
+
 // The relief strip sets its type in two places — the small ruler labels and
 // the bigger hovered-bin caption — and both are the same family with a
 // different number in front. Written out twice, the stack could be edited on
