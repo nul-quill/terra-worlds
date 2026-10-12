@@ -4401,6 +4401,20 @@ var hairWBare = (appSrc.match(/lineWidth = \d;/g) || []).length;
 assert(hairWDeps === 1 && hairWReads === 3 && hairWBare === 0,
   'every hairline stroke is one pixel wide by one number (' + hairWDeps +
   ' def, ' + hairWReads + ' reads, ' + hairWBare + ' literals)');
+
+// The box around a hovered cell is the one stroke whose width follows the cell
+// rather than staying a hairline, so its own fraction is a number beside that
+// single read. Two copies could be edited apart, which lets the frame go thick
+// on a coarse grid while its crosshair stayed thin — close enough to read as an
+// odd cursor rather than as a bug. Counted as text: one fraction, one read, and
+// no bare share of a cell left beside them.
+var boxDefs = (appSrc.match(/var BOX = [\d.]+;/g) || []).length;
+var boxReads = (appSrc.match(/cellX \* BOX/g) || []).length;
+var boxLiterals = (appSrc.match(/cellX \* 0\.25/g) || []).length;
+assert(boxDefs === 1 && boxReads === 1 && boxLiterals === 0,
+  'one fraction sets the hovered cell\'s frame width (' + boxDefs + ' def, ' +
+  boxReads + ' reads, ' + boxLiterals + ' literals)');
+
 // Three marks on the relief chart are placed along its width from a height:
 // the sea rule, the decade ticks and the median. Each of those is the same
 // subtraction of the chart's own low end over its span, times the width.
@@ -4440,7 +4454,7 @@ var hoverAt = appSrc.indexOf('function drawHover()');
 var hoverSrc = hoverAt < 0 ? '' : appSrc.slice(hoverAt, hoverAt + 1600);
 var edgeSets = (hoverSrc.match(/ctx\.strokeStyle = edge;/g) || []).length;
 var widthSets = (hoverSrc.match(
-  /ctx\.lineWidth = Math\.max\(1, Math\.round\(cellX \* 0\.25\)\);/g) ||
+  /ctx\.lineWidth = Math\.max\(1, Math\.round\(cellX \* BOX\)\);/g) ||
   []).length;
 var saveSets = (hoverSrc.match(/ctx\.save\(\);/g) || []).length;
 var backSets = (hoverSrc.match(/ctx\.restore\(\);/g) || []).length;

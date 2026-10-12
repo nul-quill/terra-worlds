@@ -632,7 +632,12 @@
     var cellX = cs.w;
     var cellY = cs.h;
     ctx.strokeStyle = edge;
-    ctx.lineWidth = Math.max(1, Math.round(cellX * 0.25));
+    // The box around a hovered cell is the one mark whose width scales with the
+    // grid rather than staying a hairline: a quarter of a cell reads as a frame
+    // at any cell size, and never less than one pixel so it stays visible on a
+    // dense grid. That fraction is one number beside its only read.
+    var BOX = 0.25;
+    ctx.lineWidth = Math.max(1, Math.round(cellX * BOX));
     if (hover.x >= 0) {
       var cell = cellOf(hover.x, hover.y);
       var px = cell[0];

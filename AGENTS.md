@@ -1587,6 +1587,9 @@ Conventions:
   therefore counts the definition, the three reads, and asks that no bare
   one-pixel width be left written beside them. The box around a hovered cell
   keeps its own width on purpose, since that one scales with the cell.
+    That share is one fraction — `BOX`, a quarter of a cell with a one-pixel
+    floor — read once beside the stroke it sets, so the frame cannot go thick on
+    a coarse grid while its own crosshair stayed thin.
   Those same three chart marks are also placed by one lookup —
   `chartX(value, lo, span, w)` — since each is a height over the range the bars
   were binned over, times the chart's width. Written at each site, one mark
