@@ -4640,6 +4640,18 @@ assert(fadeDefs === 1 && fadeReads === 1 && fadeWidth === 1 && fadeTop === 1 &&
   ' read, ' + fadeWidth + ' width, ' + fadeTop + ' top, ' + fadeInline +
   ' inline)');
 
+// A river's ink is one decision: a trunk harder than its tributaries, a mouth
+// spreading past both under one cap. Four scalars, one helper — split across
+// the two statements at the call site a tributary could end up inked harder
+// than its own trunk, which still reads as a plausible network.
+var mixDefs = (coreSrc.match(/function riverMix\(/g) || []).length;
+var mixReads = (coreSrc.match(/= riverMix\(/g) || []).length;
+var mixRank = (coreSrc.match(/rank === 2 \? 0\.72 : 0\.50/g) || []).length;
+var mixMouth = (coreSrc.match(/Math\.min\(0\.9, mix \+ 0\.18\)/g) || []).length;
+assert(mixDefs === 1 && mixReads === 1 && mixRank === 1 && mixMouth === 1,
+  'one helper inks a river and its mouth (' + mixDefs + ' def, ' + mixReads +
+  ' read, ' + mixRank + ' rank pair, ' + mixMouth + ' mouth pair)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

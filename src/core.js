@@ -90,6 +90,18 @@
     return clamp01((h - SNOW_LINE) / 0.16) * 0.85;
   }
 
+  // How much of the shallow colour a river cell takes on. A trunk is drawn
+  // harder than its tributaries, and a mouth — the last cell before the sea —
+  // spreads past both, capped so a wide mouth still reads as a channel rather
+  // than as a pond. All four scalars belong to that one decision, so they are
+  // written together here: split across the two statements at the call site a
+  // tributary could end up inked harder than its own trunk, which still looks
+  // like a plausible network at a glance.
+  function riverMix(rank, mouth) {
+    var mix = rank === 2 ? 0.72 : 0.50;
+    return mouth ? Math.min(0.9, mix + 0.18) : mix;
+  }
+
   // Does any neighbour of this cell sit on the other side of the shoreline?
   // The coast ink and a river mouth both ask that question of the same four
   // cells, so the sweep is one helper: written beside each call the pair could
@@ -831,8 +843,7 @@
         if (onRiver) {
           // A river mouth spreads: the last cell before the sea widens out.
           var mouth = acrossShore(hf, i, width, height, x, y, seaLevel, false);
-          var mix = river[i] === 2 ? 0.72 : 0.50;
-          if (mouth) mix = Math.min(0.9, mix + 0.18);
+          var mix = riverMix(river[i], mouth);
           r = r * (1 - mix) + colors.shallow[0] * mix;
           g = g * (1 - mix) + colors.shallow[1] * mix;
           b = b * (1 - mix) + colors.shallow[2] * mix;

@@ -359,6 +359,13 @@ Conventions:
   tarn graded its depth on a curve the open sea did not use, which still reads as
   two plausible basins beside each other; the suite counts the definition, its two
   reads and asks for no inline `1 - depth *` left beside them.
+  A river's ink in that same pass is one decision held by one helper —
+  `riverMix(rank, mouth)` — since a trunk, its tributaries and the mouth where a
+  channel meets the sea are four scalars about the same blend. Split across two
+  statements at the call site a tributary could end up inked harder than its own
+  trunk, or a mouth could overshoot its cap, while each line still read as a
+  plausible network; the suite counts the definition, its single read and both
+  pairs of scalars inside it.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
