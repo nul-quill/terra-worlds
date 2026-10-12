@@ -4598,6 +4598,19 @@ assert(shoreDefs === 1 && shoreReads === 3 && shoreInline === 0,
   'one strength inks the first ring of water (' + shoreDefs + ' def, ' +
   shoreReads + ' reads, ' + shoreInline + ' literals)');
 
+// Three places in the colour pass ask whether a neighbour sits on the other
+// side of the shoreline: the biome's beach test, the coast ink, and the mouth
+// of a river. All three walk the same four cells, so one sweep answers them —
+// written beside each call the pair could be edited apart until a coastline
+// recognised a neighbour its own river mouth ignored, which reads as a mouth
+// sitting a cell off the shore rather than as a broken sweep.
+var sweepDefs = (coreSrc.match(/function acrossShore\(/g) || []).length;
+var sweepReads = (coreSrc.match(/= acrossShore\(/g) || []).length;
+var sweepInline = (coreSrc.match(/hf\[i - width\] [<>]=? seaLevel/g) || []).length;
+assert(sweepDefs === 1 && sweepReads === 3 && sweepInline === 0,
+  'one sweep finds the far side of the shoreline (' + sweepDefs + ' def, ' +
+  sweepReads + ' reads, ' + sweepInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

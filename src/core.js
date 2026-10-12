@@ -70,6 +70,19 @@
     return (step - 0.5) * 0.05;
   }
 
+  // Does any neighbour of this cell sit on the other side of the shoreline?
+  // The coast ink and a river mouth both ask that question of the same four
+  // cells, so the sweep is one helper: written beside each call the pair could
+  // be edited apart until a coastline recognised a neighbour its own river
+  // mouth ignored, which reads as a mouth sitting a cell off the shore.
+  function acrossShore(hf, i, width, height, x, y, seaLevel, dry) {
+    function at(v) { return dry ? v >= seaLevel : v < seaLevel; }
+    return (y > 0 && at(hf[i - width])) ||
+      (y < height - 1 && at(hf[i + width])) ||
+      (x > 0 && at(hf[i - 1])) ||
+      (x < width - 1 && at(hf[i + 1]));
+  }
+
   // Is neighbour (hv,hi) a valid downhill step from (bv,bi)? Equal heights are
   // resolved by index, which keeps the flow graph acyclic on flat plateaus.
   function lower(hv, hi, bv, bi) {
@@ -686,11 +699,7 @@
         } else {
           landCells++;
           var inLake = lake[i] > 0;
-          var nearCoast =
-            (y > 0 && hf[i - width] < seaLevel) ||
-            (y < height - 1 && hf[i + width] < seaLevel) ||
-            (x > 0 && hf[i - 1] < seaLevel) ||
-            (x < width - 1 && hf[i + 1] < seaLevel);
+          var nearCoast = acrossShore(hf, i, width, height, x, y, seaLevel, false);
           if (inLake) {
             key = 'lake';
           } else if (h < seaLevel + 0.035 || nearCoast) {
@@ -791,11 +800,7 @@
         // Coastline ink: the first ring of water against land catches a little
         // light, which is what makes a pixel coastline readable at small sizes.
         if (isWater) {
-          var ashore =
-            (y > 0 && hf[i - width] >= seaLevel) ||
-            (y < height - 1 && hf[i + width] >= seaLevel) ||
-            (x > 0 && hf[i - 1] >= seaLevel) ||
-            (x < width - 1 && hf[i + 1] >= seaLevel);
+          var ashore = acrossShore(hf, i, width, height, x, y, seaLevel, true);
           if (ashore) {
             r += (colors.beach[0] - r) * SHORE_INK;
             g += (colors.beach[1] - g) * SHORE_INK;
@@ -805,9 +810,7 @@
 
         if (onRiver) {
           // A river mouth spreads: the last cell before the sea widens out.
-          var mouth =
-            (x > 0 && hf[i - 1] < seaLevel) || (x < width - 1 && hf[i + 1] < seaLevel) ||
-            (y > 0 && hf[i - width] < seaLevel) || (y < height - 1 && hf[i + width] < seaLevel);
+          var mouth = acrossShore(hf, i, width, height, x, y, seaLevel, false);
           var mix = river[i] === 2 ? 0.72 : 0.50;
           if (mouth) mix = Math.min(0.9, mix + 0.18);
           r = r * (1 - mix) + colors.shallow[0] * mix;

@@ -338,6 +338,14 @@ Conventions:
   than its neighbours, which reads as a slightly warm coastline rather than as a
   broken triple, so the suite counts the one number, its three reads and asks for
   no bare fraction left beside them.
+  Three reads in that same group ask whether a neighbour sits on the far side of
+  the shoreline — the biome's beach test, the coast ink, and the mouth of a river —
+  and all three walk the same four cells through one `acrossShore()` sweep with a
+  `dry` flag for which side counts. Written beside each call the pair could be
+  edited apart until a coastline recognised a neighbour its own river mouth
+  ignored, which reads as a mouth sitting a cell off the shore rather than as a
+  broken sweep, so the suite counts the definition, its three reads and asks for
+  no inline four-neighbour test left beside them.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
