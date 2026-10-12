@@ -702,6 +702,11 @@
     // Written per site, the border could grow past its background on one of
     // them only, which reads as a line floating off the panel it frames.
     var MAT = 2;
+    // The hairline sits half a pixel outside that fill on every side, so its
+    // own reach is the mat plus that half. Written as three separate offsets
+    // the stroke could be pulled in on one axis only, which leaves a frame
+    // whose left edge sits on its background while its right edge floats.
+    var EDGE = MAT + 0.5;
     // The panel backing is the palette's own sky, at the same alpha the crosshair
     // uses, so a dark scheme keeps a dark mat under the magnified patch instead
     // of a bright slab. Both colours come from the lookup above, which is also
@@ -713,8 +718,8 @@
     ctx.drawImage(off, x0, y0, span, span, dx, dy, size, size);
     ctx.strokeStyle = rgba(mix(inkColour(), sky, 0.35), 0.55);
     ctx.lineWidth = HAIR;
-    ctx.strokeRect(dx - MAT - 0.5, dy - MAT - 0.5,
-      size + MAT * 2 + 1, size + MAT * 2 + 1);
+    ctx.strokeRect(dx - EDGE, dy - EDGE,
+      size + EDGE * 2, size + EDGE * 2);
     // The patch is a dozen cells wide, so the one under the cursor still has
     // to be identifiable inside it. Same ink as the crosshair, one cell of the
     // patch's own scale — the offset is the difference of two clamped indices,

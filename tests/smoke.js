@@ -4835,9 +4835,23 @@ assert(insetDefs === 1 && insetMark === 1 && insetRows === 1 && insetGate === 1,
 var matDefs = (appSrc.match(/var MAT = \d+;/g) || []).length;
 var matUses = (appSrc.match(/MAT/g) || []).length - matDefs;
 var matLiterals = (appSrc.match(/dx - 2\.5|size \+ 5\b/g) || []).length;
-assert(matDefs === 1 && matUses === 8 && matLiterals === 0,
+assert(matDefs === 1 && matUses === 5 && matLiterals === 0,
   'one reserve sizes the magnifier mat (' + matDefs + ' def, ' + matUses +
   ' reads, ' + matLiterals + ' literals)');
+
+// The hairline around that mat reaches half a pixel past the fill on every
+// side, which is one reach derived from the reserve itself. Written as three
+// offsets the stroke could be pulled in on one axis only, leaving a frame
+// whose left edge sits on its background while its right edge floats — an
+// asymmetry small enough to pass for an odd cursor. Counted as text: one
+// derivation, its four reads, and no bare offset left beside them.
+var edgeDefs = (appSrc.match(/var EDGE = MAT \+ 0\.5;/g) || []).length;
+var edgeReads = (appSrc.match(/EDGE/g) || []).length - edgeDefs;
+var edgeLiterals = (appSrc.match(/dx - MAT - 0\.5|size \+ MAT \* 2 \+ 1/g) || [])
+  .length;
+assert(edgeDefs === 1 && edgeReads === 4 && edgeLiterals === 0,
+  'one reach sets the mat border on both axes (' + edgeDefs + ' def, ' +
+  edgeReads + ' reads, ' + edgeLiterals + ' literals)');
 
 // Two fractions also size that panel: how much of the shorter canvas edge the
 // patch may take, and how much of the patch is given back as padding. The

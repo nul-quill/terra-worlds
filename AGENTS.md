@@ -1225,8 +1225,12 @@ Conventions:
   than the patch on every side, and the hairline sits half a pixel further out so
   it lands on the fill's own edge. Written at each site, the border could grow
   past its background on one branch only, which reads as a line floating off the
-  panel it frames, so the suite counts the one number, its eight reads and asks
-  for no bare offset left beside them.
+  panel it frames, so the suite counts the one number, its reads and asks for no
+  bare offset left beside them. That further half pixel is one derivation too —
+  `EDGE`, the reserve plus a half — read by all four sides of the stroke, since
+  four offsets written beside the call could pull the frame in on one axis only,
+  which leaves a border sitting on its background at the left while floating at
+  the right. The suite counts that derivation, its four reads and both probes.
   The panel's own size is a pair of fractions — `PANEL`, the share of the shorter
   canvas edge the patch may take, and `PAD`, the share of that patch given back as
   padding. The second is measured against the first rather than the canvas, so a
