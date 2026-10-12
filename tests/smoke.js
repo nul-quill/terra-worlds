@@ -4248,21 +4248,21 @@ assert(ctrDefs === 1 && ctrCalls === ctrDefs + 3 && ctrInline === ctrDefs,
 
 // Every cycle key answers to `Shift`, so its step can be negative and the
 // wrap has to come back positive. That double modulo is one lookup, read by
-// each of the six list cycles, the legend ring, the `Shift`+arrow walk over
-// the height bins and both axes of the arrow walk over cells — ten sites in
+// the shared list-cycle helper, the legend ring, the `Shift`+arrow walk over
+// the height bins and both axes of the arrow walk over cells — five sites in
 // all. Left at the call sites, one of them could drop its second wrap, and
 // that key alone would stick on its first entry under `Shift` while the
-// others backed out properly. Counted as text: one helper, ten reads, no bare
+// others backed out properly. Counted as text: one helper, five reads, no bare
 // wrap left.
 var cycDefs = (appSrc.match(/function cycleIndex\(/g) || []).length;
 var cycCalls = (appSrc.match(/cycleIndex\(/g) || []).length - cycDefs;
 var cycInline = (appSrc.match(
   /\+ \w+\.length\) % \w+\.length\)/g) || []).length;
-assert(cycDefs === 1 && cycCalls === 10 && cycInline === 0,
+assert(cycDefs === 1 && cycCalls === 5 && cycInline === 0,
   'every cycle key wraps through one step (' + cycDefs + ' def, ' + cycCalls +
   ' reads, ' + cycInline + ' inline wraps)');
 
-// The direction that wrap is stepped with is one lookup too. Seven keys walk a
+// The direction that wrap is stepped with is one lookup too. Six keys walk a
 // list and each of them answers to `Shift` by stepping backwards, so the pair
 // of signs is read rather than restated: written beside each handler, one of
 // them could invert while the others still backed out, and that reads as a
@@ -4271,9 +4271,30 @@ var stepDefs = (appSrc.match(/function shiftStep\(/g) || []).length;
 var stepCalls = (appSrc.match(/shiftStep\(ev\)/g) || []).length - stepDefs;
 var stepInline = (appSrc.match(
   /ev\.shiftKey \? -1 : 1/g) || []).length;
-assert(stepDefs === 1 && stepCalls === 7 && stepInline === 1,
+assert(stepDefs === 1 && stepCalls === 2 && stepInline === 1,
   'every cycle key reads its step from one lookup (' + stepDefs + ' def, ' +
   stepCalls + ' reads, ' + stepInline + ' in the helper)');
+
+// Those two lookups are reached from one place by the six list cycles: a
+// shared helper that pulls the keys out of the core's own array, finds where
+// the control sits, steps by the `Shift` sign, wraps and rebuilds. Written
+// beside each key the five steps could be edited apart — one letter could drop
+// its rebuild, or its `Shift` step — while each still looked right next to its
+// own dropdown. Counted as text: one definition, six reads of it, the one
+// key-extraction map inside it, and no second such map left in the handler.
+var ctlDefs = (appSrc.match(/function cycleControl\(/g) || []).length;
+var ctlCalls = (appSrc.match(/cycleControl\(inputs\./g) || []).length;
+var ctlBody = (/function cycleControl\(select, items, ev\)([\s\S]*?)\n  \}/
+  .exec(appSrc) || ['', ''])[1];
+var ctlMap = (ctlBody.match(/items\.map\(function/g) || []).length;
+var ctlSteps = (ctlBody.match(/render\(\);/g) || []).length;
+var ctlInline = (appSrc.match(
+  /\.map\(function \(\w+\) \{ return \w+\.key; \}\)/g) || []).length;
+assert(ctlDefs === 1 && ctlCalls === 6 && ctlMap === 1 && ctlSteps === 1 &&
+  ctlInline === 0,
+  'every list cycle reads one helper (' + ctlDefs + ' def, ' + ctlCalls +
+  ' reads, ' + ctlMap + ' map, ' + ctlSteps + ' rebuild, ' + ctlInline +
+  ' leftover maps)');
 
 // The bin a hovered cell falls in has to survive the repaint that follows the
 // hover: the readout records it, the grid pass reads it back, and leaving the

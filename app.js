@@ -532,6 +532,24 @@
   function shiftStep(ev) {
     return ev.shiftKey ? -1 : 1;
   }
+
+  // Every list cycle is the same five steps: take the keys out of the core's
+  // own list, find where the control sits in it, step by the `Shift`-aware
+  // sign, wrap through the shared ring, then rebuild. Written beside each key,
+  // one of them could drop its `Shift` step or its rebuild while the others
+  // stayed right, which reads as a single letter cycling the wrong way — or
+  // not at all — for reasons nothing in the dropdown explains. The list is
+  // passed in rather than looked up here, so each cycle still names the array
+  // its own dropdown is filled from. A list of plain words (the seed phrases)
+  // needs no key field, which is what the second half of that map is for.
+  function cycleControl(select, items, ev) {
+    var keys = items.map(function (it) {
+      return it.key != null ? it.key : it;
+    });
+    var at = keys.indexOf(select.value);
+    select.value = keys[cycleIndex(at, shiftStep(ev), keys.length)];
+    render();
+  }
   // Where a pointer sits inside a canvas, as a fraction of its layout box. Both
   // canvases need that pair — the map turns it into backing-store pixels for
   // the crosshair, the chart turns it into a bin index — and both have to
@@ -1823,13 +1841,9 @@
     var typingLetter = ownsCaret();
     if (!typingLetter && (ev.key === 'c' || ev.key === 'C')) {
       ev.preventDefault();
-      var order = TerraCore.channels.map(function (ch) { return ch.key; });
       // Shift walks the list backwards, the same way it does for the legend
       // pins: backing out of an overlay should not need a full lap.
-      var at = order.indexOf(inputs.channel.value);
-      var dir = shiftStep(ev);
-      inputs.channel.value = order[cycleIndex(at, dir, order.length)];
-      render();
+      cycleControl(inputs.channel, TerraCore.channels, ev);
       return;
     }
     // 'h' steps through the shape curves — the biggest single lever on a
@@ -1837,22 +1851,14 @@
     // list is the same one the dropdown and `cli --shapes` read.
     if (!typingLetter && (ev.key === 'h' || ev.key === 'H')) {
       ev.preventDefault();
-      var shapeKeys = TerraCore.shapes.map(function (s) { return s.key; });
-      var si = shapeKeys.indexOf(inputs.shape.value);
-      var sdir = shiftStep(ev);
-      inputs.shape.value = shapeKeys[cycleIndex(si, sdir, shapeKeys.length)];
-      render();
+      cycleControl(inputs.shape, TerraCore.shapes, ev);
       return;
     }
     // 'd' walks the light bearing: the same four compass points the dropdown
     // lists, which is the fastest way to see which side a ridge wants.
     if (!typingLetter && /^(d|D)$/.test(ev.key)) {
       ev.preventDefault();
-      var bearings = TerraCore.lights.map(function (lt) { return lt.key; });
-      var di = bearings.indexOf(inputs.lightDir.value);
-      var bdir = shiftStep(ev);
-      inputs.lightDir.value = bearings[cycleIndex(di, bdir, bearings.length)];
-      render();
+      cycleControl(inputs.lightDir, TerraCore.lights, ev);
       return;
     }
     // 'w' walks the column count. It is the one knob that changes how much of
@@ -1861,11 +1867,7 @@
     // so a lap of the key ends where the window began.
     if (!typingLetter && /^(w|W)$/.test(ev.key)) {
       ev.preventDefault();
-      var widths = TerraCore.grids.map(function (gr) { return gr.key; });
-      var wi = widths.indexOf(inputs.gridSize.value);
-      var wdir = shiftStep(ev);
-      inputs.gridSize.value = widths[cycleIndex(wi, wdir, widths.length)];
-      render();
+      cycleControl(inputs.gridSize, TerraCore.grids, ev);
       return;
     }
     // 'e' walks the export multiplier: the fourth of these lists is the only
@@ -1873,11 +1875,7 @@
     // key to press while comparing two sizes of the same seed.
     if (!typingLetter && /^(e|E)$/.test(ev.key)) {
       ev.preventDefault();
-      var sizes = TerraCore.scales.map(function (sc) { return sc.key; });
-      var ei = sizes.indexOf(inputs.scale.value);
-      var edir = shiftStep(ev);
-      inputs.scale.value = sizes[cycleIndex(ei, edir, sizes.length)];
-      render();
+      cycleControl(inputs.scale, TerraCore.scales, ev);
       return;
     }
     // '[' and ']' nudge the sea level, which is the slider that changes a
@@ -1953,11 +1951,7 @@
     // drifts away from itself.
     if (!typingLetter && (ev.key === 'p' || ev.key === 'P')) {
       ev.preventDefault();
-      var phrases = TerraCore.phrases;
-      var pi = phrases.indexOf(inputs.seed.value);
-      var pdir = shiftStep(ev);
-      inputs.seed.value = phrases[cycleIndex(pi, pdir, phrases.length)];
-      render();
+      cycleControl(inputs.seed, TerraCore.phrases, ev);
       return;
     }
     var toggle = { g: 'dither', l: 'contour' }[ev.key.toLowerCase()];

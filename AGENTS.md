@@ -684,21 +684,33 @@ Conventions:
   `prefers-color-scheme: dark` (only the CSS variables change). Both are checked
   with `page.emulateMedia()` followed by a reload.
   Every one of those cycles wraps through one `cycleIndex(i, step, count)`,
-  read by all six list cycles, the legend ring, the `Shift`+arrow walk over the
-  height bins and both axes of the arrow walk over cells — ten sites, since the
-  ring's empty slot is itself a stop.
+  read by the shared list-cycle helper, the legend ring, the `Shift`+arrow walk
+  over the height bins and both axes of the arrow walk over cells — five sites,
+  since the ring's empty slot is itself a stop.
   The double modulo is the point: a
   negative step under `Shift` has to come back positive, and a wrap written
   once would stick on the first entry for one key while the others backed out
-  properly. The suite counts the definition, the eight reads and asks for no
+  properly. The suite counts the definition, the five reads and asks for no
   bare wrap left beside them.
   The sign that step is paired with is one lookup too — `shiftStep(ev)` — read
-  by the seven keys that walk a list, so a `Shift` mis-press backs one step up
-  on every cycle rather than on the six whose branch happens to match. Written
+  by the shared helper and the legend ring, so a `Shift` mis-press backs one
+  step up on every cycle rather than on the ones whose branch happens to match. Written
   beside each handler the pair could invert on one key only, which reads as a
   single letter cycling the wrong way for reasons nothing in the dropdown
-  explains; the suite therefore counts the definition, the seven reads and the
+  explains; the suite therefore counts the definition, the two reads and the
   one ternary inside it.
+  Those two lookups are reached from one place by the six list cycles — `c`,
+  `h`, `d`, `w`, `e` and `p` — through `cycleControl(select, items, ev)`, which
+  pulls the keys out of the core's own array, finds where the control sits,
+  steps by the `Shift` sign, wraps and rebuilds. The map keeps a key when an
+  entry has one and falls back to the entry itself otherwise, which is what lets
+  the plain string list of phrases walk through the same helper as the six
+  `{key, label}` lists. Written beside each letter the five steps could be
+  edited apart: one key could drop its rebuild, so its dropdown would change
+  without the map following, or drop its `Shift` step, so that one letter would
+  only ever walk forwards. Both read as a slightly odd key rather than as a
+  bug, so the suite counts the definition, the six reads, the one key map and
+  the one rebuild inside it, and asks for no second such map left in the shell.
   The dark block only works by replacing every variable in `:root`, so the suite
   compares the two name lists: a variable declared once and never restated keeps
   its light value under a dark background, which is the one way this scheme can
