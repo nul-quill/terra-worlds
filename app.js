@@ -1298,7 +1298,7 @@
       // sidebar that runs past the chart, so the least useful parts are
       // dropped first: class, then count. The range always survives — it is
       // what ties the bump back to the map.
-      var parts = [hundred(sum.from) + '-' + hundred(sum.to)]
+      var parts = [rangeText(sum)]
         .concat(bandFields(sum));
       var label = fitLabel(hc, parts, w - pad * 2);
       var tw = hc.measureText(label).width;
@@ -1560,7 +1560,17 @@
   // beside its own caption.
   function bandTally(bin, sum) {
     return (bin + 1) + '/' + histState.bins +
-      ' (' + hundred(sum.from) + '-' + hundred(sum.to) + ')';
+      ' (' + rangeText(sum) + ')';
+  }
+
+  // The two ends of one bar's height range, out of a hundred. Both the chart's
+  // own caption and every note that names a bar print this pair, and each of
+  // them scales it through the same out-of-a-hundred lookup the rows use. Cut
+  // that scaling twice and one view could round a bin against another range
+  // than the one that lit it, while each figure still looked reasonable beside
+  // its own caption — so the pair is built once, here.
+  function rangeText(sum) {
+    return hundred(sum.from) + '-' + hundred(sum.to);
   }
 
   // The two fields every view of a bin prints after its tally: how many cells

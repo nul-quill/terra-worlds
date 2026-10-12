@@ -4565,7 +4565,16 @@ var bandEnds = (appSrc.match(/\/ st\.bins \* st\.span/g) || []).length;
 var bandCalls = (appSrc.match(/= bandSummary\(/g) || []).length;
 var bandStray = (appSrc.match(/histState\.bins \* histState\.span/g) ||
   []).length;
-var bandBracket = /function bandTally\(bin, sum\) \{[\s\S]{0,200}\+ '-' \+ hundred\(sum\.to\)/
+// The pair of ends is one builder of its own — `rangeText()` — since the
+// chart's caption prints it beside a count and a class while the notes print it
+// inside a tally. Two scalings could round one bin two ways while each still
+// looked right beside its own caption, so count the definition, its two reads
+// and ask that no inline pair be left beside them.
+var rangeDefs = (appSrc.match(/function rangeText\(sum\) \{/g) || []).length;
+var rangeCalls = (appSrc.match(/rangeText\(sum\)/g) || []).length - rangeDefs;
+var rangeInline = (appSrc.match(/hundred\(sum\.from\) \+ '-' \+ hundred/g) ||
+  []).length;
+var bandBracket = /function bandTally\(bin, sum\) \{[\s\S]{0,160}rangeText\(sum\)/
   .test(appSrc);
 // Four callers: the chart's own caption, the hovered-cell reading, the note
 // under the map, and the pair that tells a hovered cell whether the selected
@@ -4576,11 +4585,12 @@ var bandBracket = /function bandTally\(bin, sum\) \{[\s\S]{0,200}\+ '-' \+ hundr
 var bandInside = /'not in ' \+ bandTally\(band, sel\)/.test(appSrc);
 var bandGate = /band >= 0 && histState && cellBand !== band/.test(appSrc);
 assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 4 && !bandStray &&
-  bandBracket && bandInside && bandGate,
+  bandBracket && bandInside && bandGate && rangeDefs === 1 &&
+  rangeCalls === 2 && rangeInline === 1,
   'a lit bar says what height range it covers (' + bandDefs + ' lookup, ' +
   bandEnds + ' ends, ' + bandCalls + ' callers, stray ' + bandStray +
   ', bracket ' + bandBracket + ', note ' + bandInside + ', gate ' +
-  bandGate + ')');
+  bandGate + ', range ' + rangeDefs + '/' + rangeCalls + ')');
 
 // Three paths fill the readout strip: the hovered cell, a hovered or pinned
 // legend class, and the selected band. Each of them is a list of short fields,

@@ -1079,6 +1079,14 @@ Conventions:
   division could round one bin three ways while each still looked right beside
   its own caption, so the suite counts the builder, its three reads and the
   denominator inside it.
+  Inside that tally the two ends of the range are one print of their own —
+  `rangeText(sum)` — read by the tally and by the caption drawn inside the
+  chart, since a bar's own label names the pair beside a count and a class
+  while every note names it inside a tally. Written beside each caller the
+  scaling could be edited apart while each still looked plausible on its own
+  row, which reads as a bar whose caption and note disagree about the heights
+  it covers. The suite counts the definition, the two reads and asks that the
+  only `hundred(sum.from)` pair left in the shell be the one inside that helper.
   The two fields that follow that tally — how many cells fell in the bar, and
   which class fills most of it — are one list too, `bandFields(sum)`, read by
   the caption drawn inside the chart and by the line under the map. The class
