@@ -4925,6 +4925,19 @@ assert(patchDefs === 1 && patchReads === 2 && patchInline === 0,
   'both axes of the magnifier patch clamp through one bound (' + patchDefs +
   ' def, ' + patchReads + ' reads, ' + patchInline + ' inline)');
 
+// The number of cells the panel shows is read three times: twice as the clamp's
+// own span and once each as the source block's width and the divisor behind the
+// panel's cell size. Written beside each use that count could be edited apart,
+// which reads as a patch whose one-cell mark no longer matches the cells it
+// magnifies. Counted as text: one number, every read through it, and no second
+// dozen left beside them.
+var cellsDefs = (appSrc.match(/var PATCH = \d+;/g) || []).length;
+var cellsReads = (appSrc.match(/PATCH/g) || []).length - cellsDefs;
+var cellsLiterals = (appSrc.match(/var span = \d+;/g) || []).length;
+assert(cellsDefs === 1 && cellsReads === 5 && cellsLiterals === 0,
+  'one cell count sizes the magnifier patch (' + cellsDefs + ' def, ' +
+  cellsReads + ' reads, ' + cellsLiterals + ' literals)');
+
 // The panel also picks the half of the canvas the cursor is NOT in, once per
 // axis. Two copies of that comparison could be edited apart, and a panel that
 // followed the cursor sideways while its own row stayed on a fixed side reads

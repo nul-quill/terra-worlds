@@ -684,9 +684,14 @@
   }
 
   function drawInset(px, py) {
-    var span = 12;
-    var x0 = insetOrigin(px, current.width, span);
-    var y0 = insetOrigin(py, current.height, span);
+    // How many cells the panel shows. The same number is the width of the
+    // source block read from the offscreen copy and the divisor behind the
+    // panel's own cell size, so it is written once: a dozen written at each of
+    // those five places could be edited apart, which reads as a patch whose
+    // mark no longer matches the cells it magnifies.
+    var PATCH = 12;
+    var x0 = insetOrigin(px, current.width, PATCH);
+    var y0 = insetOrigin(py, current.height, PATCH);
     // Two fractions decide the panel: how much of the shorter canvas edge the
     // patch may take, and how much of that patch is given back as padding. Both
     // are read once each, and the second is measured against the first, so a
@@ -720,7 +725,7 @@
     ctx.fillStyle = rgba(sky, 0.85);
     ctx.fillRect(dx - MAT, dy - MAT, size + MAT * 2, size + MAT * 2);
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(off, x0, y0, span, span, dx, dy, size, size);
+    ctx.drawImage(off, x0, y0, PATCH, PATCH, dx, dy, size, size);
     ctx.strokeStyle = rgba(mix(inkColour(), sky, 0.35), 0.55);
     ctx.lineWidth = HAIR;
     ctx.strokeRect(dx - EDGE, dy - EDGE,
@@ -729,7 +734,7 @@
     // to be identifiable inside it. Same ink as the crosshair, one cell of the
     // patch's own scale — the offset is the difference of two clamped indices,
     // so it stays inside the panel at every edge of the grid.
-    var patch = size / span;
+    var patch = size / PATCH;
     ctx.strokeStyle = cellInk();
     ctx.strokeRect(dx + (px - x0) * patch, dy + (py - y0) * patch, patch, patch);
     ctx.restore();

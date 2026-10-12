@@ -1226,6 +1226,12 @@ Conventions:
   itself: the offset is the difference of the two clamped indices times the
   patch's own cell size, which is why a mark at a fixed offset would sit on the
   wrong cell everywhere but one. The suite counts both halves of that pair.
+  That dozen is one number too — `PATCH` — since five reads cover it: both
+  halves of the clamp, the pair of edges of the source block cut from the
+  offscreen copy, and the divisor behind the panel's own cell size. Written
+  beside each use it could be edited apart, which reads as a patch whose
+  one-cell mark no longer matches the cells it magnifies, so the suite counts
+  the one number and its reads.
   Inside that panel the mat behind the patch is one reserve too — `MAT`, two
   CSS pixels — because two halves read it: the filled backing is that much wider
   than the patch on every side, and the hairline sits half a pixel further out so
