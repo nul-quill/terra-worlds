@@ -658,6 +658,11 @@ Conventions:
   With two lookups an id rename could be fixed on one side only, which reads as
   a button that never answers a click while its label still restores itself —
   plausible in a screenshot, so the suite counts the one lookup and the reads.
+  The reroll button is held the same way, because it too has two callers: the
+  listener that chains the seed, and the `Space`/`R` branch that presses the
+  button rather than writing that chain step a second time. A second lookup
+  there would let the keyboard press a node the listener never wired, which
+  reads as a shortcut that clears nothing at all.
   SELECT owns the caret, so a seed phrase can still be typed. That test is one
   `ownsCaret()` lookup read by both keyboard paths — the arrow walk and the
   letter block — since two copies could drop `SELECT` from one of them, which

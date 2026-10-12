@@ -16,6 +16,11 @@
   // id would leave the click wired to nothing while the label still restored
   // itself on the node the other read found.
   var copyBtn = document.getElementById('copy');
+  // The reroll button is read the same way, since two bodies need it too: the
+  // listener at the bottom of the shell, and the `Space`/`R` branch of the
+  // keyboard handler, which presses the button rather than duplicating its
+  // chain step. Both must find the same node, so both read this one lookup.
+  var rerollBtn = document.getElementById('reroll');
 
   var inputs = {
     seed: document.getElementById('seed'),
@@ -1570,7 +1575,7 @@
   inputs.seed.addEventListener('input', render);
   window.addEventListener('hashchange', function () { applyHash(); render(); });
 
-  document.getElementById('reroll').addEventListener('click', function () {
+  rerollBtn.addEventListener('click', function () {
     // Chain from the current seed rather than picking a fresh random one, so
     // the same starting phrase always walks the same sequence of worlds and a
     // shared link lands on the same tenth reroll.
@@ -1969,7 +1974,7 @@
     if ((ev.key === ' ' || /^(r|R)$/.test(ev.key)) &&
       document.activeElement !== inputs.seed) {
       ev.preventDefault();
-      document.getElementById('reroll').click();
+      rerollBtn.click();
     }
   });
 
