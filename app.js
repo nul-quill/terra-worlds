@@ -1259,6 +1259,13 @@
     // One number for all three, so a taller strip widens the marks with it
     // rather than leaving a label sitting on a bar.
     var STRIP = 12;
+    // The median's mark is taller than a decade tick, and that depth is one
+    // number of its own: it hangs from the same edge as the ticks and reaches
+    // further down, which is what makes the middle of the range findable
+    // without reading its label. Written as a bare offset the two marks could
+    // be edited apart, which leaves a median standing no taller than the ticks
+    // beside it while its own number still reads as the important one.
+    var MARK = 7;
     for (i = 0; i < BINS; i++) {
       // Leave a strip along the bottom for the two corner labels, so the
       // tallest bar never sits on top of the numbers.
@@ -1347,7 +1354,7 @@
       hc.strokeStyle = rgba(INK, 0.7);
       hc.beginPath();
       hc.moveTo(hairline(medX), h - STRIP);
-      hc.lineTo(hairline(medX), h - STRIP + 7);
+      hc.lineTo(hairline(medX), h - STRIP + MARK);
       hc.stroke();
       // The mark alone says "most of the grid is around here"; the number says
       // how high that is, which is the difference between a shape and a

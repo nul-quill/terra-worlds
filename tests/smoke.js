@@ -4248,6 +4248,18 @@ assert(tickDefs === 1 && tickUses === 1 && tickLiterals === 0,
   'one depth sets every decade tick (' + tickDefs + ' def, ' + tickUses +
   ' reads, ' + tickLiterals + ' literals)');
 
+// The median's mark hangs from the same edge as the decade ticks and reaches a
+// little further down, which is what makes the middle of the range findable
+// without reading its label. Two offsets could be edited apart, leaving a median
+// standing no taller than its neighbours while its number still reads as the
+// important one. Counted as text: one number, its read, no bare depth beside it.
+var markDefs = (appSrc.match(/var MARK = \d+;/g) || []).length;
+var markUses = (appSrc.match(/STRIP \+ MARK/g) || []).length;
+var markLiterals = (appSrc.match(/STRIP \+ 7\b/g) || []).length;
+assert(markDefs === 1 && markUses === 1 && markLiterals === 0,
+  'one depth sets the median mark (' + markDefs + ' def, ' + markUses +
+  ' reads, ' + markLiterals + ' literals)');
+
 // The sea number beside its own rule sits one measure away, and the flip that
 // moves it to the other side of the line is measured against twice that same
 // gap. Written per site the pair could be edited apart, which puts the figure

@@ -212,6 +212,12 @@ Conventions:
   strip grow the bars while the marks stayed put, which reads as a label
   sitting on a bar, so every offset is written relative to the one number and
   the suite asks for no bare pixel offset left beside it.
+  That median mark is the one mark in the strip taller than a tick, and its own
+  depth is a number beside it — `MARK` — since the two hang from the same edge
+  and only differ in how far down they reach. Written as a bare offset the pair
+  could be edited apart, which leaves a median standing no taller than its
+  neighbours while its label still reads as the important one, so the suite
+  counts that depth the same way it counts the tick's.
   Every other figure in that caption is a field of the JSON record as well:
   the two ends of the range are `low` and `high`, the column count is `bins`.
   The two marks on the ruler are named there too — `sea` and `median` — so a
