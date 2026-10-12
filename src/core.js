@@ -1248,6 +1248,16 @@
     return Math.round(value * 100);
   }
 
+  // A share or a level kept to three decimals — finer than the out-of-a-hundred
+  // figures a page or a caption prints, so a terminal can rebuild a bar's column
+  // count from one saved line without losing a whole step to rounding. The
+  // record stores every fraction this way rather than six fields each writing
+  // its own division: a `land` kept finer than an `ice` would leave a reader
+  // adding two figures that never summed to the grid.
+  function three(value) {
+    return Math.round(value * 1000) / 1000;
+  }
+
   // Which classes to list, in the order to list them: every class present on
   // this world, biggest first. Equal shares fall back to the order the palette
   // declares its keys in, so the list does not depend on whether this engine's
@@ -1304,6 +1314,7 @@
     channelValue: channelValue,
     percentText: percentText,
     hundred: hundred,
+    three: three,
     lakeShare: lakeShare,
     classShare: classShare,
     legendOrder: legendOrder,

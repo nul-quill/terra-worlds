@@ -155,6 +155,11 @@ Conventions:
   looked reasonable on its own. A `land` kept finer than an `ice` would leave a
   terminal adding two figures that never summed to the grid. The suite counts
   the one definition, the fields that read it and any leftover inline triple.
+  That division is the core's (`TerraCore.three`) rather than the parser's own,
+  for the reason the out-of-a-hundred scaling is: a reader holding one line of
+  JSON applies it when it checks a share against the grid, so the parser
+  forwards and the suite counts the definition, the forward, the fields and any
+  bare triple left behind.
   `--hist` is that substitute: six rows of blocks over the record's own bins,
   with a ruler under them whose `|` sits on the sea column. The block is built
   from `core.histogram` at the sidebar's 240px width, so its column count is

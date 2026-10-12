@@ -141,8 +141,11 @@ function finishGrid(opts) {
 // terminal can rebuild a bar's column count from a saved line without losing a
 // whole step to rounding. One helper for every field, since a share rounded two
 // ways would describe a drier world in the JSON than on the page.
+// The scaling itself is the core's, read the same way `hundred()` is: one
+// division behind every fraction in the record, and the same one a reader of
+// that line applies when it checks a share against the grid.
 function three(value) {
-  return Math.round(value * 1000) / 1000;
+  return core.three(value);
 }
 
 function toPpm(img) {

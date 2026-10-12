@@ -2518,16 +2518,26 @@ assert(medDrift.length === 0,
 // and a `land` rounded finer than an `ice` would leave a terminal adding two
 // figures that never summed to the grid. Counted as text — one definition, and
 // no leftover inline triple-rounding beside the fields that read it.
+// That division is the core's rather than the writer's, for the same reason the
+// out-of-a-hundred scaling is: a reader holding one line of JSON applies it when
+// it checks a share against the grid, so a second copy in the writer could be
+// edited while each figure still looked plausible on its own. Counted on both
+// sides — one definition in the core, a forward in the CLI, no bare division left.
 var threeSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
-var threeDefs = (threeSrc.match(/function three\(value\) \{/g) || []).length;
+var threeDefs = (coreSrc.match(/function three\(value\) \{/g) || []).length;
+var threeExported = /three:\s*three/.test(coreSrc);
+var threeForwards = /function three\(value\) \{\s*return core\.three\(value\);/
+  .test(threeSrc);
 var threeCalls = (threeSrc.match(/\bthree\(/g) || []).length - threeDefs;
 var threeInline = (threeSrc.match(
   /:\s*Math\.round\([^)]*\* 1000\) \/ 1000/g) || []).length;
-assert(threeDefs === 1 && threeCalls >= 5 && threeInline === 0 &&
-  jsonLine.land === Math.round(jsonWorld.stats.land * 1000) / 1000 &&
-  jsonLine.ice === Math.round(jsonWorld.stats.ice * 1000) / 1000,
-  'the record rounds every share the same way (' + threeDefs + ' def, ' +
-  threeCalls + ' fields, ' + threeInline + ' inline)');
+assert(threeDefs === 1 && threeExported && threeForwards && threeCalls >= 5 &&
+  threeInline === 0 &&
+  jsonLine.land === core.three(jsonWorld.stats.land) &&
+  jsonLine.ice === core.three(jsonWorld.stats.ice),
+  'the record rounds every share through the core (' + threeDefs + ' def, ' +
+  threeForwards + ' forward, ' + threeCalls + ' fields, ' + threeInline +
+  ' inline)');
 
 // The basin count must agree with the lake cover it summarises: at least one
 // basin when there is standing water, never more basins than lake cells, and
