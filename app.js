@@ -1126,8 +1126,13 @@
     hc.fillStyle = rgba(INK, 0.55);
     var loLabel = String(hundred(lo));
     var hiLabel = String(hundred(lo + span));
-    hc.fillText(loLabel, pad, h - 1);
-    hc.fillText(hiLabel, w - pad - hc.measureText(hiLabel).width, h - 1);
+    // All three labels in that strip sit on one baseline, measured up from its
+    // bottom edge: the two ends of the range and the median between them. A
+    // second offset written beside one of them would put that figure a pixel
+    // off the others, which reads as two rows of numbers rather than one.
+    var BASE = 1;
+    hc.fillText(loLabel, pad, h - BASE);
+    hc.fillText(hiLabel, w - pad - hc.measureText(hiLabel).width, h - BASE);
     // The median gets a taller mark than the decade ticks: it is the one
     // number that says where most of the grid actually sits, so it is worth
     // seeing against the bars without reading the stats list.
@@ -1159,7 +1164,7 @@
       }
       if (medTw < w - pad * 2 - loTw - hiTw - GAP * 4) {
         hc.fillStyle = rgba(INK, 0.7);
-        hc.fillText(medLabel, medTextX, h - 1);
+        hc.fillText(medLabel, medTextX, h - BASE);
       }
     }
     // A hovered bin gets its elevation range and cell count written into the

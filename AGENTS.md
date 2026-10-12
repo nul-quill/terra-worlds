@@ -1244,6 +1244,12 @@ Conventions:
   pair could be edited apart, which leaves a median printed on top of its own
   corner number — still a plausible chart at a glance — so the suite counts the
   one number, its reads and asks for no bare gap left beside them.
+  Those three labels also sit on one baseline — `BASE`, one CSS pixel up from
+  the strip's bottom edge — since a second offset written beside one of them
+  would drop that figure a pixel below the others, which reads as two rows of
+  numbers rather than one. The hovered bin's caption is its own row at the top
+  of the chart, so it stays outside this pair; the suite counts the one number,
+  its three reads and asks for no bare offset left in that strip.
   The decade ticks under the bars do not use a fixed ten-unit step: the step is
   the first of 5/10/20/25/50 that leaves at most ten marks over this world's own
   relief. A flat craton would otherwise get one tick, a tall fjord twenty.

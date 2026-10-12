@@ -3939,6 +3939,20 @@ assert(leadDefs === 1 && leadUses === 3 && leadLiterals === 0,
   'one gap sets the sea label beside its rule (' + leadDefs + ' def, ' +
   leadUses + ' reads, ' + leadLiterals + ' literals)');
 
+// The three labels of the bottom strip — the two ends of the range and the
+// median between them — sit on one baseline measured up from the strip's own
+// bottom edge. Written beside each call an offset could move one figure a
+// pixel off the others, which reads as two rows of numbers rather than one.
+// Counted as text: one number, every label derived from it, no bare offset
+// left in that strip. The hovered bin's caption is a separate row at the top
+// of the chart, so it is not part of this baseline.
+var baseDefs = (appSrc.match(/var BASE = \d+;/g) || []).length;
+var baseUses = (appSrc.match(/h - BASE/g) || []).length;
+var baseLiterals = (appSrc.match(/h - 1\)/g) || []).length;
+assert(baseDefs === 1 && baseUses === 3 && baseLiterals === 0,
+  'one baseline holds the strip\'s three labels (' + baseDefs + ' def, ' +
+  baseUses + ' reads, ' + baseLiterals + ' literals)');
+
 // Both canvases size their backing store from the same clamp on the device
 // pixel ratio. Two copies of that clamp could be edited apart, and a map
 // blitted at one scale under a chart drawn at another reads as a blurry strip
