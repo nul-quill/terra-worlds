@@ -4586,6 +4586,18 @@ assert(grainDefs === 1 && grainReads === 1 && grainSpan === 1 &&
   'one helper is the whole grain step (' + grainDefs + ' def, ' + grainReads +
   ' read, ' + grainSpan + ' span, ' + grainSite + ' site)');
 
+// The first ring of water takes on the beach colour with one strength, written
+// once and read by each of a pixel's three channels. Beside each channel that
+// figure could be edited apart until a shore tinted one channel harder than the
+// other two — a slightly warm coastline reads as a plausible shore rather than
+// as a broken triple, so the count is the whole check.
+var shoreDefs = (coreSrc.match(/var SHORE_INK = /g) || []).length;
+var shoreReads = (coreSrc.match(/\- r\) \* SHORE_INK|\- g\) \* SHORE_INK|\- b\) \* SHORE_INK/g) || []).length;
+var shoreInline = (coreSrc.match(/\- b\) \* 0\.16/g) || []).length;
+assert(shoreDefs === 1 && shoreReads === 3 && shoreInline === 0,
+  'one strength inks the first ring of water (' + shoreDefs + ' def, ' +
+  shoreReads + ' reads, ' + shoreInline + ' literals)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

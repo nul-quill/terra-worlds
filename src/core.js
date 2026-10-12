@@ -797,9 +797,9 @@
             (x > 0 && hf[i - 1] >= seaLevel) ||
             (x < width - 1 && hf[i + 1] >= seaLevel);
           if (ashore) {
-            r += (colors.beach[0] - r) * 0.16;
-            g += (colors.beach[1] - g) * 0.16;
-            b += (colors.beach[2] - b) * 0.16;
+            r += (colors.beach[0] - r) * SHORE_INK;
+            g += (colors.beach[1] - g) * SHORE_INK;
+            b += (colors.beach[2] - b) * SHORE_INK;
           }
         }
 
@@ -962,6 +962,13 @@
   // an interior dried out over one range while its own reading scaled against
   // another — which still looks like a plain enough gradient at a glance.
   var INLAND_CAP = 12;
+
+  // How much of the beach colour the first ring of water takes on. The blend
+  // is one strength shared by the three channels of a pixel, so writing it
+  // beside each of them could set one channel a shade away from the other two
+  // — a coastline tinted slightly pink reads as a plausible warm shore rather
+  // than as a broken triple, which is why the three reads are one number.
+  var SHORE_INK = 0.16;
 
   // How far below the shoreline a cell has to sit before it stops being a
   // shelf and reads as open ocean. The classification and the hover note are

@@ -332,6 +332,12 @@ Conventions:
   cell's grain by a constant while still reading as a dither; the suite counts the
   definition, its single read, the length-derived divisor inside it and the one
   site that indexes the table.
+  The first ring of water in that same pass takes on the beach colour with one
+  strength — `SHORE_INK` — read once per channel of the pixel. Written beside each
+  channel the figure could be edited apart until a shore tinted one channel harder
+  than its neighbours, which reads as a slightly warm coastline rather than as a
+  broken triple, so the suite counts the one number, its three reads and asks for
+  no bare fraction left beside them.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
