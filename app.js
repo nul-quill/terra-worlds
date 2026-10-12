@@ -769,6 +769,17 @@
     return Math.round(value);
   }
 
+  // Whether a count of cells says anything. Both counts in the readout — how
+  // far a dry cell sits from the shoreline, how many cells drain behind a
+  // channel — are worth a word only once they are past the cell itself, and
+  // the two notes are read side by side in one line, so the pair should agree
+  // on where "worth a word" starts. Written beside each note the threshold
+  // could be edited on one side only, which reads as one note going quiet a
+  // step earlier than the other for reasons nothing on the page explains.
+  function worthNaming(n) {
+    return n > 1;
+  }
+
   // Which way a basin's surplus leaves. The bearing array is indexed by the
   // basin's own number minus one, and two branches of the readout need that
   // pair — a filled cell names its lake and its outflow, the one rim cell that
@@ -1324,7 +1335,7 @@
     // Only worth printing inland: a water cell is by definition at the shore,
     // and a beach cell one step in, so those would repeat the biome name.
     var inland = current.coastDistance ? cellCount(current.coastDistance[i]) : 0;
-    if (above && inland > 1) parts.push(inland + ' from water');
+    if (above && worthNaming(inland)) parts.push(inland + ' from water');
     // The one rim cell a basin spills over. It is the seam between a lake and
     // the river network, so it is worth naming on its own: hovering it shows
     // where the water in a closed basin actually goes.
@@ -1346,7 +1357,7 @@
       var catchment = current.accumulation
         ? cellCount(current.accumulation[i]) : 0;
       parts.push((current.riverMask[i] === 2 ? 'trunk river' : 'river') +
-        (catchment > 1 ? ' (' + catchment + ' cells)' : ''));
+        (worthNaming(catchment) ? ' (' + catchment + ' cells)' : ''));
     }
     // Tie the readout to the relief chart: the bin this cell falls in is
     // highlighted, so a colour on the map can be traced back to where it sits

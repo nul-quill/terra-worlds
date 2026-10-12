@@ -4102,6 +4102,19 @@ assert(countDefs === 1 && countCalls === 2 && countInline === 0,
   'both cell counts in the readout round one way (' + countDefs + ' def, ' +
   countCalls + ' reads, ' + countInline + ' inline)');
 
+// Those same two counts are only worth a word once they are past the cell
+// itself, and the two notes sit side by side in one line — so the threshold is
+// one lookup rather than a comparison written beside each note. Edited on one
+// side only, one note goes quiet a step earlier than the other, which reads as
+// a note that stops for reasons nothing on the page explains. Counted as text:
+// one definition, a read from each note, no bare comparison left beside them.
+var nameDefs = (appSrc.match(/function worthNaming\(/g) || []).length;
+var nameCalls = (appSrc.match(/worthNaming\(/g) || []).length - nameDefs;
+var nameInline = (appSrc.match(/inland > 1|catchment > 1/g) || []).length;
+assert(nameDefs === 1 && nameCalls === 2 && nameInline === 0,
+  'both cell counts in the readout go quiet at one step (' + nameDefs +
+  ' def, ' + nameCalls + ' reads, ' + nameInline + ' inline)');
+
 // A pointer is mapped onto the canvas by one ratio: the buffer's width over
 // the layout width. Both canvases need that pair — the map turns it into
 // backing-store pixels for the crosshair, the chart turns it into a bin index —

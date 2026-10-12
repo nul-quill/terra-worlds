@@ -432,6 +432,12 @@ Conventions:
   caption, and one hovered cell would then report its two counts on two scales;
   the suite counts the one definition, the two reads and asks for no bare
   `Math.round(current.` left beside them.
+  Both of those counts also go quiet at the same step, through
+  `worthNaming(n)` — a distance of one cell, or a catchment of one, says no
+  more than the biome name already did. Written beside each note the pair could
+  be edited apart, which reads as one note stopping a step earlier than the
+  other for reasons nothing on the page explains; the suite counts the one
+  definition, the two reads and asks for no bare `> 1` gate left beside them.
   Shares of the grid go through `TerraCore.percentText(fraction)` — whole percent
   at or above ten, one decimal below that, two under one percent, so a 2% class,
   a 0.2% class and a 0.04% class each keep their own figure in the legend. The
