@@ -1709,6 +1709,11 @@
   // copied link always carries what is on screen — including a hovered cell.
   // The timer is kept outside the handler so a second click during the
   // feedback window replaces the pending restore instead of stacking on it.
+  // How long that window lasts is one number too: long enough to read the
+  // word over the button, short enough that a second click is never fighting
+  // a stale label. Written beside the timer it could be edited into two
+  // different waits for the two branches of the copy path.
+  var FEED = 900;
   var copyTimer = 0;
   function copyLink() {
     var url = location.href;
@@ -1725,7 +1730,7 @@
       copyTimer = setTimeout(function () {
         copyTimer = 0;
         btn.textContent = btn.getAttribute('data-label');
-      }, 900);
+      }, FEED);
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(url).then(done, done);

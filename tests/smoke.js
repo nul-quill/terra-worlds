@@ -3557,6 +3557,17 @@ assert(copyLookups === 1 && copyNodes === 3,
   'both halves of the copy button read one node (' + copyLookups + ' lookup, ' +
   copyNodes + ' reads)');
 
+// The feedback the button shows after a click lasts one measured beat. Two
+// waits written beside the two halves of the copy path would let the clipboard
+// branch and the fallback branch hold their label for different lengths, which
+// reads as a button that answers one kind of browser faster than another.
+var feedDefs = (appSrc.match(/var FEED = \d+;/g) || []).length;
+var feedReads = (appSrc.match(/, FEED\)/g) || []).length;
+var feedLiterals = (appSrc.match(/, 900\)/g) || []).length;
+assert(feedDefs === 1 && feedReads === 1 && feedLiterals === 0,
+  'one wait holds the copy feedback label (' + feedDefs + ' def, ' +
+  feedReads + ' reads, ' + feedLiterals + ' literals)');
+
 // The reroll button is the second control with two callers: the listener that
 // chains the seed, and the keyboard branch that presses it instead of writing
 // the chain step a second time. Same rule as the copy button — one lookup, and

@@ -724,6 +724,11 @@ Conventions:
   time it is pressed, and the restore is one shared timer that each press
   clears before scheduling again — otherwise a second click inside the feedback
   window leaves the button reading `Copied` for good.
+  The length of that window is one number too — `FEED` — since the clipboard
+  branch and the fallback branch both schedule it. Written beside each call the
+  pair could be edited apart, which reads as a button that holds its label a
+  different length in one browser than another, so the suite counts the one
+  definition, its read and asks for no bare millisecond count left beside them.
   That button is also the one control whose node two bodies need: the wiring at
   the bottom of the shell, and `copyLink()` itself, which has to write its
   feedback into the same element the click lands on. The lookup therefore sits
