@@ -4082,6 +4082,20 @@ assert(cellDefs === 1 && cellCalls === 3 && cellInline === 0,
   'every cell index comes from one division (' + cellDefs + ' def, ' +
   cellCalls + ' reads, ' + cellInline + ' inline)');
 
+// A cell index becomes a drawn position by adding half a cell, and four marks
+// are placed that way: the pair of hairlines the crosshair is stroked with and
+// the pair of fields the hover position keeps. Written beside each of them the
+// half could be dropped on one branch only, which leaves a box sitting on a
+// cell's left edge under a crosshair that stayed in the middle — close enough
+// to look like an odd cursor rather than as a bug. Counted as text: one
+// definition, four reads, no bare offset left beside them.
+var ctrDefs = (appSrc.match(/function cellCentre\(/g) || []).length;
+var ctrCalls = (appSrc.match(/cellCentre\(/g) || []).length - ctrDefs;
+var ctrInline = (appSrc.match(/\+ 0\.5\) \* /g) || []).length;
+assert(ctrDefs === 1 && ctrCalls === ctrDefs + 3 && ctrInline === ctrDefs,
+  'every cell mark is placed from its centre (' + ctrDefs + ' def, ' +
+  ctrCalls + ' reads, ' + ctrInline + ' inline)');
+
 // Every cycle key answers to `Shift`, so its step can be negative and the
 // wrap has to come back positive. That double modulo is one lookup, read by
 // each of the six list cycles, the legend ring, the `Shift`+arrow walk over

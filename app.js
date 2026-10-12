@@ -470,6 +470,17 @@
     return [Math.floor(x / cs.w), Math.floor(y / cs.h)];
   }
 
+  // Where a cell's centre falls in backing-store pixels. Four marks are placed
+  // that way — the pair of hairlines the crosshair is drawn with, and the pair
+  // of fields the hover position keeps — so the half-cell offset is one lookup
+  // rather than four that could be edited apart. Written at each site, one of
+  // them could drop the half and still land inside the grid: the box would
+  // then sit on a cell's left edge while its own crosshair stayed in the
+  // middle, which reads as an odd cursor rather than as a bug.
+  function cellCentre(i, size) {
+    return (i + 0.5) * size;
+  }
+
   // The next stop on a list cycle, one step in either direction. Every cycle
   // key answers to `Shift` too, so the step can be negative and the modulo has
   // to come back positive — hence the second wrap. Six lists walk through
@@ -539,8 +550,8 @@
       ctx.strokeStyle = hair;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      var cx = hairline((px + 0.5) * cellX);
-      var cy = hairline((py + 0.5) * cellY);
+      var cx = hairline(cellCentre(px, cellX));
+      var cy = hairline(cellCentre(py, cellY));
       ctx.moveTo(cx, 0);
       ctx.lineTo(cx, view.height);
       ctx.moveTo(0, cy);
@@ -1142,8 +1153,8 @@
     px = clampIndex(px, current.width);
     py = clampIndex(py, current.height);
     var cs = cellSize();
-    hover.x = (px + 0.5) * cs.w;
-    hover.y = (py + 0.5) * cs.h;
+    hover.x = cellCentre(px, cs.w);
+    hover.y = cellCentre(py, cs.h);
     updateReadout(px, py);
     drawHover();
     // The walked cell is part of the shared state too, so the link follows the

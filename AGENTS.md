@@ -751,6 +751,13 @@ Conventions:
     a difference of one column that reads as an odd cursor rather than as a
     bug. The suite counts the definition, the three reads and asks for no bare
     division by a cell size left beside them.
+    That cell index becomes a drawn position through one more lookup —
+    `cellCentre(i, size)` — read by the pair of hairlines the crosshair is
+    stroked with and the pair of fields the hover position keeps. Written beside
+    each of them the half-cell offset could be dropped on one branch only, which
+    leaves a box sitting on a cell's left edge under a crosshair that stayed in
+    the middle: close enough to read as an odd cursor, so the suite counts the
+    definition, the four reads and the single offset inside the helper.
     The arrow handler wraps its own pair through `cycleIndex()` before calling
     `hoverCell()`, so a walk in one direction keeps sweeping instead of sticking
     on the last column; the clamp in `hoverCell()` still handles a hash-restored
