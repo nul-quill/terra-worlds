@@ -850,6 +850,17 @@
     return Math.round(value);
   }
 
+  // A count of cells read out of one of the grid's own fields. Two notes in the
+  // readout do that — how far a dry cell sits from the shoreline, how many
+  // cells drain behind a channel — and each has to survive a world whose field
+  // is absent altogether, which is a zero rather than a blank. Written beside
+  // each note the fallback could be edited on one of them only: one would print
+  // nothing where the other printed `0`, which reads as a note that goes quiet
+  // for reasons its neighbour does not share. Both halves are one lookup.
+  function fieldCount(field, i) {
+    return field ? cellCount(field[i]) : 0;
+  }
+
   // Whether a count of cells says anything. Both counts in the readout — how
   // far a dry cell sits from the shoreline, how many cells drain behind a
   // channel — are worth a word only once they are past the cell itself, and
@@ -1465,7 +1476,7 @@
     // continent reads differently from the same colour on a coast.
     // Only worth printing inland: a water cell is by definition at the shore,
     // and a beach cell one step in, so those would repeat the biome name.
-    var inland = current.coastDistance ? cellCount(current.coastDistance[i]) : 0;
+    var inland = fieldCount(current.coastDistance, i);
     if (above && worthNaming(inland)) parts.push(inland + ' from water');
     // The one rim cell a basin spills over. It is the seam between a lake and
     // the river network, so it is worth naming on its own: hovering it shows
@@ -1485,8 +1496,7 @@
       // The catchment behind the channel explains why this cell is a trunk and
       // its neighbour is a tributary: it is the same accumulation number the
       // quantile cut is taken from.
-      var catchment = current.accumulation
-        ? cellCount(current.accumulation[i]) : 0;
+      var catchment = fieldCount(current.accumulation, i);
       parts.push((current.riverMask[i] === 2 ? 'trunk river' : 'river') +
         (worthNaming(catchment) ? ' (' + catchment + ' cells)' : ''));
     }

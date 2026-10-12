@@ -4353,11 +4353,25 @@ assert(spanDefs === 1 && spanUses === 2 && spanInline === 1,
 // read fine beside its own caption, and one hovered cell would then report its
 // two counts on two scales.
 var countDefs = (appSrc.match(/function cellCount\(/g) || []).length;
-var countCalls = (appSrc.match(/cellCount\(current\./g) || []).length;
+var countCalls = (appSrc.match(/cellCount\(/g) || []).length - countDefs;
 var countInline = (appSrc.match(/Math\.round\(current\./g) || []).length;
-assert(countDefs === 1 && countCalls === 2 && countInline === 0,
+assert(countDefs === 1 && countCalls === 1 && countInline === 0,
   'both cell counts in the readout round one way (' + countDefs + ' def, ' +
   countCalls + ' reads, ' + countInline + ' inline)');
+
+// Those two counts are also read out of a field, and either field can be
+// absent on a plain world — which is a zero, not a blank. Written beside each
+// note that fallback could be edited on one side only, so one note would print
+// nothing where the other printed `0`: a note going quiet for reasons its
+// neighbour does not share. Counted as text: one lookup, a read from each note,
+// and the single fallback inside it.
+var fieldDefs = (appSrc.match(/function fieldCount\(field, i\) \{/g) || []).length;
+var fieldCalls = (appSrc.match(/fieldCount\(current\./g) || []).length;
+var fieldFallback = (appSrc.match(/field \? cellCount\(field\[i\]\) : 0;/g) ||
+  []).length;
+assert(fieldDefs === 1 && fieldCalls === 2 && fieldFallback === 1,
+  'both cell counts read their field one way (' + fieldDefs + ' def, ' +
+  fieldCalls + ' reads, ' + fieldFallback + ' fallback)');
 
 // Those same two counts are only worth a word once they are past the cell
 // itself, and the two notes sit side by side in one line — so the threshold is

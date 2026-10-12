@@ -478,8 +478,16 @@ Conventions:
   one grid, so both round through `cellCount(value)`. Written beside each note,
   the pair could be edited apart while each still read fine beside its own
   caption, and one hovered cell would then report its two counts on two scales;
-  the suite counts the one definition, the two reads and asks for no bare
-  `Math.round(current.` left beside them.
+  the suite counts the one definition and asks for no bare `Math.round(current.`
+  left beside them.
+  Those two counts also read their field through one lookup —
+  `fieldCount(field, i)` — since either field can be absent on a plain world,
+  and that case is a zero rather than a blank. Written beside each note the
+  fallback could be edited on one side only, so one note would print nothing
+  where the other printed `0` — a note going quiet for reasons its neighbour
+  does not share. The rounding then lives one level down, read once inside that
+  lookup. The suite counts the definition, the two reads and the single
+  fallback inside it, and asks the rounding for that one read rather than two.
   Both of those counts also go quiet at the same step, through
   `worthNaming(n)` — a distance of one cell, or a catchment of one, says no
   more than the biome name already did. Written beside each note the pair could
