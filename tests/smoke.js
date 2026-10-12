@@ -3491,6 +3491,20 @@ assert(statsListDefs === 1 && statsPushes === 2 && statsChannelRows === 1 &&
   statsPushes + ' pushes, ' + statsChannelRows + ' channel rows, ' +
   statsSplices + ' splices)');
 
+// Two of those rows carry a pair of pixel counts — the grid the world was
+// built on, and the size the export multiplier saves it at. Both print the
+// pair the same way, through one builder, so the separator cannot lose a space
+// on one row while the other kept it: two columns of numbers set by two hands
+// still looks plausible in a screenshot. Counted as one definition, two reads
+// and no spaced separator left beside them. The filename's `WxH` token is a
+// different shape on purpose — it is a filename, and it keeps its own form.
+var sizeDefs = (appSrc.match(/function sizeText\(/g) || []).length;
+var sizeCalls = (appSrc.match(/[^t]sizeText\(/g) || []).length - sizeDefs;
+var sizeSpaced = (appSrc.match(/ \+ ' x ' \+/g) || []).length;
+assert(sizeDefs === 1 && sizeCalls === 2 && sizeSpaced === 1,
+  'both size rows print one pair of counts (' + sizeDefs + ' def, ' +
+  sizeCalls + ' reads, ' + sizeSpaced + ' separators)');
+
 // Every number the sidebar prints has to be reachable from a terminal too,
 // or a record cannot stand in for a screenshot. The two lists are named
 // differently in places — the page says `grid`, the record says `width` — so

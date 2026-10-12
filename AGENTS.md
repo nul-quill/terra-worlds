@@ -405,6 +405,15 @@ Conventions:
   `splice` left beside them. Because the scrape now walks the pushed rows too,
   `channel` is a key of the row-to-record mapping like every other label: the
   overlay a link stores is the overlay the record names.
+  Two of those rows carry a pair of pixel counts — the `grid` the world was
+  built on, and the size the export multiplier saves it at — and both print the
+  pair through one `sizeText(w, h)`, since the separator is the only thing the
+  two rows share. Written beside each row it could lose a space on one of them,
+  which reads as two columns of numbers set by two different hands — close
+  enough to look fine in a screenshot, so the suite counts the definition, the
+  two reads and asks for one spaced separator left in the shell. The `WxH`
+  token of a saved file name is a different shape on purpose and keeps its own
+  form: a filename is not a row of a table.
   An empty seed box is not a fourth seed: it names the generator's own default,
   so the fallback word is that one string in every place a blank field reaches —
   the core's `seed == null` default, the option reader, the `seed` row, the

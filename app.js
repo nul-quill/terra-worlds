@@ -985,15 +985,23 @@
   function renderStats(result) {
     var s = result.stats;
     var factor = exportFactor();
+    // A grid is always read as a pair of counts with a space either side of
+    // the `x`, in the row that names the world and in the row that names the
+    // size it saves at. Written beside each row the separator could lose a
+    // space on one of them, which reads as two columns of numbers set by two
+    // different hands — close enough to look fine in a screenshot.
+    function sizeText(w, h) {
+      return w + ' x ' + h;
+    }
     var rows = [
       // First so a printed page or a screenshot of the sidebar still says
       // which phrase the world came from — the hash is not on paper.
       ['seed', inputs.seed.value || 'terra'],
-      ['grid', result.width + ' x ' + result.height],
+      ['grid', sizeText(result.width, result.height)],
       // The multiplier only ever touches the saved file, so without this row
       // the `e` key would look like it did nothing until a PNG was opened.
-      ['export', factor + 'x \u00b7 ' + result.width * factor + ' x ' +
-        result.height * factor],
+      ['export', factor + 'x \u00b7 ' +
+        sizeText(result.width * factor, result.height * factor)],
       ['land', percentText(s.land)],
       ['water', percentText(s.water)],
       ['lake', percentText(TerraCore.lakeShare(s))],
