@@ -788,6 +788,14 @@ Conventions:
     way, so a pointer resting above or right of the canvas cannot write
     `at=48,-159` while the readout prints `(48, 0)`. Both the clamp and the
     wrap live in those two functions, never in `applyHash()`.
+    Both halves of that pair come back through one `pairOf(text)`, which splits
+    once and hands each half to `num()`. Written as two inline parses they could
+    be edited apart — one keeping the leading digits of a value the other
+    rejected — which would name a cell in one axis and its neighbour in the
+    other, a difference too small to notice beside a crosshair. The shape test
+    stays in `applyHash()`, since the helper only reads what it is given; the
+    suite counts the definition, the one read and asks for no bare `parseInt(`
+    left inside the hash reader.
     Whether the map has a pointer on it at all is one lookup — `pointerAway()`
     — read by the two guards in `render()` and by that reader. The note under
     the map may refill the whole strip only while nothing is hovered, a

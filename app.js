@@ -152,9 +152,19 @@
     var at = fromUrl.at;
     atCell = null;
     if (at && /^\d+,\d+$/.test(at)) {
-      var xy = at.split(',');
-      atCell = [parseInt(xy[0], 10), parseInt(xy[1], 10)];
+      atCell = pairOf(at);
     }
+  }
+
+  // Both halves of a pair in the hash are the same kind of number over the
+  // same count, so one split covers the two: the shape is checked by the
+  // caller, and each half only has to drop the comma it sits beside. Written
+  // out twice at the call site, one half could keep the leading digits of a
+  // value the other rejected, which names a cell in one axis and a different
+  // one in the other — close enough to look like a slightly odd cursor.
+  function pairOf(text) {
+    var xy = String(text).split(',');
+    return [num(xy[0], true), num(xy[1], true)];
   }
 
   var off = document.createElement('canvas');

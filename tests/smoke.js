@@ -3234,6 +3234,20 @@ var staleGuard = (applyBody.match(/hasOption\(el, value\)/g) || []).length;
 assert(staleGuard === 1,
   'a dropdown only takes a key its list offers (' + staleGuard + ')');
 
+// The hovered cell is a pair of indices, so both halves come back through one
+// `pairOf()`: the shape is tested once by the caller and each half then only
+// has to drop the comma beside it. Two inline parses could be edited apart —
+// one keeping the leading digits of a value the other threw away — which names
+// a cell in one axis and a neighbouring cell in the other, a difference too
+// small to notice next to a crosshair. Count the definition, the one read in
+// the hash reader, and ask that no bare parse of a half survive beside them.
+var pairDefs = (appSrc.match(/function pairOf\(/g) || []).length;
+var pairCalls = (applyBody.match(/= pairOf\(/g) || []).length;
+var pairInline = (applyBody.match(/parseInt\(/g) || []).length;
+assert(pairDefs === 1 && pairCalls === 1 && pairInline === 0,
+  'the at= pair is read by one helper (' + pairDefs + ' def, ' +
+  pairCalls + ' call, ' + pairInline + ' inline)');
+
 // The note under the chart is the only place the keyboard is documented, so
 // every single-letter shortcut the shell handles must be named there. Pulled
 // out of the handler with the same comparison it uses, then matched against
