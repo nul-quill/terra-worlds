@@ -1015,13 +1015,15 @@
       ['biomes', String(biomeCount(s.counts))],
       ['contours', s.contourBands + ' land / ' + s.basinBands + ' basin'],
       ['checksum', s.checksum],
-      ['generate', s.ms + ' ms']
     ];
     // When an overlay is on, say which one: the legend below still lists the
-    // biomes, so the two together explain what is being looked at.
+    // biomes, so the two together explain what is being looked at. The row is
+    // pushed in place rather than spliced in after the list is closed, so its
+    // position — between the checksum and the clock — is written once.
     if (result.channelName) {
-      rows.splice(rows.length - 1, 0, ['channel', result.channelName]);
+      rows.push(['channel', result.channelName]);
     }
+    rows.push(['generate', s.ms + ' ms']);
     statsBox.textContent = '';
     rows.forEach(function (row) {
       var dt = document.createElement('dt');

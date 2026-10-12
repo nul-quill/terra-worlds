@@ -395,6 +395,16 @@ Conventions:
   smoke suite reads the row labels out of `renderStats()` and checks that first
   pair plus that no label is reused — two rows with one name would make the
   list ambiguous to read back.
+  That list is one ordered list rather than a list plus a later insert. The two
+  rows appended at its tail — the overlay's name, which only exists when an
+  overlay is on, and the clock that always closes the column — are pushed in the
+  list's own order, since a positional `splice` has to be re-counted every time a
+  row joins it, and a stale index still produces a plausible column with the
+  clock in the middle. The suite therefore scrapes the literal and both pushes
+  together, and asks for one list, two pushes, one `channel` row and no
+  `splice` left beside them. Because the scrape now walks the pushed rows too,
+  `channel` is a key of the row-to-record mapping like every other label: the
+  overlay a link stores is the overlay the record names.
   An empty seed box is not a fourth seed: it names the generator's own default,
   so the fallback word is that one string in every place a blank field reaches —
   the core's `seed == null` default, the option reader, the `seed` row, the

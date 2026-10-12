@@ -3455,6 +3455,15 @@ if (rowsBlock) {
     return m;
   });
 }
+// Two rows are appended by a push rather than written inside the literal — the
+// overlay's name only exists when an overlay is on — so the scrape follows them
+// to keep the list in the order the sidebar shows it.
+if (rowsBlock) {
+  appSrc.replace(/rows\.push\(\['([a-z ]+)'/g, function (m, label) {
+    rowLabels.push(label);
+    return m;
+  });
+}
 var dupeRow = '';
 var seenRow = {};
 rowLabels.forEach(function (label) {
@@ -3466,6 +3475,22 @@ assert(rowLabels.length > 10 && rowLabels[0] === 'seed' &&
   'the stats list opens with the seed (' + rowLabels.slice(0, 3).join('/') +
   ', dupe ' + dupeRow + ')');
 
+// The order of that list is the reading order of the sidebar, so it is written
+// in one place: the literal plus two pushes at its tail, and no positional
+// insert beside them. A `splice` still produces a plausible column — the right
+// rows in the right order — while leaving a second, easily stale account of
+// where the overlay's row belongs. Counted as one list, two pushes, and the
+// single `channel` row those pushes are there for.
+var statsListDefs = (appSrc.match(/var rows = \[/g) || []).length;
+var statsPushes = (appSrc.match(/rows\.push\(\['/g) || []).length;
+var statsChannelRows = (appSrc.match(/\['channel'/g) || []).length;
+var statsSplices = (appSrc.match(/rows\.splice\(/g) || []).length;
+assert(statsListDefs === 1 && statsPushes === 2 && statsChannelRows === 1 &&
+  statsSplices === 0,
+  'the stats rows are one ordered list (' + statsListDefs + ' list, ' +
+  statsPushes + ' pushes, ' + statsChannelRows + ' channel rows, ' +
+  statsSplices + ' splices)');
+
 // Every number the sidebar prints has to be reachable from a terminal too,
 // or a record cannot stand in for a screenshot. The two lists are named
 // differently in places — the page says `grid`, the record says `width` — so
@@ -3474,7 +3499,8 @@ var ROW_TO_RECORD = {
   seed: 'seed', grid: 'width', export: 'scale', land: 'land', water: 'water',
   lake: 'lake', basins: 'lakeBasins', ice: 'ice', rivers: 'rivers',
   relief: 'relief', median: 'median', biomes: 'biomes',
-  contours: 'contourBands', checksum: 'checksum', generate: 'ms'
+  contours: 'contourBands', checksum: 'checksum', channel: 'channel',
+  generate: 'ms'
 };
 var missingField = [];
 rowLabels.forEach(function (label) {
