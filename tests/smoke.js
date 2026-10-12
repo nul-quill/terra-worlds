@@ -4530,6 +4530,19 @@ assert(shadeDefs === 1 && shadeReads === 1 && shadeInline === 2,
   'one pair of bounds holds every shaded pixel (' + shadeDefs + ' def, ' +
   shadeReads + ' read, ' + shadeInline + ' bounds inside it)');
 
+// The two axes of the shade normal are the same comparison — a cell against
+// its neighbour — so the number that turns a height difference into a slope is
+// one measurement too. Written beside each axis it could be edited apart until
+// a ridge read differently sideways than up and down, which still looks like
+// relief at a glance. Counted as one number, its two reads and no bare divisor
+// left beside either axis.
+var slopeDefs = (coreSrc.match(/var SLOPE_SCALE = /g) || []).length;
+var slopeReads = (coreSrc.match(/\) \* SLOPE_SCALE/g) || []).length;
+var slopeInline = (coreSrc.match(/\(xl - xr\) \* 3\.2|\(yu - yd\) \* 3\.2/g) || []).length;
+assert(slopeDefs === 1 && slopeReads === 2 && slopeInline === 0,
+  'one scale turns a height difference into a slope (' + slopeDefs + ' def, ' +
+  slopeReads + ' reads, ' + slopeInline + ' literals)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

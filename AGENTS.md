@@ -319,6 +319,12 @@ Conventions:
   apart until a lit face and its shadow were measured on different scales, which
   still reads as plausible relief; the suite counts the definition, its single
   read and the two bounds living inside it.
+  The two axes of that same pass are measured with one number — `SLOPE_SCALE`,
+  the share a height difference between neighbours becomes in the normal. Both
+  are the same comparison of a cell against its neighbour, so writing the divisor
+  beside each axis could set one sideways and leave the other up and down, which
+  reads as a ridge leaning one way only; the suite counts the one number, its two
+  reads and asks for no bare divisor left beside either axis.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.

@@ -745,8 +745,8 @@
           var xr = hf[i + (x < width - 1 ? 1 : 0)];
           var yu = hf[i - (y > 0 ? width : 0)];
           var yd = hf[i + (y < height - 1 ? width : 0)];
-          var nxg = (xl - xr) * 3.2;
-          var nyg = (yu - yd) * 3.2;
+          var nxg = (xl - xr) * SLOPE_SCALE;
+          var nyg = (yu - yd) * SLOPE_SCALE;
           var len = Math.sqrt(nxg * nxg + nyg * nyg + 1);
           var dot = (nxg * lx + nyg * ly + lz) / len;
           var sh = 0.86 + (dot - 0.56) * hillshade * 1.5;
@@ -935,6 +935,13 @@
   // until the stripes above the shoreline and the ones under it stopped
   // looking like one grid of lines.
   var LINE_WIDTH = 0.10;
+
+  // How steep a height difference between neighbours is. Both axes of the
+  // shade normal are measured with this one number, since the two are the same
+  // comparison of a cell against its neighbour — written beside each axis the
+  // pair could be edited apart until a slope read differently sideways than it
+  // did up and down, which still looks like relief at a glance.
+  var SLOPE_SCALE = 3.2;
 
   // How far below the shoreline a cell has to sit before it stops being a
   // shelf and reads as open ocean. The classification and the hover note are
