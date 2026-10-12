@@ -492,6 +492,13 @@ Conventions:
   one record and asks that none come back empty, with the shape compared
   against the first word of `summary`. A name is the only trace a downloaded
   PNG keeps, and every token in it has to be recoverable from a line of JSON.
+  That name is one ordered list rather than a list plus a later insert. The
+  factor sits between the grid size and the checksum in the list itself, since
+  a positional `splice` has to be re-counted every time a field joins it — and
+  a stale index still produces a plausible file name, with the factor printed
+  after the checksum instead of before it. The suite counts the one list, the
+  factor inside it, the one shape override, the single join and asks for no
+  `splice` left beside them.
   Both forms of that record are checked against each other: without `--json`
   the same object prints as a padded label column, and the suite parses that
   column and asks that every key of the JSON line be a label carrying the same

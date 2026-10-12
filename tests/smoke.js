@@ -2449,6 +2449,26 @@ assert(emptySlot.length === 0 && /\w/.test(nameShape) &&
   [nameShape].concat(nameSlots.map(function (nk) { return pngRec[nk]; }))
     .join('-') + ')');
 
+// That name is one ordered list rather than a list plus a later insert. The
+// multiplier sits between the grid size and the checksum, and a positional
+// `splice` has to be re-counted every time a field joins the list — a stale
+// index still produces a plausible file name, with the factor printed after
+// the checksum instead of before it. Counted as text: one list, the factor
+// inside it, the one shape override, one join, and no splice left beside them.
+var appNameSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var nameListDefs = (appNameSrc.match(/var nameParts = \[/g) || []).length;
+var nameList = (/var nameParts = \[([\s\S]*?)\];/
+  .exec(appNameSrc) || ['', ''])[1];
+var nameFactor = (nameList.match(/exportFactor\(\)/g) || []).length;
+var nameShapeWrites = (appNameSrc.match(/nameParts\[2\] = /g) || []).length;
+var nameJoins = (appNameSrc.match(/nameParts\.join\('-'\)/g) || []).length;
+var nameSplices = (appNameSrc.match(/nameParts\.splice\(/g) || []).length;
+assert(nameListDefs === 1 && nameFactor === 1 && nameShapeWrites === 1 &&
+  nameJoins === 1 && nameSplices === 0,
+  'a saved file name is one ordered list (' + nameListDefs + ' list, ' +
+  nameFactor + ' factor, ' + nameShapeWrites + ' shape, ' + nameJoins +
+  ' join, ' + nameSplices + ' splices)');
+
 // An empty seed box is not a fourth seed: it has to mean the same world as a
 // blank `--seed` from a terminal. The generator names its own fallback, and the
 // shell reads that same word in the two places a blank box reaches — the stats
