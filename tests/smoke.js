@@ -4652,6 +4652,17 @@ assert(mixDefs === 1 && mixReads === 1 && mixRank === 1 && mixMouth === 1,
   'one helper inks a river and its mouth (' + mixDefs + ' def, ' + mixReads +
   ' read, ' + mixRank + ' rank pair, ' + mixMouth + ' mouth pair)');
 
+// Both contour ramps are the leading edge of a band: a fraction of their own
+// count, wrapped by the same subtraction of its floor. Written beside each ramp
+// the wrap could be cut differently while each still looked like evenly spaced
+// lines, which reads as two grids of stripes rather than one.
+var edgeDefs = (coreSrc.match(/function bandEdge\(/g) || []).length;
+var edgeReads = (coreSrc.match(/= bandEdge\(/g) || []).length;
+var edgeInline = (coreSrc.match(/- Math\.floor\(above \* contourBands\)|- Math\.floor\(below \* basinBands\)/g) || []).length;
+assert(edgeDefs === 1 && edgeReads === 2 && edgeInline === 0,
+  'one wrap is the leading edge of a contour band (' + edgeDefs + ' def, ' +
+  edgeReads + ' reads, ' + edgeInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

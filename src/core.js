@@ -102,6 +102,15 @@
     return mouth ? Math.min(0.9, mix + 0.18) : mix;
   }
 
+  // Where a cell sits inside its own contour band: the fraction past the last
+  // line. Both the land ramp and the bathymetric one are that same fraction of
+  // their own count, so the wrap is written once — a pair of copies could be
+  // cut differently while each still looked like a set of evenly spaced lines,
+  // which reads as two grids of stripes rather than one.
+  function bandEdge(t, count) {
+    return t * count - Math.floor(t * count);
+  }
+
   // Does any neighbour of this cell sit on the other side of the shoreline?
   // The coast ink and a river mouth both ask that question of the same four
   // cells, so the sweep is one helper: written beside each call the pair could
@@ -818,14 +827,14 @@
         // count, while a mountainous spill needs the extra lines to read.
         if (contour && h >= seaLevel) {
           var above = (h - seaLevel) / spanFloor(1 - seaLevel);
-          var band = above * contourBands - Math.floor(above * contourBands);
+          var band = bandEdge(above, contourBands);
           if (band < LINE_WIDTH) { r *= 0.88; g *= 0.88; b *= 0.88; }
         } else if (contour && isWater) {
           // Bathymetric lines: the same idea under water, measured from the
           // deepest cell up to the shoreline. Lighter touch than the land
           // lines, since the depth falloff already carries most of the shape.
           var below = (h - minH) / spanFloor(seaLevel - minH);
-          var wband = below * basinBands - Math.floor(below * basinBands);
+          var wband = bandEdge(below, basinBands);
           if (wband < LINE_WIDTH) { r *= 1.10; g *= 1.10; b *= 1.10; }
         }
 

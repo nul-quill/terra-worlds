@@ -320,6 +320,13 @@ Conventions:
   shoreline and the ones under it stopped looking like one grid of lines; the
   suite counts the one number, its two reads and asks for no bare share left
   beside them.
+  Those two ramps compute the leading edge of their band through one
+  `bandEdge(t, count)`, since both are the same fraction of their own count
+  wrapped by the same subtraction of its floor. Written beside each ramp the
+  wrap could be cut differently while each still looked like evenly spaced
+  lines, which reads as two grids of stripes rather than one — so the suite
+  counts the definition, its two reads and asks for no inline wrap left beside
+  them.
   The shade pass in that same group holds a pixel between two bounds through one
   `shadeClamp(sh)`, since the two ends are one decision about how far a slope may
   move its own colour. Written beside each comparison the pair could be edited
