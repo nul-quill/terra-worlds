@@ -3082,6 +3082,19 @@ assert(hoverDefs === 1 && hoverCalls === pointerSites && hoverInner === 4 &&
   'both map paths share one hover sequence (' + hoverDefs + ' def, ' +
   hoverCalls + ' reads, ' + hoverInner + ' steps, ' + hoverBare +
   ' bare sequences)');
+// The readout is filled from two kinds of caller: a pointer event, which it
+// turns into a cell itself, and a pair of indices from the keyboard walk. Both
+// halves of that pair are named parameters, so the reader of one branch cannot
+// drop the second while the other still forwards it — which would print a
+// column with no row beside it. Counted as text: one definition with both
+// parameters, a read from each caller, and no `arguments[]` left beside them.
+var readDefs = (outSrc.match(/function updateReadout\(ev, py\)/g) || []).length;
+var readCalls = (outSrc.match(/updateReadout\(px, py\)/g) || []).length +
+  (outSrc.match(/\n    updateReadout\(ev\);/g) || []).length;
+var readArgs = (outSrc.match(/arguments\[/g) || []).length;
+assert(readDefs === 1 && readCalls === 2 && readArgs === 0,
+  'the readout reads both of its axes from its own parameters (' + readDefs +
+  ' def, ' + readCalls + ' reads, ' + readArgs + ' arguments slots)');
 // Moisture is not a standalone field: the orographic pass folds the relief
 // into it by walking each row west to east, so a cell keeps more of what the
 // air carried when it came in than after the next climb. That direction is the

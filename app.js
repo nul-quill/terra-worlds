@@ -1337,10 +1337,10 @@
     return [clampIndex(xy[0], current.width), clampIndex(xy[1], current.height)];
   }
 
-  function updateReadout(ev) {
+  function updateReadout(ev, py) {
     if (!current) return;
-    var px, py;
-    if (typeof ev === 'number') { px = ev; py = arguments[1]; }
+    var px;
+    if (typeof ev === 'number') { px = ev; }
     else {
       // Backing-store pixels first, then the integer cell size — the same pair
       // of numbers the crosshair is drawn with.

@@ -842,6 +842,16 @@ Conventions:
     desktop link in sync while a phone's drifted, which no one notices with a
     mouse plugged in, so the suite counts the one definition, the two reads,
     the four steps inside it and asks for no bare sequence left beside them.
+    That readout is filled from two kinds of caller — a pointer event, which it
+    turns into a cell itself, and the pair of indices a keyboard walk just
+    clamped — so both halves of that pair are named parameters of
+    `updateReadout(ev, py)` rather than a second value picked out of
+    `arguments`. Written that way the two callers cannot disagree about how many
+    numbers they hand over: a reader that kept one axis and dropped the other
+    would print a column with no row beside it, which is a crosshair sitting on
+    the wrong cell rather than an obvious error. The suite counts the one
+    definition with both parameters, the two reads and asks for no
+    `arguments[` left beside them.
     The bound each of those cells ends with is one lookup too —
     `clampIndex(n, count)` — read by the keyboard walk, the reader that builds
     the `at=` pair and the readout's own pair, twice each since a cell has two
