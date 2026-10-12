@@ -849,6 +849,18 @@
     return n > 1;
   }
 
+  // One axis of the biome lookup, written into the readout. The pair — the
+  // moisture that moved a cell and the temperature that moved it with it — is
+  // two fields of the same shape: a field or nothing, an index, and the same
+  // out-of-a-hundred scaling. Written beside each other the two could be
+  // edited apart, one keeping its own guard and one dropping it, which reads
+  // as a readout that names the wet axis on a world without a moisture field
+  // while staying silent about the cold one. Both go through this lookup so
+  // the pair always arrives together, or not at all.
+  function pushAxis(parts, name, field, i) {
+    if (field) parts.push(name + ' ' + hundred(field[i]));
+  }
+
   // Which way a basin's surplus leaves. The bearing array is indexed by the
   // basin's own number minus one, and two branches of the readout need that
   // pair — a filled cell names its lake and its outflow, the one rim cell that
@@ -1406,12 +1418,8 @@
     // so on open ocean the pair would be two figures that never decided
     // anything, ahead of the notes that do.
     if (above) {
-      if (current.moisture) {
-        parts.push('moist ' + hundred(current.moisture[i]));
-      }
-      if (current.temperature) {
-        parts.push('temp ' + hundred(current.temperature[i]));
-      }
+      pushAxis(parts, 'moist', current.moisture, i);
+      pushAxis(parts, 'temp', current.temperature, i);
     }
     // Distance to the nearest shoreline, so a green patch in the middle of a
     // continent reads differently from the same colour on a coast.

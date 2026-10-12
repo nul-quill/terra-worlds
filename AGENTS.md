@@ -332,6 +332,13 @@ Conventions:
   so beside one the pair is two figures that decided nothing, printed ahead of
   the notes that do. The suite reads the dry branch out of the shell and asks
   that both pushes sit inside it, one each, so neither can also live outside.
+  Those two pushes are one builder too — `pushAxis(parts, name, field, i)` —
+  since both are a field or nothing, one index and the same out-of-a-hundred
+  scaling. Written beside each other the pair could be edited apart, one
+  keeping its own guard and one dropping it, which reads as a readout naming
+  the wet axis on a world whose moisture field is missing while staying silent
+  about the cold one. The suite counts the definition, the two reads, the one
+  scaling inside the helper and asks for no bare push left beside them.
 - `channelize(result, name)` is a separate pass over the already-computed fields
   (`heightField`, `moisture`, `accumulation`, `coastDistance`). It never feeds back
   into `generate`: an overlay must not change the biome map. Stretch each field by

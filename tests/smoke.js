@@ -3125,10 +3125,10 @@ assert(orroBad.length === 0,
 // numbers inside it, then count each push so neither can also live outside.
 var axesAt = outSrc.indexOf('if (above) {');
 var axesSrc = axesAt < 0 ? '' : outSrc.slice(axesAt, axesAt + 420);
-var moistPush = (outSrc.match(/parts\.push\('moist '/g) || []).length;
-var tempPush = (outSrc.match(/parts\.push\('temp '/g) || []).length;
-assert(axesAt >= 0 && axesSrc.indexOf("moist ") >= 0 &&
-  axesSrc.indexOf("temp ") >= 0 && moistPush === 1 && tempPush === 1,
+var moistPush = (outSrc.match(/pushAxis\(parts, 'moist'/g) || []).length;
+var tempPush = (outSrc.match(/pushAxis\(parts, 'temp'/g) || []).length;
+assert(axesAt >= 0 && axesSrc.indexOf("'moist'") >= 0 &&
+  axesSrc.indexOf("'temp'") >= 0 && moistPush === 1 && tempPush === 1,
   'the biome axes print where they are used (' + moistPush + ', ' + tempPush +
   ', window ' + axesSrc.length + ')');
 
@@ -4292,6 +4292,21 @@ var nameInline = (appSrc.match(/inland > 1|catchment > 1/g) || []).length;
 assert(nameDefs === 1 && nameCalls === 2 && nameInline === 0,
   'both cell counts in the readout go quiet at one step (' + nameDefs +
   ' def, ' + nameCalls + ' reads, ' + nameInline + ' inline)');
+
+// The two axes of the biome lookup — moisture and temperature — are printed by
+// the same three steps: a field or nothing, the same index, the same scaling
+// out of a hundred. Written beside each other the pair could be edited apart,
+// one keeping its guard and one dropping it, which reads as a readout naming
+// one axis on a world whose field is missing while staying silent about the
+// other. Counted as text: one definition, a read from each axis, one scaling
+// inside the helper, and no bare push left beside them.
+var axisDefs = (appSrc.match(/function pushAxis\(/g) || []).length;
+var axisCalls = (appSrc.match(/pushAxis\(parts, '/g) || []).length;
+var axisScale = (appSrc.match(/parts\.push\(name \+ ' ' \+ hundred\(/g) || []).length;
+var axisInline = (appSrc.match(/parts\.push\('(moist|temp) '/g) || []).length;
+assert(axisDefs === 1 && axisCalls === 2 && axisScale === 1 && axisInline === 0,
+  'both biome axes in the readout print one way (' + axisDefs + ' def, ' +
+  axisCalls + ' reads, ' + axisScale + ' scaling, ' + axisInline + ' inline)');
 
 // A pointer is mapped onto the canvas by one ratio: the buffer's width over
 // the layout width. Both canvases need that pair — the map turns it into
