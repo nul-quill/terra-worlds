@@ -5339,6 +5339,22 @@ assert(fadeDefs === 1 && fadeReads === 3 && fadeInside === 1 &&
   'every faded channel is one weighted sum (' + fadeDefs + ' def, ' +
   fadeReads + ' reads, ' + fadeInside + ' inside, stray ' + fadeInline + ')');
 
+// Two rows of the stats list are nothing but a count of things on this world:
+// how many basins the lake cover is split into, how many classes it wears.
+// Neither carries a unit or a second figure, so both are the number as text —
+// one conversion for the pair. Written beside each row that conversion could
+// gain a pad on one of them, which reads as two columns of counts set by two
+// different hands: close enough to look right next to their own labels, so the
+// suite counts the definition, the two reads and asks for no bare conversion
+// of either count left beside them.
+var cntDefs = (appSrc.match(/function countText\(/g) || []).length;
+var cntReads = (appSrc.match(/countText\(/g) || []).length - cntDefs;
+var cntInline = (appSrc.match(
+  /\['(?:basins|biomes)', String\(/g) || []).length;
+assert(cntDefs === 1 && cntReads === 2 && cntInline === 0,
+  'both plain counts print through one builder (' + cntDefs + ' def, ' +
+  cntReads + ' reads, ' + cntInline + ' inline)');
+
 // The patch itself is held inside the grid on both axes, and each axis is a
 // bound of the same shape: a cell minus half the patch, kept off the negative
 // edge and off the far one. Written twice the pair could be edited apart, and

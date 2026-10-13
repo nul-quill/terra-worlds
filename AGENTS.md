@@ -584,6 +584,12 @@ Conventions:
   numbers set by two different hands. The suite counts the definition, the two
   reads and asks that the only spaced slash in the shell sit inside the helper;
   the two row probes now look for that lookup rather than for a literal slash.
+  Two more rows are a plain count of things on the world — `basins` and
+  `biomes` — and both print through one `countText(n)`, since neither carries a
+  unit or a second figure. Written beside each row the conversion could gain a
+  pad on one of them, which reads as two columns of counts set by two different
+  hands, so the suite counts the definition, the two reads and asks for no bare
+  conversion of either count left beside them.
   An empty seed box is not a fourth seed: it names the generator's own default,
   so the fallback lives in one lookup — `seedPhrase()` — read by every place a
   blank field reaches: the option reader, the `seed` row, the second slot of a

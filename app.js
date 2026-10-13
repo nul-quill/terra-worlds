@@ -1179,6 +1179,15 @@
     function splitText(first, firstWord, second, secondWord) {
       return first + ' ' + firstWord + ' / ' + second + ' ' + secondWord;
     }
+    // Two other rows are a plain count of things on this world: how many
+    // separate basins the lake cover is split into, how many classes it wears.
+    // Neither needs a unit or a second figure, so both are just the number as
+    // text. Written beside each row the conversion could gain a pad or a
+    // prefix on one of them, which reads as two columns of counts set by two
+    // different hands — close enough to look fine beside their own labels.
+    function countText(n) {
+      return String(n);
+    }
     var rows = [
       // First so a printed page or a screenshot of the sidebar still says
       // which phrase the world came from — the hash is not on paper.
@@ -1192,7 +1201,7 @@
       ['water', percentText(s.water)],
       ['lake', percentText(TerraCore.lakeShare(s))],
       // How many separate basins that lake cover is split into.
-      ['basins', String(s.lakeBasins)],
+      ['basins', countText(s.lakeBasins)],
       ['ice', percentText(s.ice)],
       // Both halves of the network, same split as the `contours` row: the
       // weight of a line on the map comes from this pair, so the numbers that
@@ -1206,7 +1215,7 @@
       // Half the grid sits below this height, which is what separates a broad
       // plateau from a plain with one peak when both share a relief range.
       ['median', unitText(hundred(s.median))],
-      ['biomes', String(biomeCount(s.counts))],
+      ['biomes', countText(biomeCount(s.counts))],
       ['contours', splitText(s.contourBands, 'land', s.basinBands, 'basin')],
       ['checksum', s.checksum],
     ];
