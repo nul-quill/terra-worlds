@@ -1243,9 +1243,18 @@ Conventions:
   lookup only forwards to — the same reason `tickStep` and `binCount` live in
   the core. Beside it is `TerraCore.histogram(result, bins)`, the whole binning
   pass: it returns `{bins, hist, peak, lo, span}` over the world's own min/max,
-  and `drawHistogram()` keeps only the pixel geometry on top of that. The CLI
-  record reads its `bins` and `peak` from the same call at the sidebar's 240px
-  width, so a terminal can redraw the silhouette from JSON alone; the suite
+  and `drawHistogram()` keeps only the pixel geometry on top of that.
+  The other direction — a bin slot back into a height — is one `binEdge(lo,
+  span, bins, k)` too, read three times: the two ends of a hovered bar's range
+  and the middle of a bar where its own colour is compared against the
+  shoreline. Written beside each reader the scaling could be edited apart, which
+  lets a bar be coloured by one range while its caption names another — both
+  still read as a plausible silhouette beside their own labels, so the suite
+  counts the definition, its three reads and asks for no bare division of a bin
+  slot left beside them.
+  The CLI record reads its `bins` and `peak` from the same call at the
+  sidebar's 240px width, so a terminal can redraw the silhouette from JSON
+  alone; the suite
   counts one definition, one call from the shell, and asks that the bars sum to
   `stats.pixels` and match the record on one world.
   Summing to the grid only fixes the frame, so the suite also re-tallies each

@@ -4820,6 +4820,21 @@ assert(svDefs === 1 && svReads === 2 && svLog === 1 && svInline === 0,
   'both overlay readers compress one way (' + svDefs + ' def, ' + svReads +
   ' reads, ' + svLog + ' log, ' + svInline + ' inline)');
 
+// Inside the chart, a bin's two ends and the middle of a bar are the same
+// division of a bin slot by the count, scaled by the range. Three readers need
+// that pair: the caption of a hovered bar, and the comparison that picks a
+// bar's own colour against the shoreline. Written beside each reader the
+// scaling could be edited apart, which lets a bar be coloured by one range
+// while its caption names another — both still read as a plausible silhouette
+// beside their own labels, so the suite counts the definition, its three reads
+// and asks for no bare division of a bin slot left beside them.
+var beDefs = (appSrc.match(/function binEdge\(/g) || []).length;
+var beReads = (appSrc.match(/binEdge\(/g) || []).length - beDefs;
+var beInline = (appSrc.match(/\+ 0\.5\) \/ BINS \* span|st\.lo \+ /g) || []).length;
+assert(beDefs === 1 && beReads === 3 && beInline === 0,
+  'every bin position in the chart divides one way (' + beDefs + ' def, ' +
+  beReads + ' reads, ' + beInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

@@ -1280,7 +1280,7 @@
       // Leave a strip along the bottom for the two corner labels, so the
       // tallest bar never sits on top of the numbers.
       var bh = peak ? hist[i] / peak * (h - STRIP) : 0;
-      var c = lo + (i + 0.5) / BINS * span < result.seaLevel ? wet : dry;
+      var c = binEdge(lo, span, BINS, i + 0.5) < result.seaLevel ? wet : dry;
       var on = only < 0 ? (!member || member[i]) : i === only;
       var keep = on ? 1 : 0.45;
       // A dimmed bar is the palette's own triple washed toward the page's
@@ -1626,6 +1626,17 @@
     return TerraCore.binOf(h, lo, span, bins);
   }
 
+  // Where a position inside the bin count falls in the height range. Three
+  // readers need that: the two ends of a hovered bar's range, and the middle of
+  // a bar where its own colour is compared against the shoreline. Each is the
+  // same division of a bin slot by the count, scaled by the range. Written
+  // beside each reader the scaling could be edited apart, which lets a bar be
+  // coloured by one range while its caption names another — both still read as
+  // a plausible silhouette beside their own labels.
+  function binEdge(lo, span, bins, k) {
+    return lo + k / bins * span;
+  }
+
   function histBinFor(h) {
     if (!histState) return -1;
     return binIndex(h, histState.lo, histState.span, histState.bins);
@@ -1639,8 +1650,8 @@
   function bandSummary(bin) {
     if (!histState) return null;
     var st = histState;
-    var from = st.lo + bin / st.bins * st.span;
-    var to = st.lo + (bin + 1) / st.bins * st.span;
+    var from = binEdge(st.lo, st.span, st.bins, bin);
+    var to = binEdge(st.lo, st.span, st.bins, bin + 1);
     var tally = {};
     var biome = st.result.biome;
     if (biome) {
