@@ -171,6 +171,20 @@ function entryName(list, entry) {
   return entry.key || list[0].label;
 }
 
+// Every name a list offers, on one line. The four lists the usage text echoes
+// are that shape — a name per entry, in the order the page cycles them — so
+// the comma and the walk are written once. Each list still decides its own
+// names through `entryName`, which is what lets a keyless entry fall back to
+// its list's own label rather than to a word spelled out beside one print.
+// Written beside each echo the pair could be edited apart, which reads as two
+// listings of one list: a usage line naming `plain` above a column naming
+// `biome` for one and the same overlay.
+function nameList(list) {
+  return list.map(function (entry) {
+    return entryName(list, entry);
+  }).join(', ');
+}
+
 function toPpm(img) {
   var out = 'P6\n' + img.width + ' ' + img.height + '\n255\n';
   var chars = new Array(img.width * img.height * 3);
@@ -321,18 +335,10 @@ if (opts.help) {
   console.log('       keeps world.ppm and [--palette --json] the default');
   console.log('       scheme, both still printing JSON');
   console.log('palettes: ' + Object.keys(core.palettes).join(', '));
-  console.log('channels: ' + core.channels.map(function (c) {
-    return entryName(core.channels, c);
-  }).join(', '));
-  console.log('lights: ' + core.lights.map(function (lt) {
-    return lt.key;
-  }).join(', '));
-  console.log('grids: ' + core.grids.map(function (gr) {
-    return entryName(core.grids, gr);
-  }).join(', '));
-  console.log('scales: ' + core.scales.map(function (sc) {
-    return sc.key;
-  }).join(', '));
+  console.log('channels: ' + nameList(core.channels));
+  console.log('lights: ' + nameList(core.lights));
+  console.log('grids: ' + nameList(core.grids));
+  console.log('scales: ' + nameList(core.scales));
 } else if (opts.grids) {
   // The column counts the grid dropdown pins, in the order the `w` key walks
   // them. Each is a --width that keeps a world's cell count stable across

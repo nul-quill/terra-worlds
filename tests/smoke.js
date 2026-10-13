@@ -1282,11 +1282,25 @@ assert(rowDefs === 1 && rowReads >= 6 && rowLeft === 1,
 // overlay usage line, the two summary lines and the two listing rows), and no
 // spelling of the fallback left beside them.
 var nameDefs = (rowSrc.match(/function entryName\(/g) || []).length;
-var nameReads = (rowSrc.match(/entryName\(core\./g) || []).length;
+var nameReads = (rowSrc.match(/entryName\(core\.|nameList\(core\./g) || []).length;
 var nameLeft = (rowSrc.match(/\|\| '(biome|auto)'/g) || []).length;
-assert(nameDefs === 1 && nameReads === 5 && nameLeft === 0,
+assert(nameDefs === 1 && nameReads === 7 && nameLeft === 0,
   'one lookup names the keyless entry of a list (' + nameDefs + ' def, ' +
   nameReads + ' reads, ' + nameLeft + ' leftover words)');
+
+// The usage text also echoes four whole lists on one line each — overlays,
+// bearings, column counts and export factors. That walk is one builder too,
+// since every list is a name per entry joined by one separator. Written beside
+// each echo the pair could be edited apart while each listing still looked
+// right alone — a usage line naming `plain` above a column naming `biome` for
+// one and the same overlay — so the suite counts the definition, the four
+// echoes and asks for no inline walk of a shared list left beside them.
+var echoDefs = (rowSrc.match(/function nameList\(/g) || []).length;
+var echoReads = (rowSrc.match(/nameList\(core\./g) || []).length;
+var echoInline = (rowSrc.match(/: ' \+ core\.(channels|lights|grids|scales)/g) || []).length;
+assert(echoDefs === 1 && echoReads === 4 && echoInline === 0,
+  'one builder joins the name list under --help (' + echoDefs + ' def, ' +
+  echoReads + ' echoes, ' + echoInline + ' inline walks)');
 
 // Every shared list is also what a URL hash is matched against, so its keys
 // must be unique: two options sharing a key would make a restored link depend

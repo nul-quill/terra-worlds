@@ -1619,6 +1619,14 @@ Conventions:
   right alone — a usage line naming `plain` above a column naming `biome` for
   one and the same overlay — so the suite counts the definition, the five reads
   and asks for no leftover word beside them.
+  Four of those prints — the whole-list echoes under `--help` (overlays,
+  bearings, column counts, export factors) — reach the word through one walk,
+  `nameList(list)`, since each is a name per entry joined by one separator.
+  Both halves are counted as a pair, seven reads in all, because a second
+  inline `map` beside one echo could keep a name that its own listing row
+  would not print. The `palettes` echo stays outside that pair on purpose: its
+  list is a map of schemes, so its names come from `Object.keys` rather than
+  from entries.
   Each curve must also be its own picture: the suite renders one seed through
   every entry and compares the checksums, so a new curve that only re-skims an
   existing one loses its slot in the `h` cycle rather than diluting it.
