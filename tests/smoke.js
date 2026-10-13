@@ -5355,6 +5355,20 @@ assert(cntDefs === 1 && cntReads === 2 && cntInline === 0,
   'both plain counts print through one builder (' + cntDefs + ' def, ' +
   cntReads + ' reads, ' + cntInline + ' inline)');
 
+// A legend row is three spans — swatch, name, share — and each is the same
+// shape: a span with its own class, the name being the one that carries none.
+// Written beside each part the creation could gain a class on one of them
+// only, which reads as a row whose swatch stops matching its column: close
+// enough to a tidy row that nobody looks twice. Counted as text: one
+// definition, three reads, and no bare span left beside them.
+var spanDefs = (appSrc.match(/function rowSpan\(/g) || []).length;
+var spanReads = (appSrc.match(/rowSpan\('/g) || []).length
+  + (appSrc.match(/rowSpan\(null\)/g) || []).length;
+var spanInline = (appSrc.match(/createElement\('span'\)/g) || []).length;
+assert(spanDefs === 1 && spanReads === 3 && spanInline === 1,
+  'every legend span is built by one helper (' + spanDefs + ' def, ' +
+  spanReads + ' reads, ' + spanInline + ' inside)');
+
 // The patch itself is held inside the grid on both axes, and each axis is a
 // bound of the same shape: a cell minus half the patch, kept off the negative
 // edge and off the far one. Written twice the pair could be edited apart, and

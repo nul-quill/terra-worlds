@@ -1452,6 +1452,13 @@ Conventions:
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.
+  Each row is three spans — a swatch, a name, a share — and all three are one
+  shape: a span with its own class, the name being the one that carries none.
+  That shape is one builder — `rowSpan(cls)` — read three times, since writing
+  the creation beside each part could gain a class on one of them only, which
+  reads as a swatch that no longer matches its own column. The suite counts the
+  definition, the three reads and asks that the only `createElement('span')`
+  left in the shell be the one inside that helper.
   The row order comes from `legendKeys(result)`, which forwards to
   `TerraCore.legendOrder(result)` — classes present on this world, biggest
   first. The `k` cycle walks that same array, so the key follows the

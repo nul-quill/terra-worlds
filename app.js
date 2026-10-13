@@ -1060,20 +1060,28 @@
       pinned = pinned === key ? null : key;
       applyPin();
     }
+    // Every legend row is three spans: a swatch, a name, a share. Each is a
+    // span with a class on it — the name is the one that carries none — so the
+    // shape of the node is written once and each read names its own class.
+    // Written beside each part the creation could gain a class on one of them
+    // only, which reads as a row whose swatch stops matching its own column.
+    function rowSpan(cls) {
+      var s = document.createElement('span');
+      if (cls) s.className = cls;
+      return s;
+    }
     legendList.textContent = '';
     keys.forEach(function (key) {
         var li = document.createElement('li');
         // The key is kept on the element so a rebuild can find the same row
         // again and hand the caret back after a keyboard toggle.
         li.setAttribute('data-key', key);
-        var sw = document.createElement('span');
-        sw.className = 'sw';
+        var sw = rowSpan('sw');
         var c = result.palette.colors[key] || result.palette.colors.grass;
         sw.style.background = rgba(c, 1);
-        var label = document.createElement('span');
+        var label = rowSpan(null);
         label.textContent = biomeLabel(key);
-        var pct = document.createElement('span');
-        pct.className = 'pct';
+        var pct = rowSpan('pct');
         pct.textContent = shareText(result.stats, key);
         li.appendChild(sw); li.appendChild(label); li.appendChild(pct);
         // Hovering a row isolates that class on the map; leaving restores it.
