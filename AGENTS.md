@@ -415,6 +415,14 @@ Conventions:
   replace it with a BFS from the coast.
   The BFS is still the oracle: the smoke suite walks the same field with a
   plain FIFO queue and compares every cell, so the sweeps cannot drift from it.
+  Each of those two sweeps reads a neighbour as that neighbour's own distance
+  plus one step, and all four reads go through one `stepFrom(field, j)`, since
+  every cell of the grid is reached by that one shape. Written beside each
+  comparison the step could grow on one of them, which leaves a cell a column
+  further from the shore than the neighbour it was reached from — still a
+  plausible distance field beside its own caption, so the suite counts the
+  definition, its eight reads and asks for no bare neighbour-plus-one left in
+  either sweep.
   The field itself is unclamped — the furthest cell grows with the grid, which
   the smoke suite checks between a small and a large world — while the biome
   drying reads it through a capped `min(INLAND_CAP, dist) / INLAND_CAP`. Keep

@@ -521,6 +521,14 @@
     // is the cheapest way to tell a coast from a continental interior. Two
     // sweeps over the grid (forward, then backward) give a good approximation
     // of the city-block distance in O(n), with no queue.
+    // Each sweep reads a neighbour as that neighbour's own distance plus one
+    // step, and all four of those reads are the same shape. Written beside each
+    // comparison the step could grow on one of them, which leaves a cell one
+    // column further from the shore than the neighbour it was reached from —
+    // still a plausible distance field, so the shape is held in one place.
+    function stepFrom(field, j) {
+      return field[j] + 1;
+    }
     var dist = new Float32Array(n);
     var BIG = width + height;
     for (i = 0; i < n; i++) dist[i] = hf[i] < seaLevel ? 0 : BIG;
@@ -528,8 +536,8 @@
       for (x = 0; x < width; x++) {
         i = y * width + x;
         var dmin = dist[i];
-        if (x > 0 && dist[i - 1] + 1 < dmin) dmin = dist[i - 1] + 1;
-        if (y > 0 && dist[i - width] + 1 < dmin) dmin = dist[i - width] + 1;
+        if (x > 0 && stepFrom(dist, i - 1) < dmin) dmin = stepFrom(dist, i - 1);
+        if (y > 0 && stepFrom(dist, i - width) < dmin) dmin = stepFrom(dist, i - width);
         dist[i] = dmin;
       }
     }
@@ -537,8 +545,8 @@
       for (x = width - 1; x >= 0; x--) {
         i = y * width + x;
         dmin = dist[i];
-        if (x < width - 1 && dist[i + 1] + 1 < dmin) dmin = dist[i + 1] + 1;
-        if (y < height - 1 && dist[i + width] + 1 < dmin) dmin = dist[i + width] + 1;
+        if (x < width - 1 && stepFrom(dist, i + 1) < dmin) dmin = stepFrom(dist, i + 1);
+        if (y < height - 1 && stepFrom(dist, i + width) < dmin) dmin = stepFrom(dist, i + width);
         dist[i] = dmin;
       }
     }

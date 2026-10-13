@@ -4749,6 +4749,20 @@ assert(winDefs === 1 && winReads === 2 && winBounds === 1 && winInline === 0,
   'both min filters take their window from one span (' + winDefs + ' def, ' +
   winReads + ' reads, ' + winBounds + ' bound, ' + winInline + ' inline)');
 
+// The two chamfer sweeps that measure distance to the shoreline each read a
+// neighbour as that neighbour's own distance plus one step, and there are four
+// such reads — two per sweep. Written beside each comparison the step could
+// grow on one of them, which leaves a cell one column further from the shore
+// than the neighbour it was reached from: still a plausible distance field at a
+// glance, so the suite counts the one helper, its eight reads and asks that no
+// bare neighbour-plus-one comparison be left in either sweep.
+var stepDefs = (coreSrc.match(/function stepFrom\(/g) || []).length;
+var stepReads = (coreSrc.match(/stepFrom\(dist, /g) || []).length;
+var stepInline = (coreSrc.match(/dist\[i [-+] (1|width)\] \+ 1/g) || []).length;
+assert(stepDefs === 1 && stepReads === 8 && stepInline === 0,
+  'both chamfer sweeps step from a neighbour one way (' + stepDefs + ' def, ' +
+  stepReads + ' reads, ' + stepInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division
