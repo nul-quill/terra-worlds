@@ -5301,6 +5301,24 @@ assert(nearDefs === 1 && nearReads === 3 && nearInline === 1,
   'every blit keeps its cells through one lookup (' + nearDefs + ' def, ' +
   nearReads + ' reads, ' + nearInline + ' inside)');
 
+// Every mark in the chart that has to be nudged to fit asks one question: how
+// wide is this string. Seven reads do that — the shrink loop behind a hovered
+// caption, the sea figure beside its rule, the high-end corner label, the three
+// measurements of the median squeeze and the pill grown around a caption. Two
+// shapes of the same measurement could be edited apart, which lets a label be
+// placed by one metric while its own box is sized by another: a caption a pixel
+// off its pill still reads as a caption. Counted as text: one definition, seven
+// reads, and the only call to the context left inside that helper.
+var twDefs = (appSrc.match(/function textWidth\(/g) || []).length;
+var twReads = (appSrc.match(/textWidth\(hc, /g) || []).length - twDefs;
+var twBody = (/function textWidth\(hc, s\)([\s\S]*?)\n  \}/
+  .exec(appSrc) || [])[1] || '';
+var twInside = (twBody.match(/hc\.measureText\(/g) || []).length;
+var twOutside = (appSrc.match(/hc\.measureText\(/g) || []).length - twInside;
+assert(twDefs === 1 && twReads === 7 && twInside === 1 && twOutside === 0,
+  'every chart label is measured through one lookup (' + twDefs + ' def, ' +
+  twReads + ' reads, ' + twInside + ' inside, stray ' + twOutside + ')');
+
 // The patch itself is held inside the grid on both axes, and each axis is a
 // bound of the same shape: a cell minus half the patch, kept off the negative
 // edge and off the far one. Written twice the pair could be edited apart, and

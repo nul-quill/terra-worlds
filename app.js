@@ -857,6 +857,17 @@
     return ((value - lo) / span) * w;
   }
 
+  // The width of a piece of text, as the chart's own context measures it. Every
+  // mark that has to be nudged to fit — a right-hand corner label, a tick that
+  // would crowd it, a pill grown around a caption — asks that one question, and
+  // the answer is always the width of the same measurement. Written beside each
+  // site the pair could be edited apart, which lets a label be placed by one
+  // metric while its own box is sized by another: a caption a pixel off its
+  // pill still reads as a caption, so all seven reads go through here.
+  function textWidth(hc, s) {
+    return hc.measureText(s).width;
+  }
+
   // Shrink a list of short fields until its text fits a given width, dropping
   // the least useful field first. The hovered-bin label is the only row that
   // has to do this — a narrow sidebar cannot hold range, count and class at
@@ -871,7 +882,7 @@
       if (parts[n]) keep.push(parts[n]);
     }
     var label = keep.join('  ');
-    while (keep.length > 1 && hc.measureText(label).width > limit) {
+    while (keep.length > 1 && textWidth(hc, label) > limit) {
       keep.pop();
       label = keep.join('  ');
     }
@@ -1354,7 +1365,7 @@
     // Flipped to the left of the line when it would otherwise run off the edge.
     hc.font = '9px ' + FONT;
     var seaLabel = 'sea ' + hundred(result.seaLevel);
-    var seaTw = hc.measureText(seaLabel).width;
+    var seaTw = textWidth(hc, seaLabel);
     hc.fillStyle = rgba(INK, 0.75);
     // The gap between the rule and its number is one measure: it is the lead
     // on whichever side the label lands, and twice that lead is what the flip
@@ -1376,7 +1387,7 @@
     // off the others, which reads as two rows of numbers rather than one.
     var BASE = 1;
     hc.fillText(loLabel, GUT, h - BASE);
-    hc.fillText(hiLabel, w - GUT - hc.measureText(hiLabel).width, h - BASE);
+    hc.fillText(hiLabel, w - GUT - textWidth(hc, hiLabel), h - BASE);
     // The median gets a taller mark than the decade ticks: it is the one
     // number that says where most of the grid actually sits, so it is worth
     // seeing against the bars without reading the stats list.
@@ -1391,9 +1402,9 @@
       // how high that is, which is the difference between a shape and a
       // measurement. Kept inside the corner labels so the strip never overlaps.
       var medLabel = 'median ' + hundred(result.stats.median);
-      var medTw = hc.measureText(medLabel).width;
-      var loTw = hc.measureText(loLabel).width;
-      var hiTw = hc.measureText(hiLabel).width;
+      var medTw = textWidth(hc, medLabel);
+      var loTw = textWidth(hc, loLabel);
+      var hiTw = textWidth(hc, hiLabel);
       // Three labels share that strip, so the gap between two of them is one
       // number: it pushes the median clear of the low-end figure, pulls it back
       // from the high end, and is multiplied up when the row is measured to see
@@ -1423,7 +1434,7 @@
       var parts = [rangeText(sum)]
         .concat(bandFields(sum));
       var label = fitLabel(hc, parts, w - GUT * 2);
-      var tw = hc.measureText(label).width;
+      var tw = textWidth(hc, label);
       // The box behind the caption is the label plus one padding on every
       // side: the fill starts that far left of the text and grows by twice
       // itself, so the ink never touches the edge of its own pill. Written per

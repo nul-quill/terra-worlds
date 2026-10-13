@@ -1796,6 +1796,14 @@ Conventions:
   another, which reads as a caption that truncates a field too early. The
   suite counts the definition, the single read and asks that both joins be the
   only ones in the shell.
+  Every one of those labels first asks how wide its string is, and that question
+  is one lookup too — `textWidth(hc, s)` — read seven times: the shrink loop, the
+  sea figure beside its rule, the high-end corner label, the three measurements of
+  the median squeeze and the pill grown around a caption. Two shapes of the same
+  measurement could be edited apart, which lets a label be placed by one metric
+  while its own box is sized by another — a caption a pixel off its pill still
+  reads as a caption, so the suite counts the definition, the seven reads and asks
+  that the only call to the context sit inside the helper.
   Inside that same pass the box ink is set once — a stroke style plus the
   border width, a quarter of a cell and never less than one pixel — and the
   hairlines are drawn between a `save()` and a `restore()`, which puts that
