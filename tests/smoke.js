@@ -5261,15 +5261,30 @@ assert(edgeDefs === 1 && edgeReads === 4 && edgeLiterals === 0,
 // that grows while the picture inside it stays put. Counted as text: one
 // definition of each, one read of each, and no bare fraction left beside them.
 var panelDefs = (appSrc.match(/var PANEL = \d/g) || []).length;
-var panelReads = (appSrc.match(/\* PANEL\)/g) || []).length;
+var panelReads = (appSrc.match(/, PANEL\)/g) || []).length;
 var padDefs = (appSrc.match(/var PAD = \d/g) || []).length;
-var padReads = (appSrc.match(/\* PAD\)/g) || []).length;
+var padReads = (appSrc.match(/, PAD\)/g) || []).length;
 var fracInline = (appSrc.match(/\* 0\.28\)|\* 0\.10\)/g) || []).length;
 assert(panelDefs === 1 && panelReads === 1 && padDefs === 1 && padReads === 1 &&
   fracInline === 0,
   'two named fractions size the magnifier (' + panelDefs + '/' + padDefs +
   ' defs, ' + panelReads + '/' + padReads + ' reads, ' + fracInline +
   ' literals)');
+
+// Both of those fractions reach the panel through one rounded share: the box
+// over the shorter canvas edge, and its padding over that box. Written beside
+// each call the pair could be edited apart — one truncating while the other
+// rounds — which reads as a mat whose padding no longer scales with the panel it
+// frames, still a plausible panel at a glance. So the suite counts the one
+// definition, its two reads, the single rounding inside it and asks for no bare
+// rounded product of a measurement and a share left beside them.
+var boxDefs = (appSrc.match(/function boxScale\(/g) || []).length;
+var boxReads = (appSrc.match(/= boxScale\(/g) || []).length;
+var boxRound = (appSrc.match(/return Math\.round\(px \* share\)/g) || []).length;
+var boxInline = (appSrc.match(/Math\.round\(Math\.min\(view\.width|Math\.round\(size \*/g) || []).length;
+assert(boxDefs === 1 && boxReads === 2 && boxRound === 1 && boxInline === 0,
+  'both magnifier boxes are a rounded share (' + boxDefs + ' def, ' + boxReads +
+  ' reads, ' + boxRound + ' round, ' + boxInline + ' inline)');
 
 // The patch itself is held inside the grid on both axes, and each axis is a
 // bound of the same shape: a cell minus half the patch, kept off the negative

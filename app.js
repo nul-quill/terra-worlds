@@ -683,6 +683,16 @@
     return pos * 2 > extent ? pad : room - pad;
   }
 
+  // A box measured as a share of a bigger one. Two measurements of the
+  // magnifier are that shape: the panel over the shorter canvas edge, and its
+  // padding over the panel. Written beside each call the pair could be edited
+  // apart — one truncating while the other rounds — which reads as a mat whose
+  // padding no longer scales with the panel it frames, still a plausible panel
+  // at a glance.
+  function boxScale(px, share) {
+    return Math.round(px * share);
+  }
+
   function drawInset(px, py) {
     // How many cells the panel shows. The same number is the width of the
     // source block read from the offscreen copy and the divisor behind the
@@ -701,8 +711,8 @@
     // stays the same size.
     var PANEL = 0.28;
     var PAD = 0.10;
-    var size = Math.round(Math.min(view.width, view.height) * PANEL);
-    var pad = Math.round(size * PAD);
+    var size = boxScale(Math.min(view.width, view.height), PANEL);
+    var pad = boxScale(size, PAD);
     var dx = farHalf(px, current.width, view.width - size, pad);
     var dy = farHalf(py, current.height, view.height - size, pad);
     ctx.save();

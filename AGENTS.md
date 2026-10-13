@@ -1419,6 +1419,14 @@ Conventions:
   which reads as a border that grows while the picture inside it stays put, so the
   suite counts one definition and one read of each and asks for no bare fraction
   left beside them.
+  Both of those fractions reach the panel through one rounded share —
+  `boxScale(px, share)` — since the box over the shorter canvas edge and its
+  padding over that box are the same shape of measurement. Written beside each
+  call the pair could be edited apart, one truncating while the other rounds,
+  which reads as a mat whose padding no longer scales with the panel it frames —
+  still a plausible panel at a glance, so the suite counts the definition, its
+  two reads, the single rounding inside it and asks for no bare rounded product
+  of a measurement and a share left beside them.
   Which half of the canvas that panel sits in is one lookup as well —
   `farHalf(pos, extent, room, pad)` — read once per axis, since the panel has a
   column to place and a row. Written beside each axis the comparison could be
