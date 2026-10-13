@@ -1086,12 +1086,26 @@
       if (cls) s.className = cls;
       return s;
     }
+    // A row answers to two kinds of caret the same way: whatever puts the
+    // pointer or the focus on it previews that class, whatever takes it away
+    // gives the preview back. Four listeners, two shapes — written beside each
+    // other the pair could be edited apart, which reads as a row that keeps a
+    // faded map after the pointer leaves while a tab away still restored it.
+    // Both halves repaint through drawHover(), so a cell picked earlier — from
+    // the hash or a previous hover — keeps its mark when the list is left.
+    function watchRow(li, key) {
+      li.addEventListener('mouseenter', function () { drawHighlighted(key); });
+      li.addEventListener('mouseleave', clearSolo);
+      li.addEventListener('focus', function () { drawHighlighted(key); });
+      li.addEventListener('blur', clearSolo);
+    }
     legendList.textContent = '';
     keys.forEach(function (key) {
         var li = document.createElement('li');
         // The key is kept on the element so a rebuild can find the same row
         // again and hand the caret back after a keyboard toggle.
         li.setAttribute('data-key', key);
+        watchRow(li, key);
         var sw = rowSpan('sw');
         var c = result.palette.colors[key] || result.palette.colors.grass;
         sw.style.background = rgba(c, 1);
@@ -1100,12 +1114,6 @@
         var pct = rowSpan('pct');
         pct.textContent = shareText(result.stats, key);
         li.appendChild(sw); li.appendChild(label); li.appendChild(pct);
-        // Hovering a row isolates that class on the map; leaving restores it.
-        // Both halves repaint through drawHover(), so a cell picked earlier —
-        // from the hash or a previous hover — keeps its mark when the pointer
-        // leaves the list. drawMap() alone would repaint the grid and lose it.
-        li.addEventListener('mouseenter', function () { drawHighlighted(key); });
-        li.addEventListener('mouseleave', clearSolo);
         // Clicking keeps the choice after the pointer moves away, which is how
         // to compare a class against the relief chart without holding the
         // cursor on its row. Clicking the same row again releases it.
@@ -1140,8 +1148,6 @@
         // mouse. The rows are only there to be read, so they are in the tab
         // order deliberately.
         li.tabIndex = 0;
-        li.addEventListener('focus', function () { drawHighlighted(key); });
-        li.addEventListener('blur', clearSolo);
         legendList.appendChild(li);
       });
   }

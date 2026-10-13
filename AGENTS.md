@@ -1481,6 +1481,14 @@ Conventions:
   reads as a swatch that no longer matches its own column. The suite counts the
   definition, the three reads and asks that the only `createElement('span')`
   left in the shell be the one inside that helper.
+  A row answers to two kinds of caret the same way, so the four registrations
+  are one helper too — `watchRow(li, key)` — since a pointer leaving and a tab
+  moving off are the same pair of steps: preview the class, give it back.
+  Written beside each other the pair could be edited apart, one keeping its
+  repaint while the other only rebuilt the rows, which reads as a list that
+  stays faded after the mouse leaves while a keyboard away still restored the
+  map. The suite counts the definition, its one read and the four caret steps
+  living inside it, so a fifth registration has to be written there as well.
   The row order comes from `legendKeys(result)`, which forwards to
   `TerraCore.legendOrder(result)` — classes present on this world, biggest
   first. The `k` cycle walks that same array, so the key follows the

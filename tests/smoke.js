@@ -4704,6 +4704,20 @@ assert(offerDefs === 1 && offerReads === 4 && offerInline === 0,
   'one shape offers every neighbour to a lake fill (' + offerDefs + ' def, ' +
   offerReads + ' reads, ' + offerInline + ' inline marks)');
 
+// A legend row answers to a pointer and to a keyboard caret with the same pair
+// of steps: preview the class, then give it back. Four registrations in two
+// shapes, so both kinds of caret cannot be edited apart — one keeping its
+// repaint while the other only rebuilt the rows. Counted as one helper, its one
+// read and the four caret steps living inside it, with none written beside the
+// row itself.
+var caretDefs = (appSrc.match(/function watchRow\(/g) || []).length;
+var caretReads = (appSrc.match(/watchRow\(li, key\)/g) || []).length - caretDefs;
+var caretSteps = (appSrc.match(
+  /li\.addEventListener\('(mouseenter|mouseleave|focus|blur)'/g) || []).length;
+assert(caretDefs === 1 && caretReads === 1 && caretSteps === 4,
+  'one pair of steps wires every legend caret (' + caretDefs + ' def, ' +
+  caretReads + ' reads, ' + caretSteps + ' caret steps)');
+
 // The steepest-drop pass compares a cell with each of its four neighbours, and
 // every one of those comparisons is a difference without a sign. Written at each
 // step the sign could be dropped on three of them, which measures a downhill
