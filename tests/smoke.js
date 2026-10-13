@@ -4718,6 +4718,19 @@ assert(caretDefs === 1 && caretReads === 1 && caretSteps === 4,
   'one pair of steps wires every legend caret (' + caretDefs + ' def, ' +
   caretReads + ' reads, ' + caretSteps + ' caret steps)');
 
+// Both contour ramps press a pixel's three channels by one strength — land
+// lines down, bathymetric lines up. Written beside each ramp the multiplication
+// could be edited apart until one branch scaled a single channel and the other
+// all three, which reads as a slightly warm set of stripes rather than as a
+// broken triple. Counted as one helper, its six channel reads and no bare
+// multiplication of a channel left beside them.
+var lineDefs = (coreSrc.match(/function lineChannel\(/g) || []).length;
+var lineReads = (coreSrc.match(/= lineChannel\(/g) || []).length;
+var lineInline = (coreSrc.match(/\*?= 0\.88;|\*?= 1\.10;/g) || []).length;
+assert(lineDefs === 1 && lineReads === 6 && lineInline === 0,
+  'one shape inks a contour channel (' + lineDefs + ' def, ' +
+  lineReads + ' reads, ' + lineInline + ' literals)');
+
 // The steepest-drop pass compares a cell with each of its four neighbours, and
 // every one of those comparisons is a difference without a sign. Written at each
 // step the sign could be dropped on three of them, which measures a downhill

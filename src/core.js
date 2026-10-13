@@ -150,6 +150,16 @@
     return t * count - Math.floor(t * count);
   }
 
+  // One channel of a pixel on a contour line: the height it had, scaled by the
+  // strength of that line. Land lines press a channel down and bathymetric ones
+  // lift it, so only the strength differs between the two ramps — the shape of
+  // the blend is the same. Written beside each ramp the pair could be edited
+  // apart until the stripes above the shoreline and the ones under it stopped
+  // looking like one grid of lines.
+  function lineChannel(value, strength) {
+    return value * strength;
+  }
+
   // Does any neighbour of this cell sit on the other side of the shoreline?
   // The coast ink and a river mouth both ask that question of the same four
   // cells, so the sweep is one helper: written beside each call the pair could
@@ -927,14 +937,22 @@
         if (contour && h >= seaLevel) {
           var above = (h - seaLevel) / spanFloor(1 - seaLevel);
           var band = bandEdge(above, contourBands);
-          if (band < LINE_WIDTH) { r *= 0.88; g *= 0.88; b *= 0.88; }
+          if (band < LINE_WIDTH) {
+            r = lineChannel(r, 0.88);
+            g = lineChannel(g, 0.88);
+            b = lineChannel(b, 0.88);
+          }
         } else if (contour && isWater) {
           // Bathymetric lines: the same idea under water, measured from the
           // deepest cell up to the shoreline. Lighter touch than the land
           // lines, since the depth falloff already carries most of the shape.
           var below = (h - minH) / spanFloor(seaLevel - minH);
           var wband = bandEdge(below, basinBands);
-          if (wband < LINE_WIDTH) { r *= 1.10; g *= 1.10; b *= 1.10; }
+          if (wband < LINE_WIDTH) {
+            r = lineChannel(r, 1.10);
+            g = lineChannel(g, 1.10);
+            b = lineChannel(b, 1.10);
+          }
         }
 
         // Coastline ink: the first ring of water against land catches a little

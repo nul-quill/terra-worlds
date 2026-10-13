@@ -355,6 +355,15 @@ Conventions:
   lines, which reads as two grids of stripes rather than one — so the suite
   counts the definition, its two reads and asks for no inline wrap left beside
   them.
+  Those two ramps also press a pixel through one `lineChannel(value, strength)`,
+  since a land line and a bathymetric one differ only in whether their strength
+  sits below or above one. Written beside each ramp the multiplication could be
+  edited apart until one branch scaled a single channel and the other all three,
+  which reads as a slightly warm set of stripes rather than as a broken triple —
+  so the suite counts the definition, its six channel reads and asks for no bare
+  multiplication of a channel left beside them. Each ramp keeps its own strength
+  as that helper's argument, since the two figures are the one difference between
+  a line pressed down and a line lifted up.
   The shade pass in that same group holds a pixel between two bounds through one
   `shadeClamp(sh)`, since the two ends are one decision about how far a slope may
   move its own colour. Written beside each comparison the pair could be edited
