@@ -464,6 +464,16 @@
     if (pointerAway() && atCell) hoverCell(atCell[0], atCell[1]);
   }
 
+  // One channel of a faded cell: keep this much of its own colour and give the
+  // rest to the palette's sky, which is nothing at all when no filter is on.
+  // Three channels of one pixel are that same sum, so the shape is written once
+  // and each read names its own index. Beside each channel the pair could be
+  // edited apart until a shore tinted one channel harder than its neighbours,
+  // which reads as a slightly warm coastline rather than as a broken triple.
+  function fadeChannel(value, keep, sky, n) {
+    return value * keep + (sky ? sky[n] * (1 - keep) : 0);
+  }
+
   // Blit the generated grid onto the visible canvas, nearest-neighbour.
   function drawMap() {
     if (!current) return;
@@ -502,9 +512,9 @@
       var cell = i >> 2;
       var keep = (!want || current.biome[cell] === want) &&
         (!bandOn || histBinFor(current.heightField[cell]) === band) ? 1 : 0.35;
-      out[i] = src[i] * keep + (sky ? sky[0] * (1 - keep) : 0);
-      out[i + 1] = src[i + 1] * keep + (sky ? sky[1] * (1 - keep) : 0);
-      out[i + 2] = src[i + 2] * keep + (sky ? sky[2] * (1 - keep) : 0);
+      out[i] = fadeChannel(src[i], keep, sky, 0);
+      out[i + 1] = fadeChannel(src[i + 1], keep, sky, 1);
+      out[i + 2] = fadeChannel(src[i + 2], keep, sky, 2);
       out[i + 3] = 255;
     }
     offCtx.putImageData(img, 0, 0);

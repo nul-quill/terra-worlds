@@ -1206,6 +1206,15 @@ Conventions:
   overlay on the map reads the same two helpers with its own palette target.
   The suite counts the wash target, the one blend call in the chart and that no
   inline sum is left beside it.
+  On the map the same dim is three sums of one pixel — red, green and blue each
+  keep their own share and hand the rest to the sky — and that shape is one
+  lookup too, `fadeChannel(value, keep, sky, n)`, read once per channel with its
+  own index. Beside each channel the pair could be edited apart until a shore
+  tinted one channel harder than its neighbours, which reads as a slightly warm
+  coastline rather than as a broken triple, so the suite counts the definition,
+  the three reads, the single sum inside it and asks for no inline sum left
+  beside them. The alpha of a cell is not part of that pair: every cell is
+  opaque, so the fourth channel is a plain 255.
   The chart's own ink is one list too — `INK`, the hue behind the sea rule, the
   decade ticks, the median mark and all four labels — and each mark reads it
   through `rgba(INK, a)` at its own strength. The pill behind a hovered bin's

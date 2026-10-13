@@ -5078,7 +5078,8 @@ assert(tallyDefs === 1 && tallyCalls === 3 && tallyDenom && !bandFixed,
 // a bin against a different scale than the one that lit it, so the count of both
 // is checked rather than either alone.
 var bandDefs = (appSrc.match(/function bandSummary\(/g) || []).length;
-var bandEnds = (appSrc.match(/\/ st\.bins \* st\.span/g) || []).length;
+var bandEnds = (appSrc.match(/binEdge\(st\.lo, st\.span, st\.bins, bin/g) || [])
+  .length;
 var bandCalls = (appSrc.match(/= bandSummary\(/g) || []).length;
 var bandStray = (appSrc.match(/histState\.bins \* histState\.span/g) ||
   []).length;
@@ -5318,6 +5319,25 @@ var twOutside = (appSrc.match(/hc\.measureText\(/g) || []).length - twInside;
 assert(twDefs === 1 && twReads === 7 && twInside === 1 && twOutside === 0,
   'every chart label is measured through one lookup (' + twDefs + ' def, ' +
   twReads + ' reads, ' + twInside + ' inside, stray ' + twOutside + ')');
+
+// A faded cell is a weighted sum of its own colour and the palette's sky, and a
+// pixel has three of those sums. Each is the same shape — keep this much, give
+// the rest to the sky — so the shape is one lookup each channel reads with its
+// own index. Written beside each channel the pair could be edited apart until a
+// shore tinted one channel harder than its neighbours, which reads as a slightly
+// warm coastline rather than as a broken triple. Counted as text: one
+// definition, three reads, the one sum inside it, none left beside them.
+var fadeDefs = (appSrc.match(/function fadeChannel\(/g) || []).length;
+var fadeReads = (appSrc.match(/fadeChannel\(src\[i/g) || []).length;
+var fadeBody = (/function fadeChannel\(value, keep, sky, n\)([\s\S]*?)\n  \}/
+  .exec(appSrc) || ['', ''])[1];
+var fadeInside = (fadeBody.match(/\* keep \+ \(sky \?/g) || []).length;
+var fadeInline = (appSrc.match(
+  /= src\[i \+? ?\d?\] \* keep \+ \(sky \?/g) || []).length;
+assert(fadeDefs === 1 && fadeReads === 3 && fadeInside === 1 &&
+  fadeInline === 0,
+  'every faded channel is one weighted sum (' + fadeDefs + ' def, ' +
+  fadeReads + ' reads, ' + fadeInside + ' inside, stray ' + fadeInline + ')');
 
 // The patch itself is held inside the grid on both axes, and each axis is a
 // bound of the same shape: a cell minus half the patch, kept off the negative
