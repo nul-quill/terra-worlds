@@ -882,6 +882,15 @@ Conventions:
   — an unknown flag and an unknown value — share that single stderr note. The
   smoke suite feeds each advertised flag a value taken from its own list, so a
   warning there means the flag is missing rather than the sample being wrong.
+  Those arrays are three walks of one shape — `keyList(list)`, the map over the
+  `key` of each entry — since shapes, overlays and bearings are all a list of
+  `{key, label}` pairs and a flag only ever accepts the key half. Written beside
+  each list the map could be edited apart: one column could drop its keyless
+  first entry, which lets `--channel` reject the plain biome map its own
+  dropdown still names `biome`. The palettes stay outside that trio on purpose:
+  their keys are the keys of a map, so that column keeps its own `Object.keys`.
+  The suite counts the definition, the three columns and asks for no bare key
+  walk left beside them.
   `--describe` prints the bare summary for one seed and prefixes each line with
   its seed when several are given, matching the `--next --describe` form, so a
   block of sentences is still traceable to its phrase.

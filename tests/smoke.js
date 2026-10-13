@@ -1319,6 +1319,21 @@ assert(sepDefs === 1 && sepJoins === 1 && sepReads === 3 && sepInline === 0,
   sepJoins + ' joins, ' + sepReads + ' brackets, ' + sepInline +
   ' inline separators)');
 
+// Three of the parser's key columns — shapes, overlays and bearings — are the
+// same walk over the `key` of each entry in one of the core's lists, so that
+// walk is one lookup too. Written beside each list the map could be edited
+// apart: one column could drop its keyless first entry, which would let
+// `--channel` reject the plain biome map its own dropdown still names `biome`.
+// The palettes stay outside this pair on purpose — that list is a map of
+// schemes, so its keys come from `Object.keys`. Counted as text: one
+// definition, one read per column, and no second key walk left beside them.
+var klDefs = (rowSrc.match(/function keyList\(/g) || []).length;
+var klReads = (rowSrc.match(/= keyList\(core\./g) || []).length;
+var klInline = (rowSrc.match(/\.map\(function \((?:s|c|lt)\) \{ return (?:s|c|lt)\.key; \}\)/g) || []).length;
+assert(klDefs === 1 && klReads === 3 && klInline === 0,
+  'one walk builds every key column (' + klDefs + ' def, ' + klReads +
+  ' columns, ' + klInline + ' inline walks)');
+
 // Every shared list is also what a URL hash is matched against, so its keys
 // must be unique: two options sharing a key would make a restored link depend
 // on which of the two the dropdown happened to reach first.

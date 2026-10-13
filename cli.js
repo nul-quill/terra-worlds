@@ -47,10 +47,22 @@ function parseArgs(argv) {
   function hasVal(list, i) {
     return list[i + 1] != null && list[i + 1].charAt(0) !== '-';
   }
+  // The keys a list of entries offers, in the list's own order. Three of the
+  // core's lists are walked this way before the parser starts — shapes,
+  // overlays and bearings — and each walk is the same map over the `key` of an
+  // entry. Written beside each list the map could be edited apart: one could
+  // drop its keyless first entry, which would let `--channel` reject the plain
+  // biome map its own dropdown still names `biome`. The palettes are not part
+  // of this pair — that list is a map of schemes, so its keys come from
+  // `Object.keys` — which is why the walk stays a separate lookup rather than
+  // a second body inside `nextKey`.
+  function keyList(list) {
+    return list.map(function (entry) { return entry.key; });
+  }
   var PALETTE_KEYS = Object.keys(core.palettes);
-  var SHAPE_KEYS = core.shapes.map(function (s) { return s.key; });
-  var CHANNEL_KEYS = core.channels.map(function (c) { return c.key; });
-  var LIGHT_KEYS = core.lights.map(function (lt) { return lt.key; });
+  var SHAPE_KEYS = keyList(core.shapes);
+  var CHANNEL_KEYS = keyList(core.channels);
+  var LIGHT_KEYS = keyList(core.lights);
   for (var i = 0; i < argv.length; i++) {
     var a = argv[i];
     if (a === '--width') opts.width = nextNum(hasVal(argv, i) ? argv[++i] : null, true);
