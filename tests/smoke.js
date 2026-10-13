@@ -5369,6 +5369,20 @@ assert(spanDefs === 1 && spanReads === 3 && spanInline === 1,
   'every legend span is built by one helper (' + spanDefs + ' def, ' +
   spanReads + ' reads, ' + spanInline + ' inside)');
 
+// The two corner labels of the relief strip are the same conversion — a scaled
+// height with no word beside it — so that shape is one builder too. Written at
+// each corner the conversion could lose its `String` on one side only, which
+// reads as two figures set by two different hands: one corner prints a number,
+// the other a bare value the ruler has to re-read. Close enough to look fine in
+// a screenshot, so the suite counts the definition, its two reads and asks for
+// no bare conversion left beside them.
+var cornerDefs = (appSrc.match(/function cornerLabel\(/g) || []).length;
+var cornerReads = (appSrc.match(/cornerLabel\(/g) || []).length - cornerDefs;
+var cornerInline = (appSrc.match(/String\(hundred\(/g) || []).length;
+assert(cornerDefs === 1 && cornerReads === 2 && cornerInline === 1,
+  'both chart corners print through one builder (' + cornerDefs + ' def, ' +
+  cornerReads + ' reads, ' + cornerInline + ' inside)');
+
 // The patch itself is held inside the grid on both axes, and each axis is a
 // bound of the same shape: a cell minus half the patch, kept off the negative
 // edge and off the far one. Written twice the pair could be edited apart, and

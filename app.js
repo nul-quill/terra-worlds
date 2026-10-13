@@ -972,6 +972,18 @@
     return n + ' units';
   }
 
+  // One end of the chart's range, printed as a plain number. The two corners of
+  // the relief strip are that same conversion — a scaled height with no word
+  // beside it — so the shape is written once and each corner names its own
+  // end. Beside each label the conversion could lose its `String` on one side
+  // only, which reads as a pair of figures set by two different hands: the
+  // corner that kept it prints a number, the other a bare value the ruler has
+  // to re-read. Close enough to look fine in a screenshot, so both halves go
+  // through this lookup.
+  function cornerLabel(value) {
+    return String(hundred(value));
+  }
+
   // One axis of the biome lookup, written into the readout. The pair — the
   // moisture that moved a cell and the temperature that moved it with it — is
   // two fields of the same shape: a field or nothing, an index, and the same
@@ -1406,8 +1418,8 @@
     // spread is readable but the numbers are not. Drawn before the hovered-bin
     // label so a hover can cover them when space is tight.
     hc.fillStyle = rgba(INK, 0.55);
-    var loLabel = String(hundred(lo));
-    var hiLabel = String(hundred(lo + span));
+    var loLabel = cornerLabel(lo);
+    var hiLabel = cornerLabel(lo + span);
     // All three labels in that strip sit on one baseline, measured up from its
     // bottom edge: the two ends of the range and the median between them. A
     // second offset written beside one of them would put that figure a pixel

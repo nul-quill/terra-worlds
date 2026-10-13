@@ -624,6 +624,13 @@ Conventions:
   counts the definition, the three reads and asks that the only `' units'` in the
   shell sit inside the helper. The chart's corner labels stay outside this pair on
   purpose: they sit under a ruler that already names the unit in its caption.
+  Those two corners are still one shape though — a scaled height with no word
+  beside it — so they print through one `cornerLabel(value)`, read once per end of
+  the range. Written beside each label the conversion could lose its `String` on
+  one side only, which reads as two figures set by two different hands: one corner
+  prints a number, the other a bare value the ruler has to re-read. Close enough to
+  look fine in a screenshot, so the suite counts the definition, its two reads and
+  asks that the only `String(hundred(` in the shell be the one inside that helper.
   The summary sentence is a printed height too. Its relief figure picks the word
   in front of it, so `describe()` reads the same lookup rather than writing a
   rounding of its own: a second one could be cut against another range and leave
