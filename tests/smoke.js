@@ -4805,6 +4805,21 @@ assert(scaleDefs === 1 && scaleReads === 2 && scaleDiv === 1,
   'both readers of an overlay scale share one division (' + scaleDefs + ' def, ' +
   scaleReads + ' reads, ' + scaleDiv + ' division)');
 
+// Both of those readers also take their log transform from one place: the two
+// heavy-tailed fields are compressed by the same curve in front of the same
+// pair of cuts. Written beside each reader the log could be dropped on one of
+// them, which prints a number for a cell whose colour was mixed against another
+// curve — still a plausible gradient beside its own caption, so the suite counts
+// the definition, its two reads, the single log inside it and asks for no bare
+// transform left beside them.
+var svDefs = (coreSrc.match(/function scaleValue\(/g) || []).length;
+var svReads = (coreSrc.match(/= scaleValue\(src\[|var v = scaleValue\(/g) || []).length;
+var svLog = (coreSrc.match(/return useLog \? Math\.log\(1 \+ v\)/g) || []).length;
+var svInline = (coreSrc.match(/\? Math\.log\(1 \+ src\[/g) || []).length;
+assert(svDefs === 1 && svReads === 2 && svLog === 1 && svInline === 0,
+  'both overlay readers compress one way (' + svDefs + ' def, ' + svReads +
+  ' reads, ' + svLog + ' log, ' + svInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

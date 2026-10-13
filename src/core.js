@@ -57,6 +57,16 @@
     return clamp01((v - sc.lo) / (sc.hi - sc.lo));
   }
 
+  // The value a scale is measured against. Two of the heavy-tailed fields are
+  // read through a log so a long tail does not collapse the ramp into one
+  // colour, and both readers of that pair — the ramp and the hover — want the
+  // same transform. Written beside each reader the log could be dropped on one
+  // of them, which prints a number for a cell whose colour was mixed against
+  // another curve: still a plausible gradient beside its own caption.
+  function scaleValue(v, useLog) {
+    return useLog ? Math.log(1 + v) : v;
+  }
+
   // Bounds on one shaded pixel. The two ends are one decision — how far a
   // slope may darken or lighten its own colour — so they are written together:
   // a low end kept beside the call and a high end kept beside the helper could
@@ -1216,7 +1226,7 @@
     var lo = colors[CHANNELS[key][0]];
     var hi = colors[CHANNELS[key][1]];
     for (var i = 0; i < n; i++) {
-      var v = useLog ? Math.log(1 + src[i]) : src[i];
+      var v = scaleValue(src[i], useLog);
       var t = scaleShare(v, sc);
       var o = i * 4;
       out[o] = lo[0] + (hi[0] - lo[0]) * t;
@@ -1257,7 +1267,7 @@
     var sc = result.channelScale;
     if (!sc) return clamp01(result.heightField[cell]);
     var src = fieldFor(sc.key, result);
-    var v = sc.useLog ? Math.log(1 + src[cell]) : src[cell];
+    var v = scaleValue(src[cell], sc.useLog);
     return scaleShare(v, sc);
   }
 
