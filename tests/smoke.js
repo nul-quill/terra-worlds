@@ -4792,6 +4792,19 @@ assert(shadeDefs === 1 && shadeReads === 4 && shadeInline === 0,
   'the four shade neighbours step off their edge one way (' + shadeDefs +
   ' def, ' + shadeReads + ' reads, ' + shadeInline + ' inline)');
 
+// Both readers of an overlay's scale — the ramp that paints the pixels and the
+// hover that prints the number under the cursor — are the same division of a
+// value inside its own pair of cuts. Written beside each reader the subtraction
+// of the low end could be dropped on one of them, which prints a figure beside
+// a colour measured from a different floor: still a plausible ramp, so the
+// suite counts the one helper, its two reads and the single division inside it.
+var scaleDefs = (coreSrc.match(/function scaleShare\(/g) || []).length;
+var scaleReads = (coreSrc.match(/= scaleShare\(v, sc\)|return scaleShare\(v, sc\)/g) || []).length;
+var scaleDiv = (coreSrc.match(/clamp01\(\(v - sc\.lo\)/g) || []).length;
+assert(scaleDefs === 1 && scaleReads === 2 && scaleDiv === 1,
+  'both readers of an overlay scale share one division (' + scaleDefs + ' def, ' +
+  scaleReads + ' reads, ' + scaleDiv + ' division)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

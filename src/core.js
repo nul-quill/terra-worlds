@@ -47,6 +47,16 @@
     return Math.max(0.001, value);
   }
 
+  // Where a value sits inside the pair of cuts its overlay was scaled between.
+  // Both readers of a scale — the ramp that paints the overlay and the hover
+  // that prints the number under the cursor — are that one division held
+  // inside the pair, so they share it. Written beside each reader the
+  // subtraction of the low end could be dropped on one of them, which prints a
+  // figure beside a colour that was measured from a different floor.
+  function scaleShare(v, sc) {
+    return clamp01((v - sc.lo) / (sc.hi - sc.lo));
+  }
+
   // Bounds on one shaded pixel. The two ends are one decision — how far a
   // slope may darken or lighten its own colour — so they are written together:
   // a low end kept beside the call and a high end kept beside the helper could
@@ -1207,7 +1217,7 @@
     var hi = colors[CHANNELS[key][1]];
     for (var i = 0; i < n; i++) {
       var v = useLog ? Math.log(1 + src[i]) : src[i];
-      var t = clamp01((v - sc.lo) / (sc.hi - sc.lo));
+      var t = scaleShare(v, sc);
       var o = i * 4;
       out[o] = lo[0] + (hi[0] - lo[0]) * t;
       out[o + 1] = lo[1] + (hi[1] - lo[1]) * t;
@@ -1248,7 +1258,7 @@
     if (!sc) return clamp01(result.heightField[cell]);
     var src = fieldFor(sc.key, result);
     var v = sc.useLog ? Math.log(1 + src[cell]) : src[cell];
-    return clamp01((v - sc.lo) / (sc.hi - sc.lo));
+    return scaleShare(v, sc);
   }
 
   // Derive the next seed from the current one, so a chain of rerolls from the

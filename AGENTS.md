@@ -477,6 +477,12 @@ Conventions:
   `channelValue(result, cell)`, which is what the hover readout prints. The scale
   is cached in `result.channelScale` during `channelize` so a hover does not sort
   the field again; keep it that way rather than recomputing percentiles per cell.
+  Both of those readers turn a value into a position inside that cached pair
+  through one `scaleShare(v, sc)`, since the ramp and the readout measure the
+  same cell against the same two cuts. Written beside each reader the subtraction
+  of the low end could be dropped on one of them, which prints a figure beside a
+  colour measured from a different floor — still a plausible ramp, so the suite
+  counts the definition, its two reads and the single division inside it.
   The `lake` overlay is the one exception to the percentile rule: the mask is
   already normalised by its own basin (1..60 steps), and most of a grid is dry,
   so the 98% mark of a world with two small tarns is still zero. It scales over
