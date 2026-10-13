@@ -4692,6 +4692,18 @@ assert(rimDefs === 1 && rimReads === 2 && rimPick === 4 && rimLoops === 1,
   rimReads + ' reads, ' + rimPick + ' neighbour steps, ' + rimLoops +
   ' ring loop)');
 
+// Each of the four neighbours a fill offers is the same four tests — inside its
+// own axis, unmarked by this fill, still dry, at or below the surface. Written
+// beside each step the pair of bounds could be edited apart, which lets a shore
+// reach one cell past its rim on one side only: still a plausible lake, so the
+// count is the check. One helper, four reads, no bare mark left beside them.
+var offerDefs = (coreSrc.match(/function offerFill\(/g) || []).length;
+var offerReads = (coreSrc.match(/offerFill\(cur/g) || []).length;
+var offerInline = (coreSrc.match(/queued\[cur/g) || []).length;
+assert(offerDefs === 1 && offerReads === 4 && offerInline === 0,
+  'one shape offers every neighbour to a lake fill (' + offerDefs + ' def, ' +
+  offerReads + ' reads, ' + offerInline + ' inline marks)');
+
 // The steepest-drop pass compares a cell with each of its four neighbours, and
 // every one of those comparisons is a difference without a sign. Written at each
 // step the sign could be dropped on three of them, which measures a downhill

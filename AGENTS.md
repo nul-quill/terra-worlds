@@ -123,6 +123,13 @@ Conventions:
   The flood fill marks cells in `queued` with the fill number at enqueue time,
   not at dequeue: without that a cell offered by two neighbours is pushed twice
   and overflows the one-slot-per-cell queue.
+  Those four offers — left, right, up and down — are one shape too, since each
+  is the same four tests: inside its own axis, unmarked by this fill, still dry,
+  and at or below the surface it is measured against. Written beside each step
+  the pair of bounds could be edited apart, a left edge held inside the grid
+  while its own right step was not, which leaves a shore reaching one cell past
+  its rim on one side only — still a plausible lake, so the suite counts the
+  definition, its four reads and asks for no bare mark left beside them.
 - The trunk/tributary split is a second quantile of the SAME accumulation field
   (`majorCut`), never a separate threshold. `riverMask` holds 1 or 2.
   The smoke suite re-derives that ordering: for every hand-picked phrase the

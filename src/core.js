@@ -784,6 +784,18 @@
     // the marks never have to be cleared between basins.
     var queued = new Int32Array(n);
     var gen = 0;
+    // Every neighbour offered to a fill is the same four tests: inside its own
+    // axis, not yet marked by this fill, still dry, and at or below the
+    // surface it is being measured against. Written beside each step the pair
+    // of bounds could be edited apart — a left edge held inside the grid while
+    // its own right step was not — which leaves a basin whose shore reaches
+    // one cell past its rim on one side only. Still a plausible lake, so the
+    // four reads share this one shape instead of restating it.
+    function offerFill(j, inside) {
+      if (!inside || queued[j] === gen || lake[j] || hf[j] > surface) return;
+      queued[j] = gen;
+      queue[tail++] = j;
+    }
     for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
         i = y * width + x;
@@ -805,10 +817,10 @@
           // `queued` marks a cell the moment it enters the queue: the depth is
           // only written on dequeue, so without this a cell offered by two
           // neighbours could be pushed twice and overflow the queue.
-          if (cx2 > 0 && queued[cur - 1] !== gen && !lake[cur - 1] && hf[cur - 1] <= surface) { queued[cur - 1] = gen; queue[tail++] = cur - 1; }
-          if (cx2 < width - 1 && queued[cur + 1] !== gen && !lake[cur + 1] && hf[cur + 1] <= surface) { queued[cur + 1] = gen; queue[tail++] = cur + 1; }
-          if (cy2 > 0 && queued[cur - width] !== gen && !lake[cur - width] && hf[cur - width] <= surface) { queued[cur - width] = gen; queue[tail++] = cur - width; }
-          if (cy2 < height - 1 && queued[cur + width] !== gen && !lake[cur + width] && hf[cur + width] <= surface) { queued[cur + width] = gen; queue[tail++] = cur + width; }
+          offerFill(cur - 1, cx2 > 0);
+          offerFill(cur + 1, cx2 < width - 1);
+          offerFill(cur - width, cy2 > 0);
+          offerFill(cur + width, cy2 < height - 1);
         }
         recordSpill(tail);
       }
