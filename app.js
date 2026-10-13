@@ -539,10 +539,6 @@
   }
 
   // Keep a cell index inside one axis of the grid. Three paths name a cell —
-  // the keyboard walk, the hash writer's reader, and the readout itself — and
-  // all three must land on the same cell for one click, so the clamp is one
-  // lookup rather than a pair of bounds written beside each call. A narrower
-  // grid than the one a link was saved against is the case that matters: the
   // restored index has to come back inside the same way a pointer does.
   function clampIndex(n, count) {
     return Math.max(0, Math.min(count - 1, n));
@@ -832,6 +828,14 @@
   // mark and the four labels — each at its own alpha, so the hue is named once
   // and only the strength varies per mark.
   var INK = [30, 38, 44];
+
+  // Three of those seven marks are stroked or filled at the same strength: the
+  // sea rule, the median's own mark, and the number hanging under it. That
+  // figure is one number rather than three — written beside each mark it could
+  // be edited apart until the sea's rule sat darker than the median it is
+  // meant to be compared with, which still reads as a plausible chart while
+  // its two notes no longer carry equal weight.
+  var MID = 0.7;
 
   // Blend two rgb triples, and turn one into a css rgba() string. The overlay,
   // the magnifier's mat and the dimmed bars all go through these two rather
@@ -1360,7 +1364,7 @@
       hc.fillStyle = rgba(mix(c, WHITE, 1 - keep), 1);
       hc.fillRect(Math.round(i * binW), Math.round(h - bh), Math.ceil(binW), Math.round(bh));
     }
-    hc.strokeStyle = rgba(INK, 0.7);
+    hc.strokeStyle = rgba(INK, MID);
     hc.lineWidth = HAIR;
     hc.beginPath();
     hc.moveTo(hairline(seaX), 0);
@@ -1432,7 +1436,7 @@
     // seeing against the bars without reading the stats list.
     var medX = chartX(result.stats.median, lo, span, w);
     if (medX >= 0 && medX <= w) {
-      hc.strokeStyle = rgba(INK, 0.7);
+      hc.strokeStyle = rgba(INK, MID);
       hc.beginPath();
       hc.moveTo(hairline(medX), h - STRIP);
       hc.lineTo(hairline(medX), h - STRIP + MARK);
@@ -1457,7 +1461,7 @@
         medTextX = w - GUT - hiTw - GAP - medTw;
       }
       if (medTw < w - GUT * 2 - loTw - hiTw - GAP * 4) {
-        hc.fillStyle = rgba(INK, 0.7);
+        hc.fillStyle = rgba(INK, MID);
         hc.fillText(medLabel, medTextX, h - BASE);
       }
     }

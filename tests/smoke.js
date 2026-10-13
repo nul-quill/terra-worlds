@@ -4402,6 +4402,20 @@ assert(hairWDeps === 1 && hairWReads === 3 && hairWBare === 0,
   'every hairline stroke is one pixel wide by one number (' + hairWDeps +
   ' def, ' + hairWReads + ' reads, ' + hairWBare + ' literals)');
 
+// Three of the chart's seven marks sit at the same strength: the sea rule, the
+// median's own mark and the number hanging under it. Written beside each stroke
+// that figure could be edited apart until the sea's rule sat darker than the
+// median it is meant to be compared with — still a plausible chart, whose two
+// notes then carry unequal weight. Counted as text: one number, three reads,
+// and no bare strength left beside them.
+var midStrengthDefs = (appSrc.match(/var MID = [\d.]+;/g) || []).length;
+var midStrengthReads = (appSrc.match(/rgba\(INK, MID\)/g) || []).length;
+var midStrengthBare = (appSrc.match(/rgba\(INK, 0\.7\)/g) || []).length;
+assert(midStrengthDefs === 1 && midStrengthReads === 3 &&
+  midStrengthBare === 0,
+  'the sea rule and the median pair share one strength (' + midStrengthDefs +
+  ' def, ' + midStrengthReads + ' reads, ' + midStrengthBare + ' literals)');
+
 // The box around a hovered cell is the one stroke whose width follows the cell
 // rather than staying a hairline, so its own fraction is a number beside that
 // single read. Two copies could be edited apart, which lets the frame go thick

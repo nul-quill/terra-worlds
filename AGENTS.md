@@ -1235,6 +1235,14 @@ Conventions:
   all: seven uses of two named lists, which the suite counts beside the count of
   leftover literals. A hue written out seven times could be edited seven ways,
   and a chart with two inks still looks plausible at a glance.
+  Three of those seven marks also share one strength — `MID`, read by the sea
+  rule, the median's mark and the number under it. Written beside each stroke the
+  figure could be edited apart until the sea's rule sat darker than the median it
+  is meant to be compared with, which still reads as a plausible chart while its
+  two notes no longer carry equal weight; the suite counts the one number, its
+  three reads and asks for no bare strength left beside them. The other four marks
+  each carry their own alpha on purpose, since a tick that matched its rule would
+  bury the bars behind it.
   The strip's type is one list as well — `FONT`, read by both sizes that set it:
   the small ruler labels and the bigger hovered-bin caption. Only the number in
   front of the family differs, so each site writes `'9px ' + FONT` rather than a
