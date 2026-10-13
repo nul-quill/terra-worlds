@@ -360,6 +360,12 @@ Conventions:
   beside each axis could set one sideways and leave the other up and down, which
   reads as a ridge leaning one way only; the suite counts the one number, its two
   reads and asks for no bare divisor left beside either axis.
+  Those four neighbours are reached through one `shadeStep(hf, i, d, atEdge)`,
+  since each is the same step off a cell that stops at its own edge. Written at
+  each axis the step could be dropped on three of them, which measures a downhill
+  face harder than the uphill one it faces — a ridge leaning one way only, still
+  plausible relief at a glance; the suite counts the definition, its four reads
+  and asks for no bare two-way ternary of a height index left beside them.
   The grain step in that same pass is one helper — `ditherOffset(bayer, x, y)` —
   whose divisor is the bayer table's own span (`bayer.length - 1`) rather than a
   number written beside the call. That divisor is the top of the table, so a

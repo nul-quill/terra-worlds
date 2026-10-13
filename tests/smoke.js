@@ -4778,6 +4778,20 @@ assert(sideDefs === 1 && sideReads === 2 && sideFloor === 1 && sideInline === 0,
   'both grid sides are one rounded count with one floor (' + sideDefs + ' def, ' +
   sideReads + ' reads, ' + sideFloor + ' floor, ' + sideInline + ' inline)');
 
+// The shade pass compares a cell with each of its four neighbours, and every
+// one of those reads is the same shape: step off in one direction unless that
+// direction is already the edge. Written beside each axis the step could be
+// dropped on three of them, which measures a downhill face harder than the
+// uphill one it faces — a ridge leaning one way only, still plausible relief.
+// The suite counts the one helper, its four reads and asks that no bare
+// two-way ternary of a height index be left beside them.
+var shadeDefs = (coreSrc.match(/function shadeStep\(/g) || []).length;
+var shadeReads = (coreSrc.match(/= shadeStep\(hf, /g) || []).length;
+var shadeInline = (coreSrc.match(/\(x > 0 \? 1 : 0\)|\(x < width - 1 \? 1 : 0\)|\(y > 0 \? width : 0\)|\(y < height - 1 \? width : 0\)/g) || []).length;
+assert(shadeDefs === 1 && shadeReads === 4 && shadeInline === 0,
+  'the four shade neighbours step off their edge one way (' + shadeDefs +
+  ' def, ' + shadeReads + ' reads, ' + shadeInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

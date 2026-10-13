@@ -359,6 +359,16 @@
     return Math.max(16, Math.round(value || fallback));
   }
 
+  // A neighbour for the shade pass. Every one of the four is the same shape:
+  // step off this cell in one direction, unless that direction is already the
+  // edge of the grid, in which case the cell reads itself. Written beside each
+  // axis the step could be dropped on one of them, which measures a downhill
+  // face harder than the uphill one it faces — a ridge leaning one way only,
+  // still plausible relief at a glance.
+  function shadeStep(hf, i, d, atEdge) {
+    return hf[i + (atEdge ? 0 : d)];
+  }
+
   /* ------------------------------------------------------------------ *
    * Main generation entry point.
    * Returns { width, height, data, biome, height, stats }.
@@ -860,10 +870,10 @@
 
         // Hillshade from the height gradient.
         if (hillshade > 0) {
-          var xl = hf[i - (x > 0 ? 1 : 0)];
-          var xr = hf[i + (x < width - 1 ? 1 : 0)];
-          var yu = hf[i - (y > 0 ? width : 0)];
-          var yd = hf[i + (y < height - 1 ? width : 0)];
+          var xl = shadeStep(hf, i, -1, x === 0);
+          var xr = shadeStep(hf, i, 1, x === width - 1);
+          var yu = shadeStep(hf, i, -width, y === 0);
+          var yd = shadeStep(hf, i, width, y === height - 1);
           var nxg = (xl - xr) * SLOPE_SCALE;
           var nyg = (yu - yd) * SLOPE_SCALE;
           var len = Math.sqrt(nxg * nxg + nyg * nyg + 1);
