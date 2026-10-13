@@ -5286,6 +5286,21 @@ assert(boxDefs === 1 && boxReads === 2 && boxRound === 1 && boxInline === 0,
   'both magnifier boxes are a rounded share (' + boxDefs + ' def, ' + boxReads +
   ' reads, ' + boxRound + ' round, ' + boxInline + ' inline)');
 
+// Three blits in the shell are nearest-neighbour: the map from its offscreen
+// copy, the magnifier's patch, and the buffer a saved PNG is filled from. Each
+// wants a cell edge to stay a cell edge, so the flag is one lookup the three
+// reads share. Written beside each blit, one of them could keep the browser's
+// default smoothing while the other two stayed crisp — a slightly soft panel
+// beside a sharp map, which reads as an odd look rather than as a bug. Counted
+// as text: one definition, three reads, and no bare assignment left beside them.
+var nearDefs = (appSrc.match(/function nearest\(/g) || []).length;
+var nearReads = (appSrc.match(/nearest\((?:ctx|cx)\);/g) || []).length;
+var nearInline = (appSrc.match(/^\s+\w+\.imageSmoothingEnabled = false;$/gm) || [])
+  .length;
+assert(nearDefs === 1 && nearReads === 3 && nearInline === 1,
+  'every blit keeps its cells through one lookup (' + nearDefs + ' def, ' +
+  nearReads + ' reads, ' + nearInline + ' inside)');
+
 // The patch itself is held inside the grid on both axes, and each axis is a
 // bound of the same shape: a cell minus half the patch, kept off the negative
 // edge and off the far one. Written twice the pair could be edited apart, and

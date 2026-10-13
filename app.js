@@ -303,6 +303,17 @@
     return Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   }
 
+  // Every blit in the shell is nearest-neighbour: the map is drawn from its
+  // offscreen copy, the magnifier enlarges a dozen cells of that copy, and the
+  // saved PNG is filled from the upscaled buffer. All three want the same thing
+  // — a cell edge that stays a cell edge — so the flag is one lookup the three
+  // reads share. Written beside each blit, one of them could keep the
+  // browser's default smoothing while the other two stayed crisp, which reads
+  // as a slightly soft panel beside a sharp map rather than as a bug.
+  function nearest(c) {
+    c.imageSmoothingEnabled = false;
+  }
+
   // A one-pixel stroke lands between two device pixels unless its coordinate is
   // pushed to the middle of one, which is what the half-pixel offset does. Both
   // canvases draw hairlines — the crosshair, the sea rule, the decade ticks and
@@ -497,7 +508,7 @@
       out[i + 3] = 255;
     }
     offCtx.putImageData(img, 0, 0);
-    ctx.imageSmoothingEnabled = false;
+    nearest(ctx);
     ctx.fillStyle = current.palette.sky;
     ctx.fillRect(0, 0, view.width, view.height);
     // Draw at the integer cell size rather than stretching to the canvas, so
@@ -734,7 +745,7 @@
     var sky = skyRgb();
     ctx.fillStyle = rgba(sky, 0.85);
     ctx.fillRect(dx - MAT, dy - MAT, size + MAT * 2, size + MAT * 2);
-    ctx.imageSmoothingEnabled = false;
+    nearest(ctx);
     ctx.drawImage(off, x0, y0, PATCH, PATCH, dx, dy, size, size);
     ctx.strokeStyle = rgba(mix(inkColour(), sky, 0.35), 0.55);
     ctx.lineWidth = HAIR;
@@ -1734,7 +1745,7 @@
     c.width = big.width;
     c.height = big.height;
     var cx = c.getContext('2d');
-    cx.imageSmoothingEnabled = false;
+    nearest(cx);
     var img = cx.createImageData(big.width, big.height);
     img.data.set(big.data);
     cx.putImageData(img, 0, 0);

@@ -1744,6 +1744,13 @@ Conventions:
   of the same picture rather than a sharp grid under a soft strip. Two copies
   of the clamp could be edited apart while each still looked reasonable, so the
   suite counts the one definition and the two reads beside it.
+  Every blit in the shell keeps its cells through one `nearest(c)`, read by the
+  three of them: the map from its offscreen copy, the magnifier's patch, and the
+  buffer a saved PNG is filled from. All three want a cell edge to stay a cell
+  edge, so the flag is written once. Beside each blit it could be dropped on one
+  branch only, which reads as a slightly soft panel next to a sharp map — close
+  enough to an odd look that nobody opens the console, so the suite counts the
+  definition, its three reads and the single assignment inside it.
   Converting a CSS measurement into that store is one lookup too —
   `bufferSize(cssPx, dpr)` — read four times: twice for the map's layout box and
   twice for the chart's column. Both round, since a fractional store puts every
