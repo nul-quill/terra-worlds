@@ -2610,6 +2610,23 @@ assert(endsOk && endsPrinted,
   'the relief row carries both ends of the range (' + reliefRec.low + '-' +
   reliefRec.high + ')');
 
+// That bracketed pair is the same shape a hovered bar prints beside its own
+// number: two heights scaled out of a hundred, joined by one dash. Three views
+// need it — the row above the chart, the chart's caption and every note that
+// names a bar — so the pair is one builder read three times. Written beside
+// each view the scaling could be edited apart while each still looked right on
+// its own row, which reads as a chart whose corners and whose caption disagree
+// about the same bump. Counted as one definition, its three reads and the one
+// scaled pair living inside it.
+var pairDefs = (endsSrc.match(/function rangeText\(lo, hi\) \{/g) || []).length;
+var pairReads = (endsSrc.match(/rangeText\(/g) || []).length - pairDefs;
+var pairBody = (endsSrc.match(
+  /function rangeText\(lo, hi\) \{\s*return hundred\(lo\) \+ '-' \+ hundred\(hi\);/g) ||
+  []).length;
+assert(pairDefs === 1 && pairReads === 3 && pairBody === 1,
+  'one builder prints a bracketed pair of heights (' + pairDefs + ' def, ' +
+  pairReads + ' reads, ' + pairBody + ' bodies)');
+
 // The record also carries the bars themselves, which is what lets a pasted
 // block of text profile be checked against a line of JSON. The array has to be
 // the very pass the chart draws: one count per bin, every cell counted once,
@@ -5150,16 +5167,17 @@ var bandEnds = (appSrc.match(/binEdge\(st\.lo, st\.span, st\.bins, bin/g) || [])
 var bandCalls = (appSrc.match(/= bandSummary\(/g) || []).length;
 var bandStray = (appSrc.match(/histState\.bins \* histState\.span/g) ||
   []).length;
-// The pair of ends is one builder of its own — `rangeText()` — since the
-// chart's caption prints it beside a count and a class while the notes print it
-// inside a tally. Two scalings could round one bin two ways while each still
-// looked right beside its own caption, so count the definition, its two reads
-// and ask that no inline pair be left beside them.
-var rangeDefs = (appSrc.match(/function rangeText\(sum\) \{/g) || []).length;
-var rangeCalls = (appSrc.match(/rangeText\(sum\)/g) || []).length - rangeDefs;
-var rangeInline = (appSrc.match(/hundred\(sum\.from\) \+ '-' \+ hundred/g) ||
-  []).length;
-var bandBracket = /function bandTally\(bin, sum\) \{[\s\S]{0,160}rangeText\(sum\)/
+// The pair of ends is one builder of its own — `rangeText(lo, hi)` — since the
+// chart's caption prints it beside a count and a class, the notes print it
+// inside a tally, and the `relief` row brackets its own spread with the same
+// two figures. Three scalings could round one range three ways while each still
+// looked right beside its own caption, so count the definition, its three reads
+// and ask that the only bracket of two scaled heights be the one inside it.
+var rangeDefs = (appSrc.match(/function rangeText\(/g) || []).length;
+var rangeCalls = (appSrc.match(/rangeText\(/g) || []).length - rangeDefs;
+var rangeInline = (appSrc.match(
+  /hundred\([^)]*\) \+ '-' \+ hundred\(/g) || []).length;
+var bandBracket = /function bandTally\(bin, sum\) \{[\s\S]{0,160}rangeText\(sum\./
   .test(appSrc);
 // Four callers: the chart's own caption, the hovered-cell reading, the note
 // under the map, and the pair that tells a hovered cell whether the selected
@@ -5171,7 +5189,7 @@ var bandInside = /'not in ' \+ bandTally\(band, sel\)/.test(appSrc);
 var bandGate = /band >= 0 && histState && cellBand !== band/.test(appSrc);
 assert(bandDefs === 1 && bandEnds === 2 && bandCalls === 4 && !bandStray &&
   bandBracket && bandInside && bandGate && rangeDefs === 1 &&
-  rangeCalls === 2 && rangeInline === 1,
+  rangeCalls === 3 && rangeInline === 1,
   'a lit bar says what height range it covers (' + bandDefs + ' lookup, ' +
   bandEnds + ' ends, ' + bandCalls + ' callers, stray ' + bandStray +
   ', bracket ' + bandBracket + ', note ' + bandInside + ', gate ' +

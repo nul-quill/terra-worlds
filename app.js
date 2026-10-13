@@ -1240,8 +1240,8 @@
       // The spread plus its two ends: the difference alone cannot say whether a
       // world climbs from a deep shelf or from a damp plain, and the pair in
       // brackets is the same two numbers printed at the corners of the chart.
-      ['relief', unitText(hundred(s.max - s.min)) + ' (' + hundred(s.min) +
-        '-' + hundred(s.max) + ')'],
+      ['relief', unitText(hundred(s.max - s.min)) + ' (' +
+        rangeText(s.min, s.max) + ')'],
       // Half the grid sits below this height, which is what separates a broad
       // plateau from a plain with one peak when both share a relief range.
       ['median', unitText(hundred(s.median))],
@@ -1480,7 +1480,7 @@
       // sidebar that runs past the chart, so the least useful parts are
       // dropped first: class, then count. The range always survives — it is
       // what ties the bump back to the map.
-      var parts = [rangeText(sum)]
+      var parts = [rangeText(sum.from, sum.to)]
         .concat(bandFields(sum));
       var label = fitLabel(hc, parts, w - GUT * 2);
       var tw = textWidth(hc, label);
@@ -1760,7 +1760,7 @@
   // beside its own caption.
   function bandTally(bin, sum) {
     return (bin + 1) + '/' + histState.bins +
-      ' (' + rangeText(sum) + ')';
+      ' (' + rangeText(sum.from, sum.to) + ')';
   }
 
   // The two ends of one bar's height range, out of a hundred. Both the chart's
@@ -1769,8 +1769,8 @@
   // that scaling twice and one view could round a bin against another range
   // than the one that lit it, while each figure still looked reasonable beside
   // its own caption — so the pair is built once, here.
-  function rangeText(sum) {
-    return hundred(sum.from) + '-' + hundred(sum.to);
+  function rangeText(lo, hi) {
+    return hundred(lo) + '-' + hundred(hi);
   }
 
   // The two fields every view of a bin prints after its tally: how many cells
