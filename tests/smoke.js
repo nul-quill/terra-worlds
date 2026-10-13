@@ -4734,6 +4734,21 @@ assert(qDefs === 1 && qReads === 4 && qClamp === 1,
   'every quantile is one clamped share of a sorted list (' + qDefs + ' def, ' +
   qReads + ' reads, ' + qClamp + ' clamp)');
 
+// The two separable min filters behind the lake mask — rows, then columns —
+// both walk a window of the rim's radius over their own axis, and both stop at
+// the two ends of it. Written beside each loop that pair of bounds could be
+// edited apart, which lets a row window reach one cell past its edge while its
+// own column window stopped short: still a plausible shore, so the suite counts
+// the one helper, its two reads, the pair of bounds inside it and asks for no
+// second clamped window left in either filter.
+var winDefs = (coreSrc.match(/function windowSpan\(/g) || []).length;
+var winReads = (coreSrc.match(/= windowSpan\(/g) || []).length;
+var winBounds = (coreSrc.match(/pos - RIM < 0 \? 0 : pos - RIM/g) || []).length;
+var winInline = (coreSrc.match(/x - RIM < 0 \? 0|y - RIM < 0 \? 0/g) || []).length;
+assert(winDefs === 1 && winReads === 2 && winBounds === 1 && winInline === 0,
+  'both min filters take their window from one span (' + winDefs + ' def, ' +
+  winReads + ' reads, ' + winBounds + ' bound, ' + winInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

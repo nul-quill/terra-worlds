@@ -583,24 +583,33 @@
     // Two separable min filters (rows, then columns) give window minima in
     // linear time; the ring is the four window minima on the ring itself.
     var RIM = 4;
+    // Both min filters walk a window of this radius over their own axis, and
+    // both have to stop at the two ends of it. Written beside each loop the
+    // pair could be edited apart, which lets a row window reach one cell past
+    // its edge while its own column window stopped short — still a plausible
+    // shore, so the shape of the clamp is what is held in one place.
+    function windowSpan(pos, count) {
+      return {
+        lo: pos - RIM < 0 ? 0 : pos - RIM,
+        hi: pos + RIM > count - 1 ? count - 1 : pos + RIM
+      };
+    }
     var rowMin = new Float32Array(n);
     for (y = 0; y < height; y++) {
       var row = y * width;
       for (x = 0; x < width; x++) {
-        var loX = x - RIM < 0 ? 0 : x - RIM;
-        var hiX = x + RIM > width - 1 ? width - 1 : x + RIM;
+        var wx = windowSpan(x, width);
         var m = hf[row + x];
-        for (var k = loX; k <= hiX; k++) { if (hf[row + k] < m) m = hf[row + k]; }
+        for (var k = wx.lo; k <= wx.hi; k++) { if (hf[row + k] < m) m = hf[row + k]; }
         rowMin[row + x] = m;
       }
     }
     var colMin = new Float32Array(n);
     for (x = 0; x < width; x++) {
       for (y = 0; y < height; y++) {
-        var loY = y - RIM < 0 ? 0 : y - RIM;
-        var hiY = y + RIM > height - 1 ? height - 1 : y + RIM;
+        var wy = windowSpan(y, height);
         var m2 = hf[y * width + x];
-        for (var k2 = loY; k2 <= hiY; k2++) { if (hf[k2 * width + x] < m2) m2 = hf[k2 * width + x]; }
+        for (var k2 = wy.lo; k2 <= wy.hi; k2++) { if (hf[k2 * width + x] < m2) m2 = hf[k2 * width + x]; }
         colMin[y * width + x] = m2;
       }
     }

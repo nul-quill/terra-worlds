@@ -28,6 +28,13 @@ Conventions:
 - Lakes are closed depressions: the water surface is the minimum on a ring of
   radius `RIM` around the seed cell, and the basin is a flood fill capped at that
   surface. The old single-cell test (`gap > threshold` only) left one-pixel dots.
+  Those ring minima come from two separable passes — rows, then columns — and
+  both take their window from one `windowSpan(pos, count)`, since each is only
+  the rim's radius held inside its own axis. Written beside each loop the pair of
+  bounds could be edited apart, which lets a row window reach one cell past its
+  edge while its own column window stopped short — still a plausible shore, so
+  the suite counts the definition, its two reads, the single bound inside it and
+  asks for no second clamped window left in either filter.
   Each fill also records its lowest rim neighbour as a spillway, so a basin's
   accumulation continues downstream instead of dying at the shore.
   `recordSpill()` bumps `stats.lakeBasins` once per fill, which is what the
