@@ -179,10 +179,10 @@ function entryName(list, entry) {
 // Written beside each echo the pair could be edited apart, which reads as two
 // listings of one list: a usage line naming `plain` above a column naming
 // `biome` for one and the same overlay.
-function nameList(list) {
+function nameList(list, sep) {
   return list.map(function (entry) {
     return entryName(list, entry);
-  }).join(', ');
+  }).join(sep || ', ');
 }
 
 function toPpm(img) {
@@ -276,16 +276,13 @@ if (opts.help) {
   console.log('       name both sizes to override that.');
   // The shape keys are read from the generator's list rather than repeated
   // here, so adding a curve in core.js shows up in this listing too.
-  console.log('       [--shape ' + core.shapes.map(function (s) {
-    return s.key;
-  }).join('|') + '] [--sea 0..1]');
+  console.log('       [--shape ' + nameList(core.shapes, '|') + '] [--sea 0..1]');
   console.log('       [--detail 0..1] [--polar 0..1] [--light 0..1]');
   // Like the shape list above, the bearings come from the generator's own
   // array, so a new compass point appears in the usage line without a second
   // edit here.
-  console.log('       [--dir ' + core.lights.map(function (lt) {
-    return lt.key;
-  }).join('|') + '] for the hillshade light bearing,');
+  console.log('       [--dir ' + nameList(core.lights, '|') +
+    '] for the hillshade light bearing,');
   console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
   console.log('       [--contour] for hypsometric lines on land and bathymetric');
   console.log('       steps under water, both spaced by this world\'s relief');
@@ -293,9 +290,8 @@ if (opts.help) {
   // core.channels, so a ramp added there is immediately nameable from a
   // terminal. The empty-key entry is shown as 'biome', which is what the
   // dropdown calls it.
-  console.log('       [--channel ' + core.channels.map(function (c) {
-    return entryName(core.channels, c);
-  }).join('|') + '] to flatten');
+  console.log('       [--channel ' + nameList(core.channels, '|') +
+    '] to flatten');
   console.log('       the world to one scalar field instead of the biome colours');
   console.log('       [--scale n] nearest-neighbour multiplier applied to the');
   console.log('       saved pixels, so a small grid can still fill a screen');

@@ -1624,12 +1624,22 @@ Conventions:
   and asks for no leftover word beside them.
   Four of those prints — the whole-list echoes under `--help` (overlays,
   bearings, column counts, export factors) — reach the word through one walk,
-  `nameList(list)`, since each is a name per entry joined by one separator.
+  `nameList(list, sep)`, since each is a name per entry joined by one separator.
   Both halves are counted as a pair, seven reads in all, because a second
   inline `map` beside one echo could keep a name that its own listing row
   would not print. The `palettes` echo stays outside that pair on purpose: its
   list is a map of schemes, so its names come from `Object.keys` rather than
   from entries.
+  Three of those seven sit inside a bracket of the usage line, where the
+  separator is a pipe rather than a comma — `[--shape a|b|c]` has to stay
+  narrow enough to read on one line. That second separator is an argument to
+  the same builder rather than a second walk, so the join is written once with
+  the comma as its default. Written beside each bracket the pair could be
+  edited apart, and a pipe spelled out at one call site could also drop the
+  fallback a keyless entry gets from `entryName`, which reads as a blank first
+  option inside one bracket while its own listing row still said `biome`. The
+  suite counts the one definition with both joins, the three bracketed reads
+  and asks for no bare pipe join left beside them.
   Each curve must also be its own picture: the suite renders one seed through
   every entry and compares the checksums, so a new curve that only re-skims an
   existing one loses its slot in the `h` cycle rather than diluting it.

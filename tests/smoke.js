@@ -1284,7 +1284,7 @@ assert(rowDefs === 1 && rowReads >= 6 && rowLeft === 1,
 var nameDefs = (rowSrc.match(/function entryName\(/g) || []).length;
 var nameReads = (rowSrc.match(/entryName\(core\.|nameList\(core\./g) || []).length;
 var nameLeft = (rowSrc.match(/\|\| '(biome|auto)'/g) || []).length;
-assert(nameDefs === 1 && nameReads === 7 && nameLeft === 0,
+assert(nameDefs === 1 && nameReads === 9 && nameLeft === 0,
   'one lookup names the keyless entry of a list (' + nameDefs + ' def, ' +
   nameReads + ' reads, ' + nameLeft + ' leftover words)');
 
@@ -1298,9 +1298,26 @@ assert(nameDefs === 1 && nameReads === 7 && nameLeft === 0,
 var echoDefs = (rowSrc.match(/function nameList\(/g) || []).length;
 var echoReads = (rowSrc.match(/nameList\(core\./g) || []).length;
 var echoInline = (rowSrc.match(/: ' \+ core\.(channels|lights|grids|scales)/g) || []).length;
-assert(echoDefs === 1 && echoReads === 4 && echoInline === 0,
+assert(echoDefs === 1 && echoReads === 7 && echoInline === 0,
   'one builder joins the name list under --help (' + echoDefs + ' def, ' +
   echoReads + ' echoes, ' + echoInline + ' inline walks)');
+
+// Three of those echoes sit inside a bracket, where the separator is a pipe
+// rather than a comma: `[--shape a|b|c]` has to stay narrow enough to read on
+// one line. That second separator is an argument to the same builder rather
+// than a second walk, so the suite asks for the one definition with its two
+// joins, the three bracketed reads, and no inline map of a shared list left
+// beside them. A pipe written out beside one bracket could drop the fallback
+// that a keyless entry gets from `entryName`, which reads as a blank first
+// option in one bracket while its own listing row still said `biome`.
+var sepDefs = (rowSrc.match(/function nameList\(list, sep\) \{/g) || []).length;
+var sepJoins = (rowSrc.match(/\.join\(sep \|\| ', '\)/g) || []).length;
+var sepReads = (rowSrc.match(/nameList\(core\.[a-z]+, '\|'\)/g) || []).length;
+var sepInline = (rowSrc.match(/\.join\('\|'\)/g) || []).length;
+assert(sepDefs === 1 && sepJoins === 1 && sepReads === 3 && sepInline === 0,
+  'one builder also joins the bracketed lists (' + sepDefs + ' def, ' +
+  sepJoins + ' joins, ' + sepReads + ' brackets, ' + sepInline +
+  ' inline separators)');
 
 // Every shared list is also what a URL hash is matched against, so its keys
 // must be unique: two options sharing a key would make a restored link depend
