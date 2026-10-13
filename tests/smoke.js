@@ -4763,6 +4763,21 @@ assert(stepDefs === 1 && stepReads === 8 && stepInline === 0,
   'both chamfer sweeps step from a neighbour one way (' + stepDefs + ' def, ' +
   stepReads + ' reads, ' + stepInline + ' inline)');
 
+// Both sides of the grid are the same three-step reading: a caller's count,
+// rounded, held above the smallest drawable size, falling back to that axis's
+// own default. Written beside each axis the floor could be dropped on one of
+// them, which lets a very short window keep its rows while its columns shrink
+// to a ribbon — still a plausible shape for a narrow browser, so the suite
+// counts the one helper, its two reads, the single floor inside it and asks for
+// no second clamped rounding left beside the pair.
+var sideDefs = (coreSrc.match(/function gridSide\(/g) || []).length;
+var sideReads = (coreSrc.match(/= gridSide\(/g) || []).length;
+var sideFloor = (coreSrc.match(/Math\.max\(16, Math\.round\(/g) || []).length;
+var sideInline = (coreSrc.match(/Math\.max\(16, Math\.round\(opts\./g) || []).length;
+assert(sideDefs === 1 && sideReads === 2 && sideFloor === 1 && sideInline === 0,
+  'both grid sides are one rounded count with one floor (' + sideDefs + ' def, ' +
+  sideReads + ' reads, ' + sideFloor + ' floor, ' + sideInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

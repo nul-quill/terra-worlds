@@ -810,6 +810,14 @@ Conventions:
   second copy only has to be edited once to make a terminal and the page disagree
   about the shape of a world: the suite therefore asks the fill for that lookup by
   name and asks for no leftover ratio literal.
+  Inside the generator each side of that pair is one rounded count with one
+  floor — `gridSide(value, fallback)` — since both axes are the same three steps
+  (round the caller's number, hold it above the smallest drawable size, fall back
+  to that axis's own default). Written beside each axis the floor could be dropped
+  on one of them, which lets a very short window keep its rows while its columns
+  shrink to a ribbon — still a plausible shape for a narrow browser, so the suite
+  counts the definition, its two reads, the single floor inside it and asks for no
+  second clamped rounding left beside the pair.
   Because the fill runs once on the parsed options rather than inside a print
   branch, the `--next` chain — which builds its worlds through its own option
   copies — reports the same derived pair as the plain listing. The suite checks

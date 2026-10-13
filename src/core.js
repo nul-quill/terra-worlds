@@ -349,6 +349,16 @@
     return clamp01(h);
   }
 
+  // One side of the grid: a caller's count, rounded, held above the smallest
+  // drawable size, falling back to this axis's own default. Both axes are that
+  // same three-step reading, so they share it — written beside each axis the
+  // floor could be dropped on one of them, which lets a very short window keep
+  // its rows while its columns shrink to a ribbon, still a plausible shape for
+  // a narrow browser.
+  function gridSide(value, fallback) {
+    return Math.max(16, Math.round(value || fallback));
+  }
+
   /* ------------------------------------------------------------------ *
    * Main generation entry point.
    * Returns { width, height, data, biome, height, stats }.
@@ -358,8 +368,8 @@
     var opts = options || {};
     var started = Date.now();
 
-    var width = Math.max(16, Math.round(opts.width || DEFAULT_GRID.width));
-    var height = Math.max(16, Math.round(opts.height || DEFAULT_GRID.height));
+    var width = gridSide(opts.width, DEFAULT_GRID.width);
+    var height = gridSide(opts.height, DEFAULT_GRID.height);
     var seed = typeof opts.seed === 'number' ? opts.seed | 0 : hashString(opts.seed == null ? 'terra' : opts.seed);
 
     var seaLevel = opts.seaLevel == null ? 0.48 : clamp01(opts.seaLevel);
