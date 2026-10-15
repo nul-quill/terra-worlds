@@ -470,6 +470,14 @@ Conventions:
   the wet axis on a world whose moisture field is missing while staying silent
   about the cold one. The suite counts the definition, the two reads, the one
   scaling inside the helper and asks for no bare push left beside them.
+  That builder also folds away an axis its own overlay already printed: with
+  `moist` on, the ramp figure beside the biome name IS the moisture reading, so
+  a second copy of the same word pushes the notes that say something new off the
+  end of the line. The comparison sits inside the helper rather than beside each
+  call, since both halves of the pair are measured against the overlay in use —
+  written twice, one could keep its own name and drop the other's, which reads
+  as a readout that shrinks by one field for reasons nothing on the page
+  explains. The suite counts the definition and that one gate beside it.
 - `channelize(result, name)` is a separate pass over the already-computed fields
   (`heightField`, `moisture`, `accumulation`, `coastDistance`). It never feeds back
   into `generate`: an overlay must not change the biome map. Stretch each field by

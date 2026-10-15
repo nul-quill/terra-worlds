@@ -1025,8 +1025,12 @@
   // as a readout that names the wet axis on a world without a moisture field
   // while staying silent about the cold one. Both go through this lookup so
   // the pair always arrives together, or not at all.
+  // The third step is the overlay's own name: with the moisture ramp on, the
+  // figure above the pair already IS that axis, so printing it twice would
+  // crowd the two readings that do say something new off the end of the line.
   function pushAxis(parts, name, field, i) {
-    if (field) parts.push(name + ' ' + hundred(field[i]));
+    if (!field || name === current.channelName) return;
+    parts.push(name + ' ' + hundred(field[i]));
   }
 
   // Which way a basin's surplus leaves. The bearing array is indexed by the

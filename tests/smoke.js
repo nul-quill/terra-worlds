@@ -5209,6 +5209,18 @@ assert(axisDefs === 1 && axisCalls === 2 && axisScale === 1 && axisInline === 0,
   'both biome axes in the readout print one way (' + axisDefs + ' def, ' +
   axisCalls + ' reads, ' + axisScale + ' scaling, ' + axisInline + ' inline)');
 
+// That same helper is also the reason a hovered cell does not print the same
+// figure twice. With the moisture ramp on, the overlay's own number already is
+// the wet axis, so the pair has to notice and stay quiet — otherwise the two
+// readings that say something new are pushed off the end of the line. The test
+// is one comparison inside the helper, beside the guard for a missing field, so
+// a second copy of it written at each call could drop one axis only.
+var axisGate = (appSrc.match(
+  /if \(!field \|\| name === current\.channelName\) return;/g) || []).length;
+assert(axisDefs === 1 && axisGate === 1,
+  'an axis already printed by its own overlay stays quiet (' + axisDefs +
+  ' def, ' + axisGate + ' gate)');
+
 // Two views end with the same pair about a bin: how many cells fell in the
 // bar, and which class fills most of it. The caption drawn inside the chart
 // and the line under the map both print it, so the pair is one builder — a
