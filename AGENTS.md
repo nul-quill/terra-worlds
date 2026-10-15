@@ -983,6 +983,11 @@ Conventions:
   button rather than writing that chain step a second time. A second lookup
   there would let the keyboard press a node the listener never wired, which
   reads as a shortcut that clears nothing at all.
+  The third button on the panel — the one that saves the PNG — is held beside
+  those two rather than looked up again at its own listener, so every button on
+  the page is found by one lookup. Two shapes of lookup would let an id rename
+  be fixed on one side only, which reads as a button that never answers a click
+  while its label still looks right in a screenshot.
   SELECT owns the caret, so a seed phrase can still be typed. That test is one
   `ownsCaret()` lookup read by both keyboard paths — the arrow walk and the
   letter block — since two copies could drop `SELECT` from one of them, which

@@ -3777,6 +3777,17 @@ assert(rollLookups === 1 && rollNodes === 3,
   'both halves of the reroll button read one node (' + rollLookups + ' lookup, ' +
   rollNodes + ' reads)');
 
+// The third button on the panel is held the same way, so all three sit beside
+// the canvases and the text boxes rather than one being looked up again at its
+// own listener. Two shapes of lookup mean an id rename can be fixed on one side
+// only, which reads as a button that never answers a click while its label
+// still looks right in a screenshot of the sidebar.
+var saveLookups = (appSrc.match(/getElementById\('save'\)/g) || []).length;
+var saveNodes = (appSrc.match(/saveBtn/g) || []).length;
+assert(saveLookups === 1 && saveNodes === 2,
+  'the save button is one lookup read by its wiring (' + saveLookups +
+  ' lookup, ' + saveNodes + ' reads)');
+
 // The stats list is the only trace of a world once it is printed or screenshotted,
 // so it has to open with the thing every other number hangs off: the seed. Read
 // the row labels straight out of the shell and check the order, plus that no label

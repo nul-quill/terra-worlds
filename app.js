@@ -21,6 +21,12 @@
   // keyboard handler, which presses the button rather than duplicating its
   // chain step. Both must find the same node, so both read this one lookup.
   var rerollBtn = document.getElementById('reroll');
+  // The save button is held here too, so every button on the panel is looked
+  // up once beside the canvases and the text boxes rather than once at the
+  // listener that wires it. With two shapes of lookup, an id rename could be
+  // fixed on one side only — which reads as a button that never answers a
+  // click while its label still looks right in a screenshot.
+  var saveBtn = document.getElementById('save');
 
   var inputs = {
     seed: document.getElementById('seed'),
@@ -1933,7 +1939,7 @@
     inputs.seed.value = String(TerraCore.nextSeed(seedPhrase()));
     render();
   });
-  document.getElementById('save').addEventListener('click', savePng);
+  saveBtn.addEventListener('click', savePng);
 
   // The hash already holds every option, so the current URL is the whole state.
   copyBtn.addEventListener('click', copyLink);
