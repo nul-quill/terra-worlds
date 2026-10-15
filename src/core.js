@@ -702,14 +702,17 @@
     }
 
     function ringMinimum(px, py) {
-      var a = Math.max(0, py - RIM) * width + px;
-      var b = Math.min(height - 1, py + RIM) * width + px;
-      var c = py * width + Math.max(0, px - RIM);
-      var d = py * width + Math.min(width - 1, px + RIM);
-      var best = rowMin[a];
-      if (rowMin[b] < best) best = rowMin[b];
-      if (colMin[c] < best) best = colMin[c];
-      if (colMin[d] < best) best = colMin[d];
+      // The ring is the four window minima on the ring itself, so its two axes
+      // are the same clamped window the two filters walked. Written here as
+      // four bare comparisons the ring could reach one cell past a shore its
+      // own filters stopped at — still a plausible rim, so both axes take their
+      // bounds from the one span.
+      var ys = windowSpan(py, height);
+      var xs = windowSpan(px, width);
+      var best = rowMin[ys.lo * width + px];
+      if (rowMin[ys.hi * width + px] < best) best = rowMin[ys.hi * width + px];
+      if (colMin[py * width + xs.lo] < best) best = colMin[py * width + xs.lo];
+      if (colMin[py * width + xs.hi] < best) best = colMin[py * width + xs.hi];
       return best;
     }
 

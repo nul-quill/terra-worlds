@@ -5080,9 +5080,21 @@ var winDefs = (coreSrc.match(/function windowSpan\(/g) || []).length;
 var winReads = (coreSrc.match(/= windowSpan\(/g) || []).length;
 var winBounds = (coreSrc.match(/pos - RIM < 0 \? 0 : pos - RIM/g) || []).length;
 var winInline = (coreSrc.match(/x - RIM < 0 \? 0|y - RIM < 0 \? 0/g) || []).length;
-assert(winDefs === 1 && winReads === 2 && winBounds === 1 && winInline === 0,
+assert(winDefs === 1 && winReads === 4 && winBounds === 1 && winInline === 0,
   'both min filters take their window from one span (' + winDefs + ' def, ' +
   winReads + ' reads, ' + winBounds + ' bound, ' + winInline + ' inline)');
+
+// The ring that turns those window minima into a lake is the same clamped
+// window on each axis, so it reads the one span too rather than restating the
+// radius in four bare comparisons. Written that way the ring could reach one
+// cell past a shore its own filters stopped at — still a plausible rim beside
+// its own caption — so the suite counts the span's four reads (two filters plus
+// the ring's two axes) and asks that no second clamping of the rim's radius be
+// left anywhere in the lake pass.
+var ringClamp = (coreSrc.match(/Math\.(max|min)\((0|height - 1|width - 1), p[yx]/g) || []).length;
+assert(winDefs === 1 && winReads === 4 && ringClamp === 0,
+  'the rim ring shares its window with both filters (' + winReads +
+  ' reads, ' + ringClamp + ' bare clamp)');
 
 // The two chamfer sweeps that measure distance to the shoreline each read a
 // neighbour as that neighbour's own distance plus one step, and there are four

@@ -40,8 +40,14 @@ Conventions:
   the rim's radius held inside its own axis. Written beside each loop the pair of
   bounds could be edited apart, which lets a row window reach one cell past its
   edge while its own column window stopped short — still a plausible shore, so
-  the suite counts the definition, its two reads, the single bound inside it and
+  the suite counts the definition, its four reads, the single bound inside it and
   asks for no second clamped window left in either filter.
+  The four reads are the two filters plus both axes of `ringMinimum()`, which is
+  only those same two windows read at their own ends. Written there as bare
+  `Math.max`/`Math.min` of the radius, the ring could reach one cell past a shore
+  its own filters stopped at — still a plausible rim beside its own caption — so
+  the suite counts that pair of reads and asks for no bare clamp of the radius
+  left in the lake pass.
   Each fill also records its lowest rim neighbour as a spillway, so a basin's
   accumulation continues downstream instead of dying at the shore.
   `recordSpill()` bumps `stats.lakeBasins` once per fill, which is what the
