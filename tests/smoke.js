@@ -1330,6 +1330,20 @@ assert(sepDefs === 1 && sepJoins === 1 && sepReads === 3 && sepInline === 0,
   sepJoins + ' joins, ' + sepReads + ' brackets, ' + sepInline +
   ' inline separators)');
 
+// The scheme table is a map rather than a list of entries, so its keys come
+// from `Object.keys` — but that walk is still one lookup, read by the flag
+// reader, the summary line under `--help` and the `--palettes` column. Three
+// copies could be edited apart while each listing still looked right alone: a
+// name the flag accepts and the column beneath it does not show. Counted as
+// text: one definition, three reads, and exactly one walk of the table — the
+// one living inside that lookup.
+var pkDefs = (rowSrc.match(/function paletteKeys\(/g) || []).length;
+var pkReads = (rowSrc.match(/paletteKeys\(\)/g) || []).length - pkDefs;
+var pkInline = (rowSrc.match(/Object\.keys\(core\.palettes\)/g) || []).length;
+assert(pkDefs === 1 && pkReads === 3 && pkInline === 1,
+  'one lookup walks the scheme table (' + pkDefs + ' def, ' + pkReads +
+  ' reads, ' + pkInline + ' inline walks)');
+
 // Three of the parser's key columns — shapes, overlays and bearings — are the
 // same walk over the `key` of each entry in one of the core's lists, so that
 // walk is one lookup too. Written beside each list the map could be edited

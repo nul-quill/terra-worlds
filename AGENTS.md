@@ -891,6 +891,14 @@ Conventions:
   their keys are the keys of a map, so that column keeps its own `Object.keys`.
   The suite counts the definition, the three columns and asks for no bare key
   walk left beside them.
+  That one walk of the scheme map is itself a lookup on each side — the shell's
+  `paletteKeys()` fills the dropdown and backs the digit keys, the CLI's feeds
+  the `--palettes` column, the `palettes:` echo and the `--palette` value list.
+  Two bodies could be edited apart, one sorting the keys and one keeping
+  declaration order, which would make `3` pick a different scheme from the third
+  row of the dropdown — an odd choice rather than a bug, so each side is counted
+  on its own: one definition, its reads, and the single `Object.keys` left in the
+  file being the one inside that helper.
   `--describe` prints the bare summary for one seed and prefixes each line with
   its seed when several are given, matching the `--next --describe` form, so a
   block of sentences is still traceable to its phrase.

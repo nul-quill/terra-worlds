@@ -59,7 +59,7 @@ function parseArgs(argv) {
   function keyList(list) {
     return list.map(function (entry) { return entry.key; });
   }
-  var PALETTE_KEYS = Object.keys(core.palettes);
+  var PALETTE_KEYS = paletteKeys();
   var SHAPE_KEYS = keyList(core.shapes);
   var CHANNEL_KEYS = keyList(core.channels);
   var LIGHT_KEYS = keyList(core.lights);
@@ -169,6 +169,17 @@ function three(value) {
 // rather than a name — so it keeps its own narrow width beside its loop.
 function listingRow(key, text) {
   return String(key).padEnd(11) + text;
+}
+
+// The keys of the scheme table, in the order the table declares them. That
+// table is a map rather than a list of entries, so its walk is its own shape
+// beside the three list walks in `keyList`. Three prints need it — the flag
+// reader, the summary line under `--help` and the `--palettes` column — and
+// each is the same call, so a scheme added to the core appears in all three at
+// once. Written beside each print the walk could be edited apart, which reads
+// as a name the flag accepts and the listing does not show.
+function paletteKeys() {
+  return Object.keys(core.palettes);
 }
 
 // What an entry with no key of its own is called. Two of the core's lists open
@@ -355,7 +366,7 @@ if (opts.help) {
   console.log('       that word belongs to the next flag, so [--out --json]');
   console.log('       keeps world.ppm and [--palette --json] the default');
   console.log('       scheme, both still printing JSON');
-  console.log('palettes: ' + Object.keys(core.palettes).join(', '));
+  console.log('palettes: ' + paletteKeys().join(', '));
   console.log('channels: ' + nameList(core.channels));
   console.log('lights: ' + nameList(core.lights));
   console.log('grids: ' + nameList(core.grids));
@@ -377,7 +388,7 @@ if (opts.help) {
   // One row per palette: the key that --palette takes, plus the label the
   // dropdown shows and the sky triple the chart is washed with. Names only,
   // so it is cheap to eyeball before choosing a scheme for a render.
-  Object.keys(core.palettes).forEach(function (name) {
+  paletteKeys().forEach(function (name) {
     var p = core.palettes[name];
     console.log(listingRow(name, p.label + '  sky ' + p.sky));
   });
