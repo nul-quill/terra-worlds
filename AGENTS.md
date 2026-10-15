@@ -938,6 +938,14 @@ Conventions:
   compares the two for one seed and one grid. A field the CLI forgets to pass,
   or a phrase edited on one side only, shows up there as a difference rather
   than as two sentences that each look reasonable on their own.
+  Whether a call holds more than one world is one question too —
+  `manySeeds(opts)` — read by both of its forms: the sentence that prefixes each
+  line with its own seed, and the output name that becomes a prefix. Written
+  beside each site the count could be edited on one side only, which reads as a
+  listing whose sentences name their seeds while every world after the first
+  overwrites the file before it — a lost file rather than an obvious bug, so the
+  suite counts the definition, its two reads and asks that the only count of the
+  seed list be the one inside that helper.
   With several seeds, `--out` is a prefix: the suffix is built by stripping an
   optional extension and appending `-<n>.<ext>`. Strip with an anchored
   `/\.(ppm|png)$/` rather than an optional one — a prefix with no dot at all

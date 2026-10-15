@@ -1309,6 +1309,21 @@ assert(lineDefs === 1 && lineReads === 2 && lineGap === 1,
   'a line that names its seed joins through one builder (' + lineDefs +
   ' def, ' + lineReads + ' reads, ' + lineGap + ' gaps)');
 
+// Two prints ask whether a call holds more than one world: the sentence that
+// prefixes each line with its own seed, and the output name that becomes a
+// prefix so nothing is overwritten. Both count the same list, so the test is
+// one lookup. Written beside each site it could be edited on one side only,
+// which reads as a listing whose sentences name their seeds while every world
+// after the first overwrites the file before it — a lost file, not an obvious
+// bug. Counted as text: one definition, its two reads, and the single count of
+// the list being the one inside that helper rather than a second beside a call.
+var manyDefs = (rowSrc.match(/function manySeeds\(/g) || []).length;
+var manyReads = (rowSrc.match(/manySeeds\(opts\)/g) || []).length - manyDefs;
+var manyCount = (rowSrc.match(/opts\.seeds\.length > 1/g) || []).length;
+assert(manyDefs === 1 && manyReads === 2 && manyCount === 1,
+  'both multi-seed forms ask one question (' + manyDefs + ' def, ' + manyReads +
+  ' reads, ' + manyCount + ' counts)');
+
 // Two of those lists open with an entry that has no key of its own — the plain
 // biome map among the overlays, the following-the-window count among the grids —
 // and each needs a word beside it in every print. That word is one lookup, so a

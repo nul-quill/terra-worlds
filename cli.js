@@ -130,6 +130,16 @@ function parseArgs(argv) {
   return opts;
 }
 
+// Whether this call prints more than one world. Two readers ask that question:
+// the sentence that prefixes each line with its own seed, and the output name
+// that becomes a prefix so nothing is overwritten. Both are the same count of
+// the same list, so the test is one lookup — written beside each site it could
+// be edited on one side only, which reads as a listing whose sentences name
+// their seeds while every world after the first overwrites the file before it.
+function manySeeds(opts) {
+  return opts.seeds.length > 1;
+}
+
 // Fill whichever side of the grid a caller did not name, from the ratio of the
 // two defaults. `--width 800` alone should be a wide landscape rather than an
 // 800x300 letterbox, and `--height 200` alone should not be a tall column. Both
@@ -494,7 +504,7 @@ if (opts.help) {
       // a block of summaries can still be traced back to a phrase — the same
       // shape `--next --describe` prints.
       var saidLine = core.describe(result);
-      console.log(opts.seeds.length > 1 ? seedLine(seed, saidLine) : saidLine);
+      console.log(manySeeds(opts) ? seedLine(seed, saidLine) : saidLine);
       if (opts.hist) console.log(histBlock(result));
       return;
     }
@@ -506,7 +516,7 @@ if (opts.help) {
     // a prefix written as `map` still needs a number per world, and dropping
     // the suffix whenever no dot is present would let every world after the
     // first overwrite the one before it.
-    var name = opts.seeds.length > 1
+    var name = manySeeds(opts)
       ? opts.out.replace(/\.(ppm|png)$/i, '') + '-' + (si + 1) + '.' + ext
       : opts.out;
     // The grid stays as generated for the stats; only the saved pixels grow.
