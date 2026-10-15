@@ -3788,6 +3788,21 @@ assert(saveLookups === 1 && saveNodes === 2,
   'the save button is one lookup read by its wiring (' + saveLookups +
   ' lookup, ' + saveNodes + ' reads)');
 
+// Every control on the panel answers the same pair of events, and the pair is
+// registered in one walk over the controls rather than once per control. The
+// shape to watch for is a lone listener beside that walk: it keeps the control
+// working while splitting the rule in two, so the next control added to the
+// map answers one event and quietly waits for something else to redraw. Count
+// the walk, the two registrations inside it, and ask that no control also get
+// its own pair beside them.
+var wireWalks = (appSrc.match(/Object\.keys\(inputs\)\.forEach/g) || []).length;
+var wireChange = (appSrc.match(/addEventListener\('change', render\)/g) || []).length;
+var wireInput = (appSrc.match(/addEventListener\('input', function/g) || []).length;
+var wireSolo = (appSrc.match(/inputs\.\w+\.addEventListener\(/g) || []).length;
+assert(wireWalks === 1 && wireChange === 1 && wireInput === 1 && wireSolo === 0,
+  'one loop wires every control (' + wireWalks + ' walk, ' + wireChange +
+  ' change, ' + wireInput + ' input, ' + wireSolo + ' solo listeners)');
+
 // The stats list is the only trace of a world once it is printed or screenshotted,
 // so it has to open with the thing every other number hangs off: the seed. Read
 // the row labels straight out of the shell and check the order, plus that no label

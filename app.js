@@ -1921,13 +1921,20 @@
   // Anything in the address bar wins over the defaults above.
   applyHash();
 
+  // Every control answers the same pair of events, so one loop wires them all:
+  // `change` for the dropdowns and the checkboxes, `input` for the things that
+  // redraw while their value is being moved — the sliders and the seed box.
+  // Written as a loop plus one extra listener beside it, the pair could be
+  // edited apart: a control added to `inputs` would then answer one event only,
+  // which reads as a box that waits for a click elsewhere before showing the
+  // world it was just given. The seed box is named inside the same guard as the
+  // sliders, since it is the one text control that redraws as it is typed.
   Object.keys(inputs).forEach(function (key) {
     inputs[key].addEventListener('change', render);
     inputs[key].addEventListener('input', function () {
-      if (inputs[key].type === 'range') render();
+      if (inputs[key].type === 'range' || key === 'seed') render();
     });
   });
-  inputs.seed.addEventListener('input', render);
   window.addEventListener('hashchange', function () { applyHash(); render(); });
 
   rerollBtn.addEventListener('click', function () {

@@ -1211,6 +1211,15 @@ Conventions:
     stores `checked ? 1 : 0` and the reader compares against `'1'`, since a bare
     `false` in a URL would read as a value rather than as a tick. The suite
     counts one of each, so the encoding cannot be changed on one side only.
+  Every control is wired by one walk over `inputs`: a `change` listener for the
+  dropdowns and checkboxes, and an `input` listener that redraws for the things
+  whose value moves under a finger — the sliders and the seed box, which is why
+  that one text control is named inside the same guard. Written as a loop plus a
+  lone listener beside it, the pair could be edited apart: a control added to the
+  map would then answer one event only, which reads as a box that waits for a
+  click elsewhere before showing the world it was just given. The suite counts the
+  walk, the two registrations inside it and asks for no solo listener left beside
+  them.
   Every INPUT or SELECT id in `index.html` is a key of `HASH_KEYS`, and every
   key there names a real control: the smoke suite compares the two lists, so a
   new dropdown cannot arrive without also surviving a shared link.
