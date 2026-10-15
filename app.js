@@ -888,6 +888,18 @@
     return ((value - lo) / span) * w;
   }
 
+  // A mark placed by `chartX` can fall just outside the strip when a world's
+  // own range is narrower than the two levels the marks name, so each of those
+  // positions is held inside the chart's width. Both ends of that hold are one
+  // decision about how far a mark may leave its box, so they live together:
+  // written as two comparisons beside the call, one could be dropped while the
+  // other stayed, which lets a sea rule ride off the right edge of a chart
+  // while still coming back on the left — an asymmetry small enough to read as
+  // an odd chart rather than as a bug.
+  function clampTo(value, hi) {
+    return Math.max(0, Math.min(hi, value));
+  }
+
   // The width of a piece of text, as the chart's own context measures it. Every
   // mark that has to be nudged to fit — a right-hand corner label, a tick that
   // would crowd it, a pill grown around a caption — asks that one question, and
@@ -1351,8 +1363,7 @@
     // to read as a slightly odd chart rather than as a bug.
     var GUT = 3;
     var seaX = chartX(result.seaLevel, lo, span, w);
-    if (seaX < 0) seaX = 0;
-    if (seaX > w) seaX = w;
+    seaX = clampTo(seaX, w);
     hc.fillStyle = result.palette.sky;
     hc.fillRect(0, 0, w, h);
     // Which bins hold the class the legend is pointing at. Without this the

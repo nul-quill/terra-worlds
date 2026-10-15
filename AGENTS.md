@@ -1866,6 +1866,15 @@ Conventions:
   comparison would report a mismatch that no rendering can show.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
+  That rule is placed by the same division as every other mark, so on a world
+  whose binned range is narrower than the sea level itself the position can come
+  back outside the strip. Both ends of that hold are one lookup —
+  `clampTo(value, hi)` — since they are one decision about how far a mark may
+  leave its box. Written as two comparisons beside the call, one could be dropped
+  while the other stayed, which lets a sea rule ride off the right edge of a
+  chart while still coming back on the left — an asymmetry small enough to read
+  as an odd chart rather than as a bug, so the suite counts the definition, its
+  single read and asks for no bare pair of comparisons left beside it.
   The gap between that rule and its number is one measure — `LEAD`, four CSS
   pixels — which is the lead on whichever side the label lands and twice itself
   in the flip test. Written beside each site the pair could be edited apart,

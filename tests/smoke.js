@@ -4497,6 +4497,20 @@ assert(markDefs === 1 && markUses === 1 && markLiterals === 0,
   'one depth sets the median mark (' + markDefs + ' def, ' + markUses +
   ' reads, ' + markLiterals + ' literals)');
 
+// The sea rule is placed by the same division as every other mark, so on a
+// world whose range is narrower than the sea level itself the position can
+// come back outside the strip. Both ends of that hold are one decision about
+// how far a mark may leave its box: written as two comparisons beside the call,
+// one could be dropped while the other stayed, which lets the rule ride off the
+// right edge of a chart while still coming back on the left. Counted as text:
+// one lookup, its single read, no bare pair of comparisons left beside it.
+var holdDefs = (appSrc.match(/function clampTo\(/g) || []).length;
+var holdReads = (appSrc.match(/clampTo\(seaX, w\)/g) || []).length;
+var holdBare = (appSrc.match(/if \(seaX < 0\)|if \(seaX > w\)/g) || []).length;
+assert(holdDefs === 1 && holdReads === 1 && holdBare === 0,
+  'the sea rule is held inside the chart by one clamp (' + holdDefs + ' def, ' +
+  holdReads + ' reads, ' + holdBare + ' bare comparisons)');
+
 // The sea number beside its own rule sits one measure away, and the flip that
 // moves it to the other side of the line is measured against twice that same
 // gap. Written per site the pair could be edited apart, which puts the figure
