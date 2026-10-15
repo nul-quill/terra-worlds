@@ -1294,6 +1294,21 @@ assert(numDefs === 1 && numReads === 1 && numPad === 1,
   'the numbered phrase column pads through one builder (' + numDefs + ' def, ' +
   numReads + ' read, ' + numPad + ' padding)');
 
+// Two prints put a seed in front of its own sentence: each line of a
+// `--next --describe` chain, and a plain `--describe` over several seeds. Both
+// are the same pair with the same gap between its halves, so the join is one
+// builder. Written beside each branch the gap could be edited on one side only
+// — which leaves two listings of one set of sentences whose columns stop
+// lining up, while every line still names its own seed and looks traceable.
+// Counted as text: one definition, its two reads, and the one gap appearing
+// nowhere but inside that helper.
+var lineDefs = (rowSrc.match(/function seedLine\(/g) || []).length;
+var lineReads = (rowSrc.match(/seedLine\(/g) || []).length - lineDefs;
+var lineGap = (rowSrc.match(/'  '/g) || []).length;
+assert(lineDefs === 1 && lineReads === 2 && lineGap === 1,
+  'a line that names its seed joins through one builder (' + lineDefs +
+  ' def, ' + lineReads + ' reads, ' + lineGap + ' gaps)');
+
 // Two of those lists open with an entry that has no key of its own — the plain
 // biome map among the overlays, the following-the-window count among the grids —
 // and each needs a word beside it in every print. That word is one lookup, so a

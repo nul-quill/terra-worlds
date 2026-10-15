@@ -925,6 +925,14 @@ Conventions:
   `--describe` prints the bare summary for one seed and prefixes each line with
   its seed when several are given, matching the `--next --describe` form, so a
   block of sentences is still traceable to its phrase.
+  That prefix is one builder — `seedLine(seed, text)` — read by both forms, since
+  the two-space gap between a phrase and its sentence is the only thing they
+  share. Written beside each branch the gap could be edited on one side only,
+  which reads as two listings of one set of sentences whose columns stop lining
+  up while every line still names its own seed — close enough to a working
+  listing that nobody re-reads it, so the suite counts the definition, its two
+  reads and asks that the only two-space literal in the file be the one inside
+  that helper.
   Both views of a world go through one `describe()` call — the sidebar takes the
   string from the record it just generated, the CLI from its own — so the suite
   compares the two for one seed and one grid. A field the CLI forgets to pass,

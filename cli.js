@@ -456,7 +456,7 @@ if (opts.help) {
     if (opts.describe) {
       console.log(chainRows(chain, function (s) {
         var r = runWorld(s);
-        return s + '  ' + core.describe(r) +
+        return seedLine(s, core.describe(r)) +
           (opts.hist ? '\n' + histBlock(r) : '');
       }));
     } else if (opts.json) {
@@ -494,7 +494,7 @@ if (opts.help) {
       // a block of summaries can still be traced back to a phrase — the same
       // shape `--next --describe` prints.
       var saidLine = core.describe(result);
-      console.log(opts.seeds.length > 1 ? seed + '  ' + saidLine : saidLine);
+      console.log(opts.seeds.length > 1 ? seedLine(seed, saidLine) : saidLine);
       if (opts.hist) console.log(histBlock(result));
       return;
     }
@@ -562,6 +562,16 @@ function histBlock(result) {
 // together while the others still kept a line each.
 function chainRows(chain, line) {
   return chain.map(line).join('\n');
+}
+
+// A printed world that names the phrase it came from. Both forms that do this
+// — each line of a `--next --describe` chain, and a plain `--describe` over
+// several seeds — put the phrase in front of its sentence with the same gap,
+// so the pair is one builder: written beside each branch the gap could be
+// edited on one side only, which leaves two listings of the same sentences
+// whose columns no longer line up while every line still names its own seed.
+function seedLine(seed, text) {
+  return seed + '  ' + text;
 }
 
 function profile(result) {
