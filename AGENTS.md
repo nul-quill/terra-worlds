@@ -1659,6 +1659,12 @@ Conventions:
   builder. The suite counts both definitions, the five dumped lists and that one
   map walk. The numbered phrase column is outside the pair as well: its first
   field is a count rather than a name, so it keeps its own narrow width.
+  That narrow width is one builder too — `numberRow(no, text)` — since the
+  listing still prints a padded field over its words. Written beside the loop it
+  could be edited apart from the other listings while each still looked tidy
+  alone, and the two columns a reader scans would stop matching between one flag
+  and the next, so the suite counts the definition, its one read and the single
+  narrow pad inside the helper.
   Two of those lists open with an entry that has no key of its own — the plain
   biome map among the overlays, the `auto` count among the grids — and each
   needs a word beside it in every print. That word is one lookup,

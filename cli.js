@@ -171,6 +171,15 @@ function listingRow(key, text) {
   return String(key).padEnd(11) + text;
 }
 
+// The numbered column of `--phrases`. That listing's first field is a count
+// rather than a name, so it is narrower than the key column above and stays
+// outside `listingRow` on purpose. The shape it does share — a padded first
+// field and the words after it — is written once here, so a phrase listing
+// added later lines up with this one instead of buying a second gap.
+function numberRow(no, text) {
+  return String(no).padEnd(3) + text;
+}
+
 // One label of the plain stats table, held to the width the record measured.
 // The table is a column of names over their values, and the gap is the only
 // thing every row shares, so the pad is one lookup rather than a loop written
@@ -428,7 +437,7 @@ if (opts.help) {
   // The hand-picked seed phrases the `p` key walks. Each one is a whole
   // world in two words, so this is the shortest way to a good first render.
   core.phrases.forEach(function (p, i) {
-    console.log(String(i + 1).padEnd(3) + p);
+    console.log(numberRow(i + 1, p));
   });
 } else {
   var fs = require('fs');

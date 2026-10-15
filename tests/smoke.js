@@ -1280,6 +1280,20 @@ assert(rowDefs === 1 && rowLeft === 1 && dumpDefs === 1 && dumpReads === 5 &&
   'one row builder pads every listing (' + rowDefs + ' def, ' + dumpReads +
   ' dumped lists, ' + rowMapWalk + ' map walk, ' + rowLeft + ' padding)');
 
+// The numbered phrase column sits outside that builder on purpose — its first
+// field is a count rather than a name — but it is still a padded field over its
+// words, so that shape is one helper too. Written beside the loop it could be
+// edited apart from the other listings while each still looked tidy alone, and
+// the two columns a reader scans would stop matching between one flag and the
+// next. Counted as text: one definition, its single read, and the one narrow
+// pad living inside that helper.
+var numDefs = (rowSrc.match(/function numberRow\(/g) || []).length;
+var numReads = (rowSrc.match(/numberRow\(/g) || []).length - numDefs;
+var numPad = (rowSrc.match(/\.padEnd\(3\)/g) || []).length;
+assert(numDefs === 1 && numReads === 1 && numPad === 1,
+  'the numbered phrase column pads through one builder (' + numDefs + ' def, ' +
+  numReads + ' read, ' + numPad + ' padding)');
+
 // Two of those lists open with an entry that has no key of its own — the plain
 // biome map among the overlays, the following-the-window count among the grids —
 // and each needs a word beside it in every print. That word is one lookup, so a
