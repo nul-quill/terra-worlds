@@ -1436,6 +1436,17 @@
     return {bins: bins, hist: hist, peak: peak, lo: lo, span: span};
   }
 
+  // How tall one column of a silhouette is, as a share of the tallest bar. Both
+  // readers of that silhouette — the bars drawn on the page and the rows of
+  // blocks a terminal stacks — measure a count against the same peak, and both
+  // treat an empty peak as a flat row rather than dividing by zero. Written
+  // beside each reader the fallback could be edited apart, which lets a world
+  // with a single occupied column print full bars above its own ruler while its
+  // text profile came back empty — two plausible silhouettes of one grid.
+  function barShare(hist, peak, i) {
+    return peak ? hist[i] / peak : 0;
+  }
+
   // Height to bar index, clamped to the last bar: a cell sitting exactly on the
   // top of the range would otherwise fall one past the end.
   function binOf(h, lo, span, bins) {
@@ -1608,6 +1619,7 @@
     nextSeed: nextSeed,
     histogram: histogram,
     binOf: binOf,
+    barShare: barShare,
     palettes: PALETTES,
     shapes: SHAPES,
     channels: CHANNEL_LIST,

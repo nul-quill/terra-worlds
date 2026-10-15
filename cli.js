@@ -595,7 +595,7 @@ function profile(result) {
     var level = (rows - r) / rows;
     var line = '';
     for (var i = 0; i < h.bins; i++) {
-      var frac = h.peak ? h.hist[i] / h.peak : 0;
+      var frac = core.barShare(h.hist, h.peak, i);
       line += frac >= level ? '#' : ' ';
     }
     lines.push(line.replace(/\s+$/, ''));

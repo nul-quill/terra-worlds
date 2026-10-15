@@ -1414,7 +1414,7 @@
     for (i = 0; i < BINS; i++) {
       // Leave a strip along the bottom for the two corner labels, so the
       // tallest bar never sits on top of the numbers.
-      var bh = peak ? hist[i] / peak * (h - STRIP) : 0;
+      var bh = TerraCore.barShare(hist, peak, i) * (h - STRIP);
       var c = binEdge(lo, span, BINS, i + 0.5) < result.seaLevel ? wet : dry;
       var on = only < 0 ? (!member || member[i]) : i === only;
       var keep = on ? 1 : 0.45;

@@ -5280,6 +5280,26 @@ assert(beDefs === 1 && beReads === 3 && beInline === 0,
   'every bin position in the chart divides one way (' + beDefs + ' def, ' +
   beReads + ' reads, ' + beInline + ' inline)');
 
+// Two readers draw the same silhouette: the chart stacks bars from a count over
+// the tallest bar, the terminal's profile fills a column by that same share.
+// Both also have to agree about an empty peak, since a world with one occupied
+// column is otherwise a division by zero. Written beside each reader the
+// fallback could be edited apart, which lets the page show full bars above a
+// ruler whose own text profile came back empty — two plausible silhouettes of
+// one grid, so the suite counts the definition, its two reads, the single
+// division inside it and asks for no bare share left beside them.
+var bsDefs = (coreSrc.match(/function barShare\(/g) || []).length;
+var bsReads = (appSrc.match(/TerraCore\.barShare\(hist, peak, i\)/g) || [])
+  .length + (cliSrcForH.match(/core\.barShare\(h\.hist, h\.peak, i\)/g) || [])
+  .length;
+var bsBody = (coreSrc.match(/return peak \? hist\[i\] \/ peak : 0;/g) || [])
+  .length;
+var bsInline = (appSrc.match(/peak \? hist\[i\]/g) || [])
+  .concat(cliSrcForH.match(/h\.peak \? h\.hist\[i\]/g) || []).length;
+assert(bsDefs === 1 && bsReads === 2 && bsBody === 1 && bsInline === 0,
+  'both silhouettes scale a bar through one share (' + bsDefs + ' def, ' +
+  bsReads + ' reads, ' + bsBody + ' division, ' + bsInline + ' inline)');
+
 // The readout prints two counts of cells: how far a dry cell sits from the
 // shoreline, and how many cells drain behind a channel. Both are whole numbers
 // over the same grid, so both round through one lookup rather than a division

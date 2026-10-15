@@ -334,6 +334,14 @@ Conventions:
   the column count and every row string are compared against that seed's own
   `bins`, `hist` and `peak`. Note the block sits between the summary sentence
   and the ruler, so a reader of the raw output slices those two off first.
+  That share of `peak` is one lookup on both sides of the pair —
+  `TerraCore.barShare(hist, peak, i)` — read by the bars on the page and by the
+  rows of blocks in the terminal, since each is a count over the tallest bar with
+  the same empty-peak fallback. Written beside each reader the fallback could be
+  edited apart, which lets a world with one occupied column print full bars above
+  a ruler whose own profile came back empty — two plausible silhouettes of one
+  grid, so the suite counts the definition, its two reads, the single division
+  inside it and asks for no bare share left beside them.
   The `relief` row carries the spread and its two ends — `70 units (10-80)` —
   where the pair in brackets is what the chart prints at its corners. The record
   keeps those ends as `low` and `high`, already out of a hundred, so a terminal
