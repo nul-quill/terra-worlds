@@ -2648,6 +2648,21 @@ assert(rgbDefs === 1 && rgbReads === 2 && rgbInline === 0,
   'both encoders pick a pixel\'s channels through one lookup (' + rgbDefs +
   ' definition, ' + rgbReads + ' reads, ' + rgbInline + ' inline offsets)');
 
+// The CRC register behind every PNG chunk is 32 bits wide, and both halves of
+// the fold are that width held as ones: the seed the register starts on and
+// the mask it closes with. One word for both, since they are one decision about
+// the register — written beside each half the pair could be edited apart, which
+// leaves a checksum a strict decoder rejects while a lenient one still inflates
+// the stream, so the difference never shows until a file is opened elsewhere.
+// Counted as text: one declaration, its two reads, and no second copy of the
+// all-ones word left outside that declaration.
+var crcDefs = (encSrc.match(/var CRC_ALL = 0xffffffff;/g) || []).length;
+var crcReads = (encSrc.match(/(?:crc = CRC_ALL|crc \^ CRC_ALL)/g) || []).length;
+var crcWords = (encSrc.match(/0xffffffff/g) || []).length;
+assert(crcDefs === 1 && crcReads === 2 && crcWords === 1,
+  'both halves of the CRC fold share one register width (' + crcDefs +
+  ' declaration, ' + crcReads + ' reads, ' + crcWords + ' words)');
+
 // The name the browser gives a saved PNG is built from six of these fields:
 // seed, shape, palette, the grid, the multiplier and the checksum. A record
 // that could not refill all six would leave a person holding a file they

@@ -1919,6 +1919,14 @@ Conventions:
   byte-for-byte comparison above only catches that when the totals differ. The
   suite counts the definition, its two reads and asks for no bare second- or
   third-channel offset left beside them.
+  Inside that same encoder the CRC register is 32 bits wide, and both halves of
+  the fold are that width held as ones: the seed the register starts on, and the
+  mask it is closed with. One word — `CRC_ALL` — for both, since they are one
+  decision about the register. Written beside each half the pair could be edited
+  apart, which leaves a chunk whose CRC a strict decoder rejects while a lenient
+  one still inflates the stream — a file that opens here and not elsewhere, so
+  the suite counts the one declaration, its two reads and asks that the
+  all-ones word appear nowhere else in the file.
   Because it moves no count, the multiplier is shown in its own `export` row
   right under `grid`: the factor plus the pixel size it saves at. Both the row
   and `savePng()` read it through `exportFactor()`, so the number on screen is

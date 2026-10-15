@@ -278,8 +278,15 @@ function toPpm(img) {
 // the four standard chunks. Node's zlib does the compression, so there is no
 // dependency and no second code path — the pixels come from the same buffer
 // the PPM writer reads.
+// The register is 32 bits wide, and both ends of the fold are that width held
+// as ones: the seed the register starts on, and the mask it is closed with.
+// One word for both, since they are one decision about the register — written
+// beside each half the pair could be edited apart, which leaves a checksum a
+// strict decoder rejects while a lenient one still inflates the stream.
+var CRC_ALL = 0xffffffff;
+
 function crc32(buf) {
-  var c, crc = 0xffffffff;
+  var c, crc = CRC_ALL;
   for (var i = 0; i < buf.length; i++) {
     // Shift the whole register, not just the incoming byte: the byte is
     // folded in first, then eight rounds of the polynomial walk it through.
@@ -289,7 +296,7 @@ function crc32(buf) {
     }
     crc = c;
   }
-  return (crc ^ 0xffffffff) >>> 0;
+  return (crc ^ CRC_ALL) >>> 0;
 }
 
 function chunk(type, data) {
