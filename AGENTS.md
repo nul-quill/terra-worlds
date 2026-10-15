@@ -25,6 +25,13 @@ Conventions:
   terracing. Do not replace it with a fixed threshold.
 - Drainage walks the height field highest-rank-first with an index tie-break,
   otherwise terraced plateaus stop draining and rivers disappear.
+  That tie-break is one comparison — `lower(hv, hi, bv, bi)` — read five times:
+  the four neighbours of the walk and the rim sweep that picks a spillway.
+  Written beside each site the index half could be dropped on one of them, which
+  lets a flat basin hand its surplus to a cell uphill of itself while every
+  sloped cell still drains normally — a plausible network with one stagnant
+  tarn. The suite counts the definition, its five reads and asks for no bare
+  height comparison left beside them.
 - Lakes are closed depressions: the water surface is the minimum on a ring of
   radius `RIM` around the seed cell, and the basin is a flood fill capped at that
   surface. The old single-cell test (`gap > threshold` only) left one-pixel dots.

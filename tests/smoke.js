@@ -5111,6 +5111,22 @@ assert(shadeDefs === 1 && shadeReads === 4 && shadeInline === 0,
   'the four shade neighbours step off their edge one way (' + shadeDefs +
   ' def, ' + shadeReads + ' reads, ' + shadeInline + ' inline)');
 
+// The drainage walk and the spillway pick both ask the same question of a
+// neighbour: is it a downhill step, with equal heights settled by index. That
+// tie-break is what keeps a terraced plateau draining at all, and it is asked
+// five times — once per neighbour of the walk, once by the rim sweep. Written
+// beside each site the index half could be dropped on one of them, which lets
+// a flat basin hand its surplus to a cell uphill of itself while every
+// sloped cell still drains normally: a plausible network with one stagnant
+// tarn. The suite counts the one helper, its five reads and asks that no bare
+// height comparison be left beside them.
+var lowDefs = (coreSrc.match(/function lower\(/g) || []).length;
+var lowReads = (coreSrc.match(/lower\(hf\[/g) || []).length;
+var lowInline = (coreSrc.match(/hf\[i [-+] (1|width)\] < bh/g) || []).length;
+assert(lowDefs === 1 && lowReads === 5 && lowInline === 0,
+  'every downhill step is one comparison with a tie-break (' + lowDefs +
+  ' def, ' + lowReads + ' reads, ' + lowInline + ' inline)');
+
 // Both readers of an overlay's scale — the ramp that paints the pixels and the
 // hover that prints the number under the cursor — are the same division of a
 // value inside its own pair of cuts. Written beside each reader the subtraction
