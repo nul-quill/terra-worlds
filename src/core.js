@@ -79,6 +79,16 @@
     return useLog ? Math.log(1 + v) : v;
   }
 
+  // One channel of a ramp's colour. A ramp blends two palette triples and the
+  // three halves of that blend are the same sum with a different index, so the
+  // shape is written once and each channel is one read of it. Beside each
+  // channel the sum could be edited apart until a shore tinted one channel
+  // harder than its neighbours, which reads as a slightly warm coastline
+  // rather than as a broken triple.
+  function rampChannel(lo, hi, t, n) {
+    return lo[n] + (hi[n] - lo[n]) * t;
+  }
+
   // Bounds on one shaded pixel. The two ends are one decision — how far a
   // slope may darken or lighten its own colour — so they are written together:
   // a low end kept beside the call and a high end kept beside the helper could
@@ -1291,9 +1301,9 @@
       var v = scaleValue(src[i], useLog);
       var t = scaleShare(v, sc);
       var o = i * 4;
-      out[o] = lo[0] + (hi[0] - lo[0]) * t;
-      out[o + 1] = lo[1] + (hi[1] - lo[1]) * t;
-      out[o + 2] = lo[2] + (hi[2] - lo[2]) * t;
+      out[o] = rampChannel(lo, hi, t, 0);
+      out[o + 1] = rampChannel(lo, hi, t, 1);
+      out[o + 2] = rampChannel(lo, hi, t, 2);
       out[o + 3] = 255;
     }
     return { width: w, height: h, data: out, channel: key };

@@ -544,6 +544,13 @@ Conventions:
   curve — still a plausible gradient beside its own caption, so the suite counts
   the definition, its two reads, the single log inside it and asks for no bare
   transform left beside them.
+  The blend those three channels are written with is one shape too —
+  `rampChannel(lo, hi, t, n)` — since a ramp's triple is the same sum with a
+  different index. Written beside each channel the pair could be edited apart
+  until a shore tinted one channel harder than its neighbours, which reads as a
+  slightly warm coastline rather than as a broken triple, so the suite counts the
+  definition, its three reads, the single sum inside it and asks for no inline
+  triple left beside them.
   The `lake` overlay is the one exception to the percentile rule: the mask is
   already normalised by its own basin (1..60 steps), and most of a grid is dry,
   so the 98% mark of a world with two small tarns is still zero. It scales over

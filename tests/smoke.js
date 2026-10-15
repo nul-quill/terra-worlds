@@ -5248,6 +5248,21 @@ assert(svDefs === 1 && svReads === 2 && svLog === 1 && svInline === 0,
   'both overlay readers compress one way (' + svDefs + ' def, ' + svReads +
   ' reads, ' + svLog + ' log, ' + svInline + ' inline)');
 
+// A ramp blends two palette triples, and that blend is three sums of one shape:
+// red, green and blue each keep their own share of the low colour and hand the
+// rest to the high one. Written beside each channel the sum could be edited
+// apart until a shore tinted one channel harder than its neighbours, which
+// reads as a slightly warm coastline rather than as a broken triple — so the
+// suite counts the definition, its three reads, the single sum inside it and
+// asks for no inline triple left beside them.
+var rcDefs = (coreSrc.match(/function rampChannel\(/g) || []).length;
+var rcReads = (coreSrc.match(/= rampChannel\(lo, hi, t, /g) || []).length;
+var rcSum = (coreSrc.match(/return lo\[n\] \+ \(hi\[n\] - lo\[n\]\) \* t;/g) || []).length;
+var rcInline = (coreSrc.match(/lo\[\d\] \+ \(hi\[\d\]/g) || []).length;
+assert(rcDefs === 1 && rcReads === 3 && rcSum === 1 && rcInline === 0,
+  'every channel of a ramp blends one way (' + rcDefs + ' def, ' + rcReads +
+  ' reads, ' + rcSum + ' sum, ' + rcInline + ' inline)');
+
 // Inside the chart, a bin's two ends and the middle of a bar are the same
 // division of a bin slot by the count, scaled by the range. Three readers need
 // that pair: the caption of a hovered bar, and the comparison that picks a
