@@ -3163,6 +3163,24 @@ assert(pointTotal > 20 && usedNames.length === POINTS8.length,
   'spillways use the whole compass (' + usedNames.length + ' of ' +
   POINTS8.length + ' points, ' + pointTotal + ' basins)');
 
+// Both halves of that bucket — how wide a step is, and where it wraps — are the
+// length of the list the point is read out of. Written as two numbers beside the
+// division, the width could be widened on one side only, which lets a bearing
+// come back from a bucket its own wrap never visits: still eight plausible
+// points, one of them unreachable. So count the one lookup, its three reads and
+// ask for no bare count of the points left beside them.
+var compassLookup =
+  /var points = COMPASS\.length;/.exec(coreSrc);
+var compassBody = /function bearing\(dx, dy\) \{([\s\S]*?)\n    \}/
+  .exec(coreSrc);
+var compassReads = compassBody
+  ? compassBody[1].match(/points/g).length - 1 : 0;
+var compassBare =
+  (coreSrc.match(/% 8;|\/ 45\)/g) || []).length;
+assert(compassLookup && compassReads === 3 && compassBare === 0,
+  'the compass bucket is its own list length (' + compassReads +
+  ' reads, ' + compassBare + ' bare)');
+
 // The outlet marks are the third array in that trio, and they have to stay one
 // per basin too: `result.spillway` holds the basin's own number, so a world
 // with 42 tarns needs 42 marked rim cells and 42 distinct numbers among them.

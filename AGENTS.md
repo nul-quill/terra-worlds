@@ -86,6 +86,13 @@ Conventions:
   The bucket stays 45 degrees with the north offset: coarsen it and a whole set
   of points goes unused, so the suite walks every hand-picked world and asks
   that all eight points appear somewhere in that array.
+  Both halves of that bucket — the width of a step and the wrap that keeps the
+  index inside the list — are one lookup, `COMPASS.length`, since each is only
+  the point count of the list the bearing is read out of. Written as two numbers
+  beside the division, the width could be widened on one side only, which lets a
+  bearing come back from a bucket its own wrap never visits — still eight
+  plausible points, one of them unreachable — so the suite counts the definition,
+  its three reads inside `bearing()` and asks for no bare count left beside them.
   The spillway cell itself is marked in `result.spillway` (one cell per basin),
   which the readout prints as `outlet` and the river pass uses to keep a
   basin's catchment drawn even when accumulation alone would cut it off.

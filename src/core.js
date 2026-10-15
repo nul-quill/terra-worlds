@@ -783,8 +783,11 @@
 
     function bearing(dx, dy) {
       var deg = Math.atan2(dy, dx) * 180 / Math.PI + 90;
-      var step = Math.round(deg / 45) % 8;
-      if (step < 0) step += 8;
+      // One bucket per entry, so the width of a bucket and the wrap are both
+      // the length of the list above rather than two counts beside it.
+      var points = COMPASS.length;
+      var step = Math.round(deg / (360 / points)) % points;
+      if (step < 0) step += points;
       return COMPASS[step];
     }
 
