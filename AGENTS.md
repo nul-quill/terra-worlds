@@ -959,6 +959,13 @@ Conventions:
   shrink to a ribbon — still a plausible shape for a narrow browser, so the suite
   counts the definition, its two reads, the single floor inside it and asks for no
   second clamped rounding left beside the pair.
+  Inside that same grid the noise lattice is two counts of one ratio — the column
+  count, and a row count derived from it over the grid's own aspect by
+  `latticeRows(cols, height, width)`. Written as two expressions the column count
+  could be edited on one axis only, which measures a wide world as a grid of tall
+  rectangles while every pinned column count still looks right on its own; the
+  suite counts the definition, its single read, the one floor inside it and asks
+  for no bare rounding of that ratio left beside the pair.
   Because the fill runs once on the parsed options rather than inside a print
   branch, the `--next` chain — which builds its worlds through its own option
   copies — reports the same derived pair as the plain listing. The suite checks

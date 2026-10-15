@@ -428,6 +428,17 @@
     return Math.max(16, Math.round(value || fallback));
   }
 
+  // The other axis of the noise lattice. Given the column count, the rows
+  // follow the grid's own aspect so a cell stays roughly square, held above the
+  // smallest band worth sampling. The column count arrives as an argument
+  // rather than as a second literal beside the division, since both axes are
+  // one shape: written twice the ratio could be edited on one axis only, which
+  // measures a wide world as a grid of tall rectangles while every pinned
+  // column count still looks right on its own.
+  function latticeRows(cols, height, width) {
+    return Math.max(3, Math.round(cols * height / width));
+  }
+
   // A neighbour for the shade pass. Every one of the four is the same shape:
   // step off this cell in one direction, unless that direction is already the
   // edge of the grid, in which case the cell reads itself. Written beside each
@@ -468,7 +479,7 @@
 
     // Lattice counts: proportional to aspect so cells stay roughly square.
     var cols = 5;
-    var rows = Math.max(3, Math.round(5 * height / width));
+    var rows = latticeRows(cols, height, width);
 
     var n = width * height;
     var hf = new Float32Array(n);

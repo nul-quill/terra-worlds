@@ -5140,6 +5140,25 @@ assert(sideDefs === 1 && sideReads === 2 && sideFloor === 1 && sideInline === 0,
   'both grid sides are one rounded count with one floor (' + sideDefs + ' def, ' +
   sideReads + ' reads, ' + sideFloor + ' floor, ' + sideInline + ' inline)');
 
+// The two axes of the noise lattice are one ratio: the rows follow the columns
+// over the grid's own aspect, with one floor under them. Written as two
+// separate expressions the column count could be edited on one axis only,
+// which measures a wide world as a grid of tall rectangles while every pinned
+// column count still looks right on its own — a plausible enough picture that
+// nobody re-measures it. The suite counts the one helper, its single read, the
+// one floor inside it and asks for no bare rounding of that ratio left beside
+// the pair.
+var latDefs = (coreSrc.match(/function latticeRows\(/g) || []).length;
+var latReads = (coreSrc.match(/= latticeRows\(cols, height, width\)/g) || [])
+  .length;
+var latFloor = (coreSrc.match(/Math\.max\(3, Math\.round\(cols \*/g) || [])
+  .length;
+var latInline = (coreSrc.match(/Math\.round\(5 \* height \/ width\)/g) || [])
+  .length;
+assert(latDefs === 1 && latReads === 1 && latFloor === 1 && latInline === 0,
+  'both lattice axes follow one ratio with one floor (' + latDefs + ' def, ' +
+  latReads + ' reads, ' + latFloor + ' floor, ' + latInline + ' inline)');
+
 // The shade pass compares a cell with each of its four neighbours, and every
 // one of those reads is the same shape: step off in one direction unless that
 // direction is already the edge. Written beside each axis the step could be
