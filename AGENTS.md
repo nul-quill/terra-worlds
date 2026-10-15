@@ -537,13 +537,16 @@ Conventions:
   of the low end could be dropped on one of them, which prints a figure beside a
   colour measured from a different floor — still a plausible ramp, so the suite
   counts the definition, its two reads and the single division inside it.
-  Both of those readers also compress their field through one `scaleValue(v,
+  Every reader of that field also compresses it through one `scaleValue(v,
   useLog)`, since the two heavy-tailed overlays are logged in front of the same
-  pair of cuts. Written beside each reader the log could be dropped on one of
-  them, which prints a number for a cell whose colour was mixed against another
-  curve — still a plausible gradient beside its own caption, so the suite counts
-  the definition, its two reads, the single log inside it and asks for no bare
-  transform left beside them.
+  pair of cuts: the sample those two cuts are taken from, the ramp that paints
+  the pixels, and the hover that prints the number under the cursor. Written
+  beside each reader the log could be dropped on one of them, which prints a
+  number for a cell whose colour was mixed against another curve — or cuts a
+  scale from raw values while the pixels beside it were logged — still a
+  plausible gradient beside its own caption, so the suite counts the definition,
+  its three reads, the single log inside it and asks for no bare transform left
+  beside them.
   The blend those three channels are written with is one shape too —
   `rampChannel(lo, hi, t, n)` — since a ramp's triple is the same sum with a
   different index. Written beside each channel the pair could be edited apart

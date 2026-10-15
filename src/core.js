@@ -1266,7 +1266,7 @@
   function scaleFor(values, n, useLog) {
     var sample = new Array(n);
     for (var i = 0; i < n; i++) {
-      sample[i] = useLog ? Math.log(1 + values[i]) : values[i];
+      sample[i] = scaleValue(values[i], useLog);
     }
     sample.sort(byNumber);
     var lo = sample[quantileIndex(0.02, n)];
