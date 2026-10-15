@@ -2258,6 +2258,20 @@ tableOut.forEach(function (line) {
 assert(colBad.length === 0,
   'the plain table pads to its own widest label (' + (widestKey + 1) +
   ' columns, off at ' + colBad.join(',') + ')');
+// That gap is applied by one lookup — `padLabel()` — rather than by a loop
+// written beside the row that prints it. Split, one row could keep its own pad
+// while the next dropped to a bare concatenation, which reads as two columns of
+// numbers set by two different hands: close enough to look right in a
+// screenshot of a terminal that nobody re-measures. Counted as text: one
+// definition, the one read beside the write, and exactly one pad loop — the one
+// inside that helper.
+var padSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+var padDefs = (padSrc.match(/function padLabel\(/g) || []).length;
+var padReads = (padSrc.match(/padLabel\(/g) || []).length - padDefs;
+var padLoops = (padSrc.match(/while \(label\.length/g) || []).length;
+assert(padDefs === 1 && padReads === 1 && padLoops === 1,
+  'the plain table pads every label through one lookup (' + padDefs +
+  ' definition, ' + padReads + ' reads, ' + padLoops + ' pad loops)');
 
 // A lone size flag should not decide the other side by accident. `--width 100`
 // on its own used to mean 100x300 — a letterbox strip — because the untouched

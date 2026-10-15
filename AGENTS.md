@@ -767,6 +767,13 @@ Conventions:
   would otherwise print its value flush against the name. The suite re-measures
   the widest key of the JSON line and asks every row of the table for that
   row's own gap, so the pad cannot drift from the labels it is set by.
+  That gap is applied by one lookup — `padLabel(key, width)` — rather than by a
+  loop written beside the row that prints it. Split, one row could keep its own
+  pad while the next dropped to a bare concatenation, which reads as two columns
+  of numbers set by two different hands — close enough to look right in a
+  screenshot of a terminal that nobody re-measures. The suite counts the one
+  definition, its single read and asks that the only pad loop in the file be the
+  one inside that helper.
 - `nextSeed(value)` derives the next seed from the current one (FNV-1a over the
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not

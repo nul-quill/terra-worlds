@@ -171,6 +171,18 @@ function listingRow(key, text) {
   return String(key).padEnd(11) + text;
 }
 
+// One label of the plain stats table, held to the width the record measured.
+// The table is a column of names over their values, and the gap is the only
+// thing every row shares, so the pad is one lookup rather than a loop written
+// beside the write: a row could keep its own while the next dropped to a bare
+// concatenation, which reads as two columns of numbers set by two different
+// hands — close enough to look fine in a screenshot of a terminal.
+function padLabel(key, width) {
+  var label = String(key);
+  while (label.length < width) label += ' ';
+  return label;
+}
+
 // The keys of the scheme table, in the order the table declares them. That
 // table is a map rather than a list of entries, so its walk is its own shape
 // beside the three list walks in `keyList`. Three prints need it — the flag
@@ -694,9 +706,7 @@ function summarise(seed, result, name, asJson) {
   keys.forEach(function (k) { if (k.length > padTo) padTo = k.length; });
   padTo += 1;
   keys.forEach(function (k) {
-    var label = k;
-    while (label.length < padTo) label += ' ';
-    lines.push(label + rec[k]);
+    lines.push(padLabel(k, padTo) + rec[k]);
   });
   return lines.join('\n');
 }
