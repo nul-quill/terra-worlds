@@ -2080,6 +2080,14 @@ Conventions:
   identical to the line above it, which is the shape a half-applied edit leaves
   behind. Keep notes in one place: a convention belongs in AGENTS.md, the
   reader-facing description in README.md, and neither repeats itself.
+- Every script opens with a comment naming what it is, since a terminal reads
+  these four files one at a time and the first lines are the only summary a
+  `cat` gives before the first statement. The suite asks each of `app.js`,
+  `cli.js`, `src/core.js` and `tests/smoke.js` for a `/*` on its first
+  non-blank line and a closing `*/` within the first few, so a header cannot
+  swallow the body. A dropped header reads as a file whose purpose has to be
+  inferred from its functions — the one thing a four-file split should not
+  cost a reader, and an orphan fragment left above the opener costs the same.
 
 Verify with:
 

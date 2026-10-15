@@ -1,5 +1,4 @@
-      // The spread plus its two ends: the difference alone cannot say whether a
-/* Terra app shell — draws the core result onto a crisp canvas. */
+      /* Terra app shell — draws the core result onto a crisp canvas. */
 (function () {
   'use strict';
 

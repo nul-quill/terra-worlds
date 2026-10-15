@@ -6025,6 +6025,22 @@ assert(cutBad.length === 0,
     dups.join(',') + ')');
 });
 
+  // Each script is also read in a terminal, where the first lines are the only
+  // summary a `cat` gives before the first statement. So each one opens with a
+  // comment naming what it is, and that shape is checked rather than assumed: the
+  // first non-blank line has to be a comment opener, and the block has to close
+  // inside the first few lines so the header cannot swallow the body. A dropped
+  // header reads as a file whose purpose has to be inferred from its functions,
+  // which is the one thing a four-file split should not cost a reader.
+  ['app.js', 'cli.js', 'src/core.js', 'tests/smoke.js'].forEach(function (js) {
+    var jscr = require('fs')
+      .readFileSync(__dirname + '/../' + js, 'utf8')
+      .replace(/\r/g, '');
+    var head = jscr.replace(/^\s+/, '').split('\n').slice(0, 6).join(' ');
+    assert(head.indexOf('/*') === 0 && head.indexOf('*/') > 0,
+      js + ' opens with a header of its own (' + head.slice(0, 28) + ')');
+  });
+
 console.log('\nsummary: ' + a.width + 'x' + a.height +
   ' land=' + Math.round(land * 100) + '% water=' + Math.round(water * 100) +
   '% rivers=' + a.stats.rivers + ' biomes=' + keys.length + ' in ' + a.stats.ms + 'ms');
