@@ -1962,6 +1962,19 @@ Conventions:
   covered by the rule the moment it gets a `== null` default. Compare the pair as
   numbers: `0.7` in the core and `'0.70'` in the shell are one value, and a text
   comparison would report a mismatch that no rendering can show.
+  Two of those sliders are counted knobs rather than fractions — how many terrace
+  steps, how much of the grid keeps a channel — and both are read through one
+  `wholeOption(value, fallback)`, since each is the same three steps (round the
+  caller's number, hold it at or above zero, fall back to that knob's own
+  default). Written beside each knob the rounding could be edited on one of them,
+  which lets one slider move in whole steps while its neighbour keeps a fraction
+  the field then reads two ways — still a plausible pair of controls beside their
+  own captions, so the suite counts the definition, its two reads, the single
+  floor inside it and asks for no bare rounding of either option left beside them.
+  Because those two fallbacks now sit inside that lookup, the three-way scrape
+  accepts either shape: an inline `== null` default or the number passed to
+  `wholeOption()`. A scrape that knew only the first would call those sliders
+  unreadable and fail for a reason no rendering can show.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
   That rule is placed by the same division as every other mark, so on a world

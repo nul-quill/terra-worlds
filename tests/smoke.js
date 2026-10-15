@@ -5173,6 +5173,25 @@ assert(shadeDefs === 1 && shadeReads === 4 && shadeInline === 0,
   'the four shade neighbours step off their edge one way (' + shadeDefs +
   ' def, ' + shadeReads + ' reads, ' + shadeInline + ' inline)');
 
+// The two knobs a caller passes as a count — how many terrace steps, how much
+// of the grid keeps a channel — are the same three-step reading: round the
+// caller's number, hold it at or above zero, fall back to that knob's own
+// default. Written beside each knob the rounding could be edited on one of
+// them, which lets one slider move in whole steps while its neighbour keeps a
+// fraction the field then reads two ways — still a plausible pair of controls
+// beside their own captions. The suite counts the one helper, its two reads,
+// the single floor inside it and asks for no bare rounding of either option
+// left beside them.
+var wholeDefs = (coreSrc.match(/function wholeOption\(/g) || []).length;
+var wholeReads = (coreSrc.match(/= wholeOption\(/g) || []).length;
+var wholeFloor = (coreSrc.match(/Math\.max\(0, Math\.round\(/g) || []).length;
+var wholeInline = (coreSrc.match(/\? 0 : Math\.round\(opts\.|\? 90 : Math\.max\(0/g) || [])
+  .length;
+assert(wholeDefs === 1 && wholeReads === 2 && wholeFloor === 1 && wholeInline === 0,
+  'both counted knobs are one rounded number with one floor (' + wholeDefs +
+  ' def, ' + wholeReads + ' reads, ' + wholeFloor + ' floor, ' + wholeInline +
+  ' inline)');
+
 // The drainage walk and the spillway pick both ask the same question of a
 // neighbour: is it a downhill step, with equal heights settled by index. That
 // tie-break is what keeps a terraced plateau draining at all, and it is asked
@@ -6122,8 +6141,12 @@ var sliderBad = [];
 ['detail', 'polar', 'terraces', 'hillshade', 'rivers'].forEach(function (sName) {
   // The core's own fallback is read from its source rather than repeated here,
   // so the comparison stays core-vs-shell rather than a copy of either.
-  var sCore = new RegExp('opts\\.' + sName +
-    ' == null \\?\\s*([\\d.]+)').exec(coreSrc);
+  // A knob is read either as an inline `== null` fallback or through the one
+  // whole-number option reader, so both shapes are accepted and the number is
+  // taken from whichever half matched.
+  var sMatch = new RegExp('opts\\.' + sName +
+    '(?: == null \\?\\s*([\\d.]+)|,\\s*([\\d.]+))').exec(coreSrc);
+  var sCore = sMatch && { 1: sMatch[1] === undefined ? sMatch[2] : sMatch[1] };
   var sShell = new RegExp('inputs\\.' + sName + '\\.value = \'([\\d.]+)\'')
     .exec(appSrc);
   var sInput = new RegExp('<input id="' + sName + '"[^>]*>').exec(html);

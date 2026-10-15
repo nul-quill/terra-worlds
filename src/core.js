@@ -449,6 +449,17 @@
     return hf[i + (atEdge ? 0 : d)];
   }
 
+  // A knob a caller passes as a count: the number of terrace steps, or how
+  // much of the grid keeps a channel. Both are the same three-step reading —
+  // round the caller's number, hold it at or above zero, fall back to that
+  // knob's own default. Written beside each knob the rounding could be edited
+  // on one of them, which lets a slider step move one control in whole
+  // increments while its neighbour keeps a fraction the field then reads two
+  // ways — still a plausible pair of knobs beside their own captions.
+  function wholeOption(value, fallback) {
+    return value == null ? fallback : Math.max(0, Math.round(value));
+  }
+
   /* ------------------------------------------------------------------ *
    * Main generation entry point.
    * Returns { width, height, data, biome, height, stats }.
@@ -464,10 +475,10 @@
 
     var seaLevel = opts.seaLevel == null ? 0.48 : clamp01(opts.seaLevel);
     var detail = opts.detail == null ? 0.35 : clamp01(opts.detail);
-    var terraces = opts.terraces == null ? 0 : Math.round(opts.terraces);
+    var terraces = wholeOption(opts.terraces, 0);
     var hillshade = opts.hillshade == null ? 0.55 : clamp01(opts.hillshade);
     var polar = opts.polar == null ? 0.7 : clamp01(opts.polar);
-    var riverMin = opts.rivers == null ? 90 : Math.max(0, Math.round(opts.rivers));
+    var riverMin = wholeOption(opts.rivers, 90);
     var shape = opts.shape || 'continents';
     var dither = opts.dither !== false;
     // Hypsometric contours: thin bands at fixed height intervals. Off by
