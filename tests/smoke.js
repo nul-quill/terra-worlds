@@ -5137,6 +5137,20 @@ assert(posDefs === 1 && posCalls === 2 && posGuard === 2 && !posInline,
   'both canvases map a pointer through one fraction (' + posDefs + ' def, ' +
   posCalls + ' reads, ' + posGuard + ' guards, stray ' + posInline + ')');
 
+// Every one of those reads starts from a layout box, and three places ask for
+// that box: the grid is counted off the map, a pointer is mapped onto the
+// buffer through it, and a bin is picked out of the chart. Three copies of the
+// same measurement could be edited apart — one could gain a fallback width
+// while another stayed bare — which lets a pointer name one column while the
+// bars beside it were counted against another. Counted as text: one lookup, a
+// read per site, and the only box measurement in the shell sitting inside it.
+var boxDefs = (appSrc.match(/function layoutBox\(/g) || []).length;
+var boxCalls = (appSrc.match(/= layoutBox\((?:view|histCanvas)\)/g) || []).length;
+var boxBare = (appSrc.match(/\.getBoundingClientRect\(/g) || []).length;
+assert(boxDefs === 1 && boxCalls === 3 && boxBare === 1,
+  'every layout read goes through one box lookup (' + boxDefs + ' def, ' +
+  boxCalls + ' reads, ' + boxBare + ' bare measurements)');
+
 // Three paths name a hovered cell: the keyboard walk, the reader behind the
 // `at=` pair, and the readout itself. Each ends by keeping its pair inside the
 // grid, and that bound is one lookup rather than a pair of comparisons written

@@ -378,10 +378,21 @@
     return hover.x < 0;
   }
 
+  // How wide a canvas actually is on the page. Three places ask that question
+  // — the grid is counted off the map's own box, a pointer is mapped onto the
+  // buffer through it, and a bin is picked out of the chart's — and each needs
+  // a box that may measure nothing while a layout is still settling. Written
+  // beside each site the read could gain a guard on one of them only, which
+  // lets a pointer divide by a zero-width box while the grid beside it still
+  // rounded safely: the crosshair then names one column and the bars another.
+  function layoutBox(el) {
+    return el.getBoundingClientRect();
+  }
+
   function render() {
     var opts = readOptions();
     writeHash();
-    var rect = view.getBoundingClientRect();
+    var rect = layoutBox(view);
     var dpr = pixelScale();
 
     // Native grid: keep cells chunky so the pixel look survives upscaling.
@@ -629,7 +640,7 @@
   // could be edited apart, and the hover mark would then sit on one cell while
   // the readout named the neighbour to its left.
   function pointerPos(ev) {
-    var rect = view.getBoundingClientRect();
+    var rect = layoutBox(view);
     var f = pointerFraction(ev, rect);
     return { x: f.x * view.width, y: f.y * view.height };
   }
@@ -1953,7 +1964,7 @@
   // would have.
   function hoverHistogram(ev, toggleSame) {
     if (!histState) return;
-    var rect = histCanvas.getBoundingClientRect();
+    var rect = layoutBox(histCanvas);
     var f = pointerFraction(ev, rect);
     var bin = Math.floor(f.x * histState.bins);
     // A touch has no hover-out, so nothing would ever clear the band again:

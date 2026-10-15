@@ -1107,6 +1107,15 @@ Conventions:
     rather than writing a second division of its own. The suite counts the
     definition, the two reads, both guards inside the helper and asks that the
     chart hold no bare division left beside it.
+    Every one of those reads starts from a layout box, and that box is one
+    lookup too — `layoutBox(el)` — since three places ask for it: the grid is
+    counted off the map's own box, a pointer is mapped onto the buffer through
+    it, and a bin is picked out of the chart's. Written beside each site the
+    read could gain a fallback width on one of them only, which lets a pointer
+    name one column while the bars beside it were counted against another —
+    both still plausible next to their own caption, so the suite counts the
+    definition, the three reads and asks that the only box measurement in the
+    shell be the one inside that helper.
     Those two paths then run one shared sequence — `hoverFromPointer(ev)` —
     which moves the mark, prints the readout, repaints and writes the hash, in
     that order. A fifth step added to the mouse branch only would keep a
