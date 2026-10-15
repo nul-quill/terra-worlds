@@ -1229,6 +1229,16 @@
     function countText(n) {
       return String(n);
     }
+    // Each row is two cells: a name and its figure. Both are a node with a
+    // text on it, so the pair is one builder read once per half. Written beside
+    // each half the creation could gain a class on one of them, or drop its
+    // text assignment, which reads as a column of figures with no names beside
+    // them — a table that still looks tidy in a screenshot.
+    function statCell(tag, text) {
+      var el = document.createElement(tag);
+      el.textContent = text;
+      return el;
+    }
     var rows = [
       // First so a printed page or a screenshot of the sidebar still says
       // which phrase the world came from — the hash is not on paper.
@@ -1270,12 +1280,8 @@
     rows.push(['generate', s.ms + ' ms']);
     statsBox.textContent = '';
     rows.forEach(function (row) {
-      var dt = document.createElement('dt');
-      dt.textContent = row[0];
-      var dd = document.createElement('dd');
-      dd.textContent = row[1];
-      statsBox.appendChild(dt);
-      statsBox.appendChild(dd);
+      statsBox.appendChild(statCell('dt', row[0]));
+      statsBox.appendChild(statCell('dd', row[1]));
     });
   }
 

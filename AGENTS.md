@@ -1610,6 +1610,13 @@ Conventions:
   it does not, which reads as a swatch a shade off its own row — close enough
   to look right in a screenshot, so the suite asks for the one read through the
   printer and for no bare triple left beside it.
+  Each row of the stats list is two cells — a name and its figure — and both
+  halves are one shape: a node with a text on it, built by `statCell(tag, text)`
+  and read once per half. Written beside each half the creation could gain a
+  class on one of them, or drop its text assignment, which reads as a column of
+  figures with nothing naming them — a list that still looks tidy in a
+  screenshot, so the suite counts the definition, the two reads and asks for no
+  bare cell creation left beside them.
   The count of occupied classes is one lookup — `TerraCore.biomeCount(counts)` —
   that the `biomes` row and the record's `biomes` field both read, since the
   classification pass only writes a key when it hands that key a cell. Two

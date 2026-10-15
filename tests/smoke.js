@@ -5648,6 +5648,19 @@ assert(spanDefs === 1 && spanReads === 3 && spanInline === 1,
   'every legend span is built by one helper (' + spanDefs + ' def, ' +
   spanReads + ' reads, ' + spanInline + ' inside)');
 
+// A stats row is two cells — a name and its figure — and both are the same
+// shape: a node with a text on it. Written beside each half the creation could
+// gain a class on one of them, or drop its text assignment, which reads as a
+// column of figures with nothing naming them: a list that still looks tidy in a
+// screenshot of the sidebar. Counted as text: one definition, one read per half
+// of a row, and no bare pair of cell creations left beside them.
+var cellDefs = (appSrc.match(/function statCell\(/g) || []).length;
+var cellReads = (appSrc.match(/statCell\('(?:dt|dd)'/g) || []).length;
+var cellInline = (appSrc.match(/createElement\('d[td]'\)/g) || []).length;
+assert(cellDefs === 1 && cellReads === 2 && cellInline === 0,
+  'both halves of a stats row are built by one helper (' + cellDefs + ' def, ' +
+  cellReads + ' reads, ' + cellInline + ' bare)');
+
 // The two corner labels of the relief strip are the same conversion — a scaled
 // height with no word beside it — so that shape is one builder too. Written at
 // each corner the conversion could lose its `String` on one side only, which
