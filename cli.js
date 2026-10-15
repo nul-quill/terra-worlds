@@ -426,7 +426,7 @@ if (opts.help) {
       console.log(chain.map(function (s) {
         var r = runWorld(s);
         return s + '  ' + core.describe(r) +
-          (opts.hist ? '\n' + profile(r).join('\n') : '');
+          (opts.hist ? '\n' + histBlock(r) : '');
       }).join('\n'));
     } else if (opts.json) {
       // One record per seed in the chain, in the order the Reroll button
@@ -443,7 +443,7 @@ if (opts.help) {
       // from a terminal without opening the page.
       console.log(chain.map(function (s) {
         if (!opts.hist) return s;
-        return s + '\n' + profile(runWorld(s)).join('\n');
+        return s + '\n' + histBlock(runWorld(s));
       }).join('\n'));
     }
     return;
@@ -464,7 +464,7 @@ if (opts.help) {
       // shape `--next --describe` prints.
       var saidLine = core.describe(result);
       console.log(opts.seeds.length > 1 ? seed + '  ' + saidLine : saidLine);
-      if (opts.hist) console.log(profile(result).join('\n'));
+      if (opts.hist) console.log(histBlock(result));
       return;
     }
     // The extension picks the encoder: .png gets the PNG writer, anything
@@ -489,7 +489,7 @@ if (opts.help) {
     // numbers describe, for a terminal with no chart to draw into. With
     // `--json` the record is the whole output — one line per world is what
     // makes it pipeable — and those two fields are enough to redraw this.
-    if (opts.hist && !opts.json) console.log(profile(result).join('\n'));
+    if (opts.hist && !opts.json) console.log(histBlock(result));
   });
 }
 
@@ -513,6 +513,14 @@ function rulerMarks(result, h) {
 // caption shows, and the width behind the column count is written once.
 function histPass(result) {
   return core.histogram(result, core.binCount(core.histWidth));
+}
+
+// The profile as one string. Every printed form that stacks a silhouette —
+// each branch of the chain and the plain per-seed loop — reads this rather
+// than joining the rows itself, so a block cannot be assembled with one
+// separator in one form and another in the next.
+function histBlock(result) {
+  return profile(result).join('\n');
 }
 
 function profile(result) {

@@ -788,6 +788,14 @@ Conventions:
   ending in that seed's checksum, which is what lets a pasted block of bars be
   matched to its own line of JSON. The suite reads both forms and compares the
   two checksums per seed.
+  Those blocks are stacked by one writer — `histBlock(result)` — read by all
+  four places a silhouette is printed: each branch of the chain and both
+  branches of the plain per-seed loop. Written beside each call the join could
+  be edited apart, which leaves a block whose rows run together in one form
+  while another still separates them — a seam too subtle to notice next to a
+  caption that reads correctly either way, so the suite counts the definition,
+  its four reads and asks that the single join of a profile be the one inside
+  that helper.
   The rest of each chain caption is compared the same way — the two ends of the
   range, the sea level and the median — against that seed's own record rather
   than against the first one. Each form reads its figures from the world it just

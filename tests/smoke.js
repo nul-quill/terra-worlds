@@ -4233,6 +4233,18 @@ assert(/clientWidth \|\| TerraCore\.histWidth/.test(appSrc) &&
   'one sidebar width feeds the chart and the text profile (' +
   core.histWidth + ' -> ' + histSummed.bins + ' bars, ' + cliHistCalls +
   ' cli reads)');
+// Every printed form that stacks a silhouette — each branch of the chain and
+// the plain per-seed loop — goes through one writer of that block, since four
+// inline joins could be edited apart until one form separated its rows with a
+// different gap than the others. A block with the wrong seam still reads as a
+// plausible chart beside its own caption, so the suite counts the definition,
+// its four reads and asks that the single join be the one inside the helper.
+var hbDefs = (histCliSrc.match(/function histBlock\(/g) || []).length;
+var hbReads = (histCliSrc.match(/histBlock\(/g) || []).length - hbDefs;
+var hbJoins = (histCliSrc.match(/profile\([^)]*\)\.join\(/g) || []).length;
+assert(hbDefs === 1 && hbReads === 4 && hbJoins === 1,
+  'one writer stacks the profile block (' + hbDefs + ' def, ' + hbReads +
+  ' reads, ' + hbJoins + ' joins)');
 // The height of that same block is one number too. The profile stacks a fixed
 // number of threshold rows, and a reader who has only a pasted block and one
 // line of JSON has to be able to ask whether the block is complete — so the
