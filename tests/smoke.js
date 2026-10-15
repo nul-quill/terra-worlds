@@ -5127,6 +5127,22 @@ assert(lowDefs === 1 && lowReads === 5 && lowInline === 0,
   'every downhill step is one comparison with a tie-break (' + lowDefs +
   ' def, ' + lowReads + ' reads, ' + lowInline + ' inline)');
 
+// Both fractal fields walk their octaves the same way: a halving amplitude
+// over a doubling lattice, divided by the sum of those weights. Only the
+// sample and the seed stride differ between them. Written beside each field
+// the weight could be edited on one of them, which lets a ridge measure its
+// crests against another ladder of amplitudes than the rolling ground around
+// it — still plausible relief, since each field on its own looks evenly
+// weighted. The suite counts the one walk, its two reads, the single halving
+// inside it and asks for no bare octave loop left beside them.
+var octDefs = (coreSrc.match(/function octaveSum\(/g) || []).length;
+var octReads = (coreSrc.match(/return octaveSum\(/g) || []).length;
+var octAmp = (coreSrc.match(/amp \*= 0\.5;/g) || []).length;
+var octLoop = (coreSrc.match(/for \(var o = 0; o < octaves; o\+\+\)/g) || []).length;
+assert(octDefs === 1 && octReads === 2 && octAmp === 1 && octLoop === 1,
+  'both fractal fields share one octave walk (' + octDefs + ' def, ' +
+  octReads + ' reads, ' + octAmp + ' halving, ' + octLoop + ' loop)');
+
 // Both readers of an overlay's scale — the ramp that paints the pixels and the
 // hover that prints the number under the cursor — are the same division of a
 // value inside its own pair of cuts. Written beside each reader the subtraction

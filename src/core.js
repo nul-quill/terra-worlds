@@ -207,11 +207,19 @@
     return i0 + (i1 - i0) * sy;
   }
 
-  // Fractal Brownian motion over the tiling value noise.
-  function fbm(x, y, nx, ny, seed, octaves) {
+  // Both fractal fields are the same octave walk: a sample of the tiling
+  // noise per octave, weighted by a halving amplitude over a doubling
+  // lattice, and divided by the sum of those weights. Only the sample and the
+  // seed stride differ between them, so the walk is written once. Held beside
+  // each field the weight could be edited on one of them, which lets the
+  // crests of a ridge be measured against another ladder of amplitudes than
+  // the rolling ground around them — still plausible relief, since each field
+  // on its own looks evenly weighted. The sample keeps the multiply so each
+  // field's own grouping of that product is the one that was always there.
+  function octaveSum(x, y, nx, ny, seed, octaves, stride, sample) {
     var amp = 1, freq = 1, sum = 0, norm = 0;
     for (var o = 0; o < octaves; o++) {
-      sum += amp * valueNoise(x * freq, y * freq, nx * freq, ny * freq, seed + o * 7919);
+      sum += sample(amp, valueNoise(x * freq, y * freq, nx * freq, ny * freq, seed + o * stride));
       norm += amp;
       amp *= 0.5;
       freq *= 2;
@@ -219,18 +227,19 @@
     return sum / norm;
   }
 
+  // Fractal Brownian motion over the tiling value noise.
+  function fbm(x, y, nx, ny, seed, octaves) {
+    return octaveSum(x, y, nx, ny, seed, octaves, 7919, function (amp, n) {
+      return amp * n;
+    });
+  }
+
   // Ridged multifractal: sharp crests, good for mountain spines.
   function ridged(x, y, nx, ny, seed, octaves) {
-    var amp = 1, freq = 1, sum = 0, norm = 0;
-    for (var o = 0; o < octaves; o++) {
-      var n = valueNoise(x * freq, y * freq, nx * freq, ny * freq, seed + o * 6151);
-      n = 1 - Math.abs(n * 2 - 1);
-      sum += amp * n * n;
-      norm += amp;
-      amp *= 0.5;
-      freq *= 2;
-    }
-    return sum / norm;
+    return octaveSum(x, y, nx, ny, seed, octaves, 6151, function (amp, n) {
+      var crest = 1 - Math.abs(n * 2 - 1);
+      return amp * crest * crest;
+    });
   }
 
   /* ------------------------------------------------------------------ *

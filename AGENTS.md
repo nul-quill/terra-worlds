@@ -423,6 +423,15 @@ Conventions:
   trunk, or a mouth could overshoot its cap, while each line still read as a
   plausible network; the suite counts the definition, its single read and both
   pairs of scalars inside it.
+- Both fractal fields — `fbm` for rolling ground, `ridged` for mountain spines —
+  walk their octaves through one `octaveSum(x, y, nx, ny, seed, octaves, stride,
+  sample)`, since each is a halving amplitude over a doubling lattice divided by
+  the sum of those weights. Only the sample and the seed stride differ. Written
+  beside each field the weight could be edited on one of them, which lets a ridge
+  measure its crests against another ladder of amplitudes than the rolling ground
+  around it — still plausible relief, since each field on its own looks evenly
+  weighted; the suite counts the definition, its two reads, the single halving
+  inside it and asks for one octave loop.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
