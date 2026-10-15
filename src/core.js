@@ -1439,10 +1439,12 @@
   // listing describe a world the same way.
   function describe(result) {
     var s = result.stats;
-    var top = null, topCount = -1;
-    Object.keys(s.counts).forEach(function (key) {
-      if (s.counts[key] > topCount) { topCount = s.counts[key]; top = key; }
-    });
+      // The biggest class on this world is the ranking the legend already walks,
+      // so the sentence takes its first row rather than measuring the counts a
+      // second time. Written as its own max-walk beside that sort, the word after
+      // `mostly` could name one class while the first row of the list named
+      // another — both plausible summaries of one grid, so the ranking is read.
+      var top = legendOrder(result)[0];
     // The same scaling the `relief` row and the chart's corners use, so the
     // number inside this sentence is the number printed beside it. A second
     // rounding written here could be cut against another range and leave the

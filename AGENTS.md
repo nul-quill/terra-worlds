@@ -1680,6 +1680,12 @@ Conventions:
   one class, so the counts sum to `stats.pixels` and no listed class is empty.
   The smoke suite checks that on every hand-picked phrase, along with the
   sentence's `mostly X` naming the same biggest class the first row does.
+  That pair is one ranking rather than two: `describe()` takes
+  `legendOrder(result)[0]` instead of walking `stats.counts` for its own maximum.
+  Written as a separate max-walk beside that sort, the word after `mostly` could
+  name one class while the first legend row named another — both plausible
+  summaries of one grid — so the suite counts the read inside the sentence and
+  asks for no second walk of the counts map left in it.
   That one partition is also the `biomes` row, the rows of the legend and the
   `classes` column of the CLI record, so the suite counts all three on one world
   and asks for the same number: a class counted but not drawn would drop a row

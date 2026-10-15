@@ -4204,6 +4204,21 @@ assert(tieRows > 0 && tieBad.length === 0 && tieBreakSites === 1 &&
   tieBad.join(',') + ', ' + tieBreakSites + ' tie-break, ' + orderForwards +
   ' readers)');
 
+// The summary sentence names the biggest class on a world, and that ranking is
+// the one the legend walks: `describe()` reads the first row of `legendOrder()`
+// rather than measuring the counts a second time. Written as its own max-walk
+// beside that sort, the word after `mostly` could name one class while the first
+// legend row named another — both plausible summaries of one grid — so the suite
+// counts the read inside the sentence and asks that no second max-walk of the
+// counts map be left in it.
+var descSrc = (/function describe\(result\) \{[\s\S]*?\n  \}/.exec(coreOrderSrc) ||
+  [''])[0];
+var descOrder = (descSrc.match(/legendOrder\(result\)\[0\]/g) || []).length;
+var descWalk = (descSrc.match(/topCount/g) || []).length;
+assert(descOrder === 1 && descWalk === 0,
+  'the sentence names the class the legend ranks first (' + descOrder +
+  ' read, ' + descWalk + ' walks)');
+
 // A pinned row has to say so in text as well as in ink: the ring is a colour
 // difference, which a screen reader reads as nothing. So each row also carries
 // `aria-current`, and both halves of that pair — the ring's class and the
