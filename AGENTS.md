@@ -1617,6 +1617,12 @@ Conventions:
   figures with nothing naming them — a list that still looks tidy in a
   screenshot, so the suite counts the definition, the two reads and asks for no
   bare cell creation left beside them.
+  Both of those lists are rebuilt rather than patched, and each rebuild opens by
+  emptying its own container — one clear of the text, held by `clearBox(el)` and
+  read once per list. Written beside each caller one could drop to `innerHTML`
+  while the other kept a text clear, which reads as a stale row surviving under a
+  list that looked rebuilt, so the suite counts the definition, its two reads and
+  asks that the only text clear in the shell be the one inside that helper.
   The count of occupied classes is one lookup — `TerraCore.biomeCount(counts)` —
   that the `biomes` row and the record's `biomes` field both read, since the
   classification pass only writes a key when it hands that key a cell. Two

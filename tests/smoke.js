@@ -5661,6 +5661,20 @@ assert(cellDefs === 1 && cellReads === 2 && cellInline === 0,
   'both halves of a stats row are built by one helper (' + cellDefs + ' def, ' +
   cellReads + ' reads, ' + cellInline + ' bare)');
 
+// Both rebuilt lists — the legend rows and the stats rows — begin by emptying
+// their own container, and that first step is one shape: a clear of the text.
+// Written beside each list one could drop to `innerHTML` while the other kept a
+// text clear, which reads as a stale row surviving under a list that looked
+// rebuilt: close enough to a working rebuild that nobody re-reads the source.
+// Counted as text: one definition, one read per list, and the single clear
+// living inside the helper rather than beside either caller.
+var boxDefs = (appSrc.match(/function clearBox\(/g) || []).length;
+var boxReads = (appSrc.match(/clearBox\(/g) || []).length - boxDefs;
+var boxClears = (appSrc.match(/\.textContent = ''/g) || []).length;
+assert(boxDefs === 1 && boxReads === 2 && boxClears === 1,
+  'both rebuilt lists clear their box through one helper (' + boxDefs +
+  ' def, ' + boxReads + ' reads, ' + boxClears + ' clears)');
+
 // The two corner labels of the relief strip are the same conversion — a scaled
 // height with no word beside it — so that shape is one builder too. Written at
 // each corner the conversion could lose its `String` on one side only, which

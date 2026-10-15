@@ -1073,6 +1073,15 @@
     writeHash();
     bandNote();
   }
+  // Both lists on the page are rebuilt from scratch rather than patched: the
+  // legend rows and the stats rows each follow the world they describe. Each
+  // rebuild starts by emptying its own container, and that first step is the
+  // same for both — written beside each list one could drop to
+  // `innerHTML = ''` while the other kept a text clear, which reads as a stale
+  // row surviving under a list that looked rebuilt.
+  function clearBox(el) {
+    el.textContent = '';
+  }
 
   function renderLegend(result) {
     var keys = legendKeys(result);
@@ -1110,7 +1119,7 @@
       li.addEventListener('focus', function () { drawHighlighted(key); });
       li.addEventListener('blur', clearSolo);
     }
-    legendList.textContent = '';
+    clearBox(legendList);
     keys.forEach(function (key) {
         var li = document.createElement('li');
         // The key is kept on the element so a rebuild can find the same row
@@ -1278,7 +1287,7 @@
       rows.push(['channel', result.channelName]);
     }
     rows.push(['generate', s.ms + ' ms']);
-    statsBox.textContent = '';
+    clearBox(statsBox);
     rows.forEach(function (row) {
       statsBox.appendChild(statCell('dt', row[0]));
       statsBox.appendChild(statCell('dd', row[1]));
