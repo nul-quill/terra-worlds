@@ -5207,6 +5207,22 @@ assert(wholeDefs === 1 && wholeReads === 2 && wholeFloor === 1 && wholeInline ==
   ' def, ' + wholeReads + ' reads, ' + wholeFloor + ' floor, ' + wholeInline +
   ' inline)');
 
+// The four knobs a caller passes as a level — shoreline, detail, shade, polar
+// pull — are one two-step reading: that knob's own default when nothing was
+// given, otherwise the caller's number held inside 0..1. Written beside each
+// knob the clamp could be dropped on one of them, which lets one slider push
+// its own field past the top of its range while the other three stayed inside
+// it — still a plausible set of controls beside their own captions. The suite
+// counts the one helper, its four reads, the single clamp inside it and asks
+// for no bare fallback-plus-clamp left beside them.
+var unitDefs = (coreSrc.match(/function unitOption\(/g) || []).length;
+var unitReads = (coreSrc.match(/= unitOption\(/g) || []).length;
+var unitClamp = (coreSrc.match(/: clamp01\(value\)/g) || []).length;
+var unitInline = (coreSrc.match(/== null \? 0\.\d+ : clamp01/g) || []).length;
+assert(unitDefs === 1 && unitReads === 4 && unitClamp === 1 && unitInline === 0,
+  'every level knob is one fallback with one clamp (' + unitDefs + ' def, ' +
+  unitReads + ' reads, ' + unitClamp + ' clamp, ' + unitInline + ' inline)');
+
 // The drainage walk and the spillway pick both ask the same question of a
 // neighbour: is it a downhill step, with equal heights settled by index. That
 // tie-break is what keeps a terraced plateau draining at all, and it is asked
@@ -6133,7 +6149,12 @@ assert(printBlock !== null && lostChrome.length === 0 && overHidden.length === 0
 // than the other two, the browser clamps the number the core just chose. All
 // three are read out of their own file and compared here.
 var coreSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
-var coreSea = /seaLevel == null \?\s*([\d.]+)/.exec(coreSrc);
+// The core's own figure is written either as an inline `== null` fallback or
+// as the second argument of the one level-option reader, so both shapes are
+// accepted and the number comes from whichever half matched.
+var coreSea = /seaLevel(?: == null \?\s*([\d.]+)|,\s*([\d.]+))/.exec(coreSrc);
+var coreSeaNum = coreSea &&
+  (coreSea[1] === undefined ? coreSea[2] : coreSea[1]);
 var shellSea = /inputs\.seaLevel\.value = '([\d.]+)'/.exec(appSrc);
 var seaInput = /<input id="seaLevel"[^>]*>/.exec(html);
 var seaMin = seaInput && /min="([\d.]+)"/.exec(seaInput[0]);
@@ -6141,10 +6162,10 @@ var seaMax = seaInput && /max="([\d.]+)"/.exec(seaInput[0]);
 var seaStep = seaInput && /step="([\d.]+)"/.exec(seaInput[0]);
 var seaNum = Number(shellSea && shellSea[1]);
 assert(coreSea && shellSea && seaMin && seaMax && seaStep &&
-  Number(coreSea[1]) === seaNum && seaNum >= Number(seaMin[1]) &&
+  Number(coreSeaNum) === seaNum && seaNum >= Number(seaMin[1]) &&
   seaNum <= Number(seaMax[1]),
   'one sea default fits the slider it starts in (' +
-  (coreSea && coreSea[1]) + ', ' + (shellSea && shellSea[1]) + ', ' +
+  coreSeaNum + ', ' + (shellSea && shellSea[1]) + ', ' +
   (seaMin && seaMin[1]) + '-' + (seaMax && seaMax[1]) + ')');
 
 // The other sliders are the same shape of problem, so the same three-way read

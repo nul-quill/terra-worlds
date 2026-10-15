@@ -460,6 +460,17 @@
     return value == null ? fallback : Math.max(0, Math.round(value));
   }
 
+  // A knob a caller passes as a level: the shoreline, how much detail rides on
+  // it, the strength of the shade, the pull toward the poles. All four are the
+  // same two-step reading — fall back to that knob's own default, otherwise
+  // hold the caller's number inside 0..1. Written beside each knob the clamp
+  // could be dropped on one of them, which lets a slider push its own field
+  // past the top of its range while the other three stayed inside it — still a
+  // plausible pair of controls beside their own captions.
+  function unitOption(value, fallback) {
+    return value == null ? fallback : clamp01(value);
+  }
+
   /* ------------------------------------------------------------------ *
    * Main generation entry point.
    * Returns { width, height, data, biome, height, stats }.
@@ -473,11 +484,11 @@
     var height = gridSide(opts.height, DEFAULT_GRID.height);
     var seed = typeof opts.seed === 'number' ? opts.seed | 0 : hashString(opts.seed == null ? 'terra' : opts.seed);
 
-    var seaLevel = opts.seaLevel == null ? 0.48 : clamp01(opts.seaLevel);
-    var detail = opts.detail == null ? 0.35 : clamp01(opts.detail);
+    var seaLevel = unitOption(opts.seaLevel, 0.48);
+    var detail = unitOption(opts.detail, 0.35);
     var terraces = wholeOption(opts.terraces, 0);
-    var hillshade = opts.hillshade == null ? 0.55 : clamp01(opts.hillshade);
-    var polar = opts.polar == null ? 0.7 : clamp01(opts.polar);
+    var hillshade = unitOption(opts.hillshade, 0.55);
+    var polar = unitOption(opts.polar, 0.7);
     var riverMin = wholeOption(opts.rivers, 90);
     var shape = opts.shape || 'continents';
     var dither = opts.dither !== false;

@@ -1983,6 +1983,17 @@ Conventions:
   accepts either shape: an inline `== null` default or the number passed to
   `wholeOption()`. A scrape that knew only the first would call those sliders
   unreadable and fail for a reason no rendering can show.
+  The four sliders that pass a level rather than a count — shoreline, detail,
+  shade strength, polar pull — are one two-step reading too, `unitOption(value,
+  fallback)`: that knob's own default when nothing was given, otherwise the
+  caller's number held inside 0..1 by the same clamp every other 0..1 read uses.
+  Written beside each knob the clamp could be dropped on one of them, which lets
+  one slider push its own field past the top of its range while the other three
+  stayed inside it — still a plausible set of controls beside their own captions,
+  so the suite counts the definition, its four reads, the single clamp inside it
+  and asks for no bare fallback-plus-clamp left beside them. The sea scrape was
+  widened the same way as the counted pair, since that default now sits inside
+  the lookup rather than in front of it.
   The sea-level rule in the relief chart also prints its value; set the chart
   font before `measureText` so the flip-to-fit test is accurate.
   That rule is placed by the same division as every other mark, so on a world
