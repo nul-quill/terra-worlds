@@ -1743,6 +1743,14 @@ Conventions:
   as a right-sized, wrong-looking file. Keep the two encoders reading the same
   buffer — that comparison skips the PPM header's three tokens by counting
   them, not by counting newlines.
+  Those two encoders pick a pixel's channels through one `rgbOf(data, i, n)`,
+  since both read the same RGBA buffer and both skip its fourth channel.
+  Written beside each loop the pick could be edited apart — the PPM half
+  dropping to two channels while the PNG half still wrote three — which prints
+  a right-sized file whose colours are wrong in a way no caption names, and the
+  byte-for-byte comparison above only catches that when the totals differ. The
+  suite counts the definition, its two reads and asks for no bare second- or
+  third-channel offset left beside them.
   Because it moves no count, the multiplier is shown in its own `export` row
   right under `grid`: the factor plus the pixel size it saves at. Both the row
   and `savePng()` read it through `exportFactor()`, so the number on screen is

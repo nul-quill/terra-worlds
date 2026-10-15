@@ -2575,6 +2575,21 @@ assert(pngRows !== null && pngRows.length === ppmBody.length &&
   pngRows.equals(ppmBody),
   'both encoders write the same pixels (' + ppmBody.length + ' bytes of rgb)');
 
+// Both encoders read the same RGBA buffer and both skip its fourth channel, so
+// that pick is one lookup — `rgbOf()` — rather than a pair of offsets written
+// beside each loop. Split, the PPM half could drop to two channels while the
+// PNG half still wrote three: a right-sized file whose colours are wrong in a
+// way no caption names, which the comparison above only catches when the two
+// disagree about the byte count. Counted as text: one definition, its two
+// reads, and no bare second-or-third-channel offset left beside them.
+var encSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+var rgbDefs = (encSrc.match(/function rgbOf\(/g) || []).length;
+var rgbReads = (encSrc.match(/rgbOf\(/g) || []).length - rgbDefs;
+var rgbInline = (encSrc.match(/img\.data\[i \+ [12]\]/g) || []).length;
+assert(rgbDefs === 1 && rgbReads === 2 && rgbInline === 0,
+  'both encoders pick a pixel\'s channels through one lookup (' + rgbDefs +
+  ' definition, ' + rgbReads + ' reads, ' + rgbInline + ' inline offsets)');
+
 // The name the browser gives a saved PNG is built from six of these fields:
 // seed, shape, palette, the grid, the multiplier and the checksum. A record
 // that could not refill all six would leave a person holding a file they

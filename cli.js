@@ -221,14 +221,24 @@ function listingDump(list) {
   });
 }
 
+// Both encoders read the same RGBA buffer, and both skip its fourth channel.
+// That pick is one lookup: written beside each writer, the PPM half could drop
+// to two channels while the PNG half still wrote three, which prints a
+// right-sized file whose colours are wrong in a way no caption names. The suite
+// counts the definition, the two reads and asks that no bare pair of `+ 1` and
+// `+ 2` offsets be left beside them.
+function rgbOf(data, i, n) {
+  return data[i + n];
+}
+
 function toPpm(img) {
   var out = 'P6\n' + img.width + ' ' + img.height + '\n255\n';
   var chars = new Array(img.width * img.height * 3);
   var k = 0;
   for (var i = 0; i < img.data.length; i += 4) {
-    chars[k++] = String.fromCharCode(img.data[i]);
-    chars[k++] = String.fromCharCode(img.data[i + 1]);
-    chars[k++] = String.fromCharCode(img.data[i + 2]);
+    for (var n = 0; n < 3; n++) {
+      chars[k++] = String.fromCharCode(rgbOf(img.data, i, n));
+    }
   }
   return out + chars.join('');
 }
@@ -269,9 +279,9 @@ function toPng(img) {
     rows[k++] = 0; // every scanline starts with its filter byte: none
     for (var x = 0; x < w; x++) {
       var i = (y * w + x) * 4;
-      rows[k++] = img.data[i];
-      rows[k++] = img.data[i + 1];
-      rows[k++] = img.data[i + 2];
+      for (var n = 0; n < 3; n++) {
+        rows[k++] = rgbOf(img.data, i, n);
+      }
     }
   }
   var head = Buffer.alloc(13);
