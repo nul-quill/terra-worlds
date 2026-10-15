@@ -1613,24 +1613,33 @@ Conventions:
   last digit, which is why the count and the span are checked together.
   The six `--listings` themselves are checked too: every line must carry a
   note beside its key, since a terminal has no dropdown label to explain it.
-  That pair of columns is one builder — `listingRow(key, text)` — read by all
-  six, so a listing added later lines up with the ones already here. Six
-  separate pad calls could be edited apart while each listing still looked tidy
-  on its own, and the columns a reader scans would then stop matching between
-  one flag and the next; the suite counts the definition, the six reads and the
-  one padding call left inside the helper. The numbered phrase column is outside
-  that pair on purpose: its first field is a count rather than a name, so it
-  keeps its own narrow width beside its loop.
+  That pair of columns is one builder — `listingRow(key, text)` — so a listing
+  added later lines up with the ones already here. Separate pad calls could be
+  edited apart while each listing still looked tidy on its own, and the columns
+  a reader scans would then stop matching between one flag and the next; the
+  suite counts the definition and the one padding call left inside the helper.
+  Five of the six listings are that builder inside one walk —
+  `listingDump(list)` — since each is a row per entry of a core list, its name
+  taken through `entryName`. Written beside each flag the loop could be edited
+  apart: one copy could drop the fallback, which prints the plain biome map as
+  a blank column under `--channels` while its own usage line still names it
+  `biome`. The palette column stays outside that walk on purpose — its rows
+  come from a map of schemes, so it keeps its own `Object.keys` loop beside the
+  builder. The suite counts both definitions, the five dumped lists and that one
+  map walk. The numbered phrase column is outside the pair as well: its first
+  field is a count rather than a name, so it keeps its own narrow width.
   Two of those lists open with an entry that has no key of its own — the plain
   biome map among the overlays, the `auto` count among the grids — and each
   needs a word beside it in every print. That word is one lookup,
   `entryName(list, entry)`, which reads the first label of the list it is handed
-  rather than a spelling written beside the print: five reads in all (the
-  overlay usage line, the two summary lines and the two listing rows). Written
+  rather than a spelling written beside the print: seven reads in all (the
+  overlay usage line, the four summary lines and the two inner calls inside the
+  two builders). Written
   at each site the pair could be edited apart while each listing still looked
   right alone — a usage line naming `plain` above a column naming `biome` for
-  one and the same overlay — so the suite counts the definition, the five reads
-  and asks for no leftover word beside them.
+  one and the same overlay — so the suite counts the definition, the seven
+  reads, the three sites sharing that inner call and asks for no leftover word
+  beside them.
   Four of those prints — the whole-list echoes under `--help` (overlays,
   bearings, column counts, export factors) — reach the word through one walk,
   `nameList(list, sep)`, since each is a name per entry joined by one separator.

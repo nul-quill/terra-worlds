@@ -197,6 +197,19 @@ function nameList(list, sep) {
   }).join(sep || ', ');
 }
 
+// Every listing that walks one of the core's lists is this same pair of steps:
+// one row per entry, its name taken through `entryName` so a keyless entry
+// still prints a word beside its note. Written beside each flag the pair could
+// be edited apart — one loop could drop the fallback, which leaves the plain
+// biome map printing as a blank column under `--channels` while its own usage
+// line still names it `biome`. The palette column stays outside this helper on
+// purpose: its rows come from a map of schemes, so it keeps its own walk.
+function listingDump(list) {
+  list.forEach(function (entry) {
+    console.log(listingRow(entryName(list, entry), entry.note));
+  });
+}
+
 function toPpm(img) {
   var out = 'P6\n' + img.width + ' ' + img.height + '\n255\n';
   var chars = new Array(img.width * img.height * 3);
@@ -351,21 +364,15 @@ if (opts.help) {
   // The column counts the grid dropdown pins, in the order the `w` key walks
   // them. Each is a --width that keeps a world's cell count stable across
   // window sizes; "auto" is the one that follows the window instead.
-  core.grids.forEach(function (gr) {
-    console.log(listingRow(entryName(core.grids, gr), gr.note));
-  });
+  listingDump(core.grids);
 } else if (opts.scales) {
   // The multipliers --scale takes, in the order the `e` key walks them. Each
   // one only enlarges the saved pixels, so the world behind them is identical.
-  core.scales.forEach(function (sc) {
-    console.log(listingRow(sc.key, sc.note));
-  });
+  listingDump(core.scales);
 } else if (opts.lights) {
   // The bearings --dir accepts, with the words the dropdown shows. Same list
   // the shade pass reads, so a key copied here is always valid.
-  core.lights.forEach(function (lt) {
-    console.log(listingRow(lt.key, lt.note));
-  });
+  listingDump(core.lights);
 } else if (opts.palettes) {
   // One row per palette: the key that --palette takes, plus the label the
   // dropdown shows and the sky triple the chart is washed with. Names only,
@@ -378,16 +385,12 @@ if (opts.help) {
     // Same idea for the shape curve: the key --shape takes, plus a short note
     // on what the curve does to the height field. Both lists are read from the
     // generator, so a name copied from here is always valid.
-    core.shapes.forEach(function (s) {
-      console.log(listingRow(s.key, s.note));
-    });
+    listingDump(core.shapes);
 } else if (opts.channels) {
   // The overlay ramps in the order the dropdown and the `c` key walk them.
   // The empty key is the plain biome map, which prints as "biome" so the
   // line is never a blank column.
-  core.channels.forEach(function (c) {
-    console.log(listingRow(entryName(core.channels, c), c.note));
-  });
+  listingDump(core.channels);
 } else if (opts.phrases) {
   // The hand-picked seed phrases the `p` key walks. Each one is a whole
   // world in two words, so this is the shortest way to a good first render.

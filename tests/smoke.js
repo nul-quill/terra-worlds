@@ -1268,11 +1268,17 @@ assert(bareLines.length === 0,
 // a count rather than a name — so it keeps its own narrow width.
 var rowSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
 var rowDefs = (rowSrc.match(/function listingRow\(/g) || []).length;
-var rowReads = (rowSrc.match(/listingRow\(/g) || []).length - rowDefs;
 var rowLeft = (rowSrc.match(/\.padEnd\(11\)/g) || []).length;
-assert(rowDefs === 1 && rowReads >= 6 && rowLeft === 1,
-  'one row builder pads every listing (' + rowDefs + ' def, ' + rowReads +
-  ' listings, ' + rowLeft + ' padding)');
+// Five of the six listings are a walk over one of the core's lists, so they
+// reach the row builder through one dump loop; the palette column is a map of
+// schemes and keeps its own walk beside the builder. Six walks in all.
+var dumpDefs = (rowSrc.match(/function listingDump\(/g) || []).length;
+var dumpReads = (rowSrc.match(/listingDump\(core\./g) || []).length;
+var rowMapWalk = (rowSrc.match(/listingRow\(name,/g) || []).length;
+assert(rowDefs === 1 && rowLeft === 1 && dumpDefs === 1 && dumpReads === 5 &&
+  rowMapWalk === 1,
+  'one row builder pads every listing (' + rowDefs + ' def, ' + dumpReads +
+  ' dumped lists, ' + rowMapWalk + ' map walk, ' + rowLeft + ' padding)');
 
 // Two of those lists open with an entry that has no key of its own — the plain
 // biome map among the overlays, the following-the-window count among the grids —
@@ -1283,10 +1289,15 @@ assert(rowDefs === 1 && rowReads >= 6 && rowLeft === 1,
 // spelling of the fallback left beside them.
 var nameDefs = (rowSrc.match(/function entryName\(/g) || []).length;
 var nameReads = (rowSrc.match(/entryName\(core\.|nameList\(core\./g) || []).length;
+// Both builders read the fallback through one inner call each, so the file
+// holds three of that shape: the definition and its two callers, rather than
+// one spelling per print.
+var nameInner = (rowSrc.match(/entryName\(list, entry\)/g) || []).length;
 var nameLeft = (rowSrc.match(/\|\| '(biome|auto)'/g) || []).length;
-assert(nameDefs === 1 && nameReads === 9 && nameLeft === 0,
+assert(nameDefs === 1 && nameReads === 7 && nameInner === 3 && nameLeft === 0,
   'one lookup names the keyless entry of a list (' + nameDefs + ' def, ' +
-  nameReads + ' reads, ' + nameLeft + ' leftover words)');
+  nameReads + ' reads, ' + nameInner + ' inner calls, ' + nameLeft +
+  ' leftover words)');
 
 // The usage text also echoes four whole lists on one line each — overlays,
 // bearings, column counts and export factors. That walk is one builder too,
