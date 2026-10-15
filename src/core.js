@@ -12,14 +12,26 @@
    * Hashing / seeding
    * ------------------------------------------------------------------ */
 
+  // Both hashes here are FNV-1a: the seed string and the checksum over the
+  // rendered pixels. Each is the same step — fold a byte in, multiply by the
+  // prime — over its own sequence, so the step is written once. The multiply
+  // keeps the shift-add form: the plain product passes 2^53 and would lose
+  // precision in a double, so it stays inside 32 bits. Written beside each
+  // loop the prime could be edited on one of them, which lets a reroll chain
+  // and a picture agree on everything except which of two worlds they
+  // describe — each hash still looks well formed on its own.
+  var FNV_OFFSET = 0x811c9dc5;
+
+  function fnvStep(h, b) {
+    h ^= b;
+    return (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+  }
+
   // FNV-1a: turn any seed string into a stable 32-bit int.
   function hashString(str) {
-    var h = 2166136261 >>> 0;
+    var h = FNV_OFFSET;
     var s = String(str);
-    for (var i = 0; i < s.length; i++) {
-      h ^= s.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
+    for (var i = 0; i < s.length; i++) h = fnvStep(h, s.charCodeAt(i));
     return h >>> 0;
   }
 
@@ -1331,12 +1343,9 @@
   // seed must agree here even when their timings differ, so this is the
   // shortest way to tell "identical world" from "close enough".
   function checksum(d) {
-    var h = 0x811c9dc5;
+    var h = FNV_OFFSET;
     for (var i = 0; i < d.length; i++) {
-      h ^= d[i];
-      // Shift-add form of the FNV prime: the plain product passes 2^53 and
-      // would lose precision in a double, so the multiply stays in 32 bits.
-      h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+      h = fnvStep(h, d[i]);
     }
     var hex = h.toString(16);
     while (hex.length < 8) hex = '0' + hex;

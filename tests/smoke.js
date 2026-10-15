@@ -5175,6 +5175,24 @@ assert(easeDefs === 1 && easeReads === 3 && easeCurve === 1 && easeInline === 0,
   'every smooth blend shares one curve (' + easeDefs + ' def, ' + easeReads +
   ' reads, ' + easeCurve + ' curve, ' + easeInline + ' inline)');
 
+// Both hashes are FNV-1a: the seed string and the checksum over the rendered
+// pixels. Each is the same fold-a-byte-then-multiply step over its own
+// sequence, so the step and the starting value are written once. Beside each
+// loop the prime could be edited on one of them, which lets a reroll chain and
+// a picture agree on everything except which of two worlds they describe — each
+// hash still looks well formed on its own. The suite counts the step, its two
+// reads, the single offset and asks for no bare shift-add left beside them.
+var fnvDefs = (coreSrc.match(/function fnvStep\(/g) || []).length;
+var fnvReads = (coreSrc.match(/= fnvStep\(/g) || []).length;
+var fnvOffset = (coreSrc.match(/FNV_OFFSET/g) || []).length;
+var fnvShift = (coreSrc.match(/\(h << 1\)/g) || []).length;
+assert(fnvDefs === 1 && fnvReads === 2 && fnvOffset === 3 && fnvShift === 1 &&
+  /^[0-9a-f]{8}$/.test(core.generate({ seed: 'salt mirror', width: 24, height: 16 }).stats.checksum) &&
+  core.generate({ seed: 'salt mirror', width: 24, height: 16 }).stats.checksum ===
+    core.generate({ seed: 'salt mirror', width: 24, height: 16 }).stats.checksum,
+  'both hashes step one FNV loop (' + fnvDefs + ' def, ' + fnvReads + ' reads, ' +
+  fnvOffset + ' offset, ' + fnvShift + ' shift-add)');
+
 // Both readers of an overlay's scale — the ramp that paints the pixels and the
 // hover that prints the number under the cursor — are the same division of a
 // value inside its own pair of cuts. Written beside each reader the subtraction

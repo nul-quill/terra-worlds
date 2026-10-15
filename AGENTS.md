@@ -588,6 +588,13 @@ Conventions:
   It is the cheap equality test for determinism: same seed + same grid must give
   the same digits, while `stats.ms` is allowed to wander. Keep the multiply in the
   shift-add form so it stays inside 32 bits.
+  Both hashes are that same fold — the seed string in `hashString` and the pixels
+  in `checksum` — so the step and its starting value are one pair, `fnvStep(h, b)`
+  beside `FNV_OFFSET`. Written beside each loop the prime could be edited on one of
+  them, which lets a reroll chain and its picture agree on everything except which
+  of two worlds they describe — each hash still looks well formed on its own. The
+  suite counts the step, its two reads, the single offset and asks for no bare
+  shift-add left beside them.
   The relief word in `describe()` is a bucket of that same number — rugged above
   70, rolling above 40, plain below — and the smoke suite re-derives the bucket
   from `stats.max - stats.min` for every shape, so the word cannot drift away
