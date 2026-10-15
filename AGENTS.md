@@ -1316,6 +1316,13 @@ Conventions:
   itself as a mouse, so one cursor move never paints the same frame twice. The
   suite counts the three lists together, so a third pointer listener has to
   state its own guard rather than relying on the other two.
+  That guard is one lookup too — `fromTouch(ev)` — since both pointer paths ask
+  the same question about the event they were handed. Written beside each
+  handler the pair could be edited apart until one branch inverted its test and
+  only answered a mouse while the other still answered a finger, which reads as
+  a chart that ignores a tap rather than as a broken guard. The suite counts the
+  definition, the two guarded reads and asks that the one comparison of the
+  pointer against `'mouse'` be the one inside that helper.
   Shift+arrows walk the same bin through `stepBand()`, which is the keyboard
   path for the height filter; plain arrows still walk cells. Both are previews —
   neither goes into the hash.

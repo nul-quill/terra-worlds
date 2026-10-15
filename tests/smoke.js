@@ -3230,12 +3230,16 @@ assert(tallyDefs === 1 && tallyReads === 2 && tallyDenom === 1,
 // move would paint the same frame twice. Count the guards with the handlers,
 // so a third pointer listener cannot arrive without saying which half it is.
 var pointerSites = (outSrc.match(/addEventListener\('pointer(?:move|down)'/g) || []).length;
-var mouseGuards = (outSrc.match(/ev\.pointerType === 'mouse'/g) || []).length;
+var touchDefs = (outSrc.match(/function fromTouch\(/g) || []).length;
+var mouseGuards = (outSrc.match(/if \(!fromTouch\(ev\)\) return;/g) || []).length;
+var touchBare = (outSrc.match(/ev\.pointerType [!=]== 'mouse'/g) || []).length;
 var mouseSites = (outSrc.match(/addEventListener\('mousemove'/g) || []).length;
-assert(pointerSites === 2 && mouseGuards === pointerSites &&
+assert(pointerSites === 2 && touchDefs === 1 && mouseGuards === pointerSites &&
+  touchBare === 1 &&
   mouseSites === pointerSites,
   'both canvases answer a finger (' + pointerSites + ' pointer paths, ' +
-  mouseGuards + ' guards, ' + mouseSites + ' mouse paths)');
+  touchDefs + ' lookups, ' + mouseGuards + ' guards, ' + touchBare +
+  ' bare tests, ' + mouseSites + ' mouse paths)');
 // The two map paths do more than answer a finger: each moves the crosshair,
 // prints the readout and writes the link, in that order. Written twice those
 // four steps can drift — a hash update added to the mouse path only would keep

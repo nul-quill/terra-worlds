@@ -1918,8 +1918,18 @@
   // Touch fires pointer events rather than mousemove, so the readout and the
   // crosshair would never move on a phone. One handler covers both, and the
   // mouse path is skipped when the pointer reports itself as a touch.
+  // Which kind of pointer a handler is answering is the same question in both
+  // places a pointer event is taken, so the comparison sits in one lookup. The
+  // two guards are the pair that keeps one cursor move from painting the same
+  // frame twice, and written beside each handler one of them could invert
+  // while the other stayed put — which reads as a map that only answers a
+  // finger, or a chart that redraws twice under a mouse, rather than as a bug.
+  function fromTouch(ev) {
+    return ev.pointerType !== 'mouse';
+  }
+
   view.addEventListener('pointermove', function (ev) {
-    if (ev.pointerType === 'mouse') return;
+    if (!fromTouch(ev)) return;
     hoverFromPointer(ev);
   });
 
@@ -1970,7 +1980,7 @@
   // A finger reports itself through pointer events, so without this the chart
   // would only respond to a mouse. Same selection rule, same repaint.
   histCanvas.addEventListener('pointerdown', function (ev) {
-    if (ev.pointerType === 'mouse') return;
+    if (!fromTouch(ev)) return;
     hoverHistogram(ev, true);
   });
 
