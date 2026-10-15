@@ -796,6 +796,14 @@ Conventions:
   caption that reads correctly either way, so the suite counts the definition,
   its four reads and asks that the single join of a profile be the one inside
   that helper.
+  Above that block the three forms of a chain — the sentences, the records and
+  the bare listing — are one shape too: a line per seed, joined once. That
+  stack is `chainRows(chain, line)`, since only the mapping differs between the
+  three. Written beside each branch the join could be edited apart, which leaves
+  one form running its seeds together while the others still keep a line each —
+  every line still names its own seed, so the seam is the only difference a
+  reader sees. The suite counts the definition, its three reads and asks that no
+  branch map the chain itself now that the helper does it.
   The rest of each chain caption is compared the same way — the two ends of the
   range, the sea level and the median — against that seed's own record rather
   than against the first one. Each form reads its figures from the world it just

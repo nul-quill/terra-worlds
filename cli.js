@@ -423,28 +423,28 @@ if (opts.help) {
     // With --describe each seed also gets its one-line summary, which is how
     // to pick a world out of a chain without opening the page.
     if (opts.describe) {
-      console.log(chain.map(function (s) {
+      console.log(chainRows(chain, function (s) {
         var r = runWorld(s);
         return s + '  ' + core.describe(r) +
           (opts.hist ? '\n' + histBlock(r) : '');
-      }).join('\n'));
+      }));
     } else if (opts.json) {
       // One record per seed in the chain, in the order the Reroll button
       // visits them. This is how to compare a run of clicks from a terminal:
       // the plain listing gives the phrases, this gives the numbers behind
       // each of them, and the `seed` field ties a record back to its line.
-      console.log(chain.map(function (s) {
+      console.log(chainRows(chain, function (s) {
         var r = runWorld(s);
         return summarise(s, r, opts.out, true);
-      }).join('\n'));
+      }));
     } else {
       // The bare listing is the phrase per seed; with --hist each phrase also
       // carries the silhouette behind it, so a run of clicks can be skimmed
       // from a terminal without opening the page.
-      console.log(chain.map(function (s) {
+      console.log(chainRows(chain, function (s) {
         if (!opts.hist) return s;
         return s + '\n' + histBlock(runWorld(s));
-      }).join('\n'));
+      }));
     }
     return;
   }
@@ -521,6 +521,16 @@ function histPass(result) {
 // separator in one form and another in the next.
 function histBlock(result) {
   return profile(result).join('\n');
+}
+
+// One block for a whole seed chain: a line per seed, in the order the Reroll
+// button walks them. Each printed form of the chain — the sentences, the
+// records, the bare listing — is that shape, so the walk and its join are
+// written once and only the mapping differs. Beside each branch the join
+// could be edited apart, which would leave one form running its seeds
+// together while the others still kept a line each.
+function chainRows(chain, line) {
+  return chain.map(line).join('\n');
 }
 
 function profile(result) {

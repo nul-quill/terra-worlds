@@ -1298,6 +1298,19 @@ assert(nameDefs === 1 && nameReads === 7 && nameInner === 3 && nameLeft === 0,
   'one lookup names the keyless entry of a list (' + nameDefs + ' def, ' +
   nameReads + ' reads, ' + nameInner + ' inner calls, ' + nameLeft +
   ' leftover words)');
+// Each printed form of a seed chain — the sentences, the records, the bare
+// listing — is a line per seed joined into one block, so that stack is one
+// writer too. Written beside each branch the join could be edited apart, which
+// leaves one form running its seeds together while the others keep a line
+// each; every line still names its own seed, so the seam is what differs. The
+// suite counts the definition, its three reads and asks that no branch map the
+// chain itself now that the helper does it.
+var crDefs = (rowSrc.match(/function chainRows\(/g) || []).length;
+var crReads = (rowSrc.match(/chainRows\(chain,/g) || []).length - crDefs;
+var crInline = (rowSrc.match(/chain\.map\(function/g) || []).length;
+assert(crDefs === 1 && crReads === 3 && crInline === 0,
+  'one writer stacks a seed chain (' + crDefs + ' def, ' + crReads +
+  ' reads, ' + crInline + ' inline maps)');
 
 // The usage text also echoes four whole lists on one line each — overlays,
 // bearings, column counts and export factors. That walk is one builder too,
