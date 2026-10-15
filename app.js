@@ -2109,6 +2109,16 @@
     return !!(el && (el.tagName === 'INPUT' || el.tagName === 'SELECT'));
   }
 
+  // Whether a key event carries a given letter, in either case. With Caps Lock
+  // on the browser reports the uppercase form, so every letter shortcut has to
+  // answer to both — and that pair is one comparison rather than a shape each
+  // branch writes for itself. Written beside each key the pair could be cut
+  // differently (one branch keeping only its own case), which reads as a
+  // single letter that stops working for reasons nothing on the page explains.
+  function keyIs(ev, letter) {
+    return ev.key.toLowerCase() === letter;
+  }
+
   // Space rerolls from anywhere, unless the caret is in the seed box.
   document.addEventListener('keydown', function (ev) {
     if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
@@ -2167,7 +2177,7 @@
     // Letters are shortcuts only when no text field owns the caret, so a seed
     // phrase like "salt mirror" can still be typed.
     var typingLetter = ownsCaret();
-    if (!typingLetter && (ev.key === 'c' || ev.key === 'C')) {
+    if (!typingLetter && keyIs(ev, 'c')) {
       ev.preventDefault();
       // Shift walks the list backwards, the same way it does for the legend
       // pins: backing out of an overlay should not need a full lap.
@@ -2177,14 +2187,14 @@
     // 'h' steps through the shape curves — the biggest single lever on a
     // world's silhouette, so it earns a key next to the overlay cycle. The
     // list is the same one the dropdown and `cli --shapes` read.
-    if (!typingLetter && (ev.key === 'h' || ev.key === 'H')) {
+    if (!typingLetter && keyIs(ev, 'h')) {
       ev.preventDefault();
       cycleControl(inputs.shape, TerraCore.shapes, ev);
       return;
     }
     // 'd' walks the light bearing: the same four compass points the dropdown
     // lists, which is the fastest way to see which side a ridge wants.
-    if (!typingLetter && /^(d|D)$/.test(ev.key)) {
+    if (!typingLetter && keyIs(ev, 'd')) {
       ev.preventDefault();
       cycleControl(inputs.lightDir, TerraCore.lights, ev);
       return;
@@ -2193,7 +2203,7 @@
     // the world fits on screen without changing the seed, so it is worth a key
     // next to the shape cycle. The empty entry — auto — is part of the list,
     // so a lap of the key ends where the window began.
-    if (!typingLetter && /^(w|W)$/.test(ev.key)) {
+    if (!typingLetter && keyIs(ev, 'w')) {
       ev.preventDefault();
       cycleControl(inputs.gridSize, TerraCore.grids, ev);
       return;
@@ -2201,7 +2211,7 @@
     // 'e' walks the export multiplier: the fourth of these lists is the only
     // one that changes the saved file and not the world, so it is the safest
     // key to press while comparing two sizes of the same seed.
-    if (!typingLetter && /^(e|E)$/.test(ev.key)) {
+    if (!typingLetter && keyIs(ev, 'e')) {
       ev.preventDefault();
       cycleControl(inputs.scale, TerraCore.scales, ev);
       return;
@@ -2243,7 +2253,7 @@
     // 'm' drops the magnifier panel. It is the only overlay that hides part of
     // the map rather than tinting it, so it is the one worth being able to
     // switch off — and unlike the legend pin it changes no pixel of the world.
-    if (!typingLetter && /^(m|M)$/.test(ev.key)) {
+    if (!typingLetter && keyIs(ev, 'm')) {
       ev.preventDefault();
       insetOn = !insetOn;
       drawHover();
@@ -2252,7 +2262,7 @@
     // 'k' walks the legend: each press pins the next class, and the cycle wraps
     // back through "nothing pinned". Same list the rows are built from, so the
     // order under the key is the order on screen.
-    if (!typingLetter && /^(k|K)$/.test(ev.key)) {
+    if (!typingLetter && keyIs(ev, 'k')) {
       ev.preventDefault();
       if (current) {
         var rows = legendKeys(current);
@@ -2277,7 +2287,7 @@
     // to browse good worlds than rerolling at random. The phrase that is
     // already in the box is replaced rather than appended, so the list never
     // drifts away from itself.
-    if (!typingLetter && (ev.key === 'p' || ev.key === 'P')) {
+    if (!typingLetter && keyIs(ev, 'p')) {
       ev.preventDefault();
       cycleControl(inputs.seed, TerraCore.phrases, ev);
       return;
@@ -2286,7 +2296,7 @@
     // 'x' copies the link, which is the last step of a finished world and the
     // only action left that needed a mouse. Same function as the button, so
     // the two paths cannot disagree about what gets copied.
-    if (!typingLetter && (ev.key === 'x' || ev.key === 'X')) {
+    if (!typingLetter && keyIs(ev, 'x')) {
       ev.preventDefault();
       copyLink();
       return;
@@ -2297,7 +2307,7 @@
       render();
       return;
     }
-    if (!typingLetter && (ev.key === 's' || ev.key === 'S')) {
+    if (!typingLetter && keyIs(ev, 's')) {
       ev.preventDefault();
       savePng();
       return;
@@ -2305,7 +2315,7 @@
     // Both cases, like every other letter key: with Caps Lock on, `ev.key` is
     // the uppercase form, and a shortcut that only answered to one of the two
     // would look broken for reasons that have nothing to do with the map.
-    if ((ev.key === ' ' || /^(r|R)$/.test(ev.key)) &&
+    if ((ev.key === ' ' || keyIs(ev, 'r')) &&
       document.activeElement !== inputs.seed) {
       ev.preventDefault();
       rerollBtn.click();

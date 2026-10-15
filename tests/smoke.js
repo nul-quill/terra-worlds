@@ -3498,6 +3498,25 @@ appSrc.replace(/\(([A-Za-z])\|[A-Za-z]\)/g, function (m, keyName) {
   handled[keyName.toLowerCase()] = 1;
   return m;
 });
+// The third shape is the shared one: every letter branch now hands its letter
+// to `keyIs()`, so the harvest walks those calls too. Without this the count
+// would drop to the handful of keys still matched by a comparison and the note
+// would look over-documented rather than complete.
+appSrc.replace(/keyIs\(ev, '([A-Za-z])'\)/g, function (m, keyName) {
+  handled[keyName.toLowerCase()] = 1;
+  return m;
+});
+// The two checkboxes are the remaining pair: their letters arrive through one
+// map over the lowercased key, which is the same both-cases rule in a shape
+// that fits two keys at once. Harvest those letters too, so the note check and
+// the case check still walk them, and count the entries so the lookup probe
+// below can subtract them from its own read count.
+var toggleMap = (/var toggle = \{([^}]*)\}/.exec(appSrc) || ['', ''])[1];
+var mapEntries = (toggleMap.match(/([a-z]):/g) || []).length;
+toggleMap.replace(/([a-z]):/g, function (m, keyName) {
+  handled[keyName] = 1;
+  return m;
+});
 var undocumented = Object.keys(handled).filter(function (keyName) {
   // Match the letter as its own token ("C cycles channels") rather than as a
   // letter inside any word, or the check would pass on prose alone.
@@ -3541,6 +3560,23 @@ var caretPair = (appSrc.match(/tagName === 'INPUT'/g) || []).length;
 assert(caretDefs === 1 && caretCalls === 2 && caretPair === 1,
   'both keyboard paths check the caret through one lookup (' + caretDefs +
   ' def, ' + caretCalls + ' reads, ' + caretPair + ' pair)');
+
+// Every letter shortcut answers in both cases through ONE comparison, so the
+// pair of cases is written once rather than in three shapes beside twelve
+// branches. Written beside each key the pair could be cut differently — one
+// branch keeping only its own case — which reads as a single letter that stops
+// working under Caps Lock for reasons nothing on the page explains. Counted as
+// text: one definition, one read per letter branch, and no leftover pair of
+// case comparisons for a letter beside them. (A bracket or a space is not a
+// letter, so those two branches keep their own comparison on purpose.)
+var keyDefs = (appSrc.match(/function keyIs\(/g) || []).length;
+var keyReads = (appSrc.match(/keyIs\(ev, '/g) || []).length;
+var keyPairs = (appSrc.match(/=== '[A-Za-z]' \|\| /g) || []).length +
+  (appSrc.match(/\/\^[A-Za-z]\|[A-Za-z]\$\//g) || []).length;
+assert(keyDefs === 1 && keyReads === Object.keys(handled).length - mapEntries &&
+  keyPairs === 0,
+  'every letter key reads one case lookup (' + keyDefs + ' def, ' + keyReads +
+  ' reads, ' + mapEntries + ' map keys, ' + keyPairs + ' bare pairs)');
 
 // The keys are only half of how the view is driven: a legend row and a chart
 // bar are both reachable with a pointer, and neither has a letter of its own.
