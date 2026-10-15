@@ -549,6 +549,13 @@ Conventions:
   so the empty case lives in that lookup: two copies of the fallback could
   disagree about a dry world while each figure still looked plausible on its
   own, one printing `0%` and the other a bare `0`.
+  That lookup is a forward rather than a second division — `lakeShare` reads
+  `classShare(stats, 'lake')`, since both are one count over one grid with the
+  same absent-count fallback. Written beside each other the two fallbacks could
+  be edited apart, which lets a world with no tarns print `0%` in the row and
+  nothing at all in the record — each still plausible beside its own caption.
+  The suite counts the forward, the single division and the one fallback left in
+  the core, and compares the two lookups on a crowded world.
   Those steps also follow the ground rather than the fill order: for any two
   neighbouring cells of one basin, the lower one carries at least as deep a
   step. The suite walks those pairs on every phrase, which is what keeps the

@@ -2882,6 +2882,22 @@ assert(lakeDefs === 1 && lakeRow === 1 && lakeRec === 1 &&
   'one fraction feeds the lake row and the record (' + lakeDefs + ' def, ' +
   lakeRow + '/' + lakeRec + ' readers)');
 
+// Both of those fractions are the same shape: a class count over the grid, with
+// the absent count folded into a zero. Written beside each other the two
+// fallbacks could be edited apart, which lets a world with no tarns print `0%`
+// in one view and nothing at all in the other — each still plausible beside its
+// own caption. So the lake fraction reads the class fraction, and the suite
+// counts the two definitions, that one forward, the single division and asks for
+// no second copy of the fallback left beside them.
+var lsForward = (lakeSrc.match(/return classShare\(stats, 'lake'\);/g) || []).length;
+var lsDiv = (lakeSrc.match(/\) \/ stats\.pixels;/g) || []).length;
+var lsFallback = (lakeSrc.match(/stats\.counts\[key\] \|\| 0/g) || []).length;
+assert(lsForward === 1 && lsDiv === 1 && lsFallback === 1 &&
+  core.lakeShare(basinWorld.stats) ===
+    core.classShare(basinWorld.stats, 'lake'),
+  'both grid fractions divide one way (' + lsForward + ' forward, ' +
+  lsDiv + ' division, ' + lsFallback + ' fallback)');
+
 // Every labelled basin also needs a bearing, since the readout pairs the two:
 // one entry per basin, each a real compass point, and none for a world with no
 // standing water.

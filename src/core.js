@@ -1455,9 +1455,13 @@
   // zero on a world with no tarns, so the empty case is folded in here: the
   // `lake` row on the page and the `lake` field of a record then divide the
   // same numerator by the same grid, and one prints it out of a hundred while
-  // the other keeps three decimals of it.
+  // the other keeps three decimals of it. That is the same division a single
+  // class takes, with the lake key written down, so it reads that one rather
+  // than holding a second copy of the fallback: two copies could disagree about
+  // a world with no tarns while each figure still looked plausible on its own,
+  // one printing `0%` in the row and the other an empty string in the record.
   function lakeShare(stats) {
-    return (stats.counts.lake || 0) / stats.pixels;
+    return classShare(stats, 'lake');
   }
 
   // Share of the grid a single class covers. Same shape as the lake fraction
