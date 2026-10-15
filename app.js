@@ -1101,6 +1101,14 @@
     el.textContent = '';
   }
 
+  // Which attribute a legend row carries its class in. Two places need that
+  // name: the write as each row is built, and the read that finds the same row
+  // again after a keyboard toggle so the caret can be handed back. Written
+  // beside each site the name could be changed on one side only, which reads as
+  // a row that shows its ring and then loses the caret on the floor — the pin
+  // still works with a click, so nothing else looks wrong.
+  var ROW_KEY = 'data-key';
+
   function renderLegend(result) {
     var keys = legendKeys(result);
     var counts = result.stats.counts;
@@ -1142,7 +1150,7 @@
         var li = document.createElement('li');
         // The key is kept on the element so a rebuild can find the same row
         // again and hand the caret back after a keyboard toggle.
-        li.setAttribute('data-key', key);
+        li.setAttribute(ROW_KEY, key);
         watchRow(li, key);
         var sw = rowSpan('sw');
         var c = result.palette.colors[key] || result.palette.colors.grass;
@@ -1171,7 +1179,7 @@
           // Rebuilding the list drops the caret, so put it back on the row that
           // was just activated: a second Enter should release the pin without
           // tabbing through the list again.
-          var again = legendList.querySelector('[data-key="' + key + '"]');
+          var again = legendList.querySelector('[' + ROW_KEY + '="' + key + '"]');
           if (again) again.focus();
         });
         if (pinned === key) li.className = 'on';

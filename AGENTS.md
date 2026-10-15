@@ -1578,6 +1578,13 @@ Conventions:
   Rows carry `data-key` so a keyboard toggle can hand the caret back after the
   list is rebuilt, and the row's own `keydown` stops propagation: `Space` is
   also the reroll shortcut and must not fire twice.
+  That attribute is one name — `ROW_KEY` — read by both halves of the pair: the
+  write as each row is built, and the query that finds the row again after a
+  rebuild. Written beside each site the name could be changed on one of them
+  only, which reads as a row that shows its ring and then drops the caret on the
+  floor — the pin still answers a click, so nothing else looks wrong. The suite
+  counts the one declaration, its two reads and asks that the only spelling of
+  the attribute be the one inside that lookup.
   Each row is three spans — a swatch, a name, a share — and all three are one
   shape: a span with its own class, the name being the one that carries none.
   That shape is one builder — `rowSpan(cls)` — read three times, since writing

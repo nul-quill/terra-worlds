@@ -5703,6 +5703,23 @@ assert(spanDefs === 1 && spanReads === 3 && spanInline === 1,
   'every legend span is built by one helper (' + spanDefs + ' def, ' +
   spanReads + ' reads, ' + spanInline + ' inside)');
 
+// A row is found again after a rebuild by the attribute it carries its class
+// in, so that name is shared by the write on each row and the read that hands
+// the caret back. Written beside each site the name could be changed on one of
+// them only, which reads as a row that shows its ring and then drops the caret
+// on the floor — the pin still answers a click, so nothing else looks wrong.
+// Counted as text: one declaration, one read per site, and no second spelling
+// of the attribute left beside them.
+var rowKeyDefs = (appSrc.match(/var ROW_KEY = 'data-key'/g) || []).length;
+var rowKeyWrites = (appSrc.match(/setAttribute\(ROW_KEY/g) || []).length;
+var rowKeyReads = (appSrc.match(/ROW_KEY/g) || []).length - rowKeyDefs;
+var rowKeyBare = (appSrc.match(/'data-key'/g) || []).length;
+assert(rowKeyDefs === 1 && rowKeyWrites === 1 && rowKeyReads === 2 &&
+  rowKeyBare === 1,
+  'a legend row is named by one attribute (' + rowKeyDefs + ' names, ' +
+  rowKeyWrites + ' writes, ' + rowKeyReads + ' reads, ' + rowKeyBare +
+  ' spellings)');
+
 // A stats row is two cells — a name and its figure — and both are the same
 // shape: a node with a text on it. Written beside each half the creation could
 // gain a class on one of them, or drop its text assignment, which reads as a
