@@ -5159,6 +5159,22 @@ assert(octDefs === 1 && octReads === 2 && octAmp === 1 && octLoop === 1,
   'both fractal fields share one octave walk (' + octDefs + ' def, ' +
   octReads + ' reads, ' + octAmp + ' halving, ' + octLoop + ' loop)');
 
+// The S-curve behind every smooth blend is one shape: the shaped height curves
+// reach it through `smoothstep`, and both axes of the value noise reach it
+// directly, since each is the same curve on its own fraction inside the cell.
+// Written beside each read the pair could be edited apart, which lets a cell
+// blend sideways on a softer curve than it blends upwards — still a plausible
+// gradient beside its own caption, since each axis on its own looks smooth.
+// The suite counts the one definition, its three reads, the single curve inside
+// it and asks for no bare pair of factors left beside them.
+var easeDefs = (coreSrc.match(/function ease\(/g) || []).length;
+var easeReads = (coreSrc.match(/return ease\(|= ease\(fx\)|sy = ease\(/g) || []).length;
+var easeCurve = (coreSrc.match(/t \* t \* \(3 - 2 \* t\);/g) || []).length;
+var easeInline = (coreSrc.match(/f[xy] \* f[xy] \* \(3/g) || []).length;
+assert(easeDefs === 1 && easeReads === 3 && easeCurve === 1 && easeInline === 0,
+  'every smooth blend shares one curve (' + easeDefs + ' def, ' + easeReads +
+  ' reads, ' + easeCurve + ' curve, ' + easeInline + ' inline)');
+
 // Both readers of an overlay's scale — the ramp that paints the pixels and the
 // hover that prints the number under the cursor — are the same division of a
 // value inside its own pair of cuts. Written beside each reader the subtraction

@@ -180,7 +180,16 @@
   }
 
   function smoothstep(a, b, x) {
-    var t = clamp01((x - a) / (b - a));
+    return ease(clamp01((x - a) / (b - a)));
+  }
+
+  // The S-curve on a value already inside 0..1: three of the reads here want
+  // it — the shaped curves in `shapeHeight`, and both axes of the value noise,
+  // whose two smooth factors are the same curve on their own fraction. Written
+  // beside each read the pair could be edited apart, which lets a cell blend
+  // sideways on a softer curve than it blends upwards: still a plausible
+  // gradient beside its own caption, since each axis on its own looks smooth.
+  function ease(t) {
     return t * t * (3 - 2 * t);
   }
 
@@ -196,8 +205,7 @@
   function valueNoise(x, y, nx, ny, seed) {
     var x0 = Math.floor(x), y0 = Math.floor(y);
     var fx = x - x0, fy = y - y0;
-    var sx = fx * fx * (3 - 2 * fx);
-    var sy = fy * fy * (3 - 2 * fy);
+    var sx = ease(fx), sy = ease(fy);
     var a = wrap(x0, nx), b = wrap(x0 + 1, nx);
     var c = wrap(y0, ny), d = wrap(y0 + 1, ny);
     var v00 = hash2(a, c, seed), v10 = hash2(b, c, seed);

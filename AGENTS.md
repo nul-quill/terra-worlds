@@ -432,6 +432,14 @@ Conventions:
   around it — still plausible relief, since each field on its own looks evenly
   weighted; the suite counts the definition, its two reads, the single halving
   inside it and asks for one octave loop.
+  The S-curve under every smooth blend is one shape too — `ease(t)` — since
+  three reads want it: `smoothstep` for the shaped curves, and both axes of the
+  value noise, each of which is that curve on its own fraction inside a cell.
+  Written beside each read the pair could be edited apart, which lets a cell
+  blend sideways on a softer curve than it blends upwards — still a plausible
+  gradient beside its own caption, since each axis on its own looks smooth; the
+  suite counts the definition, its three reads, the single curve inside it and
+  asks for no bare pair of factors left beside them.
 - Moisture is not a standalone field: the orographic pass in `generate` folds the
   relief into it, so ridges get a windward wet band and a leeward rain shadow.
   Keep it a per-row sweep — it is O(n) and must stay that way.
