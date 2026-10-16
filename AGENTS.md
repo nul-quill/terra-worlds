@@ -1940,6 +1940,13 @@ Conventions:
   `upscale()` replicates each cell as a solid f x f block rather than blending
   it, which is what keeps a 6x save the same picture as a 2x one; the smoke
   suite checks that block-for-block on a small grid.
+  Both axes of that block come from one division — `blockCoord(pos, f)` — since
+  a saved row and its own column are the same shape over their own axis. Written
+  beside each axis the pair could be edited apart, which lets a saved row repeat
+  every third column while its columns still repeat in blocks of the factor — a
+  slightly stretched picture rather than an obvious error, so the suite counts the
+  definition, its two reads and asks that the only division by the factor left in
+  the core be the one inside that helper.
   The block walk runs over every entry of `core.scales`, not just one factor:
   dimensions alone would also pass for a smoothing resize, which saves a softer
   picture than the one on screen while reporting the same counts.

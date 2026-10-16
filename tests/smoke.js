@@ -117,6 +117,25 @@ for (var by = 0; by < tiny.height && blockOk; by++) {
 }
 assert(blockOk, 'upscale repeats each cell as a solid block');
 
+// Both axes of that block come from one division of a saved pixel by the
+// factor, so the shell of that lookup is one helper: the row of a block and
+// its column are the same shape over their own axis. Written beside each axis
+// the pair could be edited apart, which lets a saved row repeat every third
+// column while its columns still repeat in blocks of the factor — a slightly
+// stretched picture rather than an obvious error, and the block check above
+// only catches that when the two halves disagree about the totals. The suite
+// counts the definition, its two reads and asks for no bare division by the
+// factor left beside them.
+// Read the core directly here: the shared `coreSrc` string is not populated
+// until much later in this file.
+var coreSrcUp = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var bcDefs = (coreSrcUp.match(/function blockCoord\(/g) || []).length;
+var bcReads = (coreSrcUp.match(/blockCoord\(/g) || []).length - bcDefs;
+var bcBare = (coreSrcUp.match(/\/ f\) \| 0/g) || []).length;
+assert(bcDefs === 1 && bcReads === 2 && bcBare === 1,
+  'both axes of an upscaled block divide one way (' + bcDefs + ' def, ' +
+  bcReads + ' reads, ' + bcBare + ' inside)');
+
 var terraced = core.generate({ seed: 'terraced', width: 165, height: 103, terraces: 8, rivers: 200 });
 assert(terraced.stats.rivers > 0, 'terraced plateaus still drain (' + terraced.stats.rivers + ' cells)');
 

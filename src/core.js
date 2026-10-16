@@ -1389,16 +1389,25 @@
   }
 
   // Nearest-neighbour upscale into a fresh RGBA buffer (crisp pixels).
+  // Which block of the source a saved pixel came from: both axes are that one
+  // division, so the pair is written once. Beside each axis the shape could be
+  // edited apart, which lets a saved row repeat every third column while its
+  // own columns still repeat in blocks of the factor — a slightly stretched
+  // picture rather than an obvious error.
+  function blockCoord(pos, f) {
+    return (pos / f) | 0;
+  }
+
   function upscale(result, factor) {
     var f = Math.max(1, Math.round(factor || 1));
     var w = result.width * f, h = result.height * f;
     var out = new Uint8ClampedArray(w * h * 4);
     var src = result.data;
     for (var y = 0; y < h; y++) {
-      var sy = ((y / f) | 0) * result.width;
+      var sy = blockCoord(y, f) * result.width;
       var row = y * w;
       for (var x = 0; x < w; x++) {
-        var so = (sy + ((x / f) | 0)) * 4;
+        var so = (sy + blockCoord(x, f)) * 4;
         var o = (row + x) * 4;
         out[o] = src[so]; out[o + 1] = src[so + 1]; out[o + 2] = src[so + 2]; out[o + 3] = 255;
       }
