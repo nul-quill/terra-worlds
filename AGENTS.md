@@ -1071,6 +1071,15 @@ Conventions:
   value-taking flag at once rather than each of them separately. The suite asks
   for a line naming both halves: that a value is optional, and that the reason
   is the next word being a flag itself.
+  Every note of that listing hangs from the same seven-space indent, and that
+  indent is one spelling held by `helpLine(text)` — the write inside the helper
+  is the only place the gap is written. Beside each note the gap could be edited
+  on one of them, which reads as a listing whose second column stops lining up
+  while every line still names its own flag — close enough to a working help
+  text that nobody re-reads it, so the suite counts the definition, the single
+  write inside it and asks that the only indented `console.log` in the file be
+  that one. The usage line and the summary echoes under the listing are flush on
+  purpose, so they keep their own `console.log` and stay outside this pair.
 - Letter shortcuts (`c`, `h`, `k`, `d`, `w`, `e`, `g`, `l`, `m`, `p`, `s`) are skipped while an INPUT or
   (`x` joins that list: it is not a list cycle but a call to `copyLink()`, the
   same function the `Copy link` button is wired to, so the two paths cannot

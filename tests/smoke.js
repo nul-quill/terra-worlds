@@ -1625,6 +1625,22 @@ assert(valueNote.length >= 1,
   '--help explains when a flag value is optional (' + valueNote.length +
   ' notes)');
 
+// Every note under the usage line hangs from the same indent, and that indent
+// is one spelling held by `helpLine()`. Counted as text: one definition, one
+// write inside it, and every indented note of the listing reaching it — a gap
+// written beside each note could be edited on one of them, which reads as a
+// listing whose second column stops lining up while every line still names its
+// own flag. The two flush lines (the usage line and the summary echoes) are a
+// different shape on purpose, so they are counted outside this pair.
+var helpSrc = require('fs').readFileSync(__dirname + '/../cli.js', 'utf8');
+var hlDefs = (helpSrc.match(/function helpLine\(/g) || []).length;
+var hlWrites = (helpSrc.match(/console\.log\('       ' \+ text\)/g) || []).length;
+var hlBare = (helpSrc.match(/console\.log\('       /g) || []).length;
+assert(hlDefs === 1 && hlWrites === 1 && hlBare === 1 &&
+    (helpSrc.match(/helpLine\(/g) || []).length > 40,
+  'every help note is one indented lookup (' + hlDefs + ' def, ' + hlWrites +
+  ' write inside it, ' + hlBare + ' bare indent left)');
+
 // A dashed word that matches no flag is a typo, not a seed: the CLI says so
 // and still renders one world, rather than treating the stray word (and its
 // value) as extra seeds. Checked by counting the summaries it prints.

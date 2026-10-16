@@ -190,6 +190,16 @@ function numberRow(no, text) {
   return String(no).padEnd(3) + text;
 }
 
+// Every note under the usage line hangs from the same indent, and that indent
+// is one spelling. Written beside each note the gap could be edited on one of
+// them, which reads as a listing whose second column stops lining up while
+// every line still names its own flag — close enough to a working help text
+// that nobody re-reads it. The first line of the listing and the summary lines
+// under it are flush on purpose, so they keep their own `console.log`.
+function helpLine(text) {
+  console.log('       ' + text);
+}
+
 // One label of the plain stats table, held to the width the record measured.
 // The table is a column of names over their values, and the gap is the only
 // thing every row shares, so the pad is one lookup rather than a loop written
@@ -354,66 +364,66 @@ if (opts.help) {
   console.log('usage: node cli.js "<seed>" [--width n] [--height n] [--palette name]');
   // The two sizes are the only flags where one value changes the other, so the
   // rule is stated where a terminal reads it rather than left for the source.
-  console.log('       a lone --width or --height keeps the default aspect: the');
-  console.log('       side you leave out is filled from the ratio of the two');
-  console.log('       defaults, so --width 800 is a wide landscape not a strip;');
-  console.log('       name both sizes to override that.');
+  helpLine('a lone --width or --height keeps the default aspect: the');
+  helpLine('side you leave out is filled from the ratio of the two');
+  helpLine('defaults, so --width 800 is a wide landscape not a strip;');
+  helpLine('name both sizes to override that.');
   // The shape keys are read from the generator's list rather than repeated
   // here, so adding a curve in core.js shows up in this listing too.
-  console.log('       [--shape ' + nameList(core.shapes, '|') + '] [--sea 0..1]');
-  console.log('       [--detail 0..1] [--polar 0..1] [--light 0..1]');
+  helpLine('[--shape ' + nameList(core.shapes, '|') + '] [--sea 0..1]');
+  helpLine('[--detail 0..1] [--polar 0..1] [--light 0..1]');
   // Like the shape list above, the bearings come from the generator's own
   // array, so a new compass point appears in the usage line without a second
   // edit here.
-  console.log('       [--dir ' + nameList(core.lights, '|') +
+  helpLine('[--dir ' + nameList(core.lights, '|') +
     '] for the hillshade light bearing,');
-  console.log('       [--terraces n] [--rivers n] [--out file.ppm]');
-  console.log('       [--contour] for hypsometric lines on land and bathymetric');
-  console.log('       steps under water, both spaced by this world\'s relief');
+  helpLine('[--terraces n] [--rivers n] [--out file.ppm]');
+  helpLine('[--contour] for hypsometric lines on land and bathymetric');
+  helpLine('steps under water, both spaced by this world\'s relief');
   // Same rule as the two lists above: the overlay keys are read from
   // core.channels, so a ramp added there is immediately nameable from a
   // terminal. The empty-key entry is shown as 'biome', which is what the
   // dropdown calls it.
-  console.log('       [--channel ' + nameList(core.channels, '|') +
+  helpLine('[--channel ' + nameList(core.channels, '|') +
     '] to flatten');
-  console.log('       the world to one scalar field instead of the biome colours');
-  console.log('       [--scale n] nearest-neighbour multiplier applied to the');
-  console.log('       saved pixels, so a small grid can still fill a screen');
-  console.log('       [--describe] to print only the one-line summary and skip');
-  console.log('       the .ppm file entirely; with several seeds each line');
-  console.log('       also carries its own seed');
-  console.log('       [--hist] to add the relief profile as text bars under the');
-  console.log('       summary, binned the way the sidebar chart bins it');
-  console.log('       [--next n] with one seed to print that seed plus the n-1 seeds');
-  console.log('       the Reroll button derives from it, one per line; with');
-  console.log('       [--json] each line of that chain is a full record');
-  console.log('       [--no-grain] to skip the Bayer dither on the shading');
-  console.log('       [--seed phrase] names a world the way a bare word does,');
-  console.log('       for a call that already passes every other setting as a');
-  console.log('       key; repeat it for several worlds, exactly as several');
-  console.log('       bare words would');
-  console.log('       [--palettes] to list the palette keys and their labels');
-  console.log('       [--shapes] to list the shape keys and what each one cuts');
-  console.log('       [--channels] to list the overlay keys and the field each');
-  console.log('       one reads, in the order the c key cycles them');
-  console.log('       [--phrases] to list the hand-picked seed phrases the p key');
-  console.log('       walks, one per line, ready to paste after this command');
-  console.log('       [--lights] to list the light bearings --dir takes');
-  console.log('       [--grids] to list the column counts the grid dropdown pins');
-  console.log('       [--scales] to list the export multipliers --scale takes');
-  console.log('       [--help] prints this listing, so a terminal can find');
-  console.log('       the flags without opening the source; -h does the same');
-  console.log('       several seeds at once are fine: each gets its own file');
-  console.log('       (--out becomes a prefix), and [--json] prints one line of');
-  console.log('       JSON per world instead of the table');
+  helpLine('the world to one scalar field instead of the biome colours');
+  helpLine('[--scale n] nearest-neighbour multiplier applied to the');
+  helpLine('saved pixels, so a small grid can still fill a screen');
+  helpLine('[--describe] to print only the one-line summary and skip');
+  helpLine('the .ppm file entirely; with several seeds each line');
+  helpLine('also carries its own seed');
+  helpLine('[--hist] to add the relief profile as text bars under the');
+  helpLine('summary, binned the way the sidebar chart bins it');
+  helpLine('[--next n] with one seed to print that seed plus the n-1 seeds');
+  helpLine('the Reroll button derives from it, one per line; with');
+  helpLine('[--json] each line of that chain is a full record');
+  helpLine('[--no-grain] to skip the Bayer dither on the shading');
+  helpLine('[--seed phrase] names a world the way a bare word does,');
+  helpLine('for a call that already passes every other setting as a');
+  helpLine('key; repeat it for several worlds, exactly as several');
+  helpLine('bare words would');
+  helpLine('[--palettes] to list the palette keys and their labels');
+  helpLine('[--shapes] to list the shape keys and what each one cuts');
+  helpLine('[--channels] to list the overlay keys and the field each');
+  helpLine('one reads, in the order the c key cycles them');
+  helpLine('[--phrases] to list the hand-picked seed phrases the p key');
+  helpLine('walks, one per line, ready to paste after this command');
+  helpLine('[--lights] to list the light bearings --dir takes');
+  helpLine('[--grids] to list the column counts the grid dropdown pins');
+  helpLine('[--scales] to list the export multipliers --scale takes');
+  helpLine('[--help] prints this listing, so a terminal can find');
+  helpLine('the flags without opening the source; -h does the same');
+  helpLine('several seeds at once are fine: each gets its own file');
+  helpLine('(--out becomes a prefix), and [--json] prints one line of');
+  helpLine('JSON per world instead of the table');
   // One rule covers every value-taking flag, so it is stated once here rather
   // than beside each of them: a dashed word after a flag belongs to that next
   // flag, which is why `--out --json` and `--palette --json` both keep their
   // own defaults and still print a record.
-  console.log('       a value is optional when the next word is itself a flag:');
-  console.log('       that word belongs to the next flag, so [--out --json]');
-  console.log('       keeps world.ppm and [--palette --json] the default');
-  console.log('       scheme, both still printing JSON');
+  helpLine('a value is optional when the next word is itself a flag:');
+  helpLine('that word belongs to the next flag, so [--out --json]');
+  helpLine('keeps world.ppm and [--palette --json] the default');
+  helpLine('scheme, both still printing JSON');
   console.log('palettes: ' + paletteKeys().join(', '));
   console.log('channels: ' + nameList(core.channels));
   console.log('lights: ' + nameList(core.lights));
