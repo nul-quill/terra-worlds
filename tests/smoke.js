@@ -5388,6 +5388,20 @@ assert(rcDefs === 1 && rcReads === 3 && rcSum === 1 && rcInline === 0,
   'every channel of a ramp blends one way (' + rcDefs + ' def, ' + rcReads +
   ' reads, ' + rcSum + ' sum, ' + rcInline + ' inline)');
 
+// The two cuts that trim an overlay's tails are one share: the low end takes
+// the tail below it, the high end the mirror above. Written beside each cut a
+// pair could be edited apart until a scale trimmed its high tail harder than
+// its low one — still a plausible ramp beside its own caption — so the suite
+// counts the one number, its two reads and asks for no bare pair of percentiles
+// left inside that pass.
+var clipDefs = (coreSrc.match(/var CLIP = /g) || []).length;
+var clipBody = /function scaleFor\(values, n, useLog\) \{([\s\S]*?)\n  \}/.exec(coreSrc)[1];
+var clipReads = (clipBody.match(/quantileIndex\(1? ?-? ?CLIP, n\)/g) || []).length;
+var clipBare = (clipBody.match(/quantileIndex\(0?\.\d+, n\)/g) || []).length;
+assert(clipDefs === 1 && clipReads === 2 && clipBare === 0,
+  'both tails of an overlay scale are one share (' + clipDefs + ' def, ' +
+  clipReads + ' reads, ' + clipBare + ' bare)');
+
 // Inside the chart, a bin's two ends and the middle of a bar are the same
 // division of a bin slot by the count, scaled by the range. Three readers need
 // that pair: the caption of a hovered bar, and the comparison that picks a

@@ -1313,14 +1313,20 @@
   // Spread a field over 0..1 by its own extremes, so a low-contrast field
   // still fills the ramp. The top and bottom 2% are clipped away, which keeps
   // a single deep trench or one huge catchment from washing out the rest.
+  // Both ends are that one share: the low cut takes the tail below it, the
+  // high cut the mirror above it. Written beside each cut the two could be
+  // edited apart until a scale trimmed its high tail harder than its low one —
+  // still a plausible ramp beside its own caption — so the pair is one number.
+  var CLIP = 0.02;
+
   function scaleFor(values, n, useLog) {
     var sample = new Array(n);
     for (var i = 0; i < n; i++) {
       sample[i] = scaleValue(values[i], useLog);
     }
     sample.sort(byNumber);
-    var lo = sample[quantileIndex(0.02, n)];
-    var hi = sample[quantileIndex(0.98, n)];
+    var lo = sample[quantileIndex(CLIP, n)];
+    var hi = sample[quantileIndex(1 - CLIP, n)];
     if (!(hi > lo)) hi = lo + 1;
     return { lo: lo, hi: hi };
   }

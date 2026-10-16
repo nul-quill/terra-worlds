@@ -542,6 +542,12 @@ Conventions:
   dropped on one of them, which lets a cut ask past the end of its own list and
   come back undefined while the field beside it still looked ordered; the suite
   counts the definition, its four reads and the single clamp inside it.
+  Those two cuts inside `scaleFor` are one share as well — `CLIP` — since the
+  high cut is only the mirror of the low one. Written beside each cut the pair
+  could be edited apart until a scale trimmed its high tail harder than its low
+  one, which still reads as a plausible ramp beside its own caption; the suite
+  counts the one number, its two reads inside that pass and asks for no bare
+  percentile left beside them.
   `fieldFor(key, result)` is the single field lookup shared by the ramp and by
   `channelValue(result, cell)`, which is what the hover readout prints. The scale
   is cached in `result.channelScale` during `channelize` so a hover does not sort
