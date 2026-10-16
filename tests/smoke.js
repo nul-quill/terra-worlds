@@ -5466,6 +5466,21 @@ assert(idxDefs === 2 && idxReads === 10 && idxBare === 2,
   'every index split in the generator is one pair (' + idxDefs + ' defs, ' +
   idxReads + ' reads, ' + idxBare + ' inside)');
 
+// The inverse pair — a column and a row back into one linear index — is the
+// other half of the same job, and thirteen two-dimensional sweeps need it: the
+// height field, both chamfer sweeps, the column filter, the ring sweep, the
+// lake seeds, the biome loop and the slope field. Written beside each loop the
+// multiply could be edited apart from the one its own neighbour reads use,
+// which lets a fill test a cell against a row one off its own column — still a
+// plausible shore beside its own caption. Counted as text: one definition, its
+// thirteen reads, and the single multiply left inside that helper.
+var ciDefs = (coreSrc.match(/function cellIndex\(/g) || []).length;
+var ciReads = (coreSrc.match(/cellIndex\(/g) || []).length - ciDefs;
+var ciBare = (coreSrc.match(/(?:y|k2|ys\.\w+|py) \* w(?:idth)? \+ /g) || []).length;
+assert(ciDefs === 1 && ciReads === 13 && ciBare === 1,
+  'every grid sweep builds its index one way (' + ciDefs + ' def, ' + ciReads +
+  ' reads, ' + ciBare + ' inside)');
+
 // Inside the chart, a bin's two ends and the middle of a bar are the same
 // division of a bin slot by the count, scaled by the range. Three readers need
 // that pair: the caption of a hovered bar, and the comparison that picks a

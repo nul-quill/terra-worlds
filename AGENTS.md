@@ -40,6 +40,17 @@ Conventions:
   column — still a plausible shore beside its own caption, so the suite counts the
   two definitions, their five paired reads and asks that the only bare splits left
   in the file be the two inside those helpers.
+  The inverse — a column and a row back into one linear index — is one lookup
+  too, `cellIndex(x, y, width)`, since eight two-dimensional sweeps ask the
+  same question thirteen times: the height field, both chamfer sweeps, the
+  column filter, the ring sweep, the lake seeds, the biome loop and the slope
+  field. Written beside
+  each loop the multiply could be edited apart from the one its own neighbour
+  reads use, which lets a fill test a cell against a row one off its own column
+  — still a plausible shore beside its own caption — so the suite counts the
+  definition, its thirteen reads and the single multiply left inside it. Each
+  comparison inside those sweeps reads its index once into a local, so a helper
+  call never has to be written twice for one test.
 - Lakes are closed depressions: the water surface is the minimum on a ring of
   radius `RIM` around the seed cell, and the basin is a flood fill capped at that
   surface. The old single-cell test (`gap > threshold` only) left one-pixel dots.

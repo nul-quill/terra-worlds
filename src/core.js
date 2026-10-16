@@ -439,6 +439,16 @@
     return Math.max(3, Math.round(cols * height / width));
   }
 
+  // A cell's place in a flat array, from its own column and row. Every sweep
+  // that walks the grid two-dimensionally needs this pair of axes, and each is
+  // only the row count of the grid wrapped under it plus the column. Written
+  // beside each loop the multiply could be edited apart from the one the reads
+  // next to it use, which lets a fill test a neighbour against a row one off
+  // its own column — still a plausible shore beside its own caption.
+  function cellIndex(x, y, width) {
+    return y * width + x;
+  }
+
   // A neighbour for the shade pass. Every one of the four is the same shape:
   // step off this cell in one direction, unless that direction is already the
   // edge of the grid, in which case the cell reads itself. Written beside each
@@ -512,7 +522,7 @@
     for (y = 0; y < height; y++) {
       v = (y + 0.5) / height;
       for (x = 0; x < width; x++) {
-        i = y * width + x;
+        i = cellIndex(x, y, width);
         u = (x + 0.5) / width;
 
         var base = fbm(u * cols, v * rows, cols, rows, seed, 5);
@@ -679,7 +689,7 @@
     for (i = 0; i < n; i++) dist[i] = hf[i] < seaLevel ? 0 : BIG;
     for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
-        i = y * width + x;
+        i = cellIndex(x, y, width);
         var dmin = dist[i];
         if (x > 0 && stepFrom(dist, i - 1) < dmin) dmin = stepFrom(dist, i - 1);
         if (y > 0 && stepFrom(dist, i - width) < dmin) dmin = stepFrom(dist, i - width);
@@ -688,7 +698,7 @@
     }
     for (y = height - 1; y >= 0; y--) {
       for (x = width - 1; x >= 0; x--) {
-        i = y * width + x;
+        i = cellIndex(x, y, width);
         dmin = dist[i];
         if (x < width - 1 && stepFrom(dist, i + 1) < dmin) dmin = stepFrom(dist, i + 1);
         if (y < height - 1 && stepFrom(dist, i + width) < dmin) dmin = stepFrom(dist, i + width);
@@ -761,9 +771,12 @@
     for (x = 0; x < width; x++) {
       for (y = 0; y < height; y++) {
         var wy = windowSpan(y, height);
-        var m2 = hf[y * width + x];
-        for (var k2 = wy.lo; k2 <= wy.hi; k2++) { if (hf[k2 * width + x] < m2) m2 = hf[k2 * width + x]; }
-        colMin[y * width + x] = m2;
+        var m2 = hf[cellIndex(x, y, width)];
+        for (var k2 = wy.lo; k2 <= wy.hi; k2++) {
+          var v2 = hf[cellIndex(x, k2, width)];
+          if (v2 < m2) m2 = v2;
+        }
+        colMin[cellIndex(x, y, width)] = m2;
       }
     }
 
@@ -775,10 +788,13 @@
       // bounds from the one span.
       var ys = windowSpan(py, height);
       var xs = windowSpan(px, width);
-      var best = rowMin[ys.lo * width + px];
-      if (rowMin[ys.hi * width + px] < best) best = rowMin[ys.hi * width + px];
-      if (colMin[py * width + xs.lo] < best) best = colMin[py * width + xs.lo];
-      if (colMin[py * width + xs.hi] < best) best = colMin[py * width + xs.hi];
+      var best = rowMin[cellIndex(px, ys.lo, width)];
+      var r2 = rowMin[cellIndex(px, ys.hi, width)];
+      if (r2 < best) best = r2;
+      var c2 = colMin[cellIndex(xs.lo, py, width)];
+      if (c2 < best) best = c2;
+      var c3 = colMin[cellIndex(xs.hi, py, width)];
+      if (c3 < best) best = c3;
       return best;
     }
 
@@ -909,7 +925,7 @@
     }
     for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
-        i = y * width + x;
+        i = cellIndex(x, y, width);
         if (hf[i] < seaLevel || lake[i]) continue;
         var gap = ringMinimum(x, y) - hf[i];
         if (gap <= 0.006) continue;
@@ -939,7 +955,7 @@
 
     for (y = 0; y < height; y++) {
       for (x = 0; x < width; x++) {
-        i = y * width + x;
+        i = cellIndex(x, y, width);
         var h = hf[i];
         var isWater = h < seaLevel;
 
@@ -1322,7 +1338,7 @@
     var out = new Float32Array(w * h);
     for (var y = 0; y < h; y++) {
       for (var x = 0; x < w; x++) {
-        var i = y * w + x;
+        var i = cellIndex(x, y, w);
         var best = neighbourDrop(hf, i, x > 0 ? i - 1 : i);
         if (x + 1 < w) best = Math.max(best, neighbourDrop(hf, i, i + 1));
         if (y > 0) best = Math.max(best, neighbourDrop(hf, i, i - w));
