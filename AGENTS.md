@@ -1864,6 +1864,12 @@ Conventions:
   empty-key entry first so "no overlay" is always the default selection. The
   channel dropdown, the `c` cycle and the smoke overlay loop all read that one
   array — add a ramp there, never in `app.js`.
+  That list and the `CHANNELS` ramp table behind it are one set. An unlisted key
+  falls back to `relief` rather than rendering nothing, so a key that lived only
+  in one of the two would either print another field or sit unreachable in the
+  dropdown — each still a plausible overlay beside its own caption. The suite
+  counts the triples in the table against the named entries and asks that every
+  listed key come back as its own scale.
   On the page side all six selects are filled by one `fillOptions(select, items)`
   loop, since each list is `{key, label}` pairs from the core: the key becomes
   the option's value — what a link stores — and the label its text. Six copies

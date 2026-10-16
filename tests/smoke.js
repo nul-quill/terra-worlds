@@ -614,6 +614,26 @@ assert(rampDistinct && Object.keys(rampSeen).length === core.channels.length - 1
   'each ramp is its own picture, empty key means relief (' +
   Object.keys(rampSeen).length + ')');
 
+// The dropdown and the ramp table are one set of overlays. Each named key in
+// `core.channels` has to survive the lookup — an unlisted key falls back to
+// `relief`, so a key that only lived in one of the two would either print the
+// wrong field or be unreachable from the page. Counted both ways: every listed
+// key must come back as its own scale, and the table must hold exactly as many
+// triples as there are named entries.
+var rampTable = /var CHANNELS = \{([\s\S]*?)\n  \};/.exec(coreSrc);
+var tableKeys = rampTable
+  ? (rampTable[1].match(/\w+:\s*\[/g) || []).length : -1;
+var orphanKeys = [];
+core.channels.forEach(function (xc) {
+  if (!xc.key) return;
+  var xr = core.generate({seed: 'pale shelf', width: 60, height: 40});
+  core.channelize(xr, xc.key);
+  if (xr.channelScale.key !== xc.key) orphanKeys.push(xc.key);
+});
+assert(tableKeys === core.channels.length - 1 && orphanKeys.length === 0,
+  'the overlay list and its ramp table are one set (' + tableKeys +
+ ' triples, ' + orphanKeys.length + ' orphans)');
+
 // `slope` is the one field built by the lookup rather than by generate, so its
 // definition is worth pinning: the steepest of the four neighbour differences,
 // never an average. Recomputed here by hand on sampled cells, which also
