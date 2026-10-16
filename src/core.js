@@ -631,12 +631,27 @@
     var river = new Uint8Array(n);
     var lake = new Uint8Array(n);
 
+    // Which column and row a linear index sits on. Five walks need that pair —
+    // the drainage sweep, the rim sweep, the basin label loop, the bearing and
+    // the fill — and each is the same modulo plus the same truncated division.
+    // Written beside each site the two halves could be edited apart, one
+    // keeping a plain floor and one a bit-truncation, which lets a fill test a
+    // neighbour against a row one off its own column — still a plausible shore
+    // beside its own caption, so the pair is written once.
+    function colOf(index) {
+      return index % width;
+    }
+
+    function rowOf(index) {
+      return (index / width) | 0;
+    }
+
     // Walk from the highest rank downwards, so every upstream cell has already
     // contributed by the time its outlet is visited. On an equal-height plateau
     // the outlet is the higher-indexed neighbour, which still drains it.
     for (var s = n - 1; s >= 0; s--) {
       i = sortArr[s];
-      var cx = i % width, cy = (i / width) | 0;
+      var cx = colOf(i), cy = rowOf(i);
       var bj = -1, bh = hf[i];
       if (cx > 0 && lower(hf[i - 1], i - 1, bh, i)) { bh = hf[i - 1]; bj = i - 1; }
       if (cx < width - 1 && lower(hf[i + 1], i + 1, bh, i)) { bh = hf[i + 1]; bj = i + 1; }
@@ -829,7 +844,7 @@
       var best = -1;
       for (var q = 0; q < count; q++) {
         var bc = queue[q];
-        var bx = bc % width, by = (bc / width) | 0;
+        var bx = colOf(bc), by = rowOf(bc);
         if (bx > 0) best = pickSpill(bc - 1, best, cap);
         if (bx < width - 1) best = pickSpill(bc + 1, best, cap);
         if (by > 0) best = pickSpill(bc - width, best, cap);
@@ -847,8 +862,8 @@
       for (var lb = 0; lb < count; lb++) {
         var lcq = queue[lb];
         basin[queue[lb]] = lakeBasins;
-        sumX += lcq % width;
-        sumY += (lcq / width) | 0;
+        sumX += colOf(lcq);
+        sumY += rowOf(lcq);
       }
       var best = sweepRim(count, true);
       if (best < 0) best = sweepRim(count, false);
@@ -861,8 +876,8 @@
       // follows to get off the basin. One entry per basin, same order as the
       // labels in `basin`, so a hover can pair them up.
       basinSpill.push(bearing(
-        (best % width) - sumX / count,
-        ((best / width) | 0) - sumY / count
+        colOf(best) - sumX / count,
+        rowOf(best) - sumY / count
       ));
       // Everything the basin collected continues downstream from the outlet.
       var carried = 0;
@@ -909,7 +924,7 @@
           if (ch > surface) continue;
           var d = surface - ch;
           lake[cur] = Math.max(1, Math.round(Math.min(1, d / 0.09) * LAKE_STEPS));
-          var cx2 = cur % width, cy2 = (cur / width) | 0;
+          var cx2 = colOf(cur), cy2 = rowOf(cur);
           // `queued` marks a cell the moment it enters the queue: the depth is
           // only written on dequeue, so without this a cell offered by two
           // neighbours could be pushed twice and overflow the queue.

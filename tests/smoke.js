@@ -5415,6 +5415,22 @@ assert(clipDefs === 1 && clipReads === 2 && clipBare === 0,
   'both tails of an overlay scale are one share (' + clipDefs + ' def, ' +
   clipReads + ' reads, ' + clipBare + ' bare)');
 
+// Five walks inside the generator turn a linear index into its column and row:
+// the drainage sweep, the rim sweep, the basin label loop, the spillway bearing
+// and the lake fill. Each is the same modulo plus the same truncated division,
+// so the pair is one lookup per half. Written beside each site the two halves
+// could be edited apart — one keeping a plain floor, one a bit-truncation —
+// which lets a fill test a neighbour against a row one off its own column,
+// still a plausible shore beside its own caption. The suite counts the two
+// definitions, their ten reads, and asks that the only two bare splits left in
+// the file be the ones inside those helpers.
+var idxDefs = (coreSrc.match(/function colOf\(|function rowOf\(/g) || []).length;
+var idxReads = (coreSrc.match(/colOf\(|rowOf\(/g) || []).length - idxDefs;
+var idxBare = (coreSrc.match(/\w+ % width|\w+ \/ width\) \| 0/g) || []).length;
+assert(idxDefs === 2 && idxReads === 10 && idxBare === 2,
+  'every index split in the generator is one pair (' + idxDefs + ' defs, ' +
+  idxReads + ' reads, ' + idxBare + ' inside)');
+
 // Inside the chart, a bin's two ends and the middle of a bar are the same
 // division of a bin slot by the count, scaled by the range. Three readers need
 // that pair: the caption of a hovered bar, and the comparison that picks a

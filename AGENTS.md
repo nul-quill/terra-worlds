@@ -32,6 +32,14 @@ Conventions:
   sloped cell still drains normally — a plausible network with one stagnant
   tarn. The suite counts the definition, its five reads and asks for no bare
   height comparison left beside them.
+  That walk and the four lake sweeps each need the pair of axes behind a linear
+  index, and both halves are one lookup — `colOf(i)` / `rowOf(i)` — since each is
+  only the column count of the grid wrapped under it. Written beside each site the
+  two halves could be edited apart, one keeping a plain `Math.floor` and one the
+  bit-truncation, which lets a fill test a neighbour against a row one off its own
+  column — still a plausible shore beside its own caption, so the suite counts the
+  two definitions, their five paired reads and asks that the only bare splits left
+  in the file be the two inside those helpers.
 - Lakes are closed depressions: the water surface is the minimum on a ring of
   radius `RIM` around the seed cell, and the basin is a flood fill capped at that
   surface. The old single-cell test (`gap > threshold` only) left one-pixel dots.
