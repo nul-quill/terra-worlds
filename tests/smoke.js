@@ -3435,6 +3435,19 @@ core.phrases.forEach(function (op) {
 });
 assert(orroBad.length === 0,
   'moisture follows the side the air came from (' + orroBad.join('; ') + ')');
+// Both halves of that swap are one product: a height change times the rate for
+// whichever side of the ridge it lands on. Written beside each branch the pair
+// could be edited apart, which lets a windward slope give up its moisture on
+// another scale than the one its leeward side picks it back up on — still a
+// plausible rain shadow beside its own caption. Counted as one helper, its one
+// read, the pair of rates living inside it and no bare branch left beside them.
+var airDefs = (coreSrc.match(/function airMassStep\(/g) || []).length;
+var airReads = (coreSrc.match(/air -= airMassStep\(dh\)/g) || []).length;
+var airPair = (coreSrc.match(/dh > 0 \? 0\.85 : 0\.30/g) || []).length;
+var airBare = (coreSrc.match(/else air \+= -dh \*/g) || []).length;
+assert(airDefs === 1 && airReads === 1 && airPair === 1 && airBare === 0,
+  'both sides of a ridge share one moisture step (' + airDefs + ' def, ' +
+  airReads + ' reads, ' + airPair + ' pair, ' + airBare + ' bare)');
 // The two axes of the biome lookup are only consulted on land: a water cell is
 // named by its height alone, so `moist` and `temp` beside one would be two
 // figures that never decided anything — and they sit ahead of the notes that do

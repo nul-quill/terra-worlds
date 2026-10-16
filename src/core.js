@@ -546,6 +546,15 @@
     // load, so the leeward side of a ridge comes out drier than the windward
     // side. Sweeping each row left to right is enough to get the effect, and it
     // keeps biome choice tied to the relief instead of an independent field.
+    // Both halves of that swap are one product: a height change times the rate
+    // for whichever side of the ridge it lands on. Written beside each branch
+    // the pair could be edited apart, which lets a windward slope give up its
+    // moisture on another scale than the one its leeward side picks it back up
+    // on — still a plausible rain shadow beside its own caption — so the shape
+    // of that step is held in one lookup.
+    function airMassStep(dh) {
+      return dh * (dh > 0 ? 0.85 : 0.30);
+    }
     for (y = 0; y < height; y++) {
       var rowBase = y * width;
       var air = mf[rowBase];
@@ -553,8 +562,7 @@
       for (x = 1; x < width; x++) {
         i = rowBase + x;
         var dh = hf[i] - prev;
-        if (dh > 0) air -= dh * 0.85;
-        else air += -dh * 0.30;
+        air -= airMassStep(dh);
         air += (mf[i] - air) * 0.35;
         prev = hf[i];
         mf[i] = clamp01(air);

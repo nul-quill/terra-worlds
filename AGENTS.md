@@ -469,6 +469,13 @@ Conventions:
   the one downwind. The smoke suite compares the two correlations on every
   hand-picked phrase, so a symmetric smoothing — or a reversed sweep — shows up
   as a flipped pair rather than as a plausible-looking field.
+  Both halves of that swap are one product inside `airMassStep(dh)`: a height
+  change times the rate for whichever side of the ridge it lands on. Written
+  beside each branch the pair could be edited apart, which lets a windward slope
+  give up its moisture on another scale than the one its leeward side picks it
+  back up on — still a plausible rain shadow beside its own caption — so the
+  suite counts the definition, its one read, the pair of rates inside it and asks
+  for no bare `else air +=` branch left beside them.
   The biome lookup is a two-axis table, so `temperature` is published beside
   `moisture` and the readout prints both — `moist 48 — temp 84` says which axis
   moved a cell, which a single colour cannot. The climate slider is the mix
