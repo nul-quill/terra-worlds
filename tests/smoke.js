@@ -286,6 +286,22 @@ core.lights.forEach(function (lt) {
 assert(worstLen < 0.01,
   'every light vector is a unit vector (worst drift ' + worstLen.toFixed(4) + ')');
 
+// The four bearings differ only in their two signs: each looks in from its own
+// corner and none looks straight down, so the vertical part of every vector is
+// one number. Counted as a pair — that height and the one pivot the shade ramp
+// subtracts — since a z written beside each triple could light one corner
+// harder than the other three while each bearing on its own still reads as a
+// plausible sun.
+var lightZ = {};
+core.lights.forEach(function (lt) { lightZ[lt.vec[2]] = 1; });
+var lightSrc = require('fs').readFileSync(__dirname + '/../src/core.js', 'utf8');
+var zDefs = (lightSrc.match(/var LIGHT_Z = /g) || []).length;
+var zReads = (lightSrc.match(/LIGHT_Z/g) || []).length;
+var zBare = (lightSrc.match(/, 0\.56\]/g) || []).length;
+assert(Object.keys(lightZ).length === 1 && zDefs === 1 && zReads === 3 && zBare === 0,
+  'every bearing shares one light height (' + Object.keys(lightZ).length +
+  ' heights, ' + zDefs + ' def, ' + zReads + ' reads, ' + zBare + ' bare)');
+
 // The strength slider is the last of the shading-only knobs: a flat world and
 // a strongly lit one have to agree on every class while differing in pixels.
 // Unlike the bearing it is a magnitude, so both ends of its range are checked

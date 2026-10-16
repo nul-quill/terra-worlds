@@ -1899,6 +1899,13 @@ Conventions:
   The smoke suite also checks each vector's length, since the shade pass mixes
   it into a height without renormalising: a long one washes the relief out, a
   short one flattens it.
+  The four vectors differ only in their two signs, so their shared height is
+  one number — `LIGHT_Z` — which the shade ramp also subtracts as its neutral
+  pivot. Written beside each triple the height could be edited on one bearing
+  only, which lights one corner of a map harder than the other three while each
+  bearing on its own still reads as a plausible sun; a pivot cut beside the ramp
+  instead would move that corner's whole shade. The suite counts the one
+  definition, its reads and asks for no bare height left inside a triple.
   `core.grids` is the sixth: the column counts the grid dropdown pins, with the
   empty-key "auto" entry first so following the window stays the default. The
   `w` cycle, `cli --grids` and the smoke width loop read that array; every

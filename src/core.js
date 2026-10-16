@@ -998,7 +998,7 @@
           var nyg = (yu - yd) * SLOPE_SCALE;
           var len = Math.sqrt(nxg * nxg + nyg * nyg + 1);
           var dot = (nxg * lx + nyg * ly + lz) / len;
-          var sh = 0.86 + (dot - 0.56) * hillshade * 1.5;
+          var sh = 0.86 + (dot - LIGHT_Z) * hillshade * 1.5;
           if (dither) {
             sh += ditherOffset(bayer, x, y);
           }
@@ -1160,11 +1160,25 @@
   // so a bearing printed in the terminal is always one the page will take.
   // z always points at the viewer, which is what keeps the relief readable
   // from every side rather than only from the upper left.
+  // That height is one number: every bearing looks in from its own corner but
+  // none looks straight down, so the vertical part of the four vectors is one
+  // measurement while only the two horizontal signs differ. Written beside
+  // each triple the height could be edited on one bearing only, which lights
+  // one corner of a map harder than the other three — still a plausible sun,
+  // so the four stay one shape. The shade ramp subtracts the same number as
+  // its neutral pivot, which is why a flat cell comes back at its base colour
+  // under every bearing.
+  var LIGHT_Z = 0.56;
+
+  function lightVec(sx, sy) {
+    return [sx, sy, LIGHT_Z];
+  }
+
   var LIGHTS = [
-    {key: 'nw', label: 'NW', note: 'from the upper left', vec: [-0.55, -0.62, 0.56]},
-    {key: 'ne', label: 'NE', note: 'from the upper right', vec: [0.55, -0.62, 0.56]},
-    {key: 'sw', label: 'SW', note: 'from the lower left', vec: [-0.55, 0.62, 0.56]},
-    {key: 'se', label: 'SE', note: 'from the lower right', vec: [0.55, 0.62, 0.56]}
+    {key: 'nw', label: 'NW', note: 'from the upper left', vec: lightVec(-0.55, -0.62)},
+    {key: 'ne', label: 'NE', note: 'from the upper right', vec: lightVec(0.55, -0.62)},
+    {key: 'sw', label: 'SW', note: 'from the lower left', vec: lightVec(-0.55, 0.62)},
+    {key: 'se', label: 'SE', note: 'from the lower right', vec: lightVec(0.55, 0.62)}
   ];
 
   // Steps the lake mask is written in: a filled cell stores its depth as an
