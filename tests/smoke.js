@@ -3726,10 +3726,12 @@ appSrc.replace(/keyIs\(ev, '([A-Za-z])'\)/g, function (m, keyName) {
 });
 // The two checkboxes are the remaining pair: their letters arrive through one
 // map over the lowercased key, which is the same both-cases rule in a shape
-// that fits two keys at once. Harvest those letters too, so the note check and
-// the case check still walk them, and count the entries so the lookup probe
+// that fits two keys at once. That table now sits inside `checkboxFor()`, so
+// the harvest reads it from there. Take those letters in too, so the note check
+// and the case check still walk them, and count the entries so the lookup probe
 // below can subtract them from its own read count.
-var toggleMap = (/var toggle = \{([^}]*)\}/.exec(appSrc) || ['', ''])[1];
+var toggleMap = (/function checkboxFor\(letter\) \{[\s\S]{0,60}?\{([^}]*)\}/
+  .exec(appSrc) || ['', ''])[1];
 var mapEntries = (toggleMap.match(/([a-z]):/g) || []).length;
 toggleMap.replace(/([a-z]):/g, function (m, keyName) {
   handled[keyName] = 1;
@@ -3795,6 +3797,20 @@ assert(keyDefs === 1 && keyReads === Object.keys(handled).length - mapEntries &&
   keyPairs === 0,
   'every letter key reads one case lookup (' + keyDefs + ' def, ' + keyReads +
   ' reads, ' + mapEntries + ' map keys, ' + keyPairs + ' bare pairs)');
+
+// The two checkboxes are the one pair of shortcuts that is not a list cycle:
+// each letter flips its own box, so the letter-to-control pair is a table
+// rather than a walk. Written beside each branch that table could be edited
+// apart — a key left on one side only — which reads as one box answering two
+// keys while its neighbour answers none, and each half still looks fine in a
+// screenshot of the panel. Counted as text: one definition, one read at the
+// branch, and no second table of those two letters left beside them.
+var boxDefs = (appSrc.match(/function checkboxFor\(/g) || []).length;
+var boxReads = (appSrc.match(/= checkboxFor\(ev\.key/g) || []).length;
+var boxTables = (appSrc.match(/g: 'dither'/g) || []).length;
+assert(boxDefs === 1 && boxReads === 1 && boxTables === 1,
+  'both checkbox shortcuts come from one table (' + boxDefs + ' def, ' +
+  boxReads + ' reads, ' + boxTables + ' table)');
 
 // The keys are only half of how the view is driven: a legend row and a chart
 // bar are both reachable with a pointer, and neither has a letter of its own.

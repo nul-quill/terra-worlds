@@ -1171,6 +1171,16 @@ Conventions:
   a shape that fits two keys at once. The suite walks the letters the note names
   and asks each for one of those two shapes, so a new key cannot arrive with a
   single-case comparison, and counts the lookup's reads against that letter set.
+  That map is one lookup too — `checkboxFor(letter)` — since it is the only pair
+  of shortcuts that is a bare flip rather than a walk over a core list. Written
+  beside the branch the pair could be edited apart, a letter left on one side
+  only, which reads as one box answering two keys while its neighbour answers
+  none — each half still looks fine in a screenshot of the panel, so the suite
+  counts the definition, its single read and asks that only one table of those
+  two letters be left in the shell. The letter harvest in the suite therefore
+  scrapes the entries out of that helper rather than from a literal beside the
+  branch, which is what keeps `G` and `L` inside both the note check and the
+  case check.
   `styles.css` ends with two
   `@media` blocks: `print` (hides the chrome, one column) and
   `prefers-color-scheme: dark` (only the CSS variables change). Both are checked

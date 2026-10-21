@@ -2277,6 +2277,15 @@
     return ev.key.toLowerCase() === letter;
   }
 
+  // Which checkbox a letter flips. The two boxes on the panel — grain and
+  // contour lines — are the only controls whose shortcut is a bare flip rather
+  // than a walk over a list, so both pairs of letter-to-control sit in this one
+  // table. Written beside each branch the pair could be edited apart, which
+  // reads as one box answering two keys while its neighbour answers none.
+  function checkboxFor(letter) {
+    return { g: 'dither', l: 'contour' }[letter];
+  }
+
   // Space rerolls from anywhere, unless the caret is in the seed box.
   document.addEventListener('keydown', function (ev) {
     if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
@@ -2460,7 +2469,7 @@
       cycleControl(inputs.seed, TerraCore.phrases, ev);
       return;
     }
-    var toggle = { g: 'dither', l: 'contour' }[ev.key.toLowerCase()];
+    var toggle = checkboxFor(ev.key.toLowerCase());
     // 'x' copies the link, which is the last step of a finished world and the
     // only action left that needed a mouse. Same function as the button, so
     // the two paths cannot disagree about what gets copied.
