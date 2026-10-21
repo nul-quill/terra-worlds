@@ -407,6 +407,18 @@
     return el.getBoundingClientRect();
   }
 
+  // The smallest span a layout box is allowed to divide by. A canvas that has
+  // not been laid out yet measures nothing, and every division by one of its
+  // edges — a pointer mapped onto the buffer, a pinned column count turned into
+  // rows — would otherwise come back as Infinity. Held to one rather than left
+  // bare, so a measure taken before the first layout still yields a count
+  // instead of an empty grid. Written beside each division the guard could be
+  // dropped on one of them, which reads as a crosshair naming one column while
+  // the bars beside it were counted against another.
+  function boxSpan(measured) {
+    return Math.max(1, measured);
+  }
+
   // One axis of a canvas in CSS pixels, with the core's published figure behind
   // it for the frames before the element has a measurement. Both halves of the
   // chart's box ask that same question, so the fallback is written once: kept
@@ -435,7 +447,7 @@
     var MINROWS = 40;
     if (opts.gridSize) {
       cols = opts.gridSize;
-      rows = Math.max(MINROWS, Math.round(cols * rect.height / Math.max(1, rect.width)));
+      rows = Math.max(MINROWS, Math.round(cols * rect.height / boxSpan(rect.width)));
     }
 
     // Cells must be a whole number of device pixels wide, or the columns come
@@ -655,8 +667,8 @@
   // divide by zero while the other still placed its mark.
   function pointerFraction(ev, rect) {
     return {
-      x: (ev.clientX - rect.left) / Math.max(1, rect.width),
-      y: (ev.clientY - rect.top) / Math.max(1, rect.height)
+      x: (ev.clientX - rect.left) / boxSpan(rect.width),
+      y: (ev.clientY - rect.top) / boxSpan(rect.height)
     };
   }
   // Where a pointer sits, in backing-store pixels. The crosshair is drawn in

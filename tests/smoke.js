@@ -5639,12 +5639,26 @@ var posDefs = (appSrc.match(/function pointerFraction\(/g) || []).length;
 var posCalls = (appSrc.match(/= pointerFraction\(ev, rect\)/g) || []).length;
 var posBody = (/function pointerFraction\(ev, rect\)([\s\S]*?)\n  \}/
   .exec(appSrc) || ['', ''])[1];
-var posGuard = (posBody.match(/Math\.max\(1, rect\.[a-z]+\)/g) || []).length;
+var posGuard = (posBody.match(/boxSpan\(rect\.[a-z]+\)/g) || []).length;
 var posInline = (appSrc.match(
   /x \/ Math\.max\(1, rect\.width\) \* histState\.bins/g) || []).length;
 assert(posDefs === 1 && posCalls === 2 && posGuard === 2 && !posInline,
   'both canvases map a pointer through one fraction (' + posDefs + ' def, ' +
   posCalls + ' reads, ' + posGuard + ' guards, stray ' + posInline + ')');
+
+// That guard itself is one lookup: every division by a layout edge — both
+// halves of a pointer's fraction, and the row count derived from a pinned
+// column count — asks the same question about a box that may not be laid out
+// yet. Written beside each division the guard could be dropped on one of them,
+// which reads as a crosshair naming one column while the bars beside it were
+// counted against another. Counted as text: one definition, one read per
+// division, and no bare clamp of a measured edge left beside them.
+var spanDefs = (appSrc.match(/function boxSpan\(/g) || []).length;
+var spanReads = (appSrc.match(/boxSpan\(/g) || []).length - spanDefs;
+var spanBare = (appSrc.match(/Math\.max\(1, rect\./g) || []).length;
+assert(spanDefs === 1 && spanReads === 3 && spanBare === 0,
+  'every layout division is guarded one way (' + spanDefs + ' def, ' +
+  spanReads + ' reads, ' + spanBare + ' bare clamps)');
 
 // Every one of those reads starts from a layout box, and three places ask for
 // that box: the grid is counted off the map, a pointer is mapped onto the

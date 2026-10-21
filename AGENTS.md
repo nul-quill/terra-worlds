@@ -1268,6 +1268,14 @@ Conventions:
     both still plausible next to their own caption, so the suite counts the
     definition, the three reads and asks that the only box measurement in the
     shell be the one inside that helper.
+    Every division by one of those edges is guarded by one lookup too —
+    `boxSpan(measured)` — read three times: both halves of a pointer's fraction
+    and the row count derived from a pinned column count. A canvas that has not
+    been laid out measures nothing, so an unguarded division comes back as
+    Infinity; written beside each division the guard could be dropped on one of
+    them, which reads as a crosshair naming one column while the bars beside it
+    were counted against another. The suite counts the definition, its three
+    reads and asks for no bare clamp of a measured edge left beside them.
     Those two paths then run one shared sequence — `hoverFromPointer(ev)` —
     which moves the mark, prints the readout, repaints and writes the hash, in
     that order. A fifth step added to the mouse branch only would keep a
