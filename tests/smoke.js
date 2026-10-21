@@ -4145,6 +4145,19 @@ assert(ladderBad.length === 0 && tickLookup === 1 && !tickCopied,
   ladderBad.join(' ') + ', ' + tickLookup + ' lookups, copied ' +
   tickCopied + ')');
 
+// That ladder counts whole units, so the shell has to turn its stored heights
+// into them before it walks the range. Three reads do that — the step it picks
+// and both ends of the range — and they go through one scaling. Written beside
+// each site the pair could be edited apart, one scaling by a hundred and one
+// keeping the fraction, which leaves ticks counted against a range their own
+// step never measured: a crowded strip beside a step picked for a wide one.
+var unitDefs = (appSrc.match(/function wholeUnits\(/g) || []).length;
+var unitReads = (appSrc.match(/wholeUnits\(/g) || []).length - unitDefs;
+var unitInline = (appSrc.match(/\* 100/g) || []).length;
+assert(unitDefs === 1 && unitReads === 3 && unitInline === 1,
+  'the tick ladder scales heights through one lookup (' + unitDefs + ' def, ' +
+  unitReads + ' reads, ' + unitInline + ' multiply inside it)');
+
 // The chart draws one vertical rule at the sea level, and the bars either side
 // of it are the whole reading of the strip. That split has to track the counted
 // water share: both follow the sea slider in the same direction, and the two

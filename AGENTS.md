@@ -2143,6 +2143,14 @@ Conventions:
   of reliefs, which is what pins the choice to the TIGHTEST step that fits — a
   helper that returned the last candidate instead of the first would still leave
   at most ten marks, while spacing a flat world's ticks wider than it needs.
+  That ladder counts whole units, so the shell first turns its stored heights
+  into them through one `wholeUnits(value)`, read three times: the step it picks
+  and both ends of the range it walks. Written beside each site the scaling
+  could be edited apart — one multiply by a hundred, one keeping the stored
+  fraction — which leaves ticks counted against a range their own step never
+  measured: a crowded strip beside a step picked for a wide one, still a
+  plausible chart at a glance. The suite counts the definition, its three reads
+  and asks that the single multiply live inside that helper.
   A tick that would land under one of the corner numbers is skipped rather than
   drawn short, and the tolerance for that skip is one number — `SLACK`, one CSS
   pixel — read by both bounds of the strip. Written beside each bound the pair

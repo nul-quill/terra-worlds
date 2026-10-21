@@ -930,6 +930,17 @@
     return ((value - lo) / span) * w;
   }
 
+  // Heights are stored 0..1 and the tick ladder counts whole units, so every
+  // mark in that strip first passes through the same scaling. Three reads: the
+  // step the ladder picks and both ends of the range it walks. Written beside
+  // each site the pair could be edited apart — one scaling by a hundred, one
+  // keeping the stored fraction — which leaves ticks counted against a range
+  // their own step never measured: a strip crowded with marks beside a step
+  // picked for a wider one, still a plausible chart at a glance.
+  function wholeUnits(value) {
+    return value * 100;
+  }
+
   // A mark placed by `chartX` can fall just outside the strip when a world's
   // own range is narrower than the two levels the marks name, so each of those
   // positions is held inside the chart's width. Both ends of that hold are one
@@ -1494,7 +1505,7 @@
     // twenty. Pick the first step that leaves at most ten marks.
     // The formula lives in the core, so the suite can check the same spacing a
     // chart is drawn with rather than repeating the candidate list here.
-    var stepUnits = TerraCore.tickStep(span * 100);
+    var stepUnits = TerraCore.tickStep(wholeUnits(span));
     hc.strokeStyle = rgba(INK, 0.35);
     // A tick that would sit under one of the corner numbers is skipped rather
     // than drawn short, and the tolerance for "under" is one number that both
@@ -1502,8 +1513,8 @@
     // edited apart, which crowds the ticks into one corner while the other
     // still breathes — an asymmetry small enough to read as an odd chart.
     var SLACK = 1;
-    for (var u = Math.ceil(lo * 100 / stepUnits) * stepUnits;
-      u <= (lo + span) * 100; u += stepUnits) {
+    for (var u = Math.ceil(wholeUnits(lo) / stepUnits) * stepUnits;
+      u <= wholeUnits(lo + span); u += stepUnits) {
       var tickX = chartX(u / 100, lo, span, w);
       if (tickX < GUT - SLACK || tickX > w - GUT + SLACK) continue;
       // Every tick is the same short mark hanging from the strip's own top
