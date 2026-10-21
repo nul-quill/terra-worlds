@@ -2450,6 +2450,18 @@ assert(core.defaultGrid.width === 480 && core.defaultGrid.height === 300 &&
   gridLookup >= 1 && gridLiterals === 0,
   'the aspect fill reads the core\'s default pair (' + gridLookup +
   ' lookup, ' + gridLiterals + ' literal)');
+// Both sides of the grid ask the same question — did a caller name this axis —
+// and both are answered by one lookup. Two copies of that test could be edited
+// apart, one keeping the finite check and one dropping it, which lets a lone
+// `--width` derive its rows while a lone `--height` comes back unset: two
+// plausible shapes for one flag list, so the suite counts the definition, its
+// two reads and asks for no bare pair of tests left beside them.
+var sizeDefs = (cliSrcGrid.match(/function namedSize\(/g) || []).length;
+var sizeReads = (cliSrcGrid.match(/namedSize\(opts\.(?:width|height)\)/g) || []).length;
+var sizeBare = (cliSrcGrid.match(/typeof opts\.(?:width|height) ===/g) || []).length;
+assert(sizeDefs === 1 && sizeReads === 2 && sizeBare === 0,
+  'one lookup asks whether a size was named (' + sizeDefs + ' def, ' +
+  sizeReads + ' reads, ' + sizeBare + ' bare)');
 // That formatter switches at ten percent: whole numbers above, one decimal
 // below. That boundary is what keeps a `2%` class and a `0.2%` class in the
 // order their counts give them, which is how the legend reads biggest-first —

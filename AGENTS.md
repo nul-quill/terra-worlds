@@ -997,6 +997,13 @@ Conventions:
   second copy only has to be edited once to make a terminal and the page disagree
   about the shape of a world: the suite therefore asks the fill for that lookup by
   name and asks for no leftover ratio literal.
+  Which sides were named at all is one question too — `namedSize(value)` — read
+  once per axis, since both halves ask whether a caller gave a finite number.
+  Written beside each axis the pair could be edited apart, one keeping the finite
+  test and one dropping it, which lets a lone `--width` derive its rows while a
+  lone `--height` reads as unset and comes back at the default size — still a
+  plausible shape for one flag on its own, so the suite counts the definition,
+  its two reads and asks for no bare pair of tests left beside them.
   Inside the generator each side of that pair is one rounded count with one
   floor — `gridSide(value, fallback)` — since both axes are the same three steps
   (round the caller's number, hold it above the smallest drawable size, fall back

@@ -144,9 +144,19 @@ function manySeeds(opts) {
 // two defaults. `--width 800` alone should be a wide landscape rather than an
 // 800x300 letterbox, and `--height 200` alone should not be a tall column. Both
 // sides named is left exactly as given.
+// Whether a caller named one side of the grid. Both axes ask that question the
+// same way — a number that survives a division — so the test is one lookup:
+// written beside each axis the pair could be edited apart, which lets a lone
+// `--width` derive its rows while a lone `--height` is read as unset and the
+// grid comes back at the default size — still a plausible shape for a narrow
+// browser, so the question is written once.
+function namedSize(value) {
+  return typeof value === 'number' && isFinite(value);
+}
+
 function finishGrid(opts) {
-  var w = typeof opts.width === 'number' && isFinite(opts.width);
-  var h = typeof opts.height === 'number' && isFinite(opts.height);
+  var w = namedSize(opts.width);
+  var h = namedSize(opts.height);
   // The ratio comes from the generator's own default pair, so the shape a lone
   // size flag derives is the shape the generator would have chosen for itself.
   var def = core.defaultGrid;
