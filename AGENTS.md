@@ -2246,6 +2246,13 @@ Conventions:
   other stays empty: an asymmetry small enough to read as a slightly odd chart
   rather than as a bug, so the suite counts the one number, its two reads and
   asks for no bare tolerance left in those bounds.
+  Those two bounds are one question about a mark — is it inside the strip,
+  given the gutter and the tolerance — so they sit together in one
+  `insideStrip(x, w)` that the tick loop reads once. Written beside the loop
+  the pair could be edited apart, which lets a tick be held back at the left
+  edge while its own right edge stays wide open: still a plausible row of
+  marks, with one corner crowded. The suite counts the definition, its single
+  read and asks that no comparison of a tick position be left outside it.
   The number of bars follows the same rule through `core.binCount(cssWidth)`:
   one bar per five CSS pixels, clamped 20..72. The clamp ends are part of the
   contract, not decoration — the suite asks that a narrow strip reaches the

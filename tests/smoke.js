@@ -4771,6 +4771,20 @@ assert(slackDefs === 1 && slackUses === 2 && slackLiterals === 0,
   'one tolerance skips ticks that crowd a corner label (' + slackDefs +
   ' def, ' + slackUses + ' reads, ' + slackLiterals + ' literals)');
 
+// Both ends of that skip are one question about a mark — is it inside the
+// strip, given the gutter and the tolerance — so the pair of comparisons lives
+// in one lookup the loop reads once. Written beside the loop the two bounds
+// could be edited apart, which lets a tick be held back at the left edge while
+// its own right edge stays wide open: still a plausible row of marks, with one
+// corner crowded. Counted as text: one definition, its single read, and no bare
+// pair of comparisons left beside them.
+var isDefs = (appSrc.match(/function insideStrip\(/g) || []).length;
+var isReads = (appSrc.match(/insideStrip\(tickX, w\)/g) || []).length;
+var isBare = (appSrc.match(/tickX [<>]/g) || []).length;
+assert(isDefs === 1 && isReads === 1 && isBare === 0,
+  'one lookup keeps a decade tick inside the strip (' + isDefs + ' def, ' +
+  isReads + ' reads, ' + isBare + ' bare comparisons)');
+
 // Everything in the chart that is not a bar is measured from one inset: the
 // tick bounds, the two corner labels, the median's squeeze, the width a hovered
 // caption may fill and the pill behind it. Written beside each site that inset

@@ -1565,14 +1565,19 @@
     hc.strokeStyle = rgba(INK, 0.35);
     // A tick that would sit under one of the corner numbers is skipped rather
     // than drawn short, and the tolerance for "under" is one number that both
-    // ends of the strip read. Written beside each bound the pair could be
-    // edited apart, which crowds the ticks into one corner while the other
-    // still breathes — an asymmetry small enough to read as an odd chart.
+    // ends of the strip read. Both halves of that hold — the low gutter and
+    // the high one — are one question about a mark, so they live together:
+    // written as two comparisons beside the loop the pair could be edited
+    // apart, which crowds the ticks into one corner while the other still
+    // breathes — an asymmetry small enough to read as an odd chart.
     var SLACK = 1;
+    function insideStrip(x, w) {
+      return x >= GUT - SLACK && x <= w - GUT + SLACK;
+    }
     for (var u = Math.ceil(wholeUnits(lo) / stepUnits) * stepUnits;
       u <= wholeUnits(lo + span); u += stepUnits) {
       var tickX = chartX(storedHeight(u), lo, span, w);
-      if (tickX < GUT - SLACK || tickX > w - GUT + SLACK) continue;
+      if (!insideStrip(tickX, w)) continue;
       // Every tick is the same short mark hanging from the strip's own top
       // edge, so its length is one number: the mark starts one pixel below
       // that edge and runs down to this depth. Written as two offsets the
