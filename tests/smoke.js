@@ -1770,6 +1770,21 @@ assert(digitSrc &&
   'the palette digit reads its number by the same rule (' +
   (digitSrc ? 'one read' : 'unreadable') + ')');
 
+// Every control on the page is read as a pair — its id plus a flag saying
+// whether the field holds a count or a level — and that pair is one lookup.
+// Written beside each field it could be edited apart, one row keeping the
+// whole-number flag and its neighbour dropping it, which lets a slider feed
+// the generator a fraction the option reader then reads two ways while every
+// field on its own still looks reasonable. Counted as text: one definition,
+// every control read through it, and no two-argument read left beside them.
+var optSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
+var optDefs = (optSrc.match(/function optionNumber\(/g) || []).length;
+var optReads = (optSrc.match(/optionNumber\('/g) || []).length;
+var optBare = (optSrc.match(/num\(inputs\.\w+\.value,/g) || []).length;
+assert(optDefs === 1 && optReads === 8 && optBare === 0,
+  'one lookup reads every numeric control (' + optDefs + ' def, ' + optReads +
+  ' reads, ' + optBare + ' bare pairs)');
+
 // The chain count is a numeric flag too, so it should be read the same way:
 // an exponent walks the whole ten-seed chain, and a value with junk on the
 // end falls back to the chain's own default length rather than to whatever
@@ -4337,7 +4352,7 @@ var factorDefs = (appSrc.match(/function exportFactor\(\)/g) || []).length;
 var factorUses = (appSrc.match(/exportFactor\(\)/g) || []).length - factorDefs;
 var factorParses = (appSrc.match(/parse(?:Int|Float)\(inputs\.scale\.value/g) ||
   []).length;
-var factorReader = (appSrc.match(/num\(inputs\.scale\.value/g) || []).length;
+var factorReader = (appSrc.match(/optionNumber\('scale'/g) || []).length;
 assert(factorDefs === 1 && factorUses === 3 && factorParses === 0 &&
   factorReader === 1,
   'the export row and the file name share one factor lookup (' + factorDefs +

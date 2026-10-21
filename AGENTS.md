@@ -984,6 +984,17 @@ Conventions:
   `exportFactor()` reads the export dropdown through it too: the factor behind
   the `export` row, the saved file's name and the multiplier in the CLI record
   are then one reading of one control.
+  Every control read through it is one pair — the control's id plus a flag for
+  whether the field holds a count or a level — and that pair is one lookup,
+  `optionNumber(key, isInt)`, read by the seven fields of `readOptions()` and by
+  `exportFactor()`. Written beside each field the pair could be edited apart,
+  one row keeping the whole-number flag and its neighbour dropping it, which
+  lets a slider feed the generator a fraction the option reader then reads two
+  ways while every field on its own still looks reasonable. The `|| 0` behind
+  the pinned column count and the `|| 3` behind the export factor stay at their
+  call sites, since each is that field's own default and not the reading rule.
+  The suite counts the definition, its eight reads and asks for no bare pair of
+  arguments left beside them.
   Keep the `argv[++i]` advance at the call site — moving it inside the helper
   reads each value twice and shifts every later flag by one.
   The chain count is read by that same helper, so `--next 1e1` walks ten seeds

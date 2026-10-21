@@ -296,18 +296,28 @@
     return inputs.seed.value || 'terra';
   }
 
+  // Every numeric control on the page is read the same way: the control's id,
+  // plus a flag saying whether the field holds a count or a level. Written
+  // beside each field that pair could be edited apart — one row keeping the
+  // whole-number flag, its neighbour dropping it — which lets a slider feed
+  // the generator a fraction the option reader then reads two ways, while
+  // every field on its own still looks reasonable. One lookup holds the pair.
+  function optionNumber(key, isInt) {
+    return num(inputs[key].value, isInt);
+  }
+
   function readOptions() {
     return {
       seed: seedPhrase(),
       palette: inputs.palette.value,
       shape: inputs.shape.value,
-      gridSize: num(inputs.gridSize.value, true) || 0,
-      seaLevel: num(inputs.seaLevel.value, false),
-      detail: num(inputs.detail.value, false),
-      polar: num(inputs.polar.value, false),
-      terraces: num(inputs.terraces.value, true),
-      hillshade: num(inputs.hillshade.value, false),
-      rivers: num(inputs.rivers.value, true),
+      gridSize: optionNumber('gridSize', true) || 0,
+      seaLevel: optionNumber('seaLevel', false),
+      detail: optionNumber('detail', false),
+      polar: optionNumber('polar', false),
+      terraces: optionNumber('terraces', true),
+      hillshade: optionNumber('hillshade', false),
+      rivers: optionNumber('rivers', true),
       lightDir: inputs.lightDir.value,
       dither: inputs.dither.checked,
       channel: inputs.channel.value,
@@ -1375,7 +1385,7 @@
   // dropdown. One lookup so the stats row and the saved file cannot disagree
   // about which factor was in use.
   function exportFactor() {
-    return num(inputs.scale.value, true) || 3;
+    return optionNumber('scale', true) || 3;
   }
 
   function renderStats(result) {
