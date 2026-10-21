@@ -890,6 +890,13 @@ Conventions:
   screenshot of a terminal that nobody re-measures. The suite counts the one
   definition, its single read and asks that the only pad loop in the file be the
   one inside that helper.
+  The width behind that gap is one lookup beside it — `widestKey(keys)` — since
+  the longest label and the one space on top of it are one decision about where
+  the value column starts. Written beside the loop that reads it, that trailing
+  space could be dropped or widened while every row still looked tidy on its own,
+  which reads as a table whose values sit at two different depths; the suite
+  counts the definition, its single read and asks that the only longest-key walk
+  in the file be the one inside that helper.
 - `nextSeed(value)` derives the next seed from the current one (FNV-1a over the
   phrase plus a `\u0001` separator). The Reroll button and `cli.js --next n` both
   use it, so a click sequence is reproducible from the first phrase. Do not

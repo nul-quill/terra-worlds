@@ -222,6 +222,17 @@ function padLabel(key, width) {
   return label;
 }
 
+// How wide that column is. The width is the record's own longest key plus the
+// one space that is the whole rule, so both halves of the measure live in one
+// lookup beside the pad that uses them. Written beside the loop that reads it,
+// the `+ 1` could be dropped or widened while every label still looked tidy on
+// its own row, which reads as a table whose values sit at two different depths.
+function widestKey(keys) {
+  var width = 0;
+  keys.forEach(function (k) { if (k.length > width) width = k.length; });
+  return width + 1;
+}
+
 // The keys of the scheme table, in the order the table declares them. That
 // table is a map rather than a list of entries, so its walk is its own shape
 // beside the three list walks in `keyList`. Three prints need it — the flag
@@ -767,9 +778,7 @@ function summarise(seed, result, name, asJson) {
   // only right while the widest key happens to be the one it was counted off,
   // so a longer field added later would print its value flush against the name
   // and the column would read as two columns.
-  var padTo = 0;
-  keys.forEach(function (k) { if (k.length > padTo) padTo = k.length; });
-  padTo += 1;
+  var padTo = widestKey(keys);
   keys.forEach(function (k) {
     lines.push(padLabel(k, padTo) + rec[k]);
   });

@@ -2417,6 +2417,20 @@ assert(padDefs === 1 && padReads === 1 && padLoops === 1,
   'the plain table pads every label through one lookup (' + padDefs +
   ' definition, ' + padReads + ' reads, ' + padLoops + ' pad loops)');
 
+// The width behind that gap is one lookup too — `widestKey()` — since the
+// longest label and the one space that is the whole rule are one decision about
+// where the value column starts. Written beside the loop that reads it, the
+// trailing space could be dropped or widened while every row still looked tidy
+// on its own, which reads as a table whose values sit at two different depths.
+// The suite counts the definition, its single read and asks that the only
+// longest-key walk in the file be the one inside that helper.
+var widestDefs = (padSrc.match(/function widestKey\(/g) || []).length;
+var widestReads = (padSrc.match(/= widestKey\(keys\)/g) || []).length;
+var widestWalks = (padSrc.match(/if \(k\.length >/g) || []).length;
+assert(widestDefs === 1 && widestReads === 1 && widestWalks === 1,
+  'one lookup measures the label column (' + widestDefs + ' def, ' +
+  widestReads + ' reads, ' + widestWalks + ' walks)');
+
 // A lone size flag should not decide the other side by accident. `--width 100`
 // on its own used to mean 100x300 — a letterbox strip — because the untouched
 // side fell back to the plain default height. Both one-sided forms are checked
