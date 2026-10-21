@@ -1894,9 +1894,21 @@
     return lo + k / bins * span;
   }
 
+  // How many bars this world's chart was binned over. Six readers ask that
+  // question: the pass that bins a height, the tally printed beside a bar,
+  // both halves of a pointer's bin (the raw count and the bound that keeps it
+  // inside), the keyboard walk's own count, and the first press of that walk.
+  // Written beside each reader the count could be edited apart, which lets a
+  // bar be lit by one ladder while its own caption counts against another —
+  // still a plausible silhouette beside its own label, so the count is read
+  // once here.
+  function binTotal() {
+    return histState.bins;
+  }
+
   function histBinFor(h) {
     if (!histState) return -1;
-    return binIndex(h, histState.lo, histState.span, histState.bins);
+    return binIndex(h, histState.lo, histState.span, binTotal());
   }
 
   // Everything one bar of the chart knows: the height range it covers, how
@@ -1935,7 +1947,7 @@
   // ends cannot be rounded three different ways while each still looked right
   // beside its own caption.
   function bandTally(bin, sum) {
-    return (bin + 1) + '/' + histState.bins +
+    return (bin + 1) + '/' + binTotal() +
       ' (' + rangeText(sum.from, sum.to) + ')';
   }
 
@@ -2143,7 +2155,7 @@
     if (!histState) return;
     var rect = layoutBox(histCanvas);
     var f = pointerFraction(ev, rect);
-    var bin = Math.floor(f.x * histState.bins);
+    var bin = Math.floor(f.x * binTotal());
     // A touch has no hover-out, so nothing would ever clear the band again:
     // tapping the bar that is already selected drops it instead. The mouse
     // path keeps the plain rule, since leaving the chart clears it there.
@@ -2156,7 +2168,7 @@
     // a narrower grid both come back inside by this one rule. Written here as
     // well it could drop its lower guard while the cell walk kept its own, so
     // a tap left of the first bar would name a bar that was never counted.
-    band = clampIndex(bin, histState.bins);
+    band = clampIndex(bin, binTotal());
     // And the matching cells on the map, so the two charts can be read against
     // each other without moving the pointer back and forth. drawHover() goes
     // through drawMap(), which repaints this chart with the same `band`, so one
@@ -2237,7 +2249,7 @@
     if (!histState) return;
     // Same wrap the cell walk uses: sweeping one direction across the height
     // range keeps going instead of sticking on the last bar.
-    var n = histState.bins;
+    var n = binTotal();
     band = cycleIndex(bin, 0, n);
     applyBand();
   }
@@ -2324,7 +2336,7 @@
           // With no bar picked yet the walk starts in the middle of the range,
           // which is the same middle the `at=` pair falls back to — one rule
           // for both, so a chart and a link cannot name two centres.
-          stepBand(band < 0 ? middleIndex(histState.bins) : band + dx);
+          stepBand(band < 0 ? middleIndex(binTotal()) : band + dx);
           return;
         }
         var cell = currentCell();

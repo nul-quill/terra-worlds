@@ -4266,6 +4266,20 @@ assert(upDefs === 1 && downDefs === 1 && downReads === 1 && downBare === 0,
   'the tick loop scales both ways through one pair (' + upDefs + ' + ' +
   downDefs + ' defs, ' + downReads + ' reads, ' + downBare + ' literals)');
 
+// The bin count behind that chart is one number, read by every path that names
+// a bar: the pass that bins a height, the tally printed beside a bar, both
+// halves of a pointer's bin, the keyboard walk's count and the middle that walk
+// starts from. Written beside each reader the count could be edited apart, which
+// lets a bar light from one ladder while its own caption counts against another
+// — still a plausible silhouette beside its own label. Counted as text: one
+// definition, the six reads, and no bare pair left outside it.
+var btDefs = (appSrc.match(/function binTotal\(/g) || []).length;
+var btReads = (appSrc.match(/binTotal\(\)/g) || []).length - btDefs;
+var btBare = (appSrc.match(/histState\.bins/g) || []).length;
+assert(btDefs === 1 && btReads === 6 && btBare === 1,
+  'every bar count comes from one lookup (' + btDefs + ' def, ' + btReads +
+  ' reads, ' + btBare + ' inside)');
+
 // The chart draws one vertical rule at the sea level, and the bars either side
 // of it are the whole reading of the strip. That split has to track the counted
 // water share: both follow the sea slider in the same direction, and the two
@@ -5965,7 +5979,7 @@ assert(cellReadDefs === 1 && cellReadWrites === 1 && cellReadClears === 1 &&
 // zero-based index — would print a row the lit bar cannot match.
 var tallyDefs = (appSrc.match(/function bandTally\(/g) || []).length;
 var tallyCalls = (appSrc.match(/bandTally\((cellBand|band), /g) || []).length;
-var tallyDenom = /\+ '\/' \+ histState\.bins/.test(appSrc);
+var tallyDenom = /function bandTally\(bin, sum\) \{\s*return \(bin \+ 1\) \+ '\/' \+ binTotal\(\)/.test(appSrc);
 var bandFixed = /'band ' \+ \d+\/\d+/.test(appSrc);
 assert(tallyDefs === 1 && tallyCalls === 3 && tallyDenom && !bandFixed,
   'the readout numbers the bar it lights (' + tallyDefs + ' label builder, ' +

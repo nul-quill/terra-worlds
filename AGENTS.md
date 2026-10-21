@@ -1602,6 +1602,15 @@ Conventions:
   division could round one bin three ways while each still looked right beside
   its own caption, so the suite counts the builder, its three reads and the
   denominator inside it.
+  That denominator is one lookup — `binTotal()`, the bar count the chart was
+  binned over — read by every path that names a bar: the pass that bins a height,
+  that tally, both halves of a pointer's bin (its raw count and the bound that
+  keeps it inside), the keyboard walk's own count and the middle that walk starts
+  from. Written beside each reader the count could be edited apart, which lets a
+  bar light from one ladder while its own caption counts against another — still a
+  plausible silhouette beside its own label, so the suite counts the definition,
+  its six reads and asks that the only bare count left in the shell be the one
+  inside that helper.
   Inside that tally the two ends of the range are one print of their own —
   `rangeText(lo, hi)` — read by the tally, by the caption drawn inside the
   chart and by the `relief` row that brackets its own spread, since a bar's own
