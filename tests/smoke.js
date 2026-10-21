@@ -4527,7 +4527,7 @@ var cliHistCalls = (histCliSrc.match(/histPass\(result\)/g) || []).length -
   cliHistDefs;
 var cliHistPairs = (histCliSrc.match(
   /core\.histogram\(result, core\.binCount\(core\.histWidth\)\)/g) || []).length;
-assert(/clientWidth \|\| TerraCore\.histWidth/.test(appSrc) &&
+assert(/cssSize\(histCanvas\.clientWidth, TerraCore\.histWidth\)/.test(appSrc) &&
   cliHistDefs === 1 && cliHistCalls === 2 && cliHistPairs === 1 &&
   histSummed.bins === jsonLine.bins,
   'one sidebar width feeds the chart and the text profile (' +
@@ -4571,8 +4571,8 @@ assert(rowDefs === 1 && rowUses === 2 && rowRecord === 1 &&
 // a chart drawn for one height and clipped by another — so the core publishes
 // the figure and every other place is compared with it.
 var hhDefs = (binCoreSrc.match(/var HIST_HEIGHT = \d+;/g) || []).length;
-var hhUses = (appSrc.match(/clientHeight \|\| TerraCore\.histHeight/g) || [])
-  .length;
+var hhUses = (appSrc.match(
+  /cssSize\(histCanvas\.clientHeight, TerraCore\.histHeight\)/g) || []).length;
 var hhAttr = (/height="(\d+)"/.exec(html.match(/<canvas id="hist"[^>]*>/)[0]) ||
   [])[1];
 var hhCssSrc = require('fs').readFileSync(__dirname + '/../styles.css', 'utf8');
@@ -4582,6 +4582,20 @@ assert(hhDefs === 1 && hhUses === 1 &&
   'one height sizes the chart strip everywhere (' + hhDefs + ' def, ' +
   hhUses + ' fallback, markup ' + hhAttr + ', css ' + hhCss +
   ', core ' + core.histHeight + ')');
+
+// Both halves of that box come back through one lookup, which holds the
+// fallback for the frames before the canvas has a measurement. Written beside
+// each axis, one of them could fall back to another number while the other
+// still matched the CLI's caption — a silhouette too wide for the `bins` its
+// own caption names, which still reads as a plausible chart. Counted as text:
+// one definition, one read per axis, and no bare fallback left beside them.
+var cssDefs = (appSrc.match(/function cssSize\(/g) || []).length;
+var cssReads = (appSrc.match(/cssSize\(histCanvas\./g) || []).length;
+var cssBare = (appSrc.match(
+  /client(?:Width|Height) \|\| TerraCore\./g) || []).length;
+assert(cssDefs === 1 && cssReads === 2 && cssBare === 0,
+  'both chart axes fall back one way (' + cssDefs + ' def, ' + cssReads +
+  ' reads, ' + cssBare + ' bare fallbacks)');
 
 // Inside that strip the bars, the decade ticks and the median mark are each
 // measured from its top edge. Four separate literals would let a taller strip

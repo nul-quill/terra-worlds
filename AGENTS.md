@@ -2177,6 +2177,13 @@ Conventions:
   strip that blinks while the map beside it stays put; the suite counts the
   definition, its four reads and asks that the only half-writes left in the
   shell be the two inside that helper.
+  The CSS size behind those two numbers is one lookup as well —
+  `cssSize(measured, fallback)` — read once per axis of the chart's box, since a
+  canvas measures nothing in the frames before the layout settles. Written beside
+  each axis, one of them could fall back to another number while the other still
+  matched the CLI's caption, which prints a silhouette too wide for the `bins` its
+  own caption names. The suite counts the definition, its two reads and asks for
+  no bare `clientWidth ||`-style fallback left beside them.
   Those two canvases also draw four thin marks — the crosshair's pair of
   hairlines, the sea rule, the decade ticks and the median mark — and every
   stroke coordinate goes through one `hairline(x)`, which rounds and adds the

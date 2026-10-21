@@ -407,6 +407,16 @@
     return el.getBoundingClientRect();
   }
 
+  // One axis of a canvas in CSS pixels, with the core's published figure behind
+  // it for the frames before the element has a measurement. Both halves of the
+  // chart's box ask that same question, so the fallback is written once: kept
+  // beside each read, one of them could fall back to another number while the
+  // other still matched the CLI's caption, which prints a silhouette whose own
+  // `bins` count disagrees with the bars above it.
+  function cssSize(measured, fallback) {
+    return measured || fallback;
+  }
+
   function render() {
     var opts = readOptions();
     writeHash();
@@ -1345,8 +1355,8 @@
     // to the element rather than the attribute: a fixed-width canvas stretched
     // to 100% reads as a blur. Drawing math stays in CSS pixels because the
     // device-pixel scale is applied with a transform.
-    var cssW = histCanvas.clientWidth || TerraCore.histWidth;
-    var cssH = histCanvas.clientHeight || TerraCore.histHeight;
+    var cssW = cssSize(histCanvas.clientWidth, TerraCore.histWidth);
+    var cssH = cssSize(histCanvas.clientHeight, TerraCore.histHeight);
     var dpr = pixelScale();
     var bw = bufferSize(cssW, dpr), bhPix = bufferSize(cssH, dpr);
     sizeCanvas(histCanvas, bw, bhPix);
