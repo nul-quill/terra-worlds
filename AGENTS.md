@@ -2023,6 +2023,13 @@ Conventions:
   is applied only when it reads, so the markup stays the single source of the
   range; the suite scrapes that branch for the four `num()` reads, the
   `isFinite` test behind them, and no bare `Number(` left beside them.
+  Both ends of that range hold the level through one `holdBound(value, bound,
+  isLow)`, since a low end and a high end are the same comparison with the
+  opposite sign. Written beside each comparison the pair could be edited apart,
+  which lets a shoreline stop dead at its low end while running past its high
+  one — still a plausible sea level beside its own caption — so the suite counts
+  the definition, its two reads and asks that no bare hold of either bound be
+  left beside them.
   The palette digits are a numeric read of that same kind: the key names a
   position in `TerraCore.palettes`, so the digit goes through `num()` too rather
   than a `parseInt` beside it. Two readings could disagree about a value with

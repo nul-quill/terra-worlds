@@ -1726,6 +1726,19 @@ assert(seaNudgeSrc &&
   'the sea nudge rounds on the printed scale (' +
   (seaNudgeSrc ? 'one scale' : 'unreadable') + ')');
 
+// Both ends of that slider's range hold the level in the same shape: a bound
+// that reads moves the level to it, one that does not is skipped. Two copies of
+// that comparison could be edited apart, which lets a shoreline stop dead at its
+// low end while running past its high one — still a plausible sea level beside
+// its own caption. So the hold is one lookup both ends read, and the only
+// bound-shape comparisons left in that branch are the two inside it.
+var holdDefs = (seaNudgeSrc.match(/function holdBound\(/g) || []).length;
+var holdReads = (seaNudgeSrc.match(/holdBound\(nextSea/g) || []).length;
+var holdBare = (seaNudgeSrc.match(/Math\.(?:max|min)\((?:lo|hi)Sea/g) || []).length;
+assert(holdDefs === 1 && holdReads === 2 && holdBare === 0,
+  'both ends of the sea range hold through one lookup (' + holdDefs +
+  ' def, ' + holdReads + ' reads, ' + holdBare + ' bare holds beside them)');
+
 // The palette digits are a numeric read of their own: the key names a
 // position in `TerraCore.palettes`, so the same rule that decides whether
 // `800x` is a grid has to decide whether a digit names a scheme. Ask for the

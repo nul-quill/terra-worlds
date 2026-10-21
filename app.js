@@ -2367,8 +2367,18 @@
       // could be cut finer than the figures next to it, so the slider would
       // hold a level no readout on the page is able to name.
       nextSea = hundred(nextSea) / 100;
-      if (isFinite(loSea)) nextSea = Math.max(loSea, nextSea);
-      if (isFinite(hiSea)) nextSea = Math.min(hiSea, nextSea);
+      // Both ends of the slider's range hold the level the same way: a bound
+      // that reads moves the level to it, a bound that does not is left out.
+      // Written beside each comparison the pair could be edited apart, which
+      // lets a shoreline stop dead at its low end while running past its high
+      // one — still a plausible sea level beside its own caption, so the hold
+      // is one lookup both ends share.
+      function holdBound(value, bound, isLow) {
+        if (!isFinite(bound)) return value;
+        return isLow ? Math.max(bound, value) : Math.min(bound, value);
+      }
+      nextSea = holdBound(nextSea, loSea, true);
+      nextSea = holdBound(nextSea, hiSea, false);
       inputs.seaLevel.value = String(nextSea);
       render();
       return;
