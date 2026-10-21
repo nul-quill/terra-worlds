@@ -1111,6 +1111,13 @@ Conventions:
   pair could be edited apart, which reads as a button that holds its label a
   different length in one browser than another, so the suite counts the one
   definition, its read and asks for no bare millisecond count left beside them.
+  The attribute holding that remembered name is one spelling too — `LABEL_KEY` —
+  read by all three sites that touch it: the guard storing it once, the write,
+  and the restore. Written beside each site the name could change on one of them
+  only, which reads as a button that never gets its caption back — the copy
+  itself still works, so nothing else looks wrong. The suite counts the one
+  declaration, its three reads and asks that the only `'data-label'` in the
+  shell be the one inside that lookup.
   That button is also the one control whose node two bodies need: the wiring at
   the bottom of the shell, and `copyLink()` itself, which has to write its
   feedback into the same element the click lands on. The lookup therefore sits

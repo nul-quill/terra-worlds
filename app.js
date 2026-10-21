@@ -1986,21 +1986,27 @@
   // different waits for the two branches of the copy path.
   var FEED = 900;
   var copyTimer = 0;
+  // The button's own name is remembered under one attribute, and three sites
+  // touch it: the guard that only stores it once, the write, and the restore.
+  // Written beside each site the name could be changed on one of them only,
+  // which reads as a button whose label never comes back — the copy still
+  // works, so nothing else looks wrong. One lookup holds the spelling.
+  var LABEL_KEY = 'data-label';
   function copyLink() {
     var url = location.href;
     var btn = copyBtn;
     // The button's real name is remembered the first time it is pressed, so a
     // second click while "Copied" is showing restores the label rather than
     // freezing the feedback word in its place.
-    if (!btn.getAttribute('data-label')) {
-      btn.setAttribute('data-label', btn.textContent);
+    if (!btn.getAttribute(LABEL_KEY)) {
+      btn.setAttribute(LABEL_KEY, btn.textContent);
     }
     var done = function () {
       btn.textContent = 'Copied';
       if (copyTimer) clearTimeout(copyTimer);
       copyTimer = setTimeout(function () {
         copyTimer = 0;
-        btn.textContent = btn.getAttribute('data-label');
+        btn.textContent = btn.getAttribute(LABEL_KEY);
       }, FEED);
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {

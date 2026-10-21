@@ -6244,6 +6244,19 @@ assert(rowKeyDefs === 1 && rowKeyWrites === 1 && rowKeyReads === 2 &&
   rowKeyWrites + ' writes, ' + rowKeyReads + ' reads, ' + rowKeyBare +
   ' spellings)');
 
+// The copy button remembers its own caption under an attribute too, and three
+// sites read that name: the guard that stores it once, the write, and the
+// restore after the feedback window. Written beside each site the spelling
+// could change on one of them only, which reads as a button that never gets
+// its label back — the copy still works, so nothing else looks wrong. Counted
+// as text: one declaration, its three reads, and one spelling left.
+var labelKeyDefs = (appSrc.match(/var LABEL_KEY = 'data-label'/g) || []).length;
+var labelKeyReads = (appSrc.match(/LABEL_KEY/g) || []).length - labelKeyDefs;
+var labelKeyBare = (appSrc.match(/'data-label'/g) || []).length;
+assert(labelKeyDefs === 1 && labelKeyReads === 3 && labelKeyBare === 1,
+  'the copy button names its label in one place (' + labelKeyDefs + ' names, ' +
+  labelKeyReads + ' reads, ' + labelKeyBare + ' spellings)');
+
 // A stats row is two cells — a name and its figure — and both are the same
 // shape: a node with a text on it. Written beside each half the creation could
 // gain a class on one of them, or drop its text assignment, which reads as a
