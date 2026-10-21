@@ -4752,6 +4752,21 @@ assert(bufDefs === 1 && bufCalls === 4 && bufInline === 1,
   'both canvases size their store one way (' + bufDefs + ' def, ' + bufCalls +
   ' reads, ' + bufInline + ' in the helper)');
 
+// A canvas is sized as a pair: a width without its height leaves the old rows
+// under a new column count, and either write wipes what the canvas holds. Four
+// canvases are sized in the shell — the map, its offscreen copy, the chart and
+// the export buffer — so the paired write with its two guards is one helper.
+// Written beside each canvas, one of them could drop its guard and clear a
+// picture the other three keep, which reads as a strip that blinks while the
+// map beside it stays put. Counted as text: one definition, one call per
+// canvas, and the only half-writes left are the two inside that helper.
+var pairDefs = (appSrc.match(/function sizeCanvas\(/g) || []).length;
+var pairCalls = (appSrc.match(/sizeCanvas\(/g) || []).length - pairDefs;
+var pairWrites = (appSrc.match(/\.(?:width|height) = /g) || []).length;
+assert(pairDefs === 1 && pairCalls === 4 && pairWrites === 2,
+  'every canvas is sized through one lookup (' + pairDefs + ' def, ' +
+  pairCalls + ' reads, ' + pairWrites + ' writes inside it)');
+
 // The two axes of the grid are snapped by one rule: a cell at least two device
 // pixels wide is rounded and its count trimmed, below that the axis keeps its
 // fractional size. Written twice, the pair could be edited apart — columns

@@ -2167,6 +2167,16 @@ Conventions:
   truncate instead and still look sharp on its own, while the map and the strip
   under it disagreed about how wide a device pixel is; the suite counts the
   definition, the four reads and the single `* dpr)` inside the helper.
+  Those two numbers then reach the element through one `sizeCanvas(el, w, h)`,
+  read by the four canvases the shell owns: the map, its offscreen copy, the
+  chart and the buffer a saved PNG is filled from. A canvas is sized as a pair —
+  a width without its height leaves the old rows under a new column count — and
+  either write wipes what the element holds, so both halves carry a comparison
+  with the value already there. Written beside each canvas, one of them could
+  drop its guard and clear a picture the other three keep, which reads as a
+  strip that blinks while the map beside it stays put; the suite counts the
+  definition, its four reads and asks that the only half-writes left in the
+  shell be the two inside that helper.
   Those two canvases also draw four thin marks — the crosshair's pair of
   hairlines, the sea rule, the decade ticks and the median mark — and every
   stroke coordinate goes through one `hairline(x)`, which rounds and adds the

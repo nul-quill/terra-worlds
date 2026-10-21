@@ -348,6 +348,19 @@
     return Math.round(cssPx * dpr);
   }
 
+  // Both halves of a backing store are written together. A canvas is only
+  // ever sized as a pair — a width without its height leaves the old rows
+  // under a new column count — and assigning either half wipes what the
+  // canvas holds, so each write is guarded by a comparison with the value it
+  // already has. That pair of tests belongs here rather than beside each of
+  // the four canvases: written at each site, one of them could drop its guard
+  // and clear a picture the other three keep, which reads as a strip that
+  // blinks while the map beside it stays put.
+  function sizeCanvas(el, w, h) {
+    if (el.width !== w) el.width = w;
+    if (el.height !== h) el.height = h;
+  }
+
   // Snap one axis of the grid to a whole number of device pixels. A cell at
   // least two pixels wide is rounded and the count trimmed to whatever still
   // fits, so every cell is the same size and only the last couple of pixels
@@ -458,8 +471,7 @@
       result.channelName = chan.channel;
     }
 
-    view.width = bw;
-    view.height = bh;
+    sizeCanvas(view, bw, bh);
     drawMap();
 
     drawHover();
@@ -493,8 +505,7 @@
   // Blit the generated grid onto the visible canvas, nearest-neighbour.
   function drawMap() {
     if (!current) return;
-    off.width = current.width;
-    off.height = current.height;
+    sizeCanvas(off, current.width, current.height);
     var img = offCtx.createImageData(current.width, current.height);
     // A pinned legend class fades every other class toward the sky colour, so
     // the map itself carries the selection. Done here rather than in a second
@@ -1338,8 +1349,7 @@
     var cssH = histCanvas.clientHeight || TerraCore.histHeight;
     var dpr = pixelScale();
     var bw = bufferSize(cssW, dpr), bhPix = bufferSize(cssH, dpr);
-    if (histCanvas.width !== bw) histCanvas.width = bw;
-    if (histCanvas.height !== bhPix) histCanvas.height = bhPix;
+    sizeCanvas(histCanvas, bw, bhPix);
     // One bin per ~5 CSS pixels, clamped: a narrow sidebar with 48 bars reads
     // as mush, a wide one with 24 wastes the space it is given.
     var BINS = TerraCore.binCount(cssW);
@@ -1856,8 +1866,7 @@
     if (!current) return;
     var big = TerraCore.upscale(current, exportFactor());
     var c = document.createElement('canvas');
-    c.width = big.width;
-    c.height = big.height;
+    sizeCanvas(c, big.width, big.height);
     var cx = c.getContext('2d');
     nearest(cx);
     var img = cx.createImageData(big.width, big.height);
