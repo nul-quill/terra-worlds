@@ -3623,6 +3623,21 @@ var writeCheck = (writeBody.match(/el\.checked \? 1 : 0/g) || []).length;
 var readCheck = (applyBody.match(/value === '1'/g) || []).length;
 assert(writeCheck === 1 && readCheck === 1,
   'a checkbox round-trips as 1 and 0 (' + writeCheck + '/' + readCheck + ')');
+
+// Both branches of that loop write the same shape — a short name, an equals
+// sign, a value that has to survive a query string — so the join is one lookup
+// both read. Written beside each push the separator could be edited on one of
+// them, which reads as a link whose checkboxes use one delimiter while its
+// dropdowns use another: a reopened page then only half restores, and each half
+// still looks fine in the address bar. Ask for one definition, the two reads in
+// the loop, and that the only such join left in the writer be the helper's own.
+var pairJoinDefs = (writeBody.match(/function hashPair\(/g) || []).length;
+var pairJoinReads = (writeBody.match(/hashPair\(HASH_KEYS/g) || []).length;
+var pairJoinBare = (writeBody.match(/\+ '=' \+/g) || []).length;
+assert(pairJoinDefs === 1 && pairJoinReads === 2 && pairJoinBare === 1,
+  'every hash pair is joined by one lookup (' + pairJoinDefs + ' def, ' +
+  pairJoinReads + ' reads, ' + pairJoinBare + ' join inside it)');
+
 var staleGuard = (applyBody.match(/hasOption\(el, value\)/g) || []).length;
 assert(staleGuard === 1,
   'a dropdown only takes a key its list offers (' + staleGuard + ')');

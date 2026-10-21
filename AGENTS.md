@@ -1352,6 +1352,14 @@ Conventions:
     stores `checked ? 1 : 0` and the reader compares against `'1'`, since a bare
     `false` in a URL would read as a value rather than as a tick. The suite
     counts one of each, so the encoding cannot be changed on one side only.
+    Both halves of that loop then join their pair the same way — a short name,
+    an equals sign, a value that survives a query string — through one
+    `hashPair(name, value)`. Written beside each push the separator could be
+    edited on one of them, which reads as a link whose checkboxes use one
+    delimiter while its dropdowns use another: a reopened page then only half
+    restores, while each half still looks fine in the address bar. The suite
+    counts the definition, the two reads and asks that the only such join left
+    in the writer be the one inside that helper.
   Every control is wired by one walk over `inputs`: a `change` listener for the
   dropdowns and checkboxes, and an `input` listener that redraws for the things
   whose value moves under a finger — the sliders and the seed box, which is why

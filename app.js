@@ -101,15 +101,24 @@
 
   function writeHash() {
     var parts = [];
+    // Every pair in the link is a short name, an equals sign, and a value that
+    // has to survive a query string. Two kinds of control reach that shape here
+    // — the ticked boxes and everything else — so the join is one lookup:
+    // written beside each push the separator could be edited on one of them,
+    // which reads as a link whose checkboxes use one delimiter and its
+    // dropdowns another, and a reopened page then only half restores.
+    function hashPair(name, value) {
+      return name + '=' + encodeURIComponent(value);
+    }
     Object.keys(HASH_KEYS).forEach(function (key) {
       var el = inputs[key];
       if (!el) return;
       // Checkboxes are stored as 1/0 so the hash stays short.
       if (el.type === 'checkbox') {
-        parts.push(HASH_KEYS[key] + '=' + (el.checked ? 1 : 0));
+        parts.push(hashPair(HASH_KEYS[key], el.checked ? 1 : 0));
         return;
       }
-      parts.push(HASH_KEYS[key] + '=' + encodeURIComponent(el.value));
+      parts.push(hashPair(HASH_KEYS[key], el.value));
     });
     // The pinned legend class is not a form control, so it rides along here.
     // A link with `pin=taiga` should reopen with that class still isolated.
