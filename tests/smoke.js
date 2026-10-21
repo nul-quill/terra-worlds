@@ -4659,9 +4659,25 @@ assert(slackDefs === 1 && slackUses === 2 && slackLiterals === 0,
 var gutDefs = (appSrc.match(/var GUT = \d+;/g) || []).length;
 var gutUses = (appSrc.match(/GUT/g) || []).length - gutDefs;
 var gutLiterals = (appSrc.match(/w - pad|pad - PILL|pad \* 2/g) || []).length;
-assert(gutDefs === 1 && gutUses === 12 && gutLiterals === 0,
+assert(gutDefs === 1 && gutUses === 11 && gutLiterals === 0,
   'one inset frames every label in the chart (' + gutDefs + ' def, ' +
   gutUses + ' reads, ' + gutLiterals + ' literals)');
+
+// Two of those labels are measured against the room left inside the gutter:
+// the fit test for the median row, and the limit a hovered caption shrinks to.
+// Both are the chart's width minus the inset on either side, so the pair of
+// subtractions is one lookup read twice. Written beside each call the count of
+// gutters could be edited apart — one dropping to a single inset — which lets a
+// caption claim a column its own fit test had already given to a corner number:
+// still a plausible row of labels, with one of them overlapping. Counted as
+// text: one definition, its two reads, and no bare double-inset left beside
+// them (the one inside that helper is the shape every reader shares).
+var innerDefs = (appSrc.match(/function innerWidth\(/g) || []).length;
+var innerReads = (appSrc.match(/innerWidth\(w\)/g) || []).length - innerDefs;
+var innerBare = (appSrc.match(/w - GUT \* 2/g) || []).length;
+assert(innerDefs === 1 && innerReads === 2 && innerBare === 1,
+  'one lookup measures the room inside the chart gutter (' + innerDefs +
+  ' def, ' + innerReads + ' reads, ' + innerBare + ' subtraction inside it)');
 
 // Each decade tick is one short mark hanging from the strip's own top edge, so
 // how far down it reaches is a single number beside that edge. Two offsets

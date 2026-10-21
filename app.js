@@ -1439,6 +1439,16 @@
     // sit closer to its edge than the tick under it — a difference small enough
     // to read as a slightly odd chart rather than as a bug.
     var GUT = 3;
+    // Two marks are measured against the room left INSIDE that gutter: the
+    // fit test for the median row and the limit a hovered caption shrinks to.
+    // Both are the chart's width minus the inset on either side, so the pair
+    // of subtractions is written once. Beside each call the count of gutters
+    // could be edited apart — one dropping to a single inset — which lets a
+    // caption claim a column the median test had already given to its corner
+    // number: still a plausible row of labels, one of them overlapping.
+    function innerWidth(w) {
+      return w - GUT * 2;
+    }
     var seaX = chartX(result.seaLevel, lo, span, w);
     seaX = clampTo(seaX, w);
     hc.fillStyle = result.palette.sky;
@@ -1586,7 +1596,7 @@
       if (medTextX + medTw > w - GUT - hiTw - GAP) {
         medTextX = w - GUT - hiTw - GAP - medTw;
       }
-      if (medTw < w - GUT * 2 - loTw - hiTw - GAP * 4) {
+      if (medTw < innerWidth(w) - loTw - hiTw - GAP * 4) {
         hc.fillStyle = rgba(INK, MID);
         hc.fillText(medLabel, medTextX, h - BASE);
       }
@@ -1602,7 +1612,7 @@
       // what ties the bump back to the map.
       var parts = [rangeText(sum.from, sum.to)]
         .concat(bandFields(sum));
-      var label = fitLabel(hc, parts, w - GUT * 2);
+      var label = fitLabel(hc, parts, innerWidth(w));
       var tw = textWidth(hc, label);
       // The box behind the caption is the label plus one padding on every
       // side: the fill starts that far left of the text and grows by twice

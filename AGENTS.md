@@ -2104,11 +2104,20 @@ Conventions:
   Those marks all sit inside one inset — `GUT`, three CSS pixels — which is the
   gutter every non-bar mark is measured from: the two tick bounds, both corner
   labels, the three comparisons of the median squeeze, the width a hovered
-  caption may fill and the pill behind it. Twelve reads of one number, since a
+  caption may fill and the pill behind it. Eleven reads of one number, since a
   gutter written beside each site could be edited apart, which lets a corner
   label sit closer to its edge than the tick under it — close enough to read as
-  a slightly odd chart, so the suite counts the one number, its twelve reads and
+  a slightly odd chart, so the suite counts the one number, its eleven reads and
   asks for no bare gutter left beside them.
+  Two of those marks are measured against the room left INSIDE that gutter — the
+  fit test for the median row and the limit a hovered caption shrinks to — and
+  both are the chart's width minus the inset on either side, so that pair of
+  subtractions is one lookup, `innerWidth(w)`, read twice. Written beside each
+  call the count of gutters could be edited apart, one dropping to a single
+  inset, which lets a caption claim a column its own fit test had already given
+  to a corner number: still a plausible row of labels, with one of them
+  overlapping. The suite counts the definition, its two reads and asks that the
+  only double-inset subtraction left in the shell be the one inside that helper.
   Those three labels also sit on one baseline — `BASE`, one CSS pixel up from
   the strip's bottom edge — since a second offset written beside one of them
   would drop that figure a pixel below the others, which reads as two rows of
