@@ -1438,6 +1438,13 @@ Conventions:
   one colour while its own crosshair is drawn in a slightly different one —
   close enough to pass at a glance. The suite counts the definition, the five
   reads and the single `hexToRgb` call inside it.
+  Behind those overlays the two canvases each lay their own sky first, and both
+  are the same pair of writes — a hue, then a rectangle over the whole box — so
+  the pair is one lookup, `paintSky(g, sky, w, h)`, read once per canvas. Written
+  beside each canvas the hue could stay while its rectangle shrank to a partial
+  fill, which leaves a chart whose margins sit on another colour than the map
+  behind it — still a plausible pair of panels at a glance, so the suite counts
+  the definition, its two reads and asks for no bare sky fill left beside them.
   The ink those marks are stroked with is one lookup as well —
   `inkColour()` — read by the three of them: the crosshair's pair of hairlines,
   the border of the magnifier's mat and the one-cell mark inside that patch.

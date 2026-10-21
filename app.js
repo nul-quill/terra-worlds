@@ -348,6 +348,19 @@
     c.imageSmoothingEnabled = false;
   }
 
+  // Both canvases open by laying the palette's sky behind everything else: the
+  // map fills its own box before blitting the grid, the relief strip fills its
+  // box before drawing bars. Each is the same pair of writes — a hue, then a
+  // rectangle over the whole box — so the pair is one lookup the two reads
+  // share. Written beside each canvas the hue could stay while the rectangle
+  // shrank to a partial fill, which leaves a strip whose own margins are a
+  // different colour than the map behind it — still a plausible chart at a
+  // glance, so both halves go through this one writer.
+  function paintSky(c, sky, w, h) {
+    c.fillStyle = sky;
+    c.fillRect(0, 0, w, h);
+  }
+
   // A one-pixel stroke lands between two device pixels unless its coordinate is
   // pushed to the middle of one, which is what the half-pixel offset does. Both
   // canvases draw hairlines — the crosshair, the sea rule, the decade ticks and
@@ -597,8 +610,7 @@
     }
     offCtx.putImageData(img, 0, 0);
     nearest(ctx);
-    ctx.fillStyle = current.palette.sky;
-    ctx.fillRect(0, 0, view.width, view.height);
+    paintSky(ctx, current.palette.sky, view.width, view.height);
     // Draw at the integer cell size rather than stretching to the canvas, so
     // every cell is exactly the same number of device pixels.
     var cs = cellSize();
@@ -1497,8 +1509,7 @@
     }
     var seaX = chartX(result.seaLevel, lo, span, w);
     seaX = clampTo(seaX, w);
-    hc.fillStyle = result.palette.sky;
-    hc.fillRect(0, 0, w, h);
+    paintSky(hc, result.palette.sky, w, h);
     // Which bins hold the class the legend is pointing at. Without this the
     // chart always shows the same silhouette, so a hovered row tells you
     // nothing about where that class sits in the height range. Only computed

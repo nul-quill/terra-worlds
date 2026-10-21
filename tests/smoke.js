@@ -4785,6 +4785,20 @@ assert(isDefs === 1 && isReads === 1 && isBare === 0,
   'one lookup keeps a decade tick inside the strip (' + isDefs + ' def, ' +
   isReads + ' reads, ' + isBare + ' bare comparisons)');
 
+// Both canvases open by laying the palette's sky behind everything else, and
+// each is the same pair of writes: a hue, then a rectangle over the whole box.
+// Written beside each canvas the hue could stay while its rectangle shrank to
+// a partial fill, which leaves a strip whose margins are another colour than
+// the map behind it — still a plausible chart at a glance. Counted as text: one
+// definition, both reads through it, and no bare pair left beside them.
+var bgDefs = (appSrc.match(/function paintSky\(/g) || []).length;
+var bgReads = (appSrc.match(/paintSky\((ctx|hc),/g) || []).length;
+var bgBare = (appSrc.match(/\.fillStyle = (current|result)\.palette\.sky/g) ||
+  []).length;
+assert(bgDefs === 1 && bgReads === 2 && bgBare === 0,
+  'one lookup lays the sky behind both canvases (' + bgDefs + ' def, ' +
+  bgReads + ' reads, ' + bgBare + ' bare pairs)');
+
 // Everything in the chart that is not a bar is measured from one inset: the
 // tick bounds, the two corner labels, the median's squeeze, the width a hovered
 // caption may fill and the pill behind it. Written beside each site that inset
