@@ -6053,6 +6053,20 @@ assert(nearDefs === 1 && nearReads === 3 && nearInline === 1,
   'every blit keeps its cells through one lookup (' + nearDefs + ' def, ' +
   nearReads + ' reads, ' + nearInline + ' inside)');
 
+// Four canvases are drawn in the shell: the map, its offscreen copy, the relief
+// strip and the buffer a saved PNG is filled from. Each asks for a context in
+// its own sentence, so four copies of that request could be edited apart — one
+// asking for another kind of context than the other three — which reads as a
+// single view that stops answering while the rest still draw. Counted as text:
+// one definition, four reads, and the only context request left inside that
+// helper.
+var ctxDefs = (appSrc.match(/function ctxOf\(/g) || []).length;
+var ctxReads = (appSrc.match(/ctxOf\(/g) || []).length - ctxDefs;
+var ctxTotal = (appSrc.match(/getContext\(/g) || []).length;
+assert(ctxDefs === 1 && ctxReads === 4 && ctxTotal === 1,
+  'every canvas is opened through one lookup (' + ctxDefs + ' def, ' +
+  ctxReads + ' reads, ' + ctxTotal + ' requests)');
+
 // Every mark in the chart that has to be nudged to fit asks one question: how
 // wide is this string. Seven reads do that — the shrink loop behind a hovered
 // caption, the sea figure beside its rule, the high-end corner label, the three

@@ -3,7 +3,7 @@
   'use strict';
 
   var view = document.getElementById('view');
-  var ctx = view.getContext('2d');
+  var ctx = ctxOf(view);
   var readout = document.getElementById('readout');
   var legendList = document.getElementById('legend');
   var statsBox = document.getElementById('stats');
@@ -173,7 +173,7 @@
   }
 
   var off = document.createElement('canvas');
-  var offCtx = off.getContext('2d');
+  var offCtx = ctxOf(off);
   var current = null;
   var hover = { x: -1, y: -1 };
   // Which biome is currently isolated: `solo` follows the pointer over the
@@ -297,6 +297,16 @@
   }
 
   /* ---- drawing ---- */
+
+  // Every canvas in the shell is drawn with the same kind of context: the map,
+  // its offscreen copy, the relief strip and the buffer a saved PNG is filled
+  // from. Four lookups of the same string could be edited apart — one asking
+  // for a bitmap context while the other three stayed with the 2d one — which
+  // reads as a single view that stops answering at a size another still draws
+  // at, so the request is one lookup the four share.
+  function ctxOf(el) {
+    return el.getContext('2d');
+  }
 
   // Both canvases size their backing store from this one number. The clamp is
   // the contract: at 1 the grid is drawn one device pixel per cell, above 2 a
@@ -1390,7 +1400,7 @@
   // hovered bin stays readable on a 52px-tall strip.
   function paintHistogram(only) {
     if (!histState) return;
-    var st = histState, hc = histCanvas.getContext('2d');
+    var st = histState, hc = ctxOf(histCanvas);
     hc.setTransform(st.dpr, 0, 0, st.dpr, 0, 0);
     var w = st.w, h = st.h, BINS = st.bins, hist = st.hist, peak = st.peak;
     var lo = st.lo, span = st.span, result = st.result;
@@ -1889,7 +1899,7 @@
     var big = TerraCore.upscale(current, exportFactor());
     var c = document.createElement('canvas');
     sizeCanvas(c, big.width, big.height);
-    var cx = c.getContext('2d');
+    var cx = ctxOf(c);
     nearest(cx);
     var img = cx.createImageData(big.width, big.height);
     img.data.set(big.data);

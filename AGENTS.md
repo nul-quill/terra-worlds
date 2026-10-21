@@ -2192,6 +2192,14 @@ Conventions:
   matched the CLI's caption, which prints a silhouette too wide for the `bins` its
   own caption names. The suite counts the definition, its two reads and asks for
   no bare `clientWidth ||`-style fallback left beside them.
+  Those four canvases are opened by one lookup too — `ctxOf(el)` — since each is
+  the same request for the same kind of context: the map, its offscreen copy, the
+  chart and the buffer a saved PNG is filled from. Written beside each canvas the
+  request could be edited apart, one asking for another kind of context than the
+  other three, which reads as a single view that stops answering while the rest
+  still draw — plausible in a screenshot of a chart that went blank, so the suite
+  counts the definition, its four reads and asks that the only context request in
+  the shell be the one inside that helper.
   Those two canvases also draw four thin marks — the crosshair's pair of
   hairlines, the sea rule, the decade ticks and the median mark — and every
   stroke coordinate goes through one `hairline(x)`, which rounds and adds the
