@@ -569,6 +569,22 @@ assert(coreHundredDefs === 1 && coreHundredExported && shellForwards &&
   coreHundredDefs + ' def, ' + shellForwards + ' forward, ' + cliReads +
   ' cli uses, ' + cliInline + ' inline)');
 
+// The caption under a text silhouette prints four heights — the two ends of
+// its range, the sea level and the median — and each of them is a stored 0..1
+// figure shown out of a hundred. Written beside each figure the scaling could
+// be edited apart, which lets a caption name its sea level on another scale
+// than its own two corners while every number still reads fine alone. So the
+// caption reads one lookup: counted as one definition, its four reads, and no
+// bare scaling left inside the caption string itself.
+var capDefs = (cliSrcForH.match(/function capNumber\(/g) || []).length;
+var capReads = (cliSrcForH.match(/capNumber\(/g) || []).length - capDefs;
+var capBody = (/lines\.push\(capNumber\([\s\S]{0,700}?\);/
+  .exec(cliSrcForH) || ['', ''])[0];
+var capBare = (capBody.match(/core\.hundred\(/g) || []).length;
+assert(capDefs === 1 && capReads === 4 && capBody.length > 0 && capBare === 0,
+  'one lookup scales every caption figure (' + capDefs + ' def, ' +
+  capReads + ' reads, ' + capBare + ' bare)');
+
 // The summary sentence is a printed height too. Its relief figure picks the
 // word in front of it — `rugged`, `rolling`, `plain` — so a rounding written
 // inside that sentence could disagree with the `relief` row beside it while

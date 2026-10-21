@@ -248,12 +248,13 @@ Conventions:
   has a layout, and by the CLI which has no window at all. Two literals would
   let a text profile and the bars on screen disagree about how many columns a
   sidebar buys; the suite counts the lookup on both sides.
-  Inside the CLI that pair of lookups is one helper — `histPass(result)` — read
-  by the writer of the bar block and by the record beneath it, since the two
-  must describe one pass: a width edited on one side only would print a
-  silhouette too wide for the `bins` its own caption names, which still looks
-  like a plausible chart. The suite counts the definition, its two reads and
-  the single nested pair inside it.
+  Those four caption figures — the two ends of the range, the sea level and the
+  median — are one lookup each in the CLI too: `capNumber(value)` forwards to
+  the core's scaling, so a caption cannot print its sea level on another scale
+  than its own two corners while every number still reads fine alone. The three
+  record fields (`relief`, `low`, `high`) keep their direct reads. The suite
+  counts the definition, its four reads and asks for no bare scaling left
+  inside the caption string.
   Keep it the strip's measured width (the canvas inside a 250px column, so
   about 200) rather than the column's: the fallback is what a terminal assumes,
   and a figure the page never measures would print a different bar count than
@@ -311,6 +312,12 @@ Conventions:
   That check also reads the row's own source for the `hundred(` call, so the
   scaling cannot be dropped at the call site while the record keeps its three
   decimals: the two halves of the pair are compared, not just printed.
+  Inside the CLI that pair of lookups is one helper — `histPass(result)` — read
+  by the writer of the bar block and by the record beneath it, since the two
+  must describe one pass: a width edited on one side only would print a
+  silhouette too wide for the `bins` its own caption names, which still looks
+  like a plausible chart. The suite counts the definition, its two reads and
+  the single nested pair inside it.
   The ruler carries two marks: `|` on the sea column and `:` on the column the
   median falls in, since a spread cannot tell a plateau from a peak squeezed
   between its own two ends. Both are the core's `binOf` over the same range, so

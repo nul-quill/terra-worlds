@@ -601,6 +601,15 @@ function seedLine(seed, text) {
   return seed + '  ' + text;
 }
 
+// Every figure the caption under a silhouette prints is a height stored 0..1
+// and shown out of a hundred, so the scaling is one lookup that the whole
+// caption reads. Written beside each figure the scaling could be edited apart,
+// which lets a caption print its sea level on another scale than its own two
+// corners — every number still reads fine on its own line.
+function capNumber(value) {
+  return core.hundred(value);
+}
+
 function profile(result) {
   var h = histPass(result);
   // The row count is the profile's own constant rather than a number written
@@ -634,10 +643,10 @@ function profile(result) {
       : (c === medCol ? ':' : '-');
   }
   lines.push(ruler);
-  lines.push(core.hundred(h.lo) + ' .. ' +
-    core.hundred(h.lo + h.span) + ' relief, sea ' +
-    core.hundred(result.seaLevel) + ', median ' +
-    core.hundred(result.stats.median) + ', ' + h.bins + ' bins, peak ' +
+  lines.push(capNumber(h.lo) + ' .. ' +
+    capNumber(h.lo + h.span) + ' relief, sea ' +
+    capNumber(result.seaLevel) + ', median ' +
+    capNumber(result.stats.median) + ', ' + h.bins + ' bins, peak ' +
     h.peak + ' cells - ' +
     // The same eight hex digits the stats list and the record print, so a
     // pasted block of text names the picture it came from — the one field a
