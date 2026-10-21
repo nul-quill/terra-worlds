@@ -812,19 +812,28 @@
     // the stroke could be pulled in on one axis only, which leaves a frame
     // whose left edge sits on its background while its right edge floats.
     var EDGE = MAT + 0.5;
+    // Both boxes around the patch grow by twice their own reserve: the fill on
+    // each of its four sides, and the hairline one half-pixel beyond that. That
+    // doubling is one shape, so both read it through this lookup. Written beside
+    // each call the pair could be edited apart, which leaves a frame whose border
+    // is thicker on one axis than the fill underneath it — still a plausible
+    // panel at a glance, so the doubling is written once.
+    function matSpan(size, reserve) {
+      return size + reserve * 2;
+    }
     // The panel backing is the palette's own sky, at the same alpha the crosshair
     // uses, so a dark scheme keeps a dark mat under the magnified patch instead
     // of a bright slab. Both colours come from the lookup above, which is also
     // what the isolation blend reads — one source for every overlay colour.
     var sky = skyRgb();
     ctx.fillStyle = rgba(sky, 0.85);
-    ctx.fillRect(dx - MAT, dy - MAT, size + MAT * 2, size + MAT * 2);
+    ctx.fillRect(dx - MAT, dy - MAT, matSpan(size, MAT), matSpan(size, MAT));
     nearest(ctx);
     ctx.drawImage(off, x0, y0, PATCH, PATCH, dx, dy, size, size);
     ctx.strokeStyle = rgba(mix(inkColour(), sky, 0.35), 0.55);
     ctx.lineWidth = HAIR;
     ctx.strokeRect(dx - EDGE, dy - EDGE,
-      size + EDGE * 2, size + EDGE * 2);
+      matSpan(size, EDGE), matSpan(size, EDGE));
     // The patch is a dozen cells wide, so the one under the cursor still has
     // to be identifiable inside it. Same ink as the crosshair, one cell of the
     // patch's own scale — the offset is the difference of two clamped indices,

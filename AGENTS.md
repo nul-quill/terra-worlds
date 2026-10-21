@@ -1709,6 +1709,13 @@ Conventions:
   four offsets written beside the call could pull the frame in on one axis only,
   which leaves a border sitting on its background at the left while floating at
   the right. The suite counts that derivation, its four reads and both probes.
+  Both boxes that mat is drawn with grow by twice their own reserve, and that
+  doubling is one lookup — `matSpan(size, reserve)` — read twice per box: the
+  fill over `MAT`, the hairline over `EDGE`. Written beside each call the pair
+  could be edited apart, which leaves a frame thicker on one axis than the
+  background under it — still a plausible panel beside its own caption — so the
+  suite counts the definition, its four reads and asks for no bare doubling left
+  beside them.
   The panel's own size is a pair of fractions — `PANEL`, the share of the shorter
   canvas edge the patch may take, and `PAD`, the share of that patch given back as
   padding. The second is measured against the first rather than the canvas, so a

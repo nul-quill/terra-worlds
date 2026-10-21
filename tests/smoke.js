@@ -6098,6 +6098,19 @@ assert(edgeDefs === 1 && edgeReads === 4 && edgeLiterals === 0,
   'one reach sets the mat border on both axes (' + edgeDefs + ' def, ' +
   edgeReads + ' reads, ' + edgeLiterals + ' literals)');
 
+// Each of those two boxes grows by twice its own reserve, and that doubling is
+// written once so the fill and the hairline around it cannot be padded by two
+// different amounts. Split beside each call, a frame could end up thicker on one
+// axis than the background underneath it — still a plausible panel beside its own
+// caption. Counted as text: one definition, its four reads (two per box), and no
+// bare doubling left beside them.
+var spanDefs = (appSrc.match(/function matSpan\(/g) || []).length;
+var spanReads = (appSrc.match(/matSpan\(size, (?:MAT|EDGE)\)/g) || []).length;
+var spanBare = (appSrc.match(/size \+ (?:MAT|EDGE) \* 2/g) || []).length;
+assert(spanDefs === 1 && spanReads === 4 && spanBare === 0,
+  'both halves of the mat grow by one doubling (' + spanDefs + ' def, ' +
+  spanReads + ' reads, ' + spanBare + ' bare)');
+
 // Two fractions also size that panel: how much of the shorter canvas edge the
 // patch may take, and how much of the patch is given back as padding. The
 // second is measured against the first, so a wider panel keeps its own margin
