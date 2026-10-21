@@ -968,6 +968,15 @@
     return value * 100;
   }
 
+  // The other direction of that same scaling: a tick counted in whole units has
+  // to be placed on a chart whose axis is stored 0..1. Both halves name the
+  // same hundred, so the step it picks and the position it lands at cannot be
+  // measured on two scales — a crowded strip beside a step picked for a wide
+  // one, still a plausible chart at a glance.
+  function storedHeight(u) {
+    return u / 100;
+  }
+
   // A mark placed by `chartX` can fall just outside the strip when a world's
   // own range is narrower than the two levels the marks name, so each of those
   // positions is held inside the chart's width. Both ends of that hold are one
@@ -1552,7 +1561,7 @@
     var SLACK = 1;
     for (var u = Math.ceil(wholeUnits(lo) / stepUnits) * stepUnits;
       u <= wholeUnits(lo + span); u += stepUnits) {
-      var tickX = chartX(u / 100, lo, span, w);
+      var tickX = chartX(storedHeight(u), lo, span, w);
       if (tickX < GUT - SLACK || tickX > w - GUT + SLACK) continue;
       // Every tick is the same short mark hanging from the strip's own top
       // edge, so its length is one number: the mark starts one pixel below

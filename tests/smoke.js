@@ -4250,6 +4250,22 @@ assert(unitDefs === 1 && unitReads === 3 && unitInline === 1,
   'the tick ladder scales heights through one lookup (' + unitDefs + ' def, ' +
   unitReads + ' reads, ' + unitInline + ' multiply inside it)');
 
+// That ladder counts whole units, and the chart's axis is stored 0..1, so the
+// loop scales up to pick its step and back down to place each mark. Both halves
+// name the same hundred, so each is one lookup beside the other. Written at the
+// two ends of that pair the scalings could be edited apart, which lets a step
+// chosen against a range of a hundred print its marks against another — a
+// crowded strip sitting under a step picked for a wide one, still a plausible
+// chart at a glance. Counted as text: one definition of each half, the loop's
+// read of the inverse, and no second division by that hundred left beside it.
+var upDefs = (appSrc.match(/function wholeUnits\(/g) || []).length;
+var downDefs = (appSrc.match(/function storedHeight\(/g) || []).length;
+var downReads = (appSrc.match(/chartX\(storedHeight\(u\)/g) || []).length;
+var downBare = (appSrc.match(/chartX\(u \/ 100/g) || []).length;
+assert(upDefs === 1 && downDefs === 1 && downReads === 1 && downBare === 0,
+  'the tick loop scales both ways through one pair (' + upDefs + ' + ' +
+  downDefs + ' defs, ' + downReads + ' reads, ' + downBare + ' literals)');
+
 // The chart draws one vertical rule at the sea level, and the bars either side
 // of it are the whole reading of the strip. That split has to track the counted
 // water share: both follow the sea slider in the same direction, and the two

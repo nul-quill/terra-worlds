@@ -2222,6 +2222,14 @@ Conventions:
   measured: a crowded strip beside a step picked for a wide one, still a
   plausible chart at a glance. The suite counts the definition, its three reads
   and asks that the single multiply live inside that helper.
+  The loop then comes back down again: each mark it counted in whole units is
+  placed on an axis stored 0..1, and that inverse is one lookup too —
+  `storedHeight(u)` — since both halves name the same hundred. Written beside the
+  call the pair could be edited apart, which lets a step chosen against a range
+  of a hundred print its marks against another — a crowded strip under a step
+  picked for a wide one, still a plausible chart at a glance; so the suite counts
+  the two definitions, the loop's one read of the inverse and asks for no second
+  division by that hundred left beside it.
   A tick that would land under one of the corner numbers is skipped rather than
   drawn short, and the tolerance for that skip is one number — `SLACK`, one CSS
   pixel — read by both bounds of the strip. Written beside each bound the pair
