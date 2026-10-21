@@ -3408,7 +3408,7 @@ assert(stepPairs > 0 && stepInv === 0,
 // it names both, since a note that dropped the direction would leave the one
 // cell that knows where the water goes saying less than its own shore.
 var outSrc = require('fs').readFileSync(__dirname + '/../app.js', 'utf8');
-var outletSrc = (/if \(current\.spillway && current\.spillway\[i\]\)([\s\S]{0,300}?)\n    \}/
+var outletSrc = (/if \(marked\(current\.spillway, i\)\)([\s\S]{0,300}?)\n    \}/
   .exec(outSrc) || ['', ''])[1];
 assert(outletSrc.indexOf('spillBearing(') >= 0 &&
   outletSrc.indexOf("drains ") >= 0 &&
@@ -3425,7 +3425,7 @@ assert(outletSrc.indexOf('spillBearing(') >= 0 &&
 var spillDefs = (outSrc.match(/function spillBearing\(/g) || []).length;
 var spillLook = (outSrc.match(/= spillBearing\(current\.\w+\[i\]\)/g) || []).length;
 var spillOffset = (outSrc.match(/basinSpill\[no - 1\]/g) || []).length;
-var shoreAt = outSrc.indexOf("if (current.basin && current.basin[i])");
+var shoreAt = outSrc.indexOf('if (marked(current.basin, i))');
 var shoreSrc = shoreAt < 0 ? '' : outSrc.slice(shoreAt, shoreAt + 400);
 var shoreLook = shoreSrc.indexOf('spillBearing(current.basin[i])') >= 0;
 assert(spillDefs === 1 && spillLook === 2 && spillOffset === 1 && shoreLook,
@@ -5806,6 +5806,21 @@ var nameInline = (appSrc.match(/inland > 1|catchment > 1/g) || []).length;
 assert(nameDefs === 1 && nameCalls === 2 && nameInline === 0,
   'both cell counts in the readout go quiet at one step (' + nameDefs +
   ' def, ' + nameCalls + ' reads, ' + nameInline + ' inline)');
+
+// Four notes ask whether one of the grid's marks names the hovered cell: the
+// standing water, its basin number, the outlet that drains it, the channel
+// behind a river. Each asks two things — the field exists, and it holds this
+// cell — and a pair written beside each note could be edited apart, one half
+// keeping its absent-field test while its neighbour dropped it. That reads as
+// a note going quiet on a plain world while the note beside it still prints,
+// each half plausible next to its own caption. Counted as text: one
+// definition, a read from each note, no bare pair left beside them.
+var mdDefs = (appSrc.match(/function marked\(/g) || []).length;
+var mdReads = (appSrc.match(/marked\(current\./g) || []).length;
+var mdBare = (appSrc.match(/current\.\w+ && current\.\w+\[i\]/g) || []).length;
+assert(mdDefs === 1 && mdReads === 4 && mdBare === 0,
+  'every readout mark is tested one way (' + mdDefs + ' def, ' + mdReads +
+  ' reads, ' + mdBare + ' bare pairs)');
 
 // The two axes of the biome lookup — moisture and temperature — are printed by
 // the same three steps: a field or nothing, the same index, the same scaling

@@ -1131,6 +1131,19 @@
     return field ? cellCount(field[i]) : 0;
   }
 
+  // Whether one of the grid's own marks names the hovered cell. Four notes in
+  // the readout ask that question — the standing water, its basin number, the
+  // outlet that drains it, the channel behind a river — and each has to
+  // survive a world whose field is absent altogether, which is the same empty
+  // answer as a cell the field never touched. Written beside each note the
+  // pair of halves could be edited apart, one keeping the absent-field test
+  // and one dropping it, which reads as a note that goes quiet on a plain
+  // world while its neighbour still prints — each half plausible beside its
+  // own caption, so the pair is one lookup both read.
+  function marked(field, i) {
+    return !!field && !!field[i];
+  }
+
   // Whether a count of cells says anything. Both counts in the readout — how
   // far a dry cell sits from the shoreline, how many cells drain behind a
   // channel — are worth a word only once they are past the cell itself, and
@@ -1817,14 +1830,14 @@
     }
     // Extra context when it costs nothing: how deep the standing water is, and
     // whether this cell is on the drainage network.
-    if (above && current.lakeMask && current.lakeMask[i]) {
+    if (above && marked(current.lakeMask, i)) {
       // The mask stores 1..60 steps of the basin's own depth range, so the
       // readout converts it to a percentage: "depth 42" means nothing, "62%
       // deep" says how full this part of the basin is.
       parts.push(hundred(current.lakeMask[i] / TerraCore.lakeSteps) + '% deep');
       // Which of the world's lakes this is. Two basins of the same depth read
       // alike otherwise, and the number matches the `basins` row in the stats.
-      if (current.basin && current.basin[i]) {
+      if (marked(current.basin, i)) {
         parts.push('basin ' + basinTally(current.basin[i]));
         // Which side the surplus leaves on. A closed lake still has one low
         // spot in its rim, and that is where the outflow channel starts.
@@ -1861,12 +1874,12 @@
     // The bearing rides along here too: this one cell IS the way out, so the
     // direction is worth more on the outlet than on the shore it sits beside.
     // Same lookup as the filled cells, indexed by the mark's own number.
-    if (current.spillway && current.spillway[i]) {
+    if (marked(current.spillway, i)) {
       var outB = spillBearing(current.spillway[i]);
       parts.push('outlet of basin ' + basinTally(current.spillway[i]) +
         (outB ? ' drains ' + outB : ''));
     }
-    if (current.riverMask && current.riverMask[i]) {
+    if (marked(current.riverMask, i)) {
       // The catchment behind the channel explains why this cell is a trunk and
       // its neighbour is a tributary: it is the same accumulation number the
       // quantile cut is taken from.
