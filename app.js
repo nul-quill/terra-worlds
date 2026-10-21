@@ -974,6 +974,19 @@
     return label;
   }
 
+  // One bar of the relief chart is a box: where its column starts, how tall it
+  // stands above the strip, and the two edges that keep neighbouring bars from
+  // sharing a pixel. Those four measurements are one box, so they are written
+  // once. Beside the call the pair of truncations could be edited apart — one
+  // rounding the column, the other keeping a fraction — which lets a bar start
+  // half a pixel from the edge its own width then rounds away: a hairline gap
+  // between two columns of bars, small enough to read as a slightly loose
+  // chart rather than as a broken grid.
+  function fillBar(hc, i, binW, h, bh) {
+    hc.fillRect(Math.round(i * binW), Math.round(h - bh),
+      Math.ceil(binW), Math.round(bh));
+  }
+
   // Same rule for a fraction that is already normalised: whole numbers above
   // ten percent, one decimal below, so a two-percent class and a
   // zero-two-percent class never print the same string.
@@ -1464,7 +1477,7 @@
       // white, which is the same blend the hover overlay does — so it goes
       // through the same two helpers rather than a fourth rounding of its own.
       hc.fillStyle = rgba(mix(c, WHITE, 1 - keep), 1);
-      hc.fillRect(Math.round(i * binW), Math.round(h - bh), Math.ceil(binW), Math.round(bh));
+      fillBar(hc, i, binW, h, bh);
     }
     hc.strokeStyle = rgba(INK, MID);
     hc.lineWidth = HAIR;

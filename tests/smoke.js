@@ -4901,6 +4901,20 @@ var fitJoin = (appSrc.match(/\.join\('  '\)/g) || []).length;
 assert(fitDefs === 1 && fitCalls === 1 && fitJoin === 2,
   'a tight chart label trims through one loop (' + fitDefs + ' def, ' +
   fitCalls + ' reads, ' + fitJoin + ' joins)');
+// One bar of the relief chart is a box of four measurements: the column it
+// starts in, the height it stands above the strip, and the two edges that keep
+// neighbouring bars from sharing a pixel. Written beside the fill, the pair of
+// truncations could be edited apart — one rounding the column, the other
+// keeping a fraction — which lets a bar start half a pixel from the edge its
+// own width then rounds away: a hairline gap between two columns, small enough
+// to read as a slightly loose chart rather than as a broken grid. Counted as
+// text: one definition, one read, and the one ceil/floor pair living inside it.
+var barDefs = (appSrc.match(/function fillBar\(/g) || []).length;
+var barReads = (appSrc.match(/fillBar\(hc,/g) || []).length - barDefs;
+var barShape = (appSrc.match(/Math\.ceil\(binW\)/g) || []).length;
+assert(barDefs === 1 && barReads === 1 && barShape === 1,
+  'a chart bar is one box of four roundings (' + barDefs + ' def, ' +
+  barReads + ' reads, ' + barShape + ' shape)');
 // The crosshair sets its box ink, draws the hairlines inside a save/restore,
 // then strokes the box. The restore puts the box ink back on its own, so a
 // second copy of that pair after it is one more place the border could be

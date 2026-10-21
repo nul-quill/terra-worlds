@@ -2238,6 +2238,15 @@ Conventions:
   another, which reads as a caption that truncates a field too early. The
   suite counts the definition, the single read and asks that both joins be the
   only ones in the shell.
+  One bar of that same chart is a box of four measurements — the column it
+  starts in, the height it stands above the strip, and the two edges that keep
+  neighbouring bars from sharing a pixel — so it is one `fillBar(hc, i, binW, h,
+  bh)` too. Written beside the fill, the pair of truncations could be edited
+  apart, one rounding the column and the other keeping a fraction, which lets a
+  bar start half a pixel from the edge its own width then rounds away: a hairline
+  gap between two columns, small enough to read as a slightly loose chart rather
+  than as a broken grid. The suite counts the definition, its single read and the
+  one ceil of a bar width living inside it.
   Every one of those labels first asks how wide its string is, and that question
   is one lookup too — `textWidth(hc, s)` — read seven times: the shrink loop, the
   sea figure beside its rule, the high-end corner label, the three measurements of
