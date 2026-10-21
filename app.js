@@ -181,7 +181,17 @@
     return [num(xy[0], true), num(xy[1], true)];
   }
 
-  var off = document.createElement('canvas');
+  // Two places need a loose canvas: the offscreen copy the map is blitted from,
+  // and the buffer a saved PNG is filled from. Both want the same kind of node,
+  // so the request is written once. Beside each site the element name could be
+  // restated on one of them only, which reads as a save path drawing into a
+  // different kind of surface than the one on screen — a slightly off picture
+  // rather than an obvious error, so both halves read this one lookup.
+  function newCanvas() {
+    return document.createElement('canvas');
+  }
+
+  var off = newCanvas();
   var offCtx = ctxOf(off);
   var current = null;
   var hover = { x: -1, y: -1 };
@@ -1967,7 +1977,7 @@
   function savePng() {
     if (!current) return;
     var big = TerraCore.upscale(current, exportFactor());
-    var c = document.createElement('canvas');
+    var c = newCanvas();
     sizeCanvas(c, big.width, big.height);
     var cx = ctxOf(c);
     nearest(cx);

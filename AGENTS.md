@@ -2255,6 +2255,14 @@ Conventions:
   branch only, which reads as a slightly soft panel next to a sharp map — close
   enough to an odd look that nobody opens the console, so the suite counts the
   definition, its three reads and the single assignment inside it.
+  Those two loose canvases — the offscreen copy the map is blitted from, and the
+  buffer a saved PNG is filled from — are also made by one lookup, `newCanvas()`,
+  since both ask for the same kind of node. Written beside each site the element
+  name could be restated on one of them only, which reads as a save path drawing
+  into another surface than the one on screen — a slightly off picture rather
+  than an obvious error, so the suite counts the definition, its two reads and
+  asks that the only `createElement('canvas')` left in the shell be the one
+  inside that helper.
   Converting a CSS measurement into that store is one lookup too —
   `bufferSize(cssPx, dpr)` — read four times: twice for the map's layout box and
   twice for the chart's column. Both round, since a fractional store puts every

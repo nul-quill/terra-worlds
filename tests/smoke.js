@@ -6341,6 +6341,20 @@ assert(cellDefs === 1 && cellReads === 2 && cellInline === 0,
   'both halves of a stats row are built by one helper (' + cellDefs + ' def, ' +
   cellReads + ' reads, ' + cellInline + ' bare)');
 
+// Two places need a loose canvas — the offscreen copy the map is blitted from,
+// and the buffer a saved PNG is filled from — and both ask for it through one
+// lookup. Written beside each site the element name could be restated on one of
+// them only, which reads as a save path drawing into another kind of surface
+// than the one on screen: a slightly off picture rather than an obvious error.
+// Counted as text: one definition, one read per site, and no bare creation left
+// beside them.
+var canvasDefs = (appSrc.match(/function newCanvas\(/g) || []).length;
+var canvasReads = (appSrc.match(/= newCanvas\(\)/g) || []).length;
+var canvasBare = (appSrc.match(/createElement\('canvas'\)/g) || []).length;
+assert(canvasDefs === 1 && canvasReads === 2 && canvasBare === 1,
+  'both loose canvases come from one lookup (' + canvasDefs + ' def, ' +
+  canvasReads + ' reads, ' + canvasBare + ' inside)');
+
 // Both rebuilt lists — the legend rows and the stats rows — begin by emptying
 // their own container, and that first step is one shape: a clear of the text.
 // Written beside each list one could drop to `innerHTML` while the other kept a
