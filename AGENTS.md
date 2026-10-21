@@ -2324,17 +2324,17 @@ Conventions:
   half pixel a one-pixel line needs to land on a whole device pixel. Written at
   each site the offset can be dropped on one mark only, which leaves a single
   soft line beside three crisp ones — a difference small enough that nobody
-  opens the console over it, so the suite counts the definition, the eight
+  opens the console over it, so the suite counts the definition, the four
   reads and asks for no bare `Math.round(...) + 0.5` left beside them.
-  The width those marks are stroked at is one number as well — `HAIR` — read by
-  the three of them: the crosshair's pair of hairlines, the border of the
-  magnifier's mat and the sea rule. Each sits over its own background at its own
-  alpha, so the alpha is written per mark while the width is not. Written beside
-  each stroke, one mark could grow a second pixel while the others stayed thin,
-  which reads as a stray line across the chart rather than as a bug — close
-  enough to a working cursor that nobody opens the console over it. The suite
-  therefore counts the definition, the three reads, and asks that no bare
-  one-pixel width be left written beside them. The box around a hovered cell
+  Those four marks are also the same four calls — open a path, drop a hairline
+  between two edges, close it — so that sequence is one lookup too,
+  `strokeMark(g, x, y1, y2)`, read by the sea rule, the decade ticks and the
+  median mark. Written beside each mark the pair of endpoints could be
+  edited apart from the offset that keeps them crisp, which leaves one mark drawn
+  between two pixels while its neighbours stayed on one — a slightly soft line
+  among sharp ones, still a plausible chart at a glance; the suite counts the
+  definition, its three reads and asks that no bare `hc.beginPath()` be left in
+  the chart.
   keeps its own width on purpose, since that one scales with the cell.
     That share is one fraction — `BOX`, a quarter of a cell with a one-pixel
     floor — read once beside the stroke it sets, so the frame cannot go thick on

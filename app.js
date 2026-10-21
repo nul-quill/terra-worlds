@@ -371,6 +371,20 @@
     return Math.round(x) + 0.5;
   }
 
+  // Every one of those marks is the same four calls: open a path, drop a
+  // hairline from one edge of the strip to another, close it. Written beside
+  // each mark the pair of endpoints could be edited apart from the offset that
+  // keeps them crisp, which leaves one mark drawn between two pixels while its
+  // neighbours stayed on one — a slightly soft line among sharp ones, close
+  // enough to an odd chart that nobody opens the console over it. One lookup
+  // holds the sequence, so each site names only its own two ends.
+  function strokeMark(g, x, y1, y2) {
+    g.beginPath();
+    g.moveTo(hairline(x), y1);
+    g.lineTo(hairline(x), y2);
+    g.stroke();
+  }
+
   // The width those marks are stroked at is the other half of the same idea: a
   // hairline is one device pixel, and the three of them — the crosshair's pair
   // of hairlines, the border of the magnifier's mat and the sea rule under the
@@ -1559,10 +1573,7 @@
     }
     hc.strokeStyle = rgba(INK, MID);
     hc.lineWidth = HAIR;
-    hc.beginPath();
-    hc.moveTo(hairline(seaX), 0);
-    hc.lineTo(hairline(seaX), h);
-    hc.stroke();
+    strokeMark(hc, seaX, 0, h);
     // Ticks every ten units of height, in the strip under the bars. Two corner
     // numbers give the ends of the range but nothing in between, and the ticks
     // are what make a bar's height estimable by eye. Drawn on the same grid as
@@ -1596,10 +1607,7 @@
       // neighbours while the rest of the row still reads as a plausible
       // scale — an asymmetry too small for anyone to open the console over.
       var TICK = 4;
-      hc.beginPath();
-      hc.moveTo(hairline(tickX), h - STRIP + 1);
-      hc.lineTo(hairline(tickX), h - STRIP + TICK);
-      hc.stroke();
+      strokeMark(hc, tickX, h - STRIP + 1, h - STRIP + TICK);
     }
     // The marker line alone does not say what the sea level is, and the slider
     // is the knob that moves it most, so the number rides next to the rule.
@@ -1635,10 +1643,7 @@
     var medX = chartX(result.stats.median, lo, span, w);
     if (medX >= 0 && medX <= w) {
       hc.strokeStyle = rgba(INK, MID);
-      hc.beginPath();
-      hc.moveTo(hairline(medX), h - STRIP);
-      hc.lineTo(hairline(medX), h - STRIP + MARK);
-      hc.stroke();
+      strokeMark(hc, medX, h - STRIP, h - STRIP + MARK);
       // The mark alone says "most of the grid is around here"; the number says
       // how high that is, which is the difference between a shape and a
       // measurement. Kept inside the corner labels so the strip never overlaps.

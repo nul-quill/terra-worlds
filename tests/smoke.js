@@ -4799,6 +4799,20 @@ assert(bgDefs === 1 && bgReads === 2 && bgBare === 0,
   'one lookup lays the sky behind both canvases (' + bgDefs + ' def, ' +
   bgReads + ' reads, ' + bgBare + ' bare pairs)');
 
+// Every thin mark on the two canvases is the same four calls: open a path,
+// drop a hairline between two edges, close it. Written beside each mark the
+// pair of endpoints could be edited apart from the offset that keeps them
+// crisp, which leaves one mark drawn between two pixels while its neighbours
+// stayed on one — a slightly soft line among sharp ones, still a plausible
+// chart. Counted as text: one definition, every mark read through it, and no
+// bare four-call sequence left beside them.
+var mkDefs = (appSrc.match(/function strokeMark\(/g) || []).length;
+var mkReads = (appSrc.match(/strokeMark\((ctx|hc),/g) || []).length;
+var mkBare = (appSrc.match(/hc\.beginPath\(\);/g) || []).length;
+assert(mkDefs === 1 && mkReads === 3 && mkBare === 0,
+  'one lookup strokes every thin mark on the two canvases (' + mkDefs +
+  ' def, ' + mkReads + ' reads, ' + mkBare + ' bare sequences)');
+
 // Everything in the chart that is not a bar is measured from one inset: the
 // tick bounds, the two corner labels, the median's squeeze, the width a hovered
 // caption may fill and the pill behind it. Written beside each site that inset
@@ -5006,7 +5020,7 @@ assert(rowFloorDefs === 1 && rowFloorReads === 1 && rowFloorLiterals === 0,
 var hairDefs = (appSrc.match(/function hairline\(/g) || []).length;
 var hairCalls = (appSrc.match(/hairline\(/g) || []).length - hairDefs;
 var hairInline = (appSrc.match(/Math\.round\([^)]*\) \+ 0\.5/g) || []).length;
-assert(hairDefs === 1 && hairCalls === 8 && hairInline === 1,
+assert(hairDefs === 1 && hairCalls === 4 && hairInline === 1,
   'every thin mark shares one pixel offset (' + hairDefs + ' def, ' +
   hairCalls + ' reads, ' + hairInline + ' in the helper)');
 // The width those marks are stroked at is the same kind of pair: three of them
