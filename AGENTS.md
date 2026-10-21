@@ -1487,11 +1487,13 @@ Conventions:
   bury the bars behind it.
   The strip's type is one list as well — `FONT`, read by both sizes that set it:
   the small ruler labels and the bigger hovered-bin caption. Only the number in
-  front of the family differs, so each site writes `'9px ' + FONT` rather than a
-  second stack. Two copies could be edited apart while each still looked fine
-  beside its own row, which reads as a caption set in another face from the
-  labels under it; the suite counts the one list, the two reads and asks for no
-  leftover stack beside them.
+  front of the family differs, so both sizes reach it through one writer —
+  `chartFont(hc, size)` — which spells the unit and the family once. Written
+  beside each row the pair could be edited apart, one keeping the unit and one
+  dropping it, which reads as a caption set at another size from the labels
+  under it while each still looked fine on its own row; the suite counts the one
+  list, the one writer, its two reads and asks that the only join of a size with
+  that list be the one inside the helper.
   `hoverHistogram()` is shared by `mousemove` and a touch `pointerdown`, so a tap
   on the chart selects a bin the same way a cursor does. Keep the one function.
   The touch call passes a second argument so tapping the bar that is already

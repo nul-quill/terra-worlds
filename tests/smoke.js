@@ -3856,11 +3856,17 @@ assert(swatchPrints === 1 && swatchBare === 0,
 // labels under it while each still looked fine beside its own row. Counted as
 // text: one list, both sizes reading it, no second stack left beside them.
 var fontDefs = (appSrc.match(/var FONT = '/g) || []).length;
-var fontUses = (appSrc.match(/px ' \+ FONT/g) || []).length;
+var fontWrites = (appSrc.match(/px ' \+ FONT/g) || []).length;
 var fontInline = (appSrc.match(/px system-ui/g) || []).length;
-assert(fontDefs === 1 && fontUses === 2 && fontInline === 0,
-  'the chart types both rows from one font list (' + fontDefs + ' def, ' +
-  fontUses + ' reads, ' + fontInline + ' inline stacks)');
+// Both rows now set their type through one writer, so the count is that one
+// definition plus its two reads, with the single join living inside it.
+var fontHelpDefs = (appSrc.match(/function chartFont\(/g) || []).length;
+var fontHelpReads = (appSrc.match(/chartFont\(hc, \d/g) || []).length;
+assert(fontDefs === 1 && fontHelpDefs === 1 && fontHelpReads === 2 &&
+  fontWrites === 1 && fontInline === 0,
+  'the chart types both rows through one writer (' + fontDefs + ' list, ' +
+  fontHelpDefs + ' def, ' + fontHelpReads + ' reads, ' + fontWrites +
+  ' join inside it, ' + fontInline + ' inline stacks)');
 
 // Every overlay on the map washes toward the palette's own sky: the isolation
 // blend twice (a pinned class, a hovered band), the crosshair's ink and the mat

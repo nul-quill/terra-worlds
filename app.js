@@ -929,6 +929,15 @@
   // the labels under it.
   var FONT = 'system-ui, sans-serif';
 
+  // Both rows of that strip set their type the same way: a size, the unit, then
+  // the one family. Written beside each row the pair could be edited apart —
+  // one keeping the unit, one dropping it — which reads as a caption set at a
+  // different size from the labels under it while each still looked fine on its
+  // own row, so the two sizes go through this one writer.
+  function chartFont(hc, size) {
+    hc.font = size + 'px ' + FONT;
+  }
+
   // Where a height lands along the chart's own width. Three marks are placed
   // that way — the sea rule, the decade ticks and the median — and each of
   // them sits on the range the bars were binned over, so the pair of ends is
@@ -1551,7 +1560,7 @@
     // The marker line alone does not say what the sea level is, and the slider
     // is the knob that moves it most, so the number rides next to the rule.
     // Flipped to the left of the line when it would otherwise run off the edge.
-    hc.font = '9px ' + FONT;
+    chartFont(hc, 9);
     var seaLabel = 'sea ' + hundred(result.seaLevel);
     var seaTw = textWidth(hc, seaLabel);
     hc.fillStyle = rgba(INK, 0.75);
@@ -1614,7 +1623,7 @@
     // chart itself, which keeps the sidebar from reflowing on every move.
     if (only >= 0) {
       var sum = bandSummary(only);
-      hc.font = '10px ' + FONT;
+      chartFont(hc, 10);
       // The full label is the range, the count and the class. On a narrow
       // sidebar that runs past the chart, so the least useful parts are
       // dropped first: class, then count. The range always survives — it is
