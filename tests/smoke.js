@@ -5080,6 +5080,25 @@ assert(boxDefs === 1 && boxReads === 1 && boxLiterals === 0,
   'one fraction sets the hovered cell\'s frame width (' + boxDefs + ' def, ' +
   boxReads + ' reads, ' + boxLiterals + ' literals)');
 
+// A counted thing — a lake's depth step, an export multiplier, the width of a
+// frame — is a rounded number with a floor of one. That pair of halves lives in
+// one core lookup read by the fill, by the upscale and by the shell's border.
+// Written beside each read the floor could be dropped on one of them, which
+// lets a shallow tarn print no depth while its own overlay still graded sixty
+// steps, or a one-pixel frame vanish on a dense grid. Counted as one
+// definition, its three reads and no bare pair left beside them.
+var wcDefs = (coreSrc.match(/function wholeCount\(/g) || []).length;
+var wcCoreReads = (coreSrc.match(/wholeCount\(/g) || []).length - wcDefs;
+var wcShellReads = (appSrc.match(/TerraCore\.wholeCount\(/g) || []).length;
+var wcExported = /wholeCount:\s*wholeCount/.test(coreSrc) ? 1 : 0;
+var wcCoreBare = (coreSrc.match(/Math\.max\(1, Math\.round\(/g) || []).length;
+var wcShellBare = (appSrc.match(/Math\.max\(1, Math\.round\(/g) || []).length;
+var wcBare = wcCoreBare - 1 + wcShellBare;
+assert(wcDefs === 1 && wcCoreReads + wcShellReads === 3 && wcExported === 1 &&
+  wcBare === 0,
+  'every counted thing rounds through one lookup (' + wcDefs + ' def, ' +
+  (wcCoreReads + wcShellReads) + ' reads, ' + wcBare + ' bare pairs)');
+
 // Three marks on the relief chart are placed along its width from a height:
 // the sea rule, the decade ticks and the median. Each of those is the same
 // subtraction of the chart's own low end over its span, times the width.
@@ -5133,7 +5152,7 @@ var hoverAt = appSrc.indexOf('function drawHover()');
 var hoverSrc = hoverAt < 0 ? '' : appSrc.slice(hoverAt, hoverAt + 1600);
 var edgeSets = (hoverSrc.match(/ctx\.strokeStyle = edge;/g) || []).length;
 var widthSets = (hoverSrc.match(
-  /ctx\.lineWidth = Math\.max\(1, Math\.round\(cellX \* BOX\)\);/g) ||
+  /ctx\.lineWidth = TerraCore\.wholeCount\(cellX \* BOX\);/g) ||
   []).length;
 var saveSets = (hoverSrc.match(/ctx\.save\(\);/g) || []).length;
 var backSets = (hoverSrc.match(/ctx\.restore\(\);/g) || []).length;

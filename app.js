@@ -768,7 +768,7 @@
     // at any cell size, and never less than one pixel so it stays visible on a
     // dense grid. That fraction is one number beside its only read.
     var BOX = 0.25;
-    ctx.lineWidth = Math.max(1, Math.round(cellX * BOX));
+    ctx.lineWidth = TerraCore.wholeCount(cellX * BOX);
     if (hover.x >= 0) {
       var cell = cellOf(hover.x, hover.y);
       var px = cell[0];

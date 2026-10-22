@@ -2360,6 +2360,14 @@ Conventions:
     That share is one fraction — `BOX`, a quarter of a cell with a one-pixel
     floor — read once beside the stroke it sets, so the frame cannot go thick on
     a coarse grid while its own crosshair stayed thin.
+  That frame's width, the depth step written into a lake mask and the export
+  multiplier behind a saved file are three counted things, and all three round
+  through one lookup — `wholeCount(value)`, a rounded value held at or above one.
+  Written beside each read the floor could be dropped on one of them, which lets a
+  coarse grid stroke a frameless box while its own tarn still graded its depth in
+  sixty whole steps — each count plausible next to its own caption, so the suite
+  counts the definition, its three reads, the export and asks for no bare
+  `Math.max(1, Math.round(` left beside them.
   Those same three chart marks are also placed by one lookup —
   `chartX(value, lo, span, w)` — since each is a height over the range the bars
   were binned over, times the chart's width. Written at each site, one mark

@@ -939,7 +939,7 @@
           var ch = hf[cur];
           if (ch > surface) continue;
           var d = surface - ch;
-          lake[cur] = Math.max(1, Math.round(Math.min(1, d / 0.09) * LAKE_STEPS));
+          lake[cur] = wholeCount(Math.min(1, d / 0.09) * LAKE_STEPS);
           var cx2 = colOf(cur), cy2 = rowOf(cur);
           // `queued` marks a cell the moment it enters the queue: the depth is
           // only written on dequeue, so without this a cell offered by two
@@ -1415,7 +1415,7 @@
   }
 
   function upscale(result, factor) {
-    var f = Math.max(1, Math.round(factor || 1));
+    var f = wholeCount(factor || 1);
     var w = result.width * f, h = result.height * f;
     var out = new Uint8ClampedArray(w * h * 4);
     var src = result.data;
@@ -1703,6 +1703,18 @@
     return isInt ? Math.round(n) : n;
   }
 
+  // A counted thing — a depth step, an export multiplier, the width of a box —
+  // is a rounded number that never falls below one. Both halves are one
+  // decision about how small a count may get, so they sit together: written
+  // beside each read the floor could be dropped on one of them, which lets a
+  // shallow tarn print no depth at all while its own overlay still graded
+  // sixty steps, or a one-pixel border vanish on a dense grid while the
+  // multiplier beside it stayed whole. Counted as one lookup, its reads and no
+  // bare pair left beside them.
+  function wholeCount(value) {
+    return Math.max(1, Math.round(value));
+  }
+
   global.TerraCore = {
     generate: generate,
     upscale: upscale,
@@ -1718,6 +1730,7 @@
     legendOrder: legendOrder,
     biomeCount: biomeCount,
     readNumber: readNumber,
+    wholeCount: wholeCount,
     hashString: hashString,
     randomSeed: randomSeed,
     nextSeed: nextSeed,
